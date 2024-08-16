@@ -1,0 +1,37 @@
+.versionsWrapper {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.settingsPage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.settingOptions {
+    display: flex;
+    justify-content: flex-start;
+    width: 80%;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.settingsOption {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    > input[type='number'] {
+        text-align: right;
+    }
+}

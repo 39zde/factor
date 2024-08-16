@@ -241,7 +241,16 @@ function Router({ route }: { route: RouteType }): React.JSX.Element {
 			return <Pages.Upload />;
 		case 'Customers':
 			return <Pages.Customers />;
-
+		case "Articles":
+			return <Pages.Articles />
+		case "Deliveries":
+			return <Pages.Deliveries />
+		case "Invoices":
+			return <Pages.Invoices />
+		case "Quotes":
+			return <Pages.Quotes />
+		case "Returnees":
+			return <Pages.Returnees />
 		default:
 			return <Pages.Home />;
 	}

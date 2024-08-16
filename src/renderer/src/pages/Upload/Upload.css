@@ -1,0 +1,286 @@
+@import url('../../base.css');
+
+.fileSelector {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+}
+
+.fileSelector>label {
+	font-family: var(--font-family);
+	font-size: large;
+}
+
+.importButton {
+	background: var(--color-button-3);
+	border-radius: 8px;
+	color: white;
+	font-weight: 600;
+}
+
+.importButton:hover {
+	background: var(--color-button-4);
+}
+
+.fileInput {
+	height: 50px;
+	padding: 12px;
+	width: 300px;
+	border-radius: 8px;
+	border: 2px dashed var(--color-text);
+	background-color: var(--color-bg-6);
+	align-items: center;
+	cursor: pointer;
+	overflow: visible;
+	position: relative;
+}
+
+.fileInput:hover {
+	border: 2px dashed var(--color-text-1);
+}
+
+.fileInput::after {
+	content: 'Upload File';
+	box-sizing: border-box;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	font-family: var(--font-family);
+	font-size: large;
+	height: 100%;
+	width: 100%;
+	top: 0;
+	left: 0;
+	position: absolute;
+	background-color: var(--color-bg-6);
+}
+
+.fileInput::after:hover {
+	background-color: red;
+}
+
+.fileDisplay {
+	height: 50px;
+	padding: 12px;
+	width: 300px;
+	border-radius: 8px;
+	border: 2px dashed var(--color-text);
+	background-color: var(--color-bg-6);
+	align-items: center;
+	overflow: visible;
+	position: relative;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 12px;
+}
+
+.removeFile {
+	position: absolute;
+	top: 0;
+	right: 0;
+	border-top-right-radius: 8px;
+	background: none;
+	cursor: pointer;
+}
+
+.uploader {
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	align-items: center;
+	gap: 25px;
+}
+
+.tableWrapper {
+	display: flex;
+	justify-content: flex-start;
+	align-items: stretch;
+	width: 100%;
+	/* border: 1px solid red; */
+	height: 100%;
+}
+
+.uploadPage {
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+	justify-content: flex-start;
+}
+
+.rowShifter,
+.colRemover {
+	position: relative;
+}
+
+li {
+	opacity: 1;
+}
+
+.alignButton,
+.removerButton {
+	border: 1px solid var(--color-text);
+	background-color: #000;
+	color: var(--color-text);
+	filter: invert();
+}
+
+.alignButton:hover,
+.removerButton:hover {
+	background-color: var(--color-hover-2);
+}
+
+.alignOptions {
+	left: -80px;
+}
+
+.removerOptions {
+	left: -50px;
+}
+
+.alignOptions,
+.removerOptions {
+	position: absolute;
+	top: 36px;
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+	justify-content: flex-start;
+	background: var(--color-bg-6);
+	opacity: 1;
+	gap: 8px;
+	z-index: 100;
+	padding: 12px;
+	width: 300px;
+	margin: 0 auto;
+	box-shadow: 0 5px 13px 2px var(--color-hover-3);
+	border-radius: 12px;
+}
+
+.alignOptions>p,
+.removerOptions>p {
+	font-size: medium;
+}
+
+.alignOptions>input,
+.alignOptions>select,
+.removerOptions>input,
+.removerOptions>select {
+	border: none;
+	display: flex;
+	justify-content: flex-start;
+	align-items: center;
+	flex-direction: row;
+	padding: 8px;
+	gap: 12px;
+	cursor: pointer;
+	font-family: var(--font-family);
+	font-size: medium;
+	border-radius: 8px;
+}
+
+.alignActions,
+.removerActions {
+	display: flex;
+	align-items: center;
+	flex-direction: row;
+	justify-content: stretch;
+	gap: 12px;
+	width: 100%;
+}
+
+.alignActions>button,
+.removerActions>button {
+	width: 100%;
+	text-align: center;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	font-weight: 600;
+}
+
+.alignActions>button:first-child,
+.removerActions>button:first-child {
+	background-color: var(--color-button-1);
+	color: var(--color-text);
+}
+
+.alignActions>button:first-child:hover,
+.removerActions>button:first-child:hover {
+	background-color: var(--color-button-2);
+}
+
+.alignActions>button:last-child,
+.removerActions>button:last-child {
+	background-color: var(--color-button-5);
+	color: var(--color-text);
+}
+
+.alignActions>button:last-child:hover,
+.removerActions>button:last-child:hover {
+	background-color: var(--color-button-6);
+}
+
+.divider {
+	background: var(--color-hover-3);
+	height: 1px;
+	width: 100%;
+	margin: 4px 0;
+}
+
+.dataSorter {
+	display: flex;
+	height: fit-content;
+	flex-direction: column;
+}
+
+.dataSorter>div {
+	height: 50%;
+}
+
+.dataAssigner {
+	width: 100%;
+	display: flex;
+	justify-content: flex-start;
+	flex-direction: column;
+	align-items: center;
+	gap: 20px;
+	border-top: 1px solid var(--color-text);
+	overflow-y: scroll;
+	scrollbar-width: var(--scrollbar-width);
+	scrollbar-color: var(--scrollbar-color);
+	padding-bottom: 32px;
+}
+
+.dataStruct {
+	font-family: monospace;
+	font-size: larger;
+}
+
+.dataRow {
+	display: inline-flex;
+	align-items: center;
+	gap: 15px;
+	justify-content: space-between;
+	padding: 0 20px;
+	width: 100%;
+}
+
+.customerOptions {
+	/* display: flex;
+    justify-content: flex-start;
+    align-items: stretch;
+    flex-direction: column;
+    */
+	gap: 15px;
+	display: grid;
+	grid-template: auto / 1fr 1fr;
+
+	width: 100%;
+}
+
+.assignWrapper {
+	width: 100%;
+}
