@@ -26,7 +26,7 @@ const defaultContext: AppContextType = {
 		colorTheme: 'system',
 		rowHeight: 38,
 		columnWidth: 160,
-		sideBarWidth: 160,
+		sideBarWidth: 170,
 	},
 	database: {
 		dbVersion: 1,
