@@ -1,27 +1,30 @@
-.versions {
-    position: absolute;
-    bottom: 30px;
-    margin: 0 auto;
-    padding: 15px 0;
-    font-family: monospace;
-    display: inline-flex;
-    overflow: hidden;
-    flex-flow: wrap;
-    align-items: center;
-    border-radius: 22px;
-    border: 1px solid light-dark(var(--color-light-3),var(--color-dark-3));
-}
+ /* prettier-ignore */
+ @import url("../../base.css");
 
-.versions li {
-    display: block;
-    float: left;
-    border-right: 1px solid var(--color-text);
-    padding: 0 20px;
-    margin: 5px 0;
-    font-size: 14px;
-    line-height: 14px;
+ .versions {
+ 	position: absolute;
+ 	bottom: 30px;
+ 	margin: 0 auto;
+ 	padding: 15px 0;
+ 	font-family: monospace;
+ 	display: inline-flex;
+ 	overflow: hidden;
+ 	flex-flow: wrap;
+ 	align-items: center;
+ 	border-radius: 22px;
+ 	border: 1px solid light-dark(var(--color-light-3), var(--color-dark-3));
+ }
 
-    &:last-child {
-        border: none;
-    }
-}
+ .versions li {
+ 	display: block;
+ 	float: left;
+ 	border-right: 1px solid var(--color-text);
+ 	padding: 0 20px;
+ 	margin: 5px 0;
+ 	font-size: 14px;
+ 	line-height: 14px;
+
+ 	&:last-child {
+ 		border: none;
+ 	}
+ }

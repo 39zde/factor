@@ -9,7 +9,6 @@ export function ResizeElement({
 		<div
 			{...props}
 			style={{ height: tableHeight, ...props.style }}
-			className="resizeElement"
-		></div>
+			className="resizeElement"></div>
 	);
 }

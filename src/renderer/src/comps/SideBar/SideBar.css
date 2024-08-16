@@ -1,47 +1,48 @@
-@import url('../../base.css');
+ /* prettier-ignore */
+ @import url('../../base.css');
 
-.sideBarButton {
-    /* border: 1px solid black; */
-    border: none;
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    flex-direction: row;
-    padding: 12px 8px;
-    gap: 12px;
-    border-radius: 8px 0 0 8px;
-    cursor: pointer;
-	 color: light-dark(var(--color-dark-1),var(--color-light-1));
-    font-family: var(--font-family);
-    font-size: medium;
-    width: 100%;
-	 height: 100%;
-}
+ .sideBarButton {
+ 	/* border: 1px solid black; */
+ 	border: none;
+ 	display: flex;
+ 	justify-content: flex-start;
+ 	align-items: center;
+ 	flex-direction: row;
+ 	padding: 12px 8px;
+ 	gap: 12px;
+ 	border-radius: 8px 0 0 8px;
+ 	cursor: pointer;
+ 	color: light-dark(var(--color-dark-1), var(--color-light-1));
+ 	font-family: var(--font-family);
+ 	font-size: medium;
+ 	width: 100%;
+ 	height: 100%;
+ }
 
 
-.sideBar {
-    position: absolute;
-    display: flex;
-    justify-content: space-between;
-    flex-direction: column;
-    align-items: stretch;
-    height: 100vh;
-    background-color: light-dark(var(--color-light-2),var(--color-dark-2));
-    left: 0;
-    width: 138px;
-    padding-left: 12px;
-    gap: 12px;
-}
+ .sideBar {
+ 	position: absolute;
+ 	display: flex;
+ 	justify-content: space-between;
+ 	flex-direction: column;
+ 	align-items: stretch;
+ 	height: 100vh;
+ 	background-color: light-dark(var(--color-light-2), var(--color-dark-2));
+ 	left: 0;
+ 	width: 138px;
+ 	padding-left: 12px;
+ 	gap: 12px;
+ }
 
-.topIcons {
-    display: flex;
-    justify-content: flex-start;
-    align-items: start;
-    flex-direction: column;
-    gap: 12px;
-    padding-top: 12px;
-}
+ .topIcons {
+ 	display: flex;
+ 	justify-content: flex-start;
+ 	align-items: start;
+ 	flex-direction: column;
+ 	gap: 12px;
+ 	padding-top: 12px;
+ }
 
-.bottomIcons {
-    padding-bottom: 12px;
-}
+ .bottomIcons {
+ 	padding-bottom: 12px;
+ }

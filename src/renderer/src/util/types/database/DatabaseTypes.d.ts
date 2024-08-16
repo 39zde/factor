@@ -23,19 +23,19 @@ export interface CustomerType {
 	note?: string[];
 }
 
-export type NameType = {
+export interface NameType {
 	// (optional) the name of the company
 	name?: string;
 	// (optional) alternative names of the company
-	alias?: Array<string>;
+	alias?: string[];
 
 	// (optional) company description
 	description?: string;
 	// (optional) any additional Information
 	notes?: string[];
-};
+}
 
-export type AddressType = {
+export interface AddressType {
 	// unique identifier
 	addressID: string;
 	// what kind of address
@@ -52,9 +52,9 @@ export type AddressType = {
 	country?: string;
 	// (optional) additional notes
 	notes?: string[];
-};
+}
 
-export type PersonType = {
+export interface PersonType {
 	// (optional) title
 	title?: TitleType;
 	// (optional) first Name (including middle Names)
@@ -69,7 +69,7 @@ export type PersonType = {
 	phone?: PhoneNumberType[];
 	// (optional) notes on that person
 	notes?: string[];
-};
+}
 
 export type TitleType =
 	| 'Herr'
@@ -95,7 +95,7 @@ export type TitleType =
 	| 'Frau Mag. '
 	| undefined;
 
-export type PhoneNumberType = {
+export interface PhoneNumberType {
 	// (optional) the type of phone number
 	type?:
 		| 'private'
@@ -110,15 +110,14 @@ export type PhoneNumberType = {
 		| 'office'
 		| 'logistics'
 		| 'emergency'
-		| 'boss'
-		| string;
+		| 'boss';
 	// phone number
 	number: string;
 	// (optional) note for the phone number
 	notes?: string;
-};
+}
 
-export type EmailType = {
+export interface EmailType {
 	// (optional) the type of email
 	type?:
 		| 'private'
@@ -139,14 +138,14 @@ export type EmailType = {
 	email: string;
 	// (optional) note for the phone number
 	notes?: string[];
-};
+}
 
-export type BankType = {
+export interface BankType {
 	bank: string;
 	bankCode?: string;
 	IBAN?: string;
 	BIC?: string;
-};
+}
 
 export interface ArticleType {
 	// unique article identifier
@@ -177,13 +176,13 @@ export interface ArticleType {
 	bulkDiscount?: StepDiscountType | PercentDiscountType;
 }
 
-export type PriceType = {
+export interface PriceType {
 	withVAT: number;
 	noVAT: number;
 	unit: 'EUR' | 'DM' | 'USD';
-};
+}
 
-export type AcquisitionType = {
+export interface AcquisitionType {
 	// when the article was obtained
 	date: Date;
 	// who much of it
@@ -196,9 +195,9 @@ export type AcquisitionType = {
 	notes?: string[];
 	//(optional) some identifier for purchase
 	purchaseInvoiceID?: string;
-};
+}
 
-export type LastEncounterType = {
+export interface LastEncounterType {
 	date: Date;
 	// (optional) id of corresponding quote
 	QuoteID?: string;
@@ -206,21 +205,21 @@ export type LastEncounterType = {
 	InvoiceID?: string;
 	// (optional) id of corresponding delivery note
 	DeliveryID?: string;
-};
+}
 
 // ordered list from first:  parent category -> ...sub categories -> article category
 export type CategoryType = Set<string>;
 
-export type StepDiscountType = {
+export interface StepDiscountType {
 	type: 'step';
 	// at what number of items a new price gets applies
-	steps: Array<number>;
+	steps: number[];
 	prices: Set<number>;
 	// (optional) at what price the discount the should be stopped, regardless of count
 	minPrice?: number;
-};
+}
 
-export type PercentDiscountType = {
+export interface PercentDiscountType {
 	type: 'percent';
 	// when to apply a new percentage
 	steps: Set<number>;
@@ -228,17 +227,17 @@ export type PercentDiscountType = {
 	percentage: Set<number>;
 	// (optional) at what price the discount the should be stopped, regardless of count
 	minPrice?: number;
-};
+}
 
-export type DiscountType = {
+export interface DiscountType {
 	amount: number;
 	unit: 'EUR' | 'DM' | 'USD' | '%';
-};
+}
 
 interface BaseType {
 	customerID: string | string[];
 	// all article Ids and how many of them
-	articleList: Array<ArticleListItem>;
+	articleList: ArticleListItem[];
 	date: Date;
 	addressIDs: {
 		// (optional) the address id stored in the CustomerType>addresses[n]>addressID with type "shipping" or "both"
@@ -248,12 +247,13 @@ interface BaseType {
 	};
 }
 
-export type ArticleListItem = {
+export interface ArticleListItem {
 	// the article ID
 	articleID: string;
 	// how many
 	count: number;
-};
+}
+
 export interface QuoteType extends BaseType {
 	// unique id for the quote
 	quoteID: string;

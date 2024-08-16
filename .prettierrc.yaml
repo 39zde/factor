@@ -4,7 +4,8 @@ semi: true
 singleQuote: true
 trailingComma: es5
 bracketSpacing: true
-bracketSameLine: false
+bracketSameLine: true
 parser: typescript
 endOfLine: lf
 singleAttributePerLine: false
+proseWrap: never

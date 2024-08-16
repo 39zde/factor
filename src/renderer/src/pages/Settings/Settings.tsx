@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { useCallback, useContext, useRef, useState } from 'react';
 import './Settings.css';
 import Versions from '@comps/Versions/Versions';
 import { AppContext } from '@renderer/App';
@@ -93,8 +93,12 @@ export function Settings() {
 	};
 
 	const saveSettings = useCallback(() => {
-		let changed: { value: any; name: string; category: string }[] = [];
-		let items = [
+		const changed: {
+			value: number | string;
+			name: string;
+			category: string;
+		}[] = [];
+		const items = [
 			{ value: rowHeight, name: 'rowHeight', category: 'appearances' },
 			{ value: colorTheme, name: 'colorTheme', category: 'appearances' },
 			{ value: language, name: 'language', category: 'general' },
@@ -115,7 +119,7 @@ export function Settings() {
 		}
 
 		if (changed.length > 0) {
-			let newContext: AppSettingsType = {
+			const newContext: AppSettingsType = {
 				appearances: {
 					...context.appearances,
 				},
@@ -159,8 +163,7 @@ export function Settings() {
 						<select
 							ref={themeInputRef}
 							onInput={themeInputHandler}
-							defaultValue={context.appearances.colorTheme}
-						>
+							defaultValue={context.appearances.colorTheme}>
 							<option>system</option>
 							<option>dark</option>
 							<option>light</option>
@@ -214,8 +217,7 @@ export function Settings() {
 						<select
 							ref={langInputRef}
 							onInput={langInputHandler}
-							defaultValue={language}
-						>
+							defaultValue={language}>
 							<option>english</option>
 							<option>deutsch</option>
 						</select>
@@ -229,8 +231,7 @@ export function Settings() {
 						<select
 							ref={decimalSeparatorInputRef}
 							onInput={decimalSeparatorInputHandler}
-							defaultValue={context.general.decimalSeparator}
-						>
+							defaultValue={context.general.decimalSeparator}>
 							<option>.</option>
 							<option>,</option>
 						</select>

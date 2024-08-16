@@ -1,7 +1,7 @@
 export interface TableProps {
 	tableName: string;
-	colsHook?: { cols: Array<string>; setCols: Function };
-	entriesHook?: { entries: number; setEntries: Function };
-	updateHook?: { update: boolean; setUpdate: Function };
+	colsHook?: { cols: string[]; setCols: (newVal: string[]) => void };
+	entriesHook?: { entries: number; setEntries: (newVal: number) => void };
+	updateHook?: { update: boolean; setUpdate: (newVal: boolean) => void };
 	uniqueKey: string;
 }

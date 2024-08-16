@@ -1,6 +1,6 @@
-export type TableRowItemProps = {
+export interface TableRowItemProps {
 	items: object;
 	colIndex?: number;
-	key?: string
+	key?: string;
 	uniqueParentKey: string;
-};
+}

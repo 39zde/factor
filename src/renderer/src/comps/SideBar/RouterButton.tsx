@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import type { RouterButtonProps } from '@util/types/types';
-import "./SideBar.css"
+import './SideBar.css';
 
 export function RouterButton({
 	route,
@@ -27,8 +27,7 @@ export function RouterButton({
 					color: route === routeName ? 'var(--color-primary)' : 'initial',
 					fontWeight: route === routeName ? 'bold' : 'initial',
 				}}
-				className="sideBarButton"
-			>
+				className="sideBarButton">
 				{icon}
 				{textOverride !== undefined ? (
 					<>{textOverride}</>

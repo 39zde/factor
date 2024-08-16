@@ -1,12 +1,12 @@
 import type Dexie from 'dexie';
-export type AppContextType = {
+export interface AppContextType {
 	appearances: {
 		colorTheme: 'light' | 'dark' | 'system';
 		rowHeight: number;
 		sideBarWidth: number;
 	};
 	database: {
-		tables: Array<string>;
+		tables: string[];
 		dbVersion: number;
 		database: Dexie;
 	};
@@ -17,21 +17,21 @@ export type AppContextType = {
 	worker: {
 		ImportWorker: Worker;
 	};
-	changeContext: Function;
-};
+	changeContext: (newVal: AppSettingsType) => void;
+}
 
-export type AppSettingsType = {
+export interface AppSettingsType {
 	appearances: {
 		colorTheme: 'light' | 'dark' | 'system';
 		rowHeight: number;
 		sideBarWidth: number;
 	};
 	database: {
-		tables: Array<string>;
+		tables: string[];
 		dbVersion: number;
 	};
 	general: {
 		language: 'english' | 'deutsch';
 		decimalSeparator: '.' | ',';
 	};
-};
+}

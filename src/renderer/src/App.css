@@ -1,29 +1,28 @@
-@import url('./base.css');
+ /* prettier-ignore */
+ @import './base.css';
 
-.appWrapper {
-    position: absolute;
-    height: 100vh;
-    width: 100vw;
-}
+ .appWrapper {
+ 	position: absolute;
+ 	height: 100vh;
+ 	width: 100vw;
+ }
 
-.appWrapper > .page {
+ .appWrapper>.page {
 
-    /* border: 1px solid blue; */
-    height: 100%;
-	 width: 100%;
-	position: relative;
-	overflow: hidden;
+ 	/* border: 1px solid blue; */
+ 	height: 100%;
+ 	width: 100%;
+ 	position: relative;
+ 	overflow: hidden;
 
-	 & .appRoute{
-		position: absolute;
-		height: 100%;
-		width: 100%;
-		scrollbar-gutter: stable both-edges;
-		scrollbar-width: var(--scrollbar-width);
-		scrollbar-color: var(--scrollbar-color);
-		overflow-y: scroll;
-		overflow-x: hidden;
-	 }
-}
-
-
+ 	& .appRoute {
+ 		position: absolute;
+ 		height: 100%;
+ 		width: 100%;
+ 		scrollbar-gutter: stable both-edges;
+ 		scrollbar-width: var(--scrollbar-width);
+ 		scrollbar-color: var(--scrollbar-color);
+ 		overflow-y: scroll;
+ 		overflow-x: hidden;
+ 	}
+ }

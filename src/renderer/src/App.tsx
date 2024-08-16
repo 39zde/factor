@@ -1,4 +1,4 @@
-import React, { useState, createContext, useEffect, useMemo } from 'react';
+import React, { useState, createContext, useMemo } from 'react';
 import SideBar from '@comps/SideBar/SideBar';
 import { Pages } from './pages/Pages';
 import Dexie from 'dexie';
@@ -93,11 +93,11 @@ function App(): JSX.Element {
 		// const locker = new LockManager();
 		navigator.storage.persist();
 		// window.electron.ipcRenderer.send("ping")
-		let settingsFile: AppSettingsType = window.electron.ipcRenderer.sendSync(
-			'settings',
-			{ type: 'readSettings' }
-		);
-		let context: AppContextType = {
+		const settingsFile: AppSettingsType =
+			window.electron.ipcRenderer.sendSync('settings', {
+				type: 'readSettings',
+			});
+		const context: AppContextType = {
 			appearances: {
 				...settingsFile.appearances,
 			},
@@ -133,8 +133,9 @@ function App(): JSX.Element {
 				<WindowContextProvider>
 					<div
 						className="appWrapper"
-						style={{ paddingLeft: contextValue.appearances.sideBarWidth }}
-					>
+						style={{
+							paddingLeft: contextValue.appearances.sideBarWidth,
+						}}>
 						<SideBar routesHook={routeHook} />
 						<div className="page">
 							<Router route={route} />

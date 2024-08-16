@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useState } from 'react';
-export type WindowContextProps = {
+export interface WindowContextProps {
 	clientHeight: number;
 	clientWidth: number;
-};
+}
 export const WindowContext = React.createContext<WindowContextProps>({
 	clientHeight: 0,
 	clientWidth: 0,

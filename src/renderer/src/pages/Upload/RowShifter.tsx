@@ -4,7 +4,7 @@ export function RowShifter({
 	cols,
 	worker,
 }: {
-	cols: Array<string>;
+	cols: string[];
 	worker: Worker;
 }): React.JSX.Element {
 	const { general } = useContext(AppContext);
@@ -41,7 +41,7 @@ export function RowShifter({
 
 	const directionHandler = () => {
 		if (directionRef.current?.value !== undefined) {
-			//@ts-ignore
+			//@ts-ignore  ..current.value is of type UploadMode, because of the hardcoded <options values={...}> in side the select element. TS does not know that
 			setDirectionInput(directionRef.current.value);
 		}
 	};
@@ -79,16 +79,14 @@ export function RowShifter({
 			<div className="rowShifter">
 				<button
 					onClick={() => setShowOptions((old) => !old)}
-					className="alignButton"
-				>
+					className="alignButton">
 					{general.language === 'deutsch'
 						? 'Zeilen ausrichten'
 						: 'Align Rows'}
 				</button>
 				<div
 					className="alignOptions"
-					style={{ display: showOptions ? 'flex' : 'none' }}
-				>
+					style={{ display: showOptions ? 'flex' : 'none' }}>
 					<p>
 						{general.language === 'deutsch'
 							? 'Zeile soll ausgerichtet werden, wenn'
@@ -97,8 +95,7 @@ export function RowShifter({
 					<select
 						ref={colInputRef}
 						id="colInput"
-						onInput={colInputHandler}
-					>
+						onInput={colInputHandler}>
 						<option defaultChecked>-</option>
 						{cols.length !== 0 ? (
 							<>
@@ -119,7 +116,9 @@ export function RowShifter({
 						ref={valueInputRef}
 						type="text"
 						id="colValueInput"
-						placeholder={general.language === "deutsch" ? "diesen Wert": "my value"}
+						placeholder={
+							general.language === 'deutsch' ? 'diesen Wert' : 'my value'
+						}
 						onInput={colValueInputHandler}
 					/>
 					<p>{general.language === 'deutsch' ? 'um' : 'by'}</p>
@@ -128,19 +127,29 @@ export function RowShifter({
 						min={1}
 						max={cols.length}
 						id="offsetCount"
-						placeholder={general.language === "deutsch" ? "diese Anzahl": "my number"}
+						placeholder={
+							general.language === 'deutsch'
+								? 'diese Anzahl'
+								: 'my number'
+						}
 						ref={offsetInputRef}
 						onInput={offsetInputHandler}
 					/>
 					<p>{general.language === 'deutsch' ? 'zur' : 'towards the'}</p>
 					<select onInput={directionHandler} ref={directionRef}>
-						<option value={"Left"}>{general.language === "deutsch" ? "linken": "left"}</option>
-						<option value={"Right"}>{general.language === "deutsch" ? "rechten": "right"}</option>
+						<option value={'Left'}>
+							{general.language === 'deutsch' ? 'linken' : 'left'}
+						</option>
+						<option value={'Right'}>
+							{general.language === 'deutsch' ? 'rechten' : 'right'}
+						</option>
 					</select>
-					<p>{general.language === "deutsch" ? "Seite": "side"}</p>
+					<p>{general.language === 'deutsch' ? 'Seite' : 'side'}</p>
 					<div className="divider" />
 					<div className="alignActions">
-						<button onClick={() => setShowOptions(false)}>{general.language  === "deutsch" ? "Abbrechen": "Cancel"}</button>
+						<button onClick={() => setShowOptions(false)}>
+							{general.language === 'deutsch' ? 'Abbrechen' : 'Cancel'}
+						</button>
 						<button onClick={goHandler}>Go!</button>
 					</div>
 				</div>

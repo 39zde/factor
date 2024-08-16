@@ -37,16 +37,17 @@ export function Table({
 	const [count, setCount] = useState<number>();
 	const [cursorX, setCursorX] = useState<number>(0);
 	const [isMouseDown, setIsMouseDown] = useState<boolean>(false);
-	const [columns, setColumns] = useState<Array<string>>();
+	const [columns, setColumns] = useState<string[]>();
+	//@ts-ignore
 	const [dbTable, setDBTable] = useState<TableType<any, any, any>>();
-	const [minWidths, setMinWidths] = useState<Array<number>>([]);
+	const [minWidths, setMinWidths] = useState<number[]>([]);
 	const [cursor, setCursor] = useState<'col-resize' | 'initial'>('initial');
 	const [userSelect, setUserSelect] = useState<'none' | 'initial'>('initial');
 	const [sortingDirection, setSortingDirection] = useState<
 		'asc' | 'dsc' | undefined
 	>(undefined);
 	const [sortingCol, setSortingCol] = useState<string | undefined>(undefined);
-	const [sortable, setSortable] = useState<Array<string>>([]);
+	const [sortable, setSortable] = useState<string[]>([]);
 
 	const table = useLiveQuery(
 		() => {
@@ -99,7 +100,7 @@ export function Table({
 				const open = await database.database.open();
 				for (const table of open.tables) {
 					if (table.name === tableName) {
-						const sortableCols: Array<string> = [];
+						const sortableCols: string[] = [];
 						sortableCols.push(table.schema.primKey.name);
 						for (const index of table.schema.indexes) {
 							sortableCols.push(index.name);
@@ -219,14 +220,12 @@ export function Table({
 					className="tableElement"
 					ref={wrapperRef}
 					onMouseMove={mouseMoveHandler}
-					onMouseUp={mouseUpHandler}
-				>
+					onMouseUp={mouseUpHandler}>
 					<table
 						style={{
 							cursor: cursor,
 							userSelect: userSelect,
-						}}
-					>
+						}}>
 						<TableHeadDisplay
 							columns={columns}
 							cursorX={cursorX}

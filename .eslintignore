@@ -22,3 +22,5 @@ README.md
 *.yaml
 yarn.lock
 *.ico
+./electron.vite.config.ts
+./eslint.config.js

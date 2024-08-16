@@ -35,7 +35,7 @@ const requestHandler = (e: MessageEvent): void => {
 				});
 			}
 
-			let rows: Array<string> = data.split('\n');
+			let rows: string[] = data.split('\n');
 			const line: string = rows[0];
 			if (line.endsWith('\r')) {
 				rows = data.split('\r\n');
@@ -89,11 +89,11 @@ const requestHandler = (e: MessageEvent): void => {
 			 * }
 			 */
 			const alignVariables = e.data.message;
-			let offset = alignVariables['offset'];
-			if (alignVariables['direction'] === 'Left') {
+			let offset = alignVariables.offset;
+			if (alignVariables.direction === 'Left') {
 				offset = offset - 2 * offset;
 			}
-			alignData(alignVariables['col'], alignVariables['value'], offset);
+			alignData(alignVariables.col, alignVariables.value, offset);
 
 			break;
 		case 'rankColsByCondition':
@@ -129,7 +129,7 @@ const requestHandler = (e: MessageEvent): void => {
 			break;
 
 		case 'sort':
-			type SortingMap = {
+			interface SortingMap {
 				customerID: string;
 				title?: string;
 				firstName?: string;
@@ -146,7 +146,7 @@ const requestHandler = (e: MessageEvent): void => {
 				first?: string;
 				latest?: string;
 				notes?: string;
-			};
+			}
 			console.log('do sorting');
 			const columnsMap: SortingMap = e.data.message;
 			const mode:
@@ -187,13 +187,13 @@ function getKeys(row: string) {
 	return keys;
 }
 
-function addData(keys: Array<string>, rows: Array<string>, db: IDBDatabase) {
+function addData(keys: string[], rows: string[], db: IDBDatabase) {
 	const transaction = db.transaction(['data_upload'], 'readwrite');
 	const objectStore = transaction.objectStore('data_upload');
 	for (let i = 1; i < rows.length; i++) {
 		const columns = rows[i].split(';');
 		const out = {};
-		out['factor_db_id'] = i;
+		out.factor_db_id = i;
 		for (let j = 0; j < keys.length; j++) {
 			out[keys[j]] = columns[j];
 		}
@@ -299,7 +299,7 @@ function rankColsByCondition(condition: string | null | number | undefined) {
 			keysReq.onsuccess = () => {
 				const keys = Object.keys(keysReq.result);
 				keys.splice(keys.indexOf('factor_db_id'), 1);
-				let progress: number = 0;
+				let progress = 0;
 				let ratchet = 0.1;
 				const counter: object = keysReq.result;
 				for (const [k] of Object.entries(counter)) {

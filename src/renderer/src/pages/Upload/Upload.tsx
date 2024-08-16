@@ -20,7 +20,7 @@ export function Upload(): React.JSX.Element {
 	const [showFile, setShowFile] = useState<boolean>(false);
 	const [fileName, setFileName] = useState<string>('');
 	const [isRed, setIsRed] = useState<boolean>(false);
-	const [cols, setCols] = useState<Array<string>>([]);
+	const [cols, setCols] = useState<string[]>([]);
 	const [entries, setEntries] = useState<number>(0);
 	const [update, setUpdate] = useState<boolean>(false); // stop rendering while updating
 	const [mouseInSorter, setMouseInSorter] = useState<boolean>(false);
@@ -36,7 +36,7 @@ export function Upload(): React.JSX.Element {
 		if (tableImportModeInputRef.current === null) {
 			return;
 		}
-		// @ts-expect-error
+		// @ts-expect-error ..current.value is of type UploadMode, because of the hardcoded <options values={...}> in side the select element. TS does not know that
 		setTableImportMode(tableImportModeInputRef.current.value);
 	};
 
@@ -115,7 +115,7 @@ export function Upload(): React.JSX.Element {
 
 	const colsHook = {
 		cols: cols,
-		setCols: (newCols: Array<string>) => {
+		setCols: (newCols: string[]) => {
 			setCols(newCols);
 		},
 	};
@@ -157,8 +157,7 @@ export function Upload(): React.JSX.Element {
 			<div
 				className="uploadPage page"
 				ref={pageRef}
-				style={{ overflow: 'hidden' }}
-			>
+				style={{ overflow: 'hidden' }}>
 				<h1>{general.language === 'deutsch' ? 'Hochladen' : 'Upload'}</h1>
 				<div className="fileSelector">
 					{showTable ? (
@@ -167,8 +166,7 @@ export function Upload(): React.JSX.Element {
 						<>
 							<label
 								htmlFor="table_file_upload"
-								className="uploadButton"
-							>
+								className="uploadButton">
 								{general.language === 'deutsch'
 									? 'Wählen Sie eine CSV Datei aus'
 									: 'Choose a CSV file'}
@@ -194,8 +192,7 @@ export function Upload(): React.JSX.Element {
 							className="fileDisplay"
 							style={{
 								display: showFile ? 'flex' : 'none',
-							}}
-						>
+							}}>
 							<button onClick={removeFileHandler} className="removeFile">
 								<XIcon
 									onMouseEnter={() => setIsRed(true)}
@@ -217,8 +214,7 @@ export function Upload(): React.JSX.Element {
 									: 'none',
 							}}
 							onClick={actionHandler}
-							className="importButton"
-						>
+							className="importButton">
 							<ImportIcon color="white" size={24} strokeWidth={2} />
 							{general.language === 'deutsch' ? 'Importieren' : 'Import'}
 						</button>
@@ -257,8 +253,7 @@ export function Upload(): React.JSX.Element {
 					<>
 						<div
 							className="dataSorter"
-							style={{ height: dataSorterHeight }}
-						>
+							style={{ height: dataSorterHeight }}>
 							<Table
 								uniqueKey={'factor_db_id'}
 								tableName="data_upload"
@@ -278,8 +273,7 @@ export function Upload(): React.JSX.Element {
 											<select
 												onInput={tableImportModeHandler}
 												ref={tableImportModeInputRef}
-												defaultValue={'customers'}
-											>
+												defaultValue={'customers'}>
 												<option value="articles">
 													{general.language == 'deutsch'
 														? 'Artikel'
@@ -325,8 +319,7 @@ export function Upload(): React.JSX.Element {
 								<div
 									className="assignWrapper"
 									onMouseEnter={sortEnterHandler}
-									onMouseLeave={sortLeaveHandler}
-								>
+									onMouseLeave={sortLeaveHandler}>
 									<ImportModule
 										mode={tableImportMode}
 										columns={cols}
@@ -371,7 +364,7 @@ function Customers({
 	columns,
 	hook,
 }: {
-	columns: Array<string>;
+	columns: string[];
 	hook: {
 		sortingMap: any;
 		setSortingMap: (newVal: CustomerSortingMap) => void;

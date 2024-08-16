@@ -1,18 +1,35 @@
 import globals from 'globals';
-import pluginJs from '@eslint/js';
+import eslint from '@eslint/js';
 import tseslint from 'typescript-eslint';
-import pluginReact from 'eslint-plugin-react';
+import react from 'eslint-plugin-react';
+import * as tsParser from '@typescript-eslint/parser';
 
-export default [
+// set ESLINT_USE_FLAT_CONFIG=true as as system environment variable
+
+export default tseslint.config(
+	eslint.configs.recommended,
+	...tseslint.configs.recommendedTypeChecked,
+	...tseslint.configs.stylisticTypeChecked,
 	{
-		files: ['**/*.{js,mjs,cjs,ts,jsx,tsx}'],
-	},
-	{
-		languageOptions: {
-			globals: globals.browser,
+		name: 'project settings',
+		files: ['**/*.{js,jsx,mjs,cjs,ts,tsx}'],
+		ignores: [],
+		plugins: {
+			react,
 		},
-	},
-	pluginJs.configs.recommended,
-	...tseslint.configs.recommended,
-	pluginReact.configs.flat.recommended,
-];
+		rules: {},
+		languageOptions: {
+			globals: {
+				...globals.browser,
+			},
+			parser: tsParser,
+			parserOptions: {
+				project: './tsconfig.web.json',
+				tsconfigRootDir: import.meta.dirname,
+				ecmaFeatures: {
+					jsx: true,
+				},
+			},
+		},
+	}
+);

@@ -3,7 +3,6 @@ import {
 	useEffect,
 	useRef,
 	createRef,
-	useMemo,
 	useContext,
 	useId,
 } from 'react';
@@ -20,7 +19,7 @@ export function TableHead({
 	arrow,
 	sortingHook,
 }: TableHeadProps) {
-	const { general, appearances } = useContext(AppContext);
+	const { appearances } = useContext(AppContext);
 	const colRefs = useRef(columns.map(() => createRef<HTMLTableCellElement>()));
 	const [activeCol, setActiveCol] = useState<number>(0);
 	const [activeBg, setActiveBg] = useState<number | undefined>(undefined);
@@ -122,8 +121,7 @@ export function TableHead({
 						borderTop: 'none',
 						borderLeft: 'none',
 						borderRight: 'none',
-					}}
-				>
+					}}>
 					{columns.map((item, index) => {
 						if (colRefs !== undefined && resizeElemHeight !== undefined) {
 							return (
@@ -136,8 +134,7 @@ export function TableHead({
 										}}
 										ref={colRefs.current[index]}
 										key={useId()}
-										onClick={() => sortingHandler(item)}
-									>
+										onClick={() => sortingHandler(item)}>
 										<span key={useId()} className="guts">
 											{item}
 											{/* {sortingHook !== undefined &&

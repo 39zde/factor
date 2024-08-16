@@ -1,1 +1,7 @@
-export type TablePages =  'articles' | 'customers' | 'quotes' | 'invoices' | 'deliveries' | 'returnees' ;
+export type TablePages =
+	| 'articles'
+	| 'customers'
+	| 'quotes'
+	| 'invoices'
+	| 'deliveries'
+	| 'returnees';

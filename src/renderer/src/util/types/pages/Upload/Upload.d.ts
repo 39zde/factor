@@ -1,5 +1,5 @@
-import type {TablePages} from "../pages"
-export type CustomerSortingMap = {
+import type { TablePages } from '../pages';
+export interface CustomerSortingMap {
 	customerID: string;
 	title?: string;
 	firstName?: string;
@@ -16,23 +16,25 @@ export type CustomerSortingMap = {
 	first?: string;
 	latest?: string;
 	notes?: string;
-};
+}
 
-export type ArticleSortingMap = {
+export interface ArticleSortingMap {
 	articleID: string;
 }
 
-
-
-
 export interface ImportModuleProps {
-		mode: TablePages;
-		columns: Array<string>;
-		hook: {
-			sortingMap: CustomerSortingMap | ArticleSortingMap;
-			setSortingMap: (newVal: CustomerSortingMap | ArticleSortingMap) => void;
-};
+	mode: TablePages;
+	columns: string[];
+	hook: {
+		sortingMap: CustomerSortingMap | ArticleSortingMap;
+		setSortingMap: (newVal: CustomerSortingMap | ArticleSortingMap) => void;
+	};
 }
 
-
-export type UploadMode = 'articles' | 'customers' | 'quotes' | 'invoices' | 'deliveries' | 'returnees'
+export type UploadMode =
+	| 'articles'
+	| 'customers'
+	| 'quotes'
+	| 'invoices'
+	| 'deliveries'
+	| 'returnees';

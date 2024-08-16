@@ -3,14 +3,13 @@ import type { RouteType } from './routes';
 export interface SideBarProps {
 	routesHook: {
 		route: RouteType;
-		setRoute: Function<RouteType>;
+		setRoute: (newVal: RouteType) => void;
 	};
 }
 
-
 export interface RouterButtonProps {
 	route: RouteType;
-	handler: Function;
+	handler: (newVal: RouteType) => void;
 	routeName: RouteType;
 	icon: React.ReactNode;
 	textOverride?: string;

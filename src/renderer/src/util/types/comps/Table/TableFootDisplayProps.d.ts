@@ -1,5 +1,5 @@
-export interface TableFootDisplayProps{
-	columns?: Array<string>;
+export interface TableFootDisplayProps {
+	columns?: string[];
 	update?: boolean;
 	key?: string;
 }

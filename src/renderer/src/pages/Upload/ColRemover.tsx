@@ -7,7 +7,7 @@ export function ColRemover({
 }: {
 	worker: Worker;
 	count: number;
-	updateHook: { update: boolean; setUpdate: Function };
+	updateHook: { update: boolean; setUpdate: (newVal: boolean) => void };
 }): React.JSX.Element {
 	const { general } = useContext(AppContext);
 	const [showOptions, setShowOptions] = useState<boolean>(false);
@@ -30,7 +30,7 @@ export function ColRemover({
 	const [progress, setProgress] = useState<string>('Go!');
 	const conditionHandler = () => {
 		if (conditionRef.current?.value !== undefined) {
-			//@ts-ignore
+			//@ts-expect-error ..current.value is of type UploadMode, because of the hardcoded <options values={...}> in side the select element. TS does not know that
 			setConditionValue(conditionRef.current?.value);
 			if (conditionRef.current.value === 'custom text') {
 				setShowTextInput(true);
@@ -107,16 +107,14 @@ export function ColRemover({
 			<div className="colRemover">
 				<button
 					onClick={() => setShowOptions((old) => !old)}
-					className="removerButton"
-				>
+					className="removerButton">
 					{general.language === 'deutsch'
 						? 'Spalten Entfernen'
 						: 'Remove Columns'}
 				</button>
 				<div
 					className="removerOptions"
-					style={{ display: showOptions ? 'flex' : 'none' }}
-				>
+					style={{ display: showOptions ? 'flex' : 'none' }}>
 					<p>
 						{general.language === 'deutsch'
 							? 'Spalte entfernen, wenn der Wert in jeder Zeile gleich'
@@ -125,8 +123,7 @@ export function ColRemover({
 					<select
 						ref={conditionRef}
 						id="colInput"
-						onInput={conditionHandler}
-					>
+						onInput={conditionHandler}>
 						<option defaultChecked>-</option>
 						<optgroup>
 							<option value={'empty text'}>

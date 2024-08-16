@@ -19,8 +19,7 @@ export function TableBodyDisplay({
 			<tbody
 				className="tableBody"
 				ref={tableBodyRef}
-				onWheel={scrollHandler}
-			>
+				onWheel={scrollHandler}>
 				{table !== undefined &&
 				dbTable !== undefined &&
 				count !== undefined ? (

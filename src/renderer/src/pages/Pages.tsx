@@ -6,7 +6,7 @@ import { Invoices } from './Invoices/Invoices';
 import { Articles } from './Articles/Articles';
 import { Quotes } from './Quotes/Quotes';
 import { Returnees } from './Returnees/Returnees';
-import { Deliveries} from "./Deliveries/Deliveries";
+import { Deliveries } from './Deliveries/Deliveries';
 import { ExportPage } from './ExportPage/ExportPage';
 export const Pages = {
 	Home,
@@ -18,5 +18,5 @@ export const Pages = {
 	Quotes,
 	Returnees,
 	Deliveries,
-	ExportPage
+	ExportPage,
 };

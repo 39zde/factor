@@ -22,8 +22,10 @@ export default function SideBar({
 	routesHook,
 }: SideBarProps): React.JSX.Element {
 	const { appearances, general } = useContext(AppContext);
-	const routeHandler = (newRoute: RouteType) => {
-		routesHook.setRoute(newRoute);
+	const routeHandler = (newVal: RouteType) => {
+		if (routesHook !== undefined) {
+			routesHook.setRoute(newVal);
+		}
 	};
 
 	return (
@@ -32,8 +34,7 @@ export default function SideBar({
 				className="sideBar"
 				style={{
 					width: appearances.sideBarWidth,
-				}}
-			>
+				}}>
 				<div className="topIcons">
 					<RouterButton
 						handler={routeHandler}

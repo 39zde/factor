@@ -110,7 +110,6 @@ app.whenReady().then(() => {
 	// IPC test
 	ipcMain.on('ping', () => console.log('[index.ts] ', 'pong'));
 
-
 	// save and read settings
 	ipcMain.on('settings', (e, message) => {
 		// console.log(message);

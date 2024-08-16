@@ -1,162 +1,166 @@
-@import url('../../base.css');
+ /* prettier-ignore */
+ @import url('../../base.css');
 
-.tableWrapper {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    justify-content: flex-start;
-    overflow: hidden;
-}
+ .tableWrapper {
+ 	width: 100%;
+ 	display: flex;
+ 	flex-direction: column;
+ 	align-items: stretch;
+ 	justify-content: flex-start;
+ 	overflow: hidden;
+ }
 
-.tableWrapper:focus {
-    border: none;
-    outline: none;
-    overflow: hidden;
-}
+ .tableWrapper:focus {
+ 	border: none;
+ 	outline: none;
+ 	overflow: hidden;
+ }
 
-.tableInfo {
-    /* min-height: 64px; */
-    padding: 12px 0;
-    width: 90%;
-    align-self: center;
-    margin: 10px 0;
-    border-radius: 32px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow-x: visible;
-    overflow-y: visible;
-	 border: 1px solid light-dark(var(--color-light-3),var(--color-dark-3));
-}
+ .tableInfo {
+ 	/* min-height: 64px; */
+ 	padding: 12px 0;
+ 	width: 90%;
+ 	align-self: center;
+ 	margin: 10px 0;
+ 	border-radius: 32px;
+ 	display: flex;
+ 	justify-content: center;
+ 	align-items: center;
+ 	overflow-x: visible;
+ 	overflow-y: visible;
+ 	border: 1px solid light-dark(var(--color-light-3), var(--color-dark-3));
+ }
 
-.tableInfo li {
-    display: flex;
-    float: left;
-    border-right: 1px solid light-dark(var(--color-light-3),var(--color-dark-3));
-    /* margin: 20px 20px; */
-    padding: 0 12px;
-    font-size: 14px;
-    line-height: 14px;
-    /* height: 100%; */
-    align-self: center;
-    justify-content: center;
-    align-items: center;
-    height: 36px;
+ .tableInfo li {
+ 	display: flex;
+ 	float: left;
+ 	border-right: 1px solid light-dark(var(--color-light-3), var(--color-dark-3));
+ 	/* margin: 20px 20px; */
+ 	padding: 0 12px;
+ 	font-size: 14px;
+ 	line-height: 14px;
+ 	/* height: 100%; */
+ 	align-self: center;
+ 	justify-content: center;
+ 	align-items: center;
+ 	height: 36px;
 
-    &:first-child {
-        align-self: center;
-        /* height: fit-content; */
-        height: 36px;
-    }
+ 	&:first-child {
+ 		align-self: center;
+ 		/* height: fit-content; */
+ 		height: 36px;
+ 	}
 
-    &:last-child {
-        border: none;
-    }
-}
+ 	&:last-child {
+ 		border: none;
+ 	}
+ }
 
-.tableElement {
-    height: 100%;
-    align-self: center;
-    width: 90%;
-    overflow-x: scroll;
-    overflow-y: hidden;
-	 scrollbar-color: light-dark((var(--color-dark-3) var(--color-light-1)), (var(--color-dark-3) var(--color-dark-1)) );
-	 scrollbar-width: var(--scrollbar-width);
-}
+ .tableElement {
+ 	height: 100%;
+ 	align-self: center;
+ 	width: 90%;
+ 	overflow-x: scroll;
+ 	overflow-y: hidden;
+ 	scrollbar-color: light-dark((var(--color-dark-3) var(--color-light-1)), (var(--color-dark-3) var(--color-dark-1)));
+ 	scrollbar-width: var(--scrollbar-width);
+ }
 
-.tableElement::-webkit-scrollbar-track {
-    background: red;
-}
+ .tableElement::-webkit-scrollbar-track {
+ 	background: red;
+ }
 
-.tableElement::-webkit-scrollbar-thumb {
-    /* Foreground */
-    background: green;
-}
+ .tableElement::-webkit-scrollbar-thumb {
+ 	/* Foreground */
+ 	background: green;
+ }
 
-table,
-thead,
-th,
-tr,
-td {
-    table-layout: auto;
-    border-collapse: collapse;
-    border-color: light-dark(var(--color-dark-3),var(--color-light-3));
-    border-width: 1px;
-    border-style: solid;
-    font-family: monospace;
-    font-size: small;
-	 margin: 0;
-	 overflow: hidden;
-	 padding: 0px;
-	 box-sizing: content-box;
-}
+ table,
+ thead,
+ th,
+ tr,
+ td {
+ 	table-layout: auto;
+ 	border-collapse: collapse;
+ 	border-color: light-dark(var(--color-dark-3), var(--color-light-3));
+ 	border-width: 1px;
+ 	border-style: solid;
+ 	font-family: monospace;
+ 	font-size: small;
+ 	margin: 0;
+ 	overflow: hidden;
+ 	padding: 0px;
+ 	box-sizing: content-box;
+ }
 
-table {
-    border-top: none;
-    border-bottom: none;
-    border-left: none;
-    border-right: none;
-}
+ table {
+ 	border-top: none;
+ 	border-bottom: none;
+ 	border-left: none;
+ 	border-right: none;
+ }
 
-thead {
-    border-bottom: 3px solid  light-dark(var(--color-dark-3),var(--color-light-3));
-    border-top: none;
-    border-left: none;
-    border-right: none;
-    background:light-dark(var(--color-light-2),var(--color-dark-2));;
+ thead {
+ 	border-bottom: 3px solid light-dark(var(--color-dark-3), var(--color-light-3));
+ 	border-top: none;
+ 	border-left: none;
+ 	border-right: none;
+ 	background: light-dark(var(--color-light-2), var(--color-dark-2));
+ 	;
 
-}
+ }
 
-tfoot {
-    border-top: 3px solid light-dark(var(--color-dark-3),var(--color-light-3));;
-    background:light-dark(var(--color-light-2),var(--color-dark-2));;
-    border-bottom: none;
-    border-left: none;
-    border-right: none;
-}
+ tfoot {
+ 	border-top: 3px solid light-dark(var(--color-dark-3), var(--color-light-3));
+ 	;
+ 	background: light-dark(var(--color-light-2), var(--color-dark-2));
+ 	;
+ 	border-bottom: none;
+ 	border-left: none;
+ 	border-right: none;
+ }
 
-td {
-	 text-overflow: clip;
-    line-break: strict;
-    white-space: break-spaces;
-	 word-wrap: break-word;
-	word-break: break-all;
-}
+ td {
+ 	text-overflow: clip;
+ 	line-break: strict;
+ 	white-space: break-spaces;
+ 	word-wrap: break-word;
+ 	word-break: break-all;
+ }
 
-th {
-    padding: 1px 5px;
-    resize: horizontal;
-    overflow: visible;
-    position: relative;
-    text-align: left;
-}
+ th {
+ 	padding: 1px 5px;
+ 	resize: horizontal;
+ 	overflow: visible;
+ 	position: relative;
+ 	text-align: left;
+ }
 
-.guts {
-    display: flex;
-    width: fit-content;
-    justify-content: flex-start;
-    align-items: center;
-	 overflow: inherit;
-	 text-overflow: inherit;
-	 line-break: inherit;
-	 white-space: inherit;
-	 max-height: inherit;
-	 border: none;
-	 margin: 0;
-	 padding: 0;
-}
+ .guts {
+ 	display: flex;
+ 	width: fit-content;
+ 	justify-content: flex-start;
+ 	align-items: center;
+ 	overflow: inherit;
+ 	text-overflow: inherit;
+ 	line-break: inherit;
+ 	white-space: inherit;
+ 	max-height: inherit;
+ 	border: none;
+ 	margin: 0;
+ 	padding: 0;
+ }
 
-th > div {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 5px;
-}
+ th>div {
+ 	display: flex;
+ 	justify-content: space-between;
+ 	align-items: center;
+ 	gap: 5px;
+ }
 
-.resizeElement {
-    top: 0;
-    right: -2.5px;
-    position: absolute;
-    width: 5px;
-}
+ .resizeElement {
+ 	top: 0;
+ 	right: -2.5px;
+ 	position: absolute;
+ 	width: 5px;
+ }

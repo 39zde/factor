@@ -51,11 +51,11 @@ function Versions(): JSX.Element {
 				{window.electron !== undefined ? (
 					<>
 						{window.electron.process.platform === 'win32' ? (
-							<>{window.electron.process.env['USERNAME']}</>
+							<>{window.electron.process.env.USERNAME}</>
 						) : window.electron.process.platform == 'linux' ? (
-							<>{window.electron.process.env['USER']}</>
+							<>{window.electron.process.env.USER}</>
 						) : window.electron.process.platform == 'macOS' ? (
-							<>{window.electron.process.env['USER']}</>
+							<>{window.electron.process.env.USER}</>
 						) : (
 							<></>
 						)}

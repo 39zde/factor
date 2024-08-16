@@ -1,6 +1,6 @@
-export type TableRowProps = {
-	table: Array<object>;
+export interface TableRowProps {
+	table: object[];
 	rowHeight: number;
 	rowCount: number;
-	uniqueKey: string
-};
+	uniqueKey: string;
+}

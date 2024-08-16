@@ -1,35 +1,33 @@
-
-
 :root {
 	/* color-scheme needs to be in the first line, (see App.tsx / styleSheet = useMemo) */
-	 --color-primary: hsl(0, 100%, 65%);
-	 --color-primary-dark: hsl(0, 55%, 48%);
-	 --color-primary-light: hsl(0, 100%, 77%);
-	 --color-secondary: #4878ff;
-	 --color-secondary-dark: #112e80;
-	 --color-secondary-light: #88a7ff;
+	--color-primary: hsl(0, 100%, 65%);
+	--color-primary-dark: hsl(0, 55%, 48%);
+	--color-primary-light: hsl(0, 100%, 77%);
+	--color-secondary: #4878ff;
+	--color-secondary-dark: #112e80;
+	--color-secondary-light: #88a7ff;
 
 
-	 --font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,
-	 Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+	--font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,
+		Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
 
 
-	 --color-dark-1:#05090f;
-	 --color-dark-2: #3b3d40;
-	 --color-dark-3: #686a6e;
-	 --color-light-1: #f8f6f6;
-	 --color-light-2: #e9dddd;
-	 --color-light-3: #d1c1c1;
+	--color-dark-1: #05090f;
+	--color-dark-2: #3b3d40;
+	--color-dark-3: #686a6e;
+	--color-light-1: #f8f6f6;
+	--color-light-2: #e9dddd;
+	--color-light-3: #d1c1c1;
 
-	 --scrollbar-width: thin;
-	 --scrollbar-light: var(--color-dark-3)var(--color-light-1);
-	 --scrollbar-dark: var(--color-light-3)var(--color-dark-1);
-	 --scrollbar-color: light-dark(var(--scrollbar-light),var(--scrollbar-dark));
-	 --scrollbar-gutter: 5px both-edges;
+	--scrollbar-width: thin;
+	--scrollbar-light: var(--color-dark-3)var(--color-light-1);
+	--scrollbar-dark: var(--color-light-3)var(--color-dark-1);
+	--scrollbar-color: light-dark(var(--scrollbar-light), var(--scrollbar-dark));
+	--scrollbar-gutter: 5px both-edges;
 
-	--color-text: light-dark(var(--color-dark-1),var(--color-light-1));
+	--color-text: light-dark(var(--color-dark-1), var(--color-light-1));
 
-	color: light-dark(var(--color-dark-1),var(--color-light-1));
+	color: light-dark(var(--color-dark-1), var(--color-light-1));
 
 }
 
@@ -39,29 +37,29 @@
 *,
 *::before,
 *::after {
-    box-sizing: border-box;
-    margin: 0;
-    font-weight: normal;
-    scroll-behavior: smooth;
+	box-sizing: border-box;
+	margin: 0;
+	font-weight: normal;
+	scroll-behavior: smooth;
 }
 
-*::selection{
+*::selection {
 	background-color: var(--color-secondary);
 	color: var(--color-light-1)
 }
 
 ul {
-    list-style: none;
+	list-style: none;
 }
 
 body {
-    min-height: 100vh;
-    background: light-dark(var(--color-light-1),var(--color-dark-1));
-    line-height: 1.6;
-    font-family: var(--font-family);
-    text-rendering: optimizeLegibility;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+	min-height: 100vh;
+	background: light-dark(var(--color-light-1), var(--color-dark-1));
+	line-height: 1.6;
+	font-family: var(--font-family);
+	text-rendering: optimizeLegibility;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
 }
 
 
@@ -78,12 +76,13 @@ button {
 	font-size: medium;
 	border-radius: 8px;
 	background: none;
-	color: light-dark(var(--color-dark-1),var(--color-light-1));
+	color: light-dark(var(--color-dark-1), var(--color-light-1));
 	border: 2px solid var(--color-primary);
 }
-button:hover{
-	background: light-dark(var(--color-primary-light),var(--color-primary-dark));
-	border-color: light-dark(var(--color-primary-dark),var(--color-primary-dark))
+
+button:hover {
+	background: light-dark(var(--color-primary-light), var(--color-primary-dark));
+	border-color: light-dark(var(--color-primary-dark), var(--color-primary-dark))
 }
 
 input,
@@ -98,32 +97,35 @@ select {
 	cursor: pointer;
 	font-family: var(--font-family);
 	font-size: medium;
-	background: light-dark(var(--color-light-1),var(--color-light-2));
-	color: light-dark(var(--color-dark-1),var(--color-dark-1));
+	background: light-dark(var(--color-light-1), var(--color-light-2));
+	color: light-dark(var(--color-dark-1), var(--color-dark-1));
 	border-width: 2px;
-	border-top-color: light-dark(var(--color-light-3),var(--color-light-2));
-	border-right-color: light-dark(var(--color-light-3),var(--color-light-2));
-	border-bottom-color: light-dark(var(--color-light-3),var(--color-light-2));
-	border-left-color: light-dark(var(--color-light-3),var(--color-light-2));
+	border-top-color: light-dark(var(--color-light-3), var(--color-light-2));
+	border-right-color: light-dark(var(--color-light-3), var(--color-light-2));
+	border-bottom-color: light-dark(var(--color-light-3), var(--color-light-2));
+	border-left-color: light-dark(var(--color-light-3), var(--color-light-2));
 	border-style: solid;
 	border-radius: 8px;
 }
 
-select:focus-visible, button:focus-visible, input:focus-visible	{
-	outline:  var(--color-secondary) auto  1px;
+select:focus-visible,
+button:focus-visible,
+input:focus-visible {
+	outline: var(--color-secondary) auto 1px;
 }
 
 h1 {
 	font-weight: 600;
 	text-align: center;
 }
+
 h2 {
 	font-weight: 500;
 	text-align: center;
 }
 
 .divider {
-	border-top: 1px solid light-dark(var(--color-dark-3),var(--color-light-3));
+	border-top: 1px solid light-dark(var(--color-dark-3), var(--color-light-3));
 	height: 1px;
 	width: 100%;
 	margin: 4px 0;

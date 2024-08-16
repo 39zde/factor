@@ -17,8 +17,7 @@ export function TableFoot({ columns }: TableFootProps) {
 						borderBottom: 'none',
 						borderLeft: 'none',
 						borderRight: 'none',
-					}}
-				>
+					}}>
 					{colRefs !== undefined ? (
 						<>
 							{columns.map((item, index) => {
@@ -31,8 +30,7 @@ export function TableFoot({ columns }: TableFootProps) {
 													borderLeft:
 														index === 0 ? 'none' : 'inherit',
 												}}
-												key={useId()}
-											>
+												key={useId()}>
 												{item}
 											</th>
 										</>

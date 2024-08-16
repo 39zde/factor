@@ -1,4 +1,4 @@
-import React, { useContext, ReactElement } from 'react';
+import React, { useContext, ReactElement, JSXElementConstructor } from 'react';
 import { AppContext } from '@renderer/App';
 import type { TableRowItemProps } from '@renderer/util/types/comps/Table/TableRowItemProps';
 export function RowItems({
@@ -24,7 +24,10 @@ function TableCell({
 	children,
 }: {
 	key: string;
-	children?: ReactElement<any, any>;
+	children: ReactElement<
+		{ className: string },
+		JSXElementConstructor<HTMLSpanElement>
+	>;
 }): React.JSX.Element {
 	const { appearances } = useContext(AppContext);
 	return (
@@ -33,8 +36,7 @@ function TableCell({
 				style={{
 					maxHeight: appearances.rowHeight,
 					height: appearances.rowHeight,
-				}}
-			>
+				}}>
 				{children}
 			</td>
 		</>
