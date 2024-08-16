@@ -21,7 +21,11 @@ export function TableRows({ table, rowHeight, rowCount }: TableRowProps) {
 				return (
 					<>
 						<tr
-							style={{ height: rowHeight, maxHeight: rowHeight }}
+							style={{
+								height: rowHeight,
+								maxHeight: rowHeight,
+								minHeight: rowHeight,
+							}}
 							key={`row-${index}-${item['factor_db_id']}`}
 							onResize={(e) => console.log(e)}
 						>

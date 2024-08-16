@@ -32,41 +32,38 @@ export function TableHead({
 				setActiveBg(undefined);
 			} else if (mouseHook.value === true) {
 				//start adjusting the col width
-				if (activeCol !== 0) {
-					const currentWidth =
-						colRefs.current[activeCol].current?.getBoundingClientRect()
-							.width;
-					const currentX =
-						colRefs.current[activeCol].current?.getBoundingClientRect()
-							.left;
-					// console.log(colRefs.current[activeCol].current?.getBoundingClientRect());
-					if (
-						currentWidth !== undefined &&
-						currentX !== undefined &&
-						cursorX !== null
-					) {
-						let currentPadding = colRefs.current[
-							activeCol
-						].current?.style.paddingRight.replace('px', '');
-						if (currentPadding !== undefined) {
-							if (currentPadding === '') {
-								currentPadding = '0';
-							}
-							const originalWidth =
-								currentWidth - parseFloat(currentPadding);
-							const a = currentX;
-							const b = cursorX;
-							const offset = Math.abs(Math.abs(b - a) - originalWidth);
-							// console.log({currentWidth: currentWidth,currentX: currentX, currentPadding: currentPadding, ogWidth: originalWidth, cursor: cursorX, offset: offset})
 
-							if (!isNaN(offset)) {
-								// console.log(offset)
-								colRefs.current[activeCol].current?.setAttribute(
-									'style',
-									'padding-right: ' + offset + 'px; border-top: none'
-								);
-							}
-						}
+				const currentWidth =
+					colRefs.current[activeCol].current?.getBoundingClientRect()
+						.width;
+				const currentX =
+					colRefs.current[activeCol].current?.getBoundingClientRect().left;
+				// console.log(colRefs.current[activeCol].current?.getBoundingClientRect());
+				if (
+					currentWidth !== undefined &&
+					currentX !== undefined &&
+					cursorX !== null
+				) {
+					const a = currentX;
+					const b = cursorX;
+					const newWidth = Math.abs(Math.abs(b - a));
+					console.log({
+						currentWidth: currentWidth,
+						cursor: cursorX,
+						currentX: currentX,
+						newWidth: newWidth,
+					});
+
+					if (!isNaN(newWidth)) {
+						// console.log(offset)
+						colRefs.current[activeCol].current?.setAttribute(
+							'style',
+							'min-width: ' +
+								newWidth +
+								'px; max-width: ' +
+								newWidth +
+								'px; border-top: none'
+						);
 					}
 				}
 			}
@@ -78,7 +75,7 @@ export function TableHead({
 			// console.log("setting mouse down to true");
 			mouseHook.setValue(true);
 		}
-		console.log('setting active INdex to ', index);
+		// console.log('setting active INdex to ', index);
 		setActiveBg(index);
 		setActiveCol(index);
 		// console.log(e);
@@ -105,7 +102,7 @@ export function TableHead({
 	};
 
 	const mouseEnterHandler = (index: number) => {
-		console.log('setting activeBG to ', index);
+		// console.log('setting activeBG to ', index);
 		setActiveBg(index);
 	};
 
@@ -135,26 +132,21 @@ export function TableHead({
 										style={{
 											borderTop: 'none',
 											borderLeft: index === 0 ? 'none' : 'inherit',
-											minWidth:
-												minWidths !== null
-													? minWidths[index]
-													: 'initial',
-											cursor: sortingHook.sortable.includes(item)
-												? 'cursor'
-												: 'default',
+											minWidth: 150,
 										}}
 										ref={colRefs.current[index]}
 										key={useId()}
 										onClick={() => sortingHandler(item)}
 									>
-										<span className="guts">
+										<span key={useId()} className="guts">
 											{item}
-											{sortingHook !== undefined &&
+											{/* {sortingHook !== undefined &&
 											sortingHook.sortingCol === item ? (
-												<>{arrow()}</>
+												// <>{arrow()}</>
+												<></>
 											) : (
 												<></>
-											)}
+											)} */}
 										</span>
 										{resizeElemHeight !== undefined &&
 										index !== columns.length - 1 ? (

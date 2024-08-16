@@ -86,6 +86,10 @@ td {
     border-style: solid;
     font-family: monospace;
     font-size: small;
+	 margin: 0;
+	 overflow: hidden;
+	 padding: 0px;
+	 box-sizing: content-box;
 }
 
 table {
@@ -113,13 +117,15 @@ tfoot {
 }
 
 td {
-    word-wrap: none;
+	 text-overflow: clip;
     line-break: strict;
-    white-space: nowrap;
+    white-space: break-spaces;
+	 word-wrap: break-word;
+	word-break: break-all;
 }
 
 th {
-    padding: 0 5px;
+    padding: 1px 5px;
     resize: horizontal;
     overflow: visible;
     position: relative;
@@ -131,6 +137,14 @@ th {
     width: fit-content;
     justify-content: flex-start;
     align-items: center;
+	 overflow: inherit;
+	 text-overflow: inherit;
+	 line-break: inherit;
+	 white-space: inherit;
+	 max-height: inherit;
+	 border: none;
+	 margin: 0;
+	 padding: 0;
 }
 
 th > div {

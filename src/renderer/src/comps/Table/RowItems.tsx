@@ -15,7 +15,7 @@ export function RowItems({ items }: TableRowItemProps): React.JSX.Element {
 							}}
 							key={useId() + useId() + useId()}
 						>
-							{items[col]}
+							<span className="guts">{items[col]}</span>
 						</td>
 					</>
 				);

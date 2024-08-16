@@ -45,6 +45,11 @@
     scroll-behavior: smooth;
 }
 
+*::selection{
+	background-color: var(--color-secondary);
+	color: var(--color-light-1)
+}
+
 ul {
     list-style: none;
 }
@@ -78,7 +83,7 @@ button {
 }
 button:hover{
 	background: light-dark(var(--color-primary-light),var(--color-primary-dark));
-	border-color: light-dark(var(--color-primary-light),var(--color-primary-dark))
+	border-color: light-dark(var(--color-primary-dark),var(--color-primary-dark))
 }
 
 input,

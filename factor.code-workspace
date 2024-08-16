@@ -1,12 +1,9 @@
 {
     "folders": [
-        {
-            "path": ".",
-        },
-        {
-            "path": "../tmp",
-        },
-    ],
+		{
+			"path": "."
+		}
+	],
     "settings": {
         "typescript.tsdk": "node_modules\\typescript\\lib",
 		  "files.exclude": {
@@ -26,8 +23,8 @@
 			".yarnrc.yaml": true,
 			"dev-app-update.yaml": true,
 			"electron-builder.yaml": true,
-			"electron.vite.config.ts": true,
-			"eslint.config.js": true,
+			"electron.vite.config.ts": false,
+			"eslint.config.js": false,
 			"tsconfig.json": true,
 			"tsconfig.node.json": true,
 			"tsconfig.web.json": true,

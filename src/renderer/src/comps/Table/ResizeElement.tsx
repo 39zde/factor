@@ -8,8 +8,8 @@ export function ResizeElement({
 	return (
 		<div
 			{...props}
-			style={{ height: tableHeight }}
-			className="colSlider"
+			style={{ height: tableHeight, ...props.style }}
+			className="resizeElement"
 		></div>
 	);
 }

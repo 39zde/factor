@@ -43,7 +43,7 @@ export function Table({
 	const [dbTable, setDBTable] = useState<TableType<any, any, any>>();
 	const [minWidths, setMinWidths] = useState<Array<number>>([]);
 	const [cursor, setCursor] = useState<'col-resize' | 'initial'>('initial');
-	const [userSelect,setUserSelect] = useState<'none'| 'initial'>('initial');
+	const [userSelect, setUserSelect] = useState<'none' | 'initial'>('initial');
 	const [sortingDirection, setSortingDirection] = useState<
 		'asc' | 'dsc' | undefined
 	>(undefined);
@@ -147,7 +147,7 @@ export function Table({
 		setValue: (newValue: boolean) => {
 			if (typeof newValue === 'boolean') {
 				setCursor('col-resize');
-				setUserSelect('none')
+				setUserSelect('none');
 				setIsMouseDown(newValue);
 			}
 		},
@@ -165,7 +165,7 @@ export function Table({
 
 	const mouseUpHandler = (): void => {
 		setCursor('initial');
-		setUserSelect('initial')
+		setUserSelect('initial');
 		setIsMouseDown(false);
 	};
 
@@ -225,7 +225,7 @@ export function Table({
 					<table
 						style={{
 							cursor: cursor,
-							userSelect: userSelect
+							userSelect: userSelect,
 						}}
 					>
 						<TableHeadDisplay
