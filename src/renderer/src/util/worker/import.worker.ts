@@ -1,27 +1,5 @@
-// eslint-disable-next-line
-self.navigator.locks.query().then((res) => {
-	// console.log(res);
-	if (res !== undefined) {
-		if (res.held !== undefined && res.pending !== undefined) {
-			if (res.pending.length === 0) {
-				if (res.held.length === 0) {
-					self.navigator.locks.request(
-						'import.worker.ts',
-						{ mode: 'exclusive', ifAvailable: true },
-						(e) => {
-							// console.log(e);
-							self.onmessage = requestHandler;
-							// console.log('acquired lock');
-						}
-					);
-					// .then((e) => console.log(e));
-				}
-			}
-		}
-	}
-});
 //@ts-ignore
-const requestHandler = (e: MessageEvent): void => {
+self.onmessage = (e: MessageEvent): void => {
 	switch (e.data.type) {
 		case 'import':
 			const data = e.data.message;
@@ -216,7 +194,9 @@ function getKeys(row: string) {
 function addData(keys: string[], rows: string[], db: IDBDatabase) {
 	const transaction = db.transaction(['data_upload'], 'readwrite');
 	const objectStore = transaction.objectStore('data_upload');
-	for (let i = 1; i < rows.length; i++) {
+	let i = 1;
+	while (i < rows.length) {
+		// console.log(i)
 		const columns = rows[i].split(';');
 		const out = {};
 		out['row'] = i;
@@ -224,6 +204,7 @@ function addData(keys: string[], rows: string[], db: IDBDatabase) {
 			out[keys[j]] = columns[j];
 		}
 		objectStore.add(out);
+		i++;
 	}
 }
 
@@ -465,7 +446,7 @@ function deleteCol(col: string) {
 }
 
 function doCustomers(map: CustomerMapType) {
-	const request = indexedDB.open('factor_db', 2);
+	const request = indexedDB.open('customers', 1);
 
 	request.onupgradeneeded = () => {
 		const db = request.result;
