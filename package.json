@@ -12,6 +12,7 @@
     "license": "Apache-2.0",
     "scripts": {
         "format": "prettier --write . && git commit --all -m formatted (package.json script)",
+        "format:no-commit": "prettier --write .",
         "lint": "eslint . -c ./eslint.config.js  --fix",
         "typecheck:node": "tsc --noEmit -p tsconfig.node.json --composite false",
         "typecheck:web": "tsc --noEmit -p tsconfig.web.json --composite false",
