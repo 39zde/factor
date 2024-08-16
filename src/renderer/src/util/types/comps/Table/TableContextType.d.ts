@@ -4,21 +4,55 @@ export type TableContextType = {
 	tableName: string;
 	uniqueKey: string;
 	scope: number;
-	setScope: (newVal: number) => void;
 	count: number;
-	setCount: (newVal: number) => void;
 	isMouseDown: boolean;
-	setIsMouseDown: (newVal: boolean) => void;
 	columns: string[];
-	setColumns: (newVal: string[]) => void;
 	dbTable: TableType<any, any, any> | undefined;
-	setDbTable: (newVal: TableType<any, any, any>) => void;
 	cursor: 'initial' | 'col-resize';
-	setCursor: (newVal: 'initial' | 'col-resize') => void;
 	cursorX: number;
-	setCursorX: (newVal: number) => void;
-	userSelect: 'none' | 'initial';
-	setUserSelect: (newVal: 'none' | 'initial') => void;
-	update: boolean | undefined;
-	setUpdate: (newVal: boolean) => void;
+	userSelect: 'initial' | 'none';
+	update: boolean;
+	activeBg: number | undefined;
+	activeCol: number | undefined;
+	columnWidths: number[];
+	resizeElemHeight: number;
+	colsRef: React.RefObject<HTMLTableCellElement>[] | any;
+	resizeStyles: ResizeStyle[];
+};
+
+export type ResizeStyle = {
+	background: 'light-dark(var(--color-dark-2),var(--color-light-2))' | 'none';
+	cursor: 'col-resize' | 'initial';
+};
+
+
+export type TableDispatchAction = {
+	type:
+		| 'set'
+		| 'mouseDown'
+		| 'mouseUp'
+		| 'mouseMove'
+		| 'mouseEnter'
+		| 'mouseLeave';
+	index?: number;
+	name?:
+		| 'scope'
+		| 'count'
+		| 'cursorX'
+		| 'isMouseDown'
+		| 'columns'
+		| 'dbTable'
+		| 'cursor'
+		| 'userSelect'
+		| 'uniqueKey'
+		| 'tableName'
+		| 'update'
+		| 'activeBg'
+		| 'activeCol'
+		| 'columnWidths'
+		| 'tableHeight'
+		| 'resizeElemHeight'
+		| 'colRefs'
+		| 'resizeStyles';
+	newVal: any;
 };

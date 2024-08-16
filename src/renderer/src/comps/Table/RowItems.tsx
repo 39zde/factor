@@ -55,13 +55,13 @@ function TableCell({
 			case 'object':
 				return <></>;
 			case 'number':
-				return <></>;
+				return <>{contents.toFixed(2)}</>;
 			case 'boolean':
-				return <></>;
+				return <>{contents}</>;
 			case 'string':
-				return <></>;
+				return <>{contents}</>;
 			default:
-				return <></>;
+				return <>[default]</>;
 		}
 	}
 }

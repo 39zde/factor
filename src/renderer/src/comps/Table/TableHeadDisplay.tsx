@@ -1,17 +1,17 @@
-import React, { useContext } from 'react';
+import React from 'react';
 
 import { TableHead } from './TableHead';
-import { TableContext } from './Table';
+import { useTableContext } from './Table';
 
 export function TableHeadDisplay(): React.JSX.Element {
-	const { columns, update } = useContext(TableContext);
-	switch (update) {
+	const tableState = useTableContext();
+	switch (tableState.update) {
 		case true:
 			return <></>;
 		case false:
 		case undefined:
-			if (columns !== undefined) {
-				if (columns.length !== 0) {
+			if (tableState.columns !== undefined) {
+				if (tableState.columns.length !== 0) {
 					return <TableHead />;
 				}
 			}

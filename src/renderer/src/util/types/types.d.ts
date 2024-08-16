@@ -40,7 +40,7 @@ export type {
 	TableBodyDisplayProps,
 	TableFootDisplayProps,
 	TableProps,
-	TableHeadProps,
+	TableDispatchAction,
 	TableContextType,
 } from './comps/Table/Table';
 
