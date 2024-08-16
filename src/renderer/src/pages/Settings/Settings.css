@@ -67,3 +67,7 @@
  		background-color: var(--color-primary-dark);
  	}
  }
+
+ .settingsSelect {
+ 	text-align: right;
+ }

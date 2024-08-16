@@ -33,19 +33,8 @@ export function Settings() {
 
 	const themeInputHandler = () => {
 		if (themeInputRef.current !== null) {
-			switch (themeInputRef.current.value) {
-				case 'dark':
-					setColorTheme('dark');
-					break;
-				case 'light':
-					setColorTheme('light');
-					break;
-				case 'system':
-					setColorTheme('light dark');
-					break;
-				default:
-					setColorTheme('light dark');
-			}
+			//@ts-expect-error  hard coded option values
+			setColorTheme(themeInputRef.current.value);
 		}
 	};
 
@@ -161,12 +150,25 @@ export function Settings() {
 								: 'Farbschema'}
 						</p>
 						<select
+							className="settingsSelect"
 							ref={themeInputRef}
 							onInput={themeInputHandler}
 							defaultValue={context.appearances.colorTheme}>
-							<option>system</option>
-							<option>dark</option>
-							<option>light</option>
+							<option value={'light dark'}>
+								{context.general.language === 'deutsch'
+									? 'Systemfarbschema '
+									: 'System theme '}
+							</option>
+							<option value={'dark'}>
+								{context.general.language === 'deutsch'
+									? 'dunkel '
+									: 'dark '}
+							</option>
+							<option value={'light'}>
+								{context.general.language === 'deutsch'
+									? 'hell '
+									: 'light '}
+							</option>
 						</select>
 					</div>
 					<div className="settingsOption">
@@ -215,11 +217,12 @@ export function Settings() {
 								: 'Sprache'}
 						</p>
 						<select
+							className="settingsSelect"
 							ref={langInputRef}
 							onInput={langInputHandler}
 							defaultValue={language}>
-							<option>english</option>
-							<option>deutsch</option>
+							<option>english </option>
+							<option>deutsch </option>
 						</select>
 					</div>
 					<div className="settingsOption">
