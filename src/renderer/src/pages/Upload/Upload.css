@@ -13,14 +13,14 @@
 }
 
 .importButton {
-	background: var(--color-button-3);
+	background: var(--color-primary);
 	border-radius: 8px;
 	color: white;
 	font-weight: 600;
 }
 
 .importButton:hover {
-	background: var(--color-button-4);
+	background: var(--color-primary-dark);
 }
 
 .fileInput {
@@ -28,8 +28,8 @@
 	padding: 12px;
 	width: 300px;
 	border-radius: 8px;
-	border: 2px dashed var(--color-text);
-	background-color: var(--color-bg-6);
+	border: 2px dashed light-dark(var(--color-light-3),var(--color-dark-3));
+	background-color:light-dark(var(--color-light-2),var(--color-dark-2));
 	align-items: center;
 	cursor: pointer;
 	overflow: visible;
@@ -37,7 +37,9 @@
 }
 
 .fileInput:hover {
-	border: 2px dashed var(--color-text-1);
+	border-width: 2px;
+	border-color: light-dark(var(--color-light-3),var(--color-dark-3));
+	border-style: dotted;
 }
 
 .fileInput::after {
@@ -53,7 +55,8 @@
 	top: 0;
 	left: 0;
 	position: absolute;
-	background-color: var(--color-bg-6);
+	background:light-dark(var(--color-light-2),var(--color-dark-2));
+
 }
 
 .fileInput::after:hover {
@@ -65,8 +68,10 @@
 	padding: 12px;
 	width: 300px;
 	border-radius: 8px;
-	border: 2px dashed var(--color-text);
-	background-color: var(--color-bg-6);
+	border-width: 2px;
+	border-color: light-dark(var(--color-light-3),var(--color-dark-3));
+	border-style: solid;
+	background-color: light-dark(var(--color-light-2),var(--color-dark-2));
 	align-items: center;
 	overflow: visible;
 	position: relative;
@@ -82,7 +87,11 @@
 	right: 0;
 	border-top-right-radius: 8px;
 	background: none;
+	border: none;
 	cursor: pointer;
+}
+.removeFile:hover{
+ background: none;
 }
 
 .uploader {
@@ -121,15 +130,12 @@ li {
 
 .alignButton,
 .removerButton {
-	border: 1px solid var(--color-text);
-	background-color: #000;
-	color: var(--color-text);
-	filter: invert();
+
 }
 
 .alignButton:hover,
 .removerButton:hover {
-	background-color: var(--color-hover-2);
+
 }
 
 .alignOptions {
@@ -148,14 +154,14 @@ li {
 	flex-direction: column;
 	align-items: stretch;
 	justify-content: flex-start;
-	background: var(--color-bg-6);
+	background:light-dark(var(--color-light-2),var(--color-dark-2));
 	opacity: 1;
 	gap: 8px;
 	z-index: 100;
 	padding: 12px;
 	width: 300px;
 	margin: 0 auto;
-	box-shadow: 0 5px 13px 2px var(--color-hover-3);
+	box-shadow: 0 5px 13px 2px light-dark(var(--color-dark-3),var(--color-light-3));
 	border-radius: 12px;
 }
 
@@ -168,7 +174,7 @@ li {
 .alignOptions>select,
 .removerOptions>input,
 .removerOptions>select {
-	border: none;
+	/* border: none;
 	display: flex;
 	justify-content: flex-start;
 	align-items: center;
@@ -178,7 +184,7 @@ li {
 	cursor: pointer;
 	font-family: var(--font-family);
 	font-size: medium;
-	border-radius: 8px;
+	border-radius: 8px; */
 }
 
 .alignActions,
@@ -201,27 +207,27 @@ li {
 	font-weight: 600;
 }
 
-.alignActions>button:first-child,
+/* .alignActions>button:first-child,
 .removerActions>button:first-child {
 	background-color: var(--color-button-1);
 	color: var(--color-text);
-}
+} */
 
-.alignActions>button:first-child:hover,
+/* .alignActions>button:first-child:hover,
 .removerActions>button:first-child:hover {
 	background-color: var(--color-button-2);
-}
+} */
 
-.alignActions>button:last-child,
+/* .alignActions>button:last-child,
 .removerActions>button:last-child {
 	background-color: var(--color-button-5);
 	color: var(--color-text);
-}
+} */
 
-.alignActions>button:last-child:hover,
+/* .alignActions>button:last-child:hover,
 .removerActions>button:last-child:hover {
 	background-color: var(--color-button-6);
-}
+} */
 
 .divider {
 	background: var(--color-hover-3);
@@ -251,7 +257,8 @@ li {
 	overflow-y: scroll;
 	scrollbar-width: var(--scrollbar-width);
 	scrollbar-color: var(--scrollbar-color);
-	padding-bottom: 32px;
+	padding-bottom: 64px;
+	padding-left: 12px;
 }
 
 .dataStruct {

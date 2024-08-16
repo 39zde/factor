@@ -9,7 +9,7 @@
     flex-flow: wrap;
     align-items: center;
     border-radius: 22px;
-    background-color: #202127;
+    border: 1px solid light-dark(var(--color-light-3),var(--color-dark-3));
 }
 
 .versions li {

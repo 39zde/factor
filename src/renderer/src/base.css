@@ -1,67 +1,33 @@
 :root {
-    --ev-c-white: #ffffff;
-    --ev-c-white-soft: #f8f8f8;
-    --ev-c-white-mute: hsl(0, 0%, 95%);
+	 --color-primary: hsl(0, 100%, 65%);
+	 --color-primary-dark: hsl(0, 55%, 48%);
+	 --color-primary-light: hsl(0, 100%, 77%);
+	 --font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,
+	 Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
 
-    --ev-c-black: hsl(240, 8%, 5%);
-    --ev-c-black-soft: hsl(0, 0%, 15%);
-    --ev-c-black-mute: hsl(0, 0%, 20%);
 
-    --ev-c-gray-1: #383d47;
-    --ev-c-gray-2: #434a56;
-    --ev-c-gray-3: #4f5964;
+	 --color-dark-1:#05090f;
+	 --color-dark-2: #3b3d40;
+	 --color-dark-3: #686a6e;
+	 --color-light-1: hsl(0, 12%, 97%);
+	 --color-light-2: hsl(0, 20%, 89%);
+	 --color-light-3: hsl(0, 15%, 79%);
 
-    --ev-c-text-1: #fffff5db;
-    --ev-c-text-2: hsla(240, 33%, 94%, 0.6);
-    --ev-c-text-3: hsla(240, 33%, 94%, 0.38);
+	 --scrollbar-width: thin;
+	 --scrollbar-light: var(--color-dark-3)var(--color-light-1);
+	 --scrollbar-dark: var(--color-light-3)var(--color-dark-1);
+	 --scrollbar-color: light-dark(var(--scrollbar-light),var(--scrollbar-dark));
+	 --scrollbar-gutter: 5px both-edges;
 
-    --ev-button-alt-border: transparent;
-    --ev-button-alt-text: var(--ev-c-text-1);
-    --ev-button-alt-bg: var(--ev-c-gray-3);
-    --ev-button-alt-hover-border: transparent;
-    --ev-button-alt-hover-text: var(--ev-c-text-1);
-    --ev-button-alt-hover-bg: var(--ev-c-gray-2);
+	--color-text: light-dark(var(--color-dark-1),var(--color-light-1));
+
+	color-scheme: dark;
+	color: light-dark(var(--color-dark-1),var(--color-light-1));
+
 }
 
-:root {
-    --color-background: var(--ev-c-black);
-    --color-background-soft: var(--ev-c-black-soft);
-    --color-background-mute: var(--ev-c-black-mute);
 
-    --color-text: var(--ev-c-text-1);
-    --color-text-1: var(--ev-c-white-soft);
-    --color-text-2: var(--ev-c-white-mute);
-    --color-text-3: hsl(211, 12%, 95%);
-    --color-text-4: hsl(211, 12%, 75%);
 
-    --color-text-inv: var(--ev-c-text-1);
-
-    --color-bg-1: var(--ev-c-black);
-    --color-bg-2: var(--ev-c-black-soft);
-    --color-bg-3: var(--ev-c-black-mute);
-
-    --color-bg-4: #0b0c0e;
-    --color-bg-5: #17181c;
-    --color-bg-6: #22242a;
-
-    --color-hover-1: var(--ev-c-gray-1);
-    --color-hover-2: var(--ev-c-gray-2);
-    --color-hover-3: var(--ev-c-gray-3);
-
-    --color-button-1: hsl(0, 78%, 59%);
-    --color-button-2: hsl(0, 58%, 52%);
-    --color-button-3: hsl(199, 78%, 59%);
-    --color-button-4: hsl(199, 52%, 41%);
-    --color-button-5: hsl(130, 78%, 59%);
-    --color-button-6: hsl(130, 52%, 41%);
-
-    --font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,
-        Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-
-    --scrollbar-width: thin;
-    --scrollbar-color: var(--color-text-4) var(--color-bg-1);
-    --scrollbar-gutter: 5px both-edges;
-}
 
 *,
 *::before,
@@ -78,23 +44,64 @@ ul {
 
 body {
     min-height: 100vh;
-    color: var(--color-text);
-    background: var(--color-background);
+    background: light-dark(var(--color-light-1),var(--color-dark-1));
     line-height: 1.6;
-    font-family:
-        Inter,
-        -apple-system,
-        BlinkMacSystemFont,
-        'Segoe UI',
-        Roboto,
-        Oxygen,
-        Ubuntu,
-        Cantarell,
-        'Fira Sans',
-        'Droid Sans',
-        'Helvetica Neue',
-        sans-serif;
+    font-family: var(--font-family);
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+}
+
+
+button {
+	border: none;
+	display: flex;
+	justify-content: flex-start;
+	align-items: center;
+	flex-direction: row;
+	padding: 8px;
+	gap: 12px;
+	cursor: pointer;
+	font-family: var(--font-family);
+	font-size: medium;
+	border-radius: 8px;
+	background: none;
+	color: light-dark(var(--color-dark-1),var(--color-light-1));
+	border: 2px solid var(--color-primary);
+}
+button:hover{
+	background: light-dark(var(--color-primary-light),var(--color-primary-dark));
+	border-color: light-dark(var(--color-primary-light),var(--color-primary-dark))
+}
+
+input,
+select {
+	border: none;
+	display: flex;
+	justify-content: flex-start;
+	align-items: center;
+	flex-direction: row;
+	padding: 8px;
+	gap: 12px;
+	cursor: pointer;
+	font-family: var(--font-family);
+	font-size: medium;
+	background: light-dark(var(--color-light-1),var(--color-light-2));
+	color: light-dark(var(--color-dark-1),var(--color-dark-1));
+	border-width: 2px;
+	border-top-color: light-dark(var(--color-light-3),var(--color-light-1));
+	border-right-color: light-dark(var(--color-light-3),var(--color-light-1));
+	border-bottom-color: light-dark(var(--color-light-3),var(--color-light-1));
+	border-left-color: light-dark(var(--color-light-3),var(--color-light-1));
+	border-style: solid;
+	border-radius: 8px;
+}
+
+h1 {
+	font-weight: 600;
+	text-align: center;
+}
+h2 {
+	font-weight: 500;
+	text-align: center;
 }

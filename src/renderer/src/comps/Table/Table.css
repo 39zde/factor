@@ -21,19 +21,19 @@
     width: 90%;
     align-self: center;
     margin: 10px 0;
-    background: var(--color-bg-6);
     border-radius: 32px;
     display: flex;
     justify-content: center;
     align-items: center;
     overflow-x: visible;
     overflow-y: visible;
+	 border: 1px solid light-dark(var(--color-light-3),var(--color-dark-3));
 }
 
 .tableInfo li {
     display: flex;
     float: left;
-    border-right: 1px solid var(--color-text-4);
+    border-right: 1px solid light-dark(var(--color-light-3),var(--color-dark-3));
     /* margin: 20px 20px; */
     padding: 0 12px;
     font-size: 14px;
@@ -61,10 +61,8 @@
     width: 90%;
     overflow-x: scroll;
     overflow-y: hidden;
-
-    scrollbar-width: var(--scrollbar-width);
-    scrollbar-color: var(--scrollbar-color);
-    scrollbar-gutter: var(--scrollbar-gutter);
+	 scrollbar-color: light-dark((var(--color-dark-3) var(--color-light-1)), (var(--color-dark-3) var(--color-dark-1)) );
+	 scrollbar-width: var(--scrollbar-width);
 }
 
 .tableElement::-webkit-scrollbar-track {
@@ -83,7 +81,7 @@ tr,
 td {
     table-layout: auto;
     border-collapse: collapse;
-    border-color: var(--color-text-4);
+    border-color: light-dark(var(--color-dark-3),var(--color-light-3));
     border-width: 1px;
     border-style: solid;
     font-family: monospace;
@@ -98,16 +96,17 @@ table {
 }
 
 thead {
-    border-bottom: 3px solid var(--color-text-4);
+    border-bottom: 3px solid  light-dark(var(--color-dark-3),var(--color-light-3));
     border-top: none;
     border-left: none;
     border-right: none;
-    background: var(--color-bg-6);
+    background:light-dark(var(--color-light-2),var(--color-dark-2));;
+
 }
 
 tfoot {
-    border-top: 3px solid var(--color-text-4);
-    background: var(--color-bg-6);
+    border-top: 3px solid light-dark(var(--color-dark-3),var(--color-light-3));;
+    background:light-dark(var(--color-light-2),var(--color-dark-2));;
     border-bottom: none;
     border-left: none;
     border-right: none;
@@ -150,5 +149,5 @@ th > div {
 }
 
 .colSlider:hover {
-    background-color: var(--color-text-1);
+    background-color: light-dark(var(--color-dark-2),var(--color-light-2));
 }
