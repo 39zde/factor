@@ -1,0 +1,10 @@
+tabWidth: 3
+useTabs: true
+semi: true
+singleQuote: true
+trailingComma: es5
+bracketSpacing: true
+bracketSameLine: false
+parser: typescript
+endOfLine: lf
+singleAttributePerLine: false
