@@ -260,6 +260,7 @@ export function Upload(): React.JSX.Element {
 							style={{ height: dataSorterHeight }}
 						>
 							<Table
+								uniqueKey={'factor_db_id'}
 								tableName="data_upload"
 								colsHook={colsHook}
 								entriesHook={entriesHook}

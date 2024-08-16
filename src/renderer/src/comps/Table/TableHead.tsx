@@ -114,7 +114,7 @@ export function TableHead({
 
 	return (
 		<>
-			<thead>
+			<thead key={useId()}>
 				<tr
 					key={useId()}
 					style={{

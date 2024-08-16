@@ -19,4 +19,5 @@ export type TableHeadProps = {
 		setSortingCol: Function;
 		sortable: Array<string>;
 	};
+	key?: string;
 };

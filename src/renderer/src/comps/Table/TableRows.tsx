@@ -2,7 +2,12 @@ import { useId, useState, useEffect } from 'react';
 import type { TableRowProps } from '@renderer/util/types/comps/Table/TableRowProps';
 import { RowItems } from './RowItems';
 
-export function TableRows({ table, rowHeight, rowCount }: TableRowProps) {
+export function TableRows({
+	table,
+	rowHeight,
+	rowCount,
+	uniqueKey,
+}: TableRowProps) {
 	// const [items, setItems] = useState<Array<object>>([])
 
 	// useEffect(() => {
@@ -18,6 +23,7 @@ export function TableRows({ table, rowHeight, rowCount }: TableRowProps) {
 	return (
 		<>
 			{table.map((item, index) => {
+				const uni: string = `td-${item[uniqueKey]}`;
 				return (
 					<>
 						<tr
@@ -26,9 +32,14 @@ export function TableRows({ table, rowHeight, rowCount }: TableRowProps) {
 								maxHeight: rowHeight,
 								minHeight: rowHeight,
 							}}
-							key={`row-${index}-${item['factor_db_id']}`}
+							key={`tr-${item[uniqueKey]}`}
 						>
-							<RowItems items={item} colIndex={index} />
+							<RowItems
+								key={uni}
+								items={item}
+								colIndex={index}
+								uniqueParentKey={uni}
+							/>
 						</tr>
 					</>
 				);

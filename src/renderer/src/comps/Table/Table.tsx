@@ -7,6 +7,7 @@ import React, {
 	WheelEvent,
 	useContext,
 	useMemo,
+	useId,
 } from 'react';
 import { Table as TableType } from 'dexie';
 import { useLiveQuery } from 'dexie-react-hooks';
@@ -24,11 +25,13 @@ export function Table({
 	colsHook,
 	entriesHook,
 	updateHook,
+	uniqueKey,
 }: {
 	tableName: string;
 	colsHook?: { cols: Array<string>; setCols: Function };
 	entriesHook?: { entries: number; setEntries: Function };
 	updateHook?: { update: boolean; setUpdate: Function };
+	uniqueKey: string;
 }): React.JSX.Element {
 	const { clientHeight } = useContext(WindowContext);
 	const { database, appearances } = useContext(AppContext);
@@ -52,6 +55,7 @@ export function Table({
 
 	const table = useLiveQuery(
 		() => {
+			console.log(scope);
 			// console.log(start,scope,clientHeight,dbTable,columns)
 			if (updateHook !== undefined) {
 				// is there an update signal to listen to?
@@ -259,26 +263,14 @@ export function Table({
 								}
 							}}
 						/>
-
-						<tbody
-							className="tableBody"
-							ref={tableBodyRef}
-							onWheel={scrollHandler}
-						>
-							{table !== undefined &&
-							dbTable !== undefined &&
-							count !== undefined ? (
-								<>
-									<TableRows
-										table={table}
-										rowHeight={appearances.rowHeight}
-										rowCount={count}
-									/>
-								</>
-							) : (
-								<></>
-							)}
-						</tbody>
+						<TableBodyDisplay
+							uniqueKey={uniqueKey}
+							table={table}
+							tableBodyRef={tableBodyRef}
+							count={count}
+							dbTable={dbTable}
+							scrollHandler={scrollHandler}
+						/>
 
 						<TableFootDisplay
 							columns={columns}
@@ -346,6 +338,7 @@ function TableHeadDisplay({
 				if (columns.length !== 0) {
 					return (
 						<TableHead
+							key={useId() + useId()}
 							columns={columns}
 							resizeElemHeight={(scope + 2) * rowHeight}
 							cursorX={cursorX}
@@ -366,9 +359,11 @@ function TableHeadDisplay({
 function TableFootDisplay({
 	columns,
 	update,
+	key,
 }: {
 	columns: Array<string> | undefined;
 	update: boolean | undefined;
+	key?: string;
 }) {
 	switch (update) {
 		case undefined:
@@ -390,4 +385,46 @@ function TableFootDisplay({
 		default:
 			return <></>;
 	}
+}
+
+function TableBodyDisplay({
+	tableBodyRef,
+	scrollHandler,
+	table,
+	dbTable,
+	count,
+	uniqueKey,
+}: {
+	tableBodyRef: React.RefObject<HTMLTableSectionElement>;
+	scrollHandler: (e: WheelEvent) => void;
+	table: any[] | never[];
+	dbTable: TableType<any, any, any> | undefined;
+	count: number | undefined;
+	uniqueKey: string;
+}): React.JSX.Element {
+	const { appearances } = useContext(AppContext);
+	return (
+		<>
+			<tbody
+				className="tableBody"
+				ref={tableBodyRef}
+				onWheel={scrollHandler}
+			>
+				{table !== undefined &&
+				dbTable !== undefined &&
+				count !== undefined ? (
+					<>
+						<TableRows
+							uniqueKey={uniqueKey}
+							table={table}
+							rowHeight={appearances.rowHeight}
+							rowCount={count}
+						/>
+					</>
+				) : (
+					<></>
+				)}
+			</tbody>
+		</>
+	);
 }
