@@ -3,4 +3,5 @@ import type { Table } from 'dexie';
 
 export interface TableBodyDisplayProps {
 	tableBodyRef: React.RefObject<HTMLTableSectionElement>;
+	causeRerender: boolean;
 }

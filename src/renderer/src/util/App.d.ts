@@ -1,4 +1,3 @@
-import type Dexie from 'dexie';
 export interface AppContextType {
 	appearances: {
 		colorTheme: 'light' | 'dark' | 'system';
@@ -8,7 +7,6 @@ export interface AppContextType {
 	database: {
 		tables: string[];
 		dbVersion: number;
-		database: Dexie;
 	};
 	general: {
 		language: 'english' | 'deutsch';

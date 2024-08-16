@@ -7,6 +7,7 @@ import React, {
 	useReducer,
 	Dispatch,
 	useEffect,
+	useState,
 } from 'react';
 import { AppContext } from '@renderer/App';
 import { WindowContext } from '../WindowContext';
@@ -52,6 +53,36 @@ function tableReducer(
 	// console.log(action);
 	//! For Some Reason the new States need to be both 'changed' in the immutable (provided) tableState and also returned. I have not looked further into it, for now it works.
 	switch (action.type) {
+		case 'changeAccept':{
+			tableState.accept = action.newVal
+				return {
+					//@ts-expect-error we want to override
+					accept: action.newVal,
+					...tableState
+				}
+		}
+		case 'increase': {
+			if (tableState.rows.includes(action.newVal)) {
+				return tableState;
+			}
+			if (action.index !== undefined) {
+				tableState.start = action.index;
+			}
+			tableState.rows.splice(0, 1);
+			tableState.rows.push(action.newVal);
+			return tableState;
+		}
+		case 'decrease': {
+			if (tableState.rows.includes(action.newVal)) {
+				return tableState;
+			}
+			if (action.index !== undefined) {
+				tableState.start = action.index;
+			}
+			tableState.rows.pop();
+			tableState.rows.splice(0, 0, action.newVal);
+			return tableState;
+		}
 		case 'set': {
 			//@ts-ignore
 			tableState[action.name] = action.newVal;
@@ -113,18 +144,23 @@ function tableReducer(
 					const b = action.newVal;
 					const newWidth = Math.abs(Math.abs(b - a));
 					if (!isNaN(newWidth)) {
-						tableState.colsRef[
-							tableState.activeCol ?? 0
-						].current?.setAttribute(
-							'style',
-							`max-width: ${newWidth}; min-width: ${newWidth}px; border-top: none`
-						);
+						tableState.columnWidths[tableState.activeCol ?? 0] = newWidth;
+						return {
+							// @ts-expect-error we want to overwrite
+							columnWidths: tableState.columnWidths.map(
+								(value, index) =>
+									index === tableState.activeCol ? newWidth : value
+							),
+							...tableState,
+						};
 					}
 				}
 			} else {
 				tableState.activeBg = undefined;
 			}
-			return tableState;
+			return {
+				...tableState,
+			};
 		}
 		case 'mouseLeave': {
 			// console.log(action.newVal);
@@ -181,6 +217,27 @@ function tableReducer(
 				...tableState,
 			};
 		}
+		case 'scopeChange': {
+			if (tableState.scope > action.newVal) {
+				tableState.rows.pop();
+				tableState.scope = action.newVal;
+			} else if (tableState.scope < action.newVal) {
+				if (action.worker !== undefined) {
+					action.worker.postMessage({
+						type: 'steam',
+						storeName: tableState.tableName,
+						dbVersion: tableState.dbVersion,
+						action: {
+							type: 'next',
+							start: tableState.start,
+							scope: tableState.scope,
+							pos: tableState.start + tableState.scope,
+						},
+					});
+				}
+			}
+			return tableState;
+		}
 		default: {
 			return tableState;
 		}
@@ -207,11 +264,13 @@ export function Table({
 	updateHook,
 	uniqueKey,
 }: TableProps): React.JSX.Element {
+	const INITIAL_COLUMN_WIDTH = 150;
 	const { clientHeight } = useContext(WindowContext);
-	const { database, appearances } = useContext(AppContext);
+	const { database, appearances, worker } = useContext(AppContext);
 	const tableBodyRef = useRef<HTMLTableSectionElement>(null);
 	const wrapperRef = useRef<HTMLDivElement>(null);
 	const colsRef = useRef<React.RefObject<HTMLTableCellElement>[]>([]).current;
+	const [causeRerender, setCauseRerender] = useState<boolean>(false);
 	const [tableState, dispatch] = useReducer(
 		tableReducer,
 		{
@@ -224,6 +283,7 @@ export function Table({
 			tableBodyRef: tableBodyRef,
 			rowHeight: appearances.rowHeight,
 			colsRef: colsRef,
+			TableWorker: worker.TableWorker,
 		},
 		(args): TableContextType => {
 			let out: TableContextType = PlaceHolderTableContext;
@@ -258,45 +318,12 @@ export function Table({
 				}));
 			}
 
-			// get out.dbTable and out.count
-			async function getTableInfo() {
-				try {
-					const open = await args.db.open();
-					for (const table of open.tables) {
-						if (table.name === args.tableName) {
-							out.dbTable = table;
-
-							// get columns
-							if (args.colsHook === undefined) {
-								out.columns = Object.keys(
-									await table.limit(1).toArray()[0]
-								);
-							}
-
-							// get count
-							if (args.entriesHook === undefined) {
-								out.count = await table.count();
-							} else {
-								out.count = args.entriesHook.entries;
-							}
-							out.columnWidths = new Array(out.count).fill(150);
-						}
-					}
-				} catch (e) {
-					console.log(e);
-				}
-			}
-			let infoPromise = getTableInfo();
-
-			// get out.scope
-
-			Promise.resolve(infoPromise);
-
 			return out;
 		}
 	);
 
 	useEffect(() => {
+		// console.log(clientHeight)
 		if (wrapperRef.current !== null) {
 			const wrapperHeight =
 				wrapperRef.current.getBoundingClientRect().height;
@@ -306,40 +333,56 @@ export function Table({
 					Math.round(wrapperHeight - scrollBarHeight) /
 					appearances.rowHeight;
 				let newScope = parseInt(rowCount.toString().split('.')[0]);
-				if (newScope > 2 && newScope < 15) {
-					dispatch({
-						type: 'set',
-						name: 'scope',
-						newVal: parseInt(rowCount.toString().split('.')[0]) - 2,
-					});
+				if (newScope > 2 && newScope < 12) {
+					let cleanedScope =
+						parseInt(rowCount.toString().split('.')[0]) - 2;
+					if (tableState.scope === 0) {
+						dispatch({
+							type: 'set',
+							name: 'scope',
+							newVal: cleanedScope,
+						});
+					} else {
+						dispatch({
+							type: 'scopeChange',
+							newVal: cleanedScope,
+						});
+					}
+
 					dispatch({
 						type: 'set',
 						name: 'resizeElemHeight',
 						newVal:
-							4 * (parseInt(rowCount.toString().split('.')[0]) - 2) +
-							(parseInt(rowCount.toString().split('.')[0]) - 2 + 2) *
-								appearances.rowHeight +
+							4 * cleanedScope +
+							(cleanedScope + 2) * appearances.rowHeight +
 							6,
 					});
-				} else if (newScope >= 15) {
-					dispatch({
-						type: 'set',
-						name: 'scope',
-						newVal: parseInt(rowCount.toString().split('.')[0]) - 3,
-					});
+				} else if (newScope >= 12) {
+					let cleanedScope =
+						parseInt(rowCount.toString().split('.')[0]) - 3;
+					if (tableState.scope === 0) {
+						dispatch({
+							type: 'set',
+							name: 'scope',
+							newVal: cleanedScope,
+						});
+					} else {
+						dispatch({
+							type: 'scopeChange',
+							newVal: cleanedScope,
+						});
+					}
 					dispatch({
 						type: 'set',
 						name: 'resizeElemHeight',
 						newVal:
-							4 * (parseInt(rowCount.toString().split('.')[0]) - 3) +
-							(parseInt(rowCount.toString().split('.')[0]) - 3 + 2) *
-								appearances.rowHeight +
+							4 * cleanedScope +
+							(cleanedScope + 2) * appearances.rowHeight +
 							6,
 					});
 				} else {
 					dispatch({
-						type: 'set',
-						name: 'scope',
+						type: 'scopeChange',
 						newVal: 2,
 					});
 					dispatch({
@@ -350,8 +393,7 @@ export function Table({
 				}
 			} else {
 				dispatch({
-					type: 'set',
-					name: 'scope',
+					type: 'scopeChange',
 					newVal: 0,
 				});
 				dispatch({
@@ -362,6 +404,98 @@ export function Table({
 			}
 		}
 	}, [clientHeight, appearances.rowHeight]);
+
+	worker.TableWorker.onmessage = (e) => {
+		if (e.data.type === 'stream') {
+			switch (e.data.action) {
+				case 'next':
+					if (tableState.accept === 'next') {
+						dispatch({
+							type: 'increase',
+							newVal: e.data.data,
+							index: e.data.start,
+						});
+					}
+					break;
+				case 'prev':
+					if (tableState.accept === 'prev') {
+						dispatch({
+							type: 'decrease',
+							newVal: e.data.data,
+							index: e.data.start,
+						});
+					}
+					break;
+				default:
+					break;
+			}
+			// console.log("causeRerender")
+			setCauseRerender(!causeRerender);
+		} else if (e.data.type === 'columns') {
+			dispatch({
+				type: 'set',
+				name: 'columns',
+				newVal: e.data.data,
+			});
+			dispatch({
+				type: 'set',
+				name: 'colsRef',
+				newVal: e.data.data.map(() => createRef<HTMLTableCellElement>()),
+			});
+			dispatch({
+				type: 'set',
+				name: 'resizeStyles',
+				newVal: e.data.data.map(() => ({
+					background: 'none',
+					cursor: 'initial',
+				})),
+			});
+			dispatch({
+				type: 'set',
+				name: 'columnWidths',
+				newVal: e.data.data.map(() => INITIAL_COLUMN_WIDTH),
+			});
+		} else if (e.data.type === 'count') {
+			console.log('count: ', e.data.data);
+			dispatch({
+				type: 'set',
+				name: 'count',
+				newVal: e.data.data,
+			});
+		} else if ((e.data.type = 'startingRows')) {
+			// console.log('rows: ', e.data.data);
+			dispatch({
+				type: 'set',
+				name: 'rows',
+				newVal: e.data.data,
+			});
+		}
+	};
+
+	useEffect(() => {
+		if (colsHook === undefined) {
+			// console.log('no cols');
+			worker.TableWorker.postMessage({
+				type: 'columns',
+				storeName: tableState.tableName,
+				dbVersion: database.dbVersion,
+			});
+		}
+		if (entriesHook === undefined) {
+			worker.TableWorker.postMessage({
+				type: 'count',
+				storeName: tableState.tableName,
+				dbVersion: database.dbVersion,
+			});
+		}
+
+		worker.TableWorker.postMessage({
+			type: 'startingRows',
+			storeName: tableState.tableName,
+			dbVersion: database.dbVersion,
+			scope: tableState.scope,
+		});
+	}, [tableState.tableName, database.dbVersion, colsHook, entriesHook]);
 
 	const TableFootDisplayMemo = memo(
 		({ columns, update }: TableFootDisplayProps) => {
@@ -397,7 +531,10 @@ export function Table({
 									userSelect: tableState.userSelect,
 								}}>
 								<TableHeadDisplay />
-								<TableBodyDisplay tableBodyRef={tableBodyRef} />
+								<TableBodyDisplay
+									causeRerender={causeRerender}
+									tableBodyRef={tableBodyRef}
+								/>
 								<TableFootDisplayMemo
 									columns={tableState.columns}
 									update={tableState.update}

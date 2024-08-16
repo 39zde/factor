@@ -1,18 +1,12 @@
 import React, { useState, createContext, useMemo } from 'react';
 import SideBar from '@comps/SideBar/SideBar';
 import { Pages } from './pages/Pages';
-import Dexie from 'dexie';
 import { WindowContextProvider } from '@comps/WindowContext';
 import type { RouteType } from './util/types/comps/SideBar/routes';
 import type { AppContextType, AppSettingsType } from '@util/App';
 
 import './App.css';
 
-const db = new Dexie('factor_db', {
-	autoOpen: true,
-	cache: 'cloned',
-	allowEmptyDB: true,
-});
 const ImportWorker = (() => {
 	const work = new Worker(
 		new URL('@util/worker/import.worker.ts', import.meta.url)
@@ -34,7 +28,6 @@ const defaultContext: AppContextType = {
 		sideBarWidth: 160,
 	},
 	database: {
-		database: db,
 		dbVersion: 1,
 		tables: [],
 	},
@@ -65,7 +58,6 @@ function App(): JSX.Element {
 				sideBarWidth: newContext.appearances.sideBarWidth,
 			},
 			database: {
-				database: contextValue.database.database,
 				dbVersion: newContext.database.dbVersion,
 				tables: newContext.database.tables,
 			},
@@ -112,7 +104,6 @@ function App(): JSX.Element {
 			},
 			database: {
 				...settingsFile.database,
-				database: db,
 			},
 			general: {
 				...settingsFile.general,

@@ -1,16 +1,14 @@
-import React from 'react';
-import type { TableRowProps } from '@renderer/util/types/comps/Table/TableRowProps';
+import React, { useContext } from 'react';
 import { RowItems } from './RowItems';
-
-export function TableRows({
-	table,
-	rowHeight,
-	uniqueKey,
-}: TableRowProps): React.JSX.Element {
+import { useTableContext } from './Table';
+import { AppContext } from '@renderer/App';
+export function TableRows(): React.JSX.Element {
+	const tableState = useTableContext();
+	const { appearances} = useContext(AppContext)
 	return (
 		<>
-			{table.map((item, index) => {
-				const uni = `row${index}key${item[uniqueKey]}`;
+			{tableState.rows.map((item, index) => {
+				const uni = `row${index}key${item[tableState.uniqueKey]}`;
 				return (
 					<>
 						<tr

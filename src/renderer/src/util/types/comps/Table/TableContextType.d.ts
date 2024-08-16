@@ -28,7 +28,6 @@ export type ResizeStyle = {
 	cursor: 'col-resize' | 'initial';
 };
 
-
 export type TableDispatchAction = {
 	type:
 		| 'set'
@@ -36,7 +35,11 @@ export type TableDispatchAction = {
 		| 'mouseUp'
 		| 'mouseMove'
 		| 'mouseEnter'
-		| 'mouseLeave';
+		| 'mouseLeave'
+		| 'increase'
+		| 'decrease'
+		| 'scopeChange'
+		| 'changeAccept';
 	index?: number;
 	name?:
 		| 'scope'
@@ -60,4 +63,5 @@ export type TableDispatchAction = {
 		| 'rows'
 		| 'accept';
 	newVal: any;
+	worker?: Worker
 };
