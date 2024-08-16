@@ -3,7 +3,7 @@ import type { TableFootProps } from '@renderer/util/types/comps/Table/TableFootP
 import { AppContext } from '@renderer/App';
 
 // a copy of table head without the ability to  resize
-export function TableFoot({ columns }: TableFootProps) {
+export function TableFoot({ columns }: TableFootProps): React.JSX.Element {
 	const { appearances } = useContext(AppContext);
 
 	return (
@@ -29,12 +29,16 @@ export function TableFoot({ columns }: TableFootProps) {
 														index === 0 ? 'none' : 'inherit',
 												}}
 												key={`tf-${index}`}>
-												{item}
+												<span className="guts">
+													{item}
+												</span>
 											</th>
 										</>
 									);
 								} else {
-									return <th key={`tf-${index}-df`}></th>;
+									return <th key={`tf-${index}-df`}>
+										<span className='guts'></span>
+									</th>;
 								}
 							})}
 						</>
