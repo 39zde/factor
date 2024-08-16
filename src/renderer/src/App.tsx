@@ -169,6 +169,8 @@ function Router({ route }: { route: RouteType }): React.JSX.Element {
 			return <Pages.Returnees />;
 		case 'ExportPage':
 			return <Pages.ExportPage />;
+		case 'Help':
+			return <Pages.Help />;
 		default:
 			return <Pages.Home />;
 	}

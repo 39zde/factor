@@ -8,4 +8,5 @@ export type RouteType =
 	| 'Returnees'
 	| 'Invoices'
 	| 'Quotes'
-	| 'ExportPage';
+	| 'ExportPage'
+	| 'Help';

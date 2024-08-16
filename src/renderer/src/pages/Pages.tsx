@@ -8,6 +8,7 @@ import { Quotes } from './Quotes/Quotes';
 import { Returnees } from './Returnees/Returnees';
 import { Deliveries } from './Deliveries/Deliveries';
 import { ExportPage } from './ExportPage/ExportPage';
+import { Help } from './Help/Help';
 export const Pages = {
 	Home,
 	Upload,
@@ -19,4 +20,5 @@ export const Pages = {
 	Returnees,
 	Deliveries,
 	ExportPage,
+	Help,
 };

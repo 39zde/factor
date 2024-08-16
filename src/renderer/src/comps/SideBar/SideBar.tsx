@@ -11,6 +11,7 @@ import {
 	ReceiptTextIcon,
 	FileOutputIcon,
 	RotateCcwIcon,
+	HelpCircle,
 } from 'lucide-react';
 
 import { AppContext } from '@renderer/App';
@@ -212,6 +213,25 @@ export default function SideBar({
 					/>
 				</div>
 				<div className="bottomIcons">
+					<RouterButton
+						handler={routeHandler}
+						icon={
+							<HelpCircle
+								size={24}
+								strokeWidth={routesHook.route === 'Help' ? 3 : 2}
+								color={
+									routesHook.route === 'Help'
+										? 'var(--color-primary)'
+										: 'light-dark(var(--color-dark-1),var(--color-light-1))'
+								}
+							/>
+						}
+						route={routesHook.route}
+						routeName="Help"
+						textOverride={
+							general.language === 'deutsch' ? 'Hilfe' : 'Help'
+						}
+					/>
 					<RouterButton
 						handler={routeHandler}
 						icon={

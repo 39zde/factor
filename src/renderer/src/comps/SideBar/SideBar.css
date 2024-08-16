@@ -27,9 +27,9 @@
  	flex-direction: column;
  	align-items: stretch;
  	height: 100vh;
+ 	max-height: 100vh;
  	background-color: light-dark(var(--color-light-2), var(--color-dark-2));
  	left: 0;
- 	width: 138px;
  	padding-left: 12px;
  	gap: 12px;
  }
@@ -45,4 +45,9 @@
 
  .bottomIcons {
  	padding-bottom: 12px;
+ 	display: flex;
+ 	flex-direction: column;
+ 	justify-content: flex-start;
+ 	align-items: stretch;
+ 	gap: 12px;
  }
