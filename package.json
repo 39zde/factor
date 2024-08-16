@@ -6,8 +6,10 @@
     "author": "39zde",
     "type": "module",
     "homepage": "https://factor.39z.de",
-	 "contributors": ["Leonhard Maier < git@39z.de >"],
-	 "license":"Apache-2.0",
+    "contributors": [
+        "Leonhard Maier < git@39z.de >"
+    ],
+    "license": "Apache-2.0",
     "scripts": {
         "format": "prettier --write . && git commit --all -m formatted (package.json script)",
         "lint": "eslint . -c ./eslint.config.js  --fix",
@@ -25,18 +27,19 @@
         "devtools": "yarn react-devtools"
     },
     "dependencies": {
-        "@electron-toolkit/preload": "^3.0.1",
-        "@electron-toolkit/utils": "^3.0.0",
         "@react-pdf/renderer": "^3.4.4",
         "dexie": "^4.0.8",
         "dexie-react-hooks": "^1.1.7",
-        "electron-updater": "^6.3.2",
-        "lucide-react": "^0.424.0"
+        "lucide-react": "^0.424.0",
+        "react": "^18.3.1",
+        "react-dom": "^18.3.1"
     },
     "devDependencies": {
         "@electron-toolkit/eslint-config-prettier": "^2.0.0",
         "@electron-toolkit/eslint-config-ts": "^2.0.0",
+        "@electron-toolkit/preload": "^3.0.1",
         "@electron-toolkit/tsconfig": "^1.0.1",
+        "@electron-toolkit/utils": "^3.0.0",
         "@eslint/js": "^8.57.0",
         "@types/node": "^20.14.14",
         "@types/react": "^18.3.3",
@@ -45,19 +48,19 @@
         "@vitejs/plugin-react": "^4.3.1",
         "electron": "^31.3.1",
         "electron-builder": "^24.13.3",
+        "electron-updater": "^6.3.2",
         "electron-vite": "^2.3.0",
         "eslint": "^8.57.0",
         "eslint-plugin-react": "^7.35.0",
         "globals": "^15.9.0",
         "prettier": "^3.3.3",
-        "react": "^18.3.1",
-        "react-dom": "^18.3.1",
+        "react-devtools": "^5.3.1",
         "typescript": "^5.5.4",
         "typescript-eslint": "^7.18.0",
         "vite": "^5.3.5"
     },
     "packageManager": "yarn@4.1.1+sha512.ec40d0639bb307441b945d9467139cbb88d14394baac760b52eca038b330d16542d66fef61574271534ace5a200518dabf3b53a85f1f9e4bfa37141b538a9590",
-	 "engines": {
-	 	 "node": "v20.16.0"
-	 }
+    "engines": {
+        "node": "v20.16.0"
+    }
 }
