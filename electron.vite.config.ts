@@ -1,3 +1,4 @@
+import mkcert from'vite-plugin-mkcert'
 import { resolve } from 'path';
 import { defineConfig, externalizeDepsPlugin } from 'electron-vite';
 import react from '@vitejs/plugin-react';
@@ -22,6 +23,6 @@ export default defineConfig({
 				'@comps': resolve('src/renderer/src/comps'),
 			},
 		},
-		plugins: [react()],
+		plugins: [react(), mkcert()],
 	},
 });
