@@ -52,7 +52,7 @@ export type TableDispatchAction = {
 		| 'columnWidths'
 		| 'tableHeight'
 		| 'resizeElemHeight'
-		| 'colRefs'
+		| 'colsRef'
 		| 'resizeStyles';
 	newVal: any;
 };
