@@ -71,26 +71,6 @@ export function TableHead({
 		// console.log(e);
 	};
 
-	const sortingHandler = (item: string) => {
-		if (sortingHook !== undefined) {
-			if (sortingHook.sortable.includes(item)) {
-				if (sortingHook.sortingCol === item) {
-					if (sortingHook.sortingDirection === 'asc') {
-						sortingHook.setSortingDirection('dsc');
-					} else if (sortingHook.sortingDirection === 'dsc') {
-						sortingHook.setSortingDirection(undefined);
-						sortingHook.setSortingCol(undefined);
-					} else {
-						sortingHook.setSortingDirection('asc');
-					}
-				} else {
-					sortingHook.setSortingCol(item);
-					sortingHook.setSortingDirection('asc');
-				}
-			}
-		}
-	};
-
 	const mouseEnterHandler = (index: number): void => {
 		// console.log('setting activeBG to ', index);
 		if (mouseHook !== undefined) {
@@ -127,8 +107,7 @@ export function TableHead({
 											minWidth: 150,
 										}}
 										ref={colRefs.current[index]}
-										key={`thead-tr-th${index}`}
-										onClick={() => sortingHandler(item)}>
+										key={`thead-tr-th${index}`}>
 										<span className="guts">{item}</span>
 										{resizeElemHeight !== undefined &&
 										index !== columns.length - 1 ? (
