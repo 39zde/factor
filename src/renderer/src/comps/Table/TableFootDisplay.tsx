@@ -10,6 +10,7 @@ export function TableFootDisplay({
 }: TableFootDisplayProps): React.JSX.Element {
 	switch (update) {
 		case undefined:
+		case false:
 			if (columns !== undefined) {
 				if (columns.length !== 0) {
 					return <TableFoot columns={columns} />;
