@@ -3,10 +3,8 @@ import SideBar from '@comps/SideBar/SideBar';
 import { Pages } from './pages/Pages';
 import Dexie from 'dexie';
 import { WindowContextProvider } from '@comps/WindowContext';
-import type { RouteType } from './util/types/routes';
+import type { RouteType } from './util/types/comps/SideBar/routes';
 import type { AppContextType, AppSettingsType } from '@util/App';
-
-
 
 import './App.css';
 

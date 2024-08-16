@@ -2,7 +2,7 @@ export interface CustomerType {
 	// unique customer id
 	customerID: string;
 	// (optional) old customer ids, for backward compatibility
-	oldCustomerIDs: string[];
+	oldCustomerIDs?: string[];
 	// (optional) the Corporate person-hood or company name of there are any
 	company?: CompanyType;
 	// (optional) All associated real persons
@@ -71,7 +71,7 @@ export type PersonType = {
 	notes?: string[];
 };
 
-export type TileType =
+export type TitleType =
 	| 'Herr'
 	| 'Frau'
 	| 'Mr.'
@@ -235,7 +235,7 @@ export type DiscountType = {
 	unit: 'EUR' | 'DM' | 'USD' | '%';
 };
 
-export interface BaseType {
+interface BaseType {
 	customerID: string | string[];
 	// all article Ids and how many of them
 	articleList: Array<ArticleListItem>;

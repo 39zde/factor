@@ -5,26 +5,8 @@ import { ColRemover } from './ColRemover';
 
 import { Table } from '@comps/Table/Table';
 import './Upload.css';
+import type { CustomerSortingMap, ImportModuleProps, ArticleSortingMap } from '@util/types/types';
 import { AppContext } from '@renderer/App';
-
-type SortingMap = {
-	customerID: string;
-	title?: string;
-	firstName?: string;
-	lastName?: string;
-	email?: string;
-	phone?: string;
-	web?: string;
-	companyName?: string;
-	alias?: string;
-	street?: string;
-	zip?: string;
-	city?: string;
-	country?: string;
-	first?: string;
-	latest?: string;
-	notes?: string;
-};
 
 export function Upload(): React.JSX.Element {
 	const { general, worker } = useContext(AppContext);
@@ -40,7 +22,7 @@ export function Upload(): React.JSX.Element {
 	const tableImportModeInputRef = useRef<HTMLSelectElement>(null);
 	const pageRef = useRef<HTMLDivElement>(null);
 	const [dataSorterHeight, setDataSorterHeight] = useState<number>(0);
-	const [sortingMap, setSortingMap] = useState<SortingMap>({ customerID: '' });
+	const [sortingMap, setSortingMap] = useState<CustomerSortingMap |ArticleSortingMap>({customerID: ""});
 	const [tableImportMode, setTableImportMode] = useState<
 		'articles' | 'customers' | 'quotes' | 'invoices' | 'deliveries'
 	>('customers');
@@ -177,12 +159,13 @@ export function Upload(): React.JSX.Element {
 
 	const sortingMapHook = {
 		sortingMap: sortingMap,
-		setSortingMap: (newVal: SortingMap) => {
+		setSortingMap: (newVal: ArticleSortingMap | CustomerSortingMap) => {
 			setSortingMap(newVal);
 		},
 	};
 
-	const importHandler = () => {
+	const importHandler = async () => {
+		
 		worker.ImportWorker.postMessage({
 			type: 'sort',
 			message: sortingMap,
@@ -373,14 +356,7 @@ function ImportModule({
 	mode,
 	columns,
 	hook,
-}: {
-	mode: 'articles' | 'customers' | 'quotes' | 'invoices' | 'deliveries';
-	columns: Array<string>;
-	hook: {
-		sortingMap: SortingMap;
-		setSortingMap: Function;
-	};
-}): React.JSX.Element {
+}: ImportModuleProps): React.JSX.Element {
 	switch (mode) {
 		case 'customers':
 			return <Customers columns={columns} hook={hook} />;
@@ -403,8 +379,8 @@ function Customers({
 }: {
 	columns: Array<string>;
 	hook: {
-		sortingMap: SortingMap;
-		setSortingMap: Function;
+		sortingMap: any;
+		setSortingMap: (newVal: CustomerSortingMap) => void;
 	};
 }) {
 	const { general } = useContext(AppContext);
@@ -538,7 +514,7 @@ function Customers({
 	};
 
 	useEffect(() => {
-		const map: SortingMap = {
+		const map: CustomerSortingMap = {
 			customerID: idCol,
 			alias: aliasCol,
 			city: cityCol,
