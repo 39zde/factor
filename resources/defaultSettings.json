@@ -1,0 +1,15 @@
+{
+	"appearances": {
+		"colorTheme": "system",
+		"rowHeight": 38,
+		"sideBarWidth": 160
+	},
+	"database": {
+		"dbVersion": 1,
+		"tables": []
+	},
+	"general": {
+		"decimalSeparator": ",",
+		"language": "english"
+	}
+}
