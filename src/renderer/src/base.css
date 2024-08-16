@@ -82,7 +82,12 @@ button {
 
 button:hover {
 	background: light-dark(var(--color-primary-light), var(--color-primary-dark));
-	border-color: light-dark(var(--color-primary-dark), var(--color-primary-dark))
+	border-color: light-dark(var(--color-primary-light), var(--color-primary-dark))
+}
+
+input:hover,
+select:hover {
+	border-color: var(--color-primary)
 }
 
 input,
