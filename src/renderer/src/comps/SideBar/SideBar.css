@@ -45,13 +45,3 @@
 .bottomIcons {
     padding-bottom: 12px;
 }
-
-.sideBarHandle
-{
-	position: absolute;
-	width: 4px;
-	height: 100%;
-	top: 0;
-	right: -2px;
-	cursor: ew-resize;
-}
