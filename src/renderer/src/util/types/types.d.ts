@@ -41,6 +41,7 @@ export type {
 	TableFootDisplayProps,
 	TableProps,
 	TableHeadProps,
+	TableContextType,
 } from './comps/Table/Table';
 
 export type { HelpTexts, HelpItem } from './pages/Help/HelpTexts';

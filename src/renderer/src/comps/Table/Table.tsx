@@ -17,6 +17,24 @@ import './Table.css';
 import type { TableProps, TableFootDisplayProps } from '@util/types/types';
 import type { Table as TableType } from 'dexie';
 
+const TableContext = createContext<TableContextType>({
+	scope: 0,
+	setScope: (newVal: number): void => {},
+	count: 0,
+	setCount: (newVal: number): void => {},
+	isMouseDown: false,
+	setIsMouseDown: (newVal: boolean): void => {},
+	columns: [],
+	setColumns: (newVal: string[]): void => {},
+	dbTable: undefined,
+	cursor: 'initial',
+	setCursor: (newVal: 'initial' | 'col-resize'): void => {},
+	cursorX: 0,
+	setCursorX: (newVal: number): void => {},
+	userSelect: 'initial',
+	setUserSelect: (newVal: 'none' | 'initial'): void => {},
+});
+
 export function Table({
 	tableName,
 	colsHook,
@@ -38,6 +56,43 @@ export function Table({
 	const [dbTable, setDBTable] = useState<TableType<any, any, any>>();
 	const [cursor, setCursor] = useState<'col-resize' | 'initial'>('initial');
 	const [userSelect, setUserSelect] = useState<'none' | 'initial'>('initial');
+	const [TableContextValue, setTableContextValue] = useState<TableContextType>(
+		{
+			scope: scope,
+			setScope: (newVal: number): void => {
+				setScope(newVal);
+			},
+			count: count,
+			setCount: (newVal: number): void => {
+				setCount(newVal);
+			},
+			isMouseDown: false,
+			setIsMouseDown: (newVal: boolean): void => {
+				if (typeof newVal === 'boolean') {
+					setCursor('col-resize');
+					setUserSelect('none');
+					setIsMouseDown(newVal);
+				}
+			},
+			columns: columns,
+			setColumns: (newVal: string[]): void => {
+				setColumns(newVal);
+			},
+			dbTable: dbTable,
+			cursor: cursor,
+			setCursor: (newVal: 'initial' | 'col-resize'): void => {
+				setCursor(newVal);
+			},
+			cursorX: cursorX,
+			setCursorX: (newVal: number): void => {
+				setCursorX(newVal);
+			},
+			userSelect: userSelect,
+			setUserSelect: (newVal: 'none' | 'initial'): void => {
+				setUserSelect(newVal);
+			},
+		}
+	);
 
 	useMemo(() => {
 		if (colsHook !== undefined) {

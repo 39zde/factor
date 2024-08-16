@@ -6,3 +6,4 @@ export type {
 	TableHeadDisplayProps,
 	SortingHookType,
 } from './TableHeadProps';
+export type { TableContextType } from './TableContextType';
