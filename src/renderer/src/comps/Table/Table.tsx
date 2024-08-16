@@ -7,7 +7,6 @@ import React, {
 	WheelEvent,
 	useContext,
 	useMemo,
-	useId,
 } from 'react';
 import { Table as TableType } from 'dexie';
 import { useLiveQuery } from 'dexie-react-hooks';
@@ -16,7 +15,7 @@ import { WindowContext } from '../WindowContext';
 import './Table.css';
 import { TableHeadDisplay } from './TableHeadDisplay';
 import { TableFoot } from './TableFoot';
-import { TableRows } from './TableRows';
+import { TableBodyDisplay } from './TableBodyDisplay';
 
 import { ArrowDown, ArrowUp } from 'lucide-react';
 
@@ -312,46 +311,4 @@ function TableFootDisplay({
 		default:
 			return <></>;
 	}
-}
-
-function TableBodyDisplay({
-	tableBodyRef,
-	scrollHandler,
-	table,
-	dbTable,
-	count,
-	uniqueKey,
-}: {
-	tableBodyRef: React.RefObject<HTMLTableSectionElement>;
-	scrollHandler: (e: WheelEvent) => void;
-	table: any[] | never[];
-	dbTable: TableType<any, any, any> | undefined;
-	count: number | undefined;
-	uniqueKey: string;
-}): React.JSX.Element {
-	const { appearances } = useContext(AppContext);
-	return (
-		<>
-			<tbody
-				className="tableBody"
-				ref={tableBodyRef}
-				onWheel={scrollHandler}
-			>
-				{table !== undefined &&
-				dbTable !== undefined &&
-				count !== undefined ? (
-					<>
-						<TableRows
-							uniqueKey={uniqueKey}
-							table={table}
-							rowHeight={appearances.rowHeight}
-							rowCount={count}
-						/>
-					</>
-				) : (
-					<></>
-				)}
-			</tbody>
-		</>
-	);
 }
