@@ -9,7 +9,7 @@ export function ColRemover({
 	count: number;
 	updateHook: { update: boolean; setUpdate: Function };
 }): React.JSX.Element {
-	const {general} = useContext(AppContext)
+	const { general } = useContext(AppContext);
 	const [showOptions, setShowOptions] = useState<boolean>(false);
 	const conditionRef = useRef<HTMLSelectElement>(null);
 	const stringRef = useRef<HTMLInputElement>(null);
@@ -109,13 +109,19 @@ export function ColRemover({
 					onClick={() => setShowOptions((old) => !old)}
 					className="removerButton"
 				>
-					Remove Empty Columns
+					{general.language === 'deutsch'
+						? 'Spalten Entfernen'
+						: 'Remove Columns'}
 				</button>
 				<div
 					className="removerOptions"
 					style={{ display: showOptions ? 'flex' : 'none' }}
 				>
-					<p>Remove a column, if the value in every row matches</p>
+					<p>
+						{general.language === 'deutsch'
+							? 'Spalte entfernen, wenn der Wert in jeder Zeile gleich'
+							: 'Remove a column, if the value in every row matches'}
+					</p>
 					<select
 						ref={conditionRef}
 						id="colInput"
@@ -123,14 +129,34 @@ export function ColRemover({
 					>
 						<option defaultChecked>-</option>
 						<optgroup>
-							<option>empty text</option>
-							<option>undefined</option>
-							<option>null</option>
-							<option>0</option>
+							<option value={'empty text'}>
+								{general.language === 'deutsch'
+									? 'leerer Text'
+									: 'empty text'}
+							</option>
+							<option value={'undefined'}>
+								{general.language === 'deutsch'
+									? 'nicht ausgefüllt (undefined value)'
+									: 'undefined value'}
+							</option>
+							<option value={'null'}>
+								{general.language === 'deutsch'
+									? 'leer (null value)'
+									: 'empty (null value)'}
+							</option>
+							<option value={'0'}>0</option>
 						</optgroup>
 						<optgroup>
-							<option>custom text</option>
-							<option>custom number</option>
+							<option value={'custom text'}>
+								{general.language === 'deutsch'
+									? 'eigener text'
+									: 'custom text'}
+							</option>
+							<option value={'custom number'}>
+								{general.language === 'deutsch'
+									? 'eigene Zahl'
+									: 'custom number'}
+							</option>
 						</optgroup>
 					</select>
 					{showNumberInput ? (
@@ -161,7 +187,9 @@ export function ColRemover({
 					)}
 					<div className="divider" />
 					<div className="removerActions">
-						<button onClick={() => setShowOptions(false)}>{general.language === "deutsch"? "Abbrechen": "Cancel"}</button>
+						<button onClick={() => setShowOptions(false)}>
+							{general.language === 'deutsch' ? 'Abbrechen' : 'Cancel'}
+						</button>
 						<button onClick={goHandler}>{progress}</button>
 					</div>
 				</div>

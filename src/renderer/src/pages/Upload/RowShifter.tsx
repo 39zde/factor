@@ -1,4 +1,5 @@
-import React, { useId, useState, useRef } from 'react';
+import { AppContext } from '@renderer/App';
+import React, { useId, useState, useRef, useContext } from 'react';
 export function RowShifter({
 	cols,
 	worker,
@@ -6,6 +7,7 @@ export function RowShifter({
 	cols: Array<string>;
 	worker: Worker;
 }): React.JSX.Element {
+	const { general } = useContext(AppContext);
 	const [showOptions, setShowOptions] = useState<boolean>(false);
 	const colInputRef = useRef<HTMLSelectElement>(null);
 	const valueInputRef = useRef<HTMLInputElement>(null);
@@ -79,13 +81,19 @@ export function RowShifter({
 					onClick={() => setShowOptions((old) => !old)}
 					className="alignButton"
 				>
-					Align shifted rows
+					{general.language === 'deutsch'
+						? 'Zeilen ausrichten'
+						: 'Align Rows'}
 				</button>
 				<div
 					className="alignOptions"
 					style={{ display: showOptions ? 'flex' : 'none' }}
 				>
-					<p>Shift every Row, where</p>
+					<p>
+						{general.language === 'deutsch'
+							? 'Zeile soll ausgerichtet werden, wenn'
+							: 'Shift Row, if'}
+					</p>
 					<select
 						ref={colInputRef}
 						id="colInput"
@@ -102,33 +110,37 @@ export function RowShifter({
 							<></>
 						)}
 					</select>
-					<p>has the value</p>
+					<p>
+						{general.language === 'deutsch'
+							? 'den Wert'
+							: 'has the value'}
+					</p>
 					<input
 						ref={valueInputRef}
 						type="text"
 						id="colValueInput"
-						placeholder="my value"
+						placeholder={general.language === "deutsch" ? "diesen Wert": "my value"}
 						onInput={colValueInputHandler}
 					/>
-					<p>by</p>
+					<p>{general.language === 'deutsch' ? 'um' : 'by'}</p>
 					<input
 						type="number"
 						min={1}
 						max={cols.length}
 						id="offsetCount"
-						placeholder="my number"
+						placeholder={general.language === "deutsch" ? "diese Anzahl": "my number"}
 						ref={offsetInputRef}
 						onInput={offsetInputHandler}
 					/>
-					<p>towards the</p>
+					<p>{general.language === 'deutsch' ? 'zur' : 'towards the'}</p>
 					<select onInput={directionHandler} ref={directionRef}>
-						<option>Left</option>
-						<option>Right</option>
+						<option value={"Left"}>{general.language === "deutsch" ? "linken": "left"}</option>
+						<option value={"Right"}>{general.language === "deutsch" ? "rechten": "right"}</option>
 					</select>
-					<p>side.</p>
+					<p>{general.language === "deutsch" ? "Seite": "side"}</p>
 					<div className="divider" />
 					<div className="alignActions">
-						<button onClick={() => setShowOptions(false)}>Cancel</button>
+						<button onClick={() => setShowOptions(false)}>{general.language  === "deutsch" ? "Abbrechen": "Cancel"}</button>
 						<button onClick={goHandler}>Go!</button>
 					</div>
 				</div>
