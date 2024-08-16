@@ -215,7 +215,7 @@ export function Upload(): React.JSX.Element {
 									{general.language === 'deutsch'
 										? 'Einträge'
 										: 'Entries'}
-									: {(entries -1).toString() ?? '-'}
+									: {(entries - 1).toString() ?? '-'}
 								</li>
 								<li key={'tableInfo2'}>
 									{general.language === 'deutsch'

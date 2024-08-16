@@ -4,6 +4,7 @@
  .versions {
  	position: absolute;
  	bottom: 30px;
+	width: 80%;
  	margin: 0 auto;
  	padding: 15px 0;
  	font-family: monospace;
