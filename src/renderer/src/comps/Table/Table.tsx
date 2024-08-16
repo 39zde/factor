@@ -14,7 +14,7 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import { AppContext } from '@renderer/App';
 import { WindowContext } from '../WindowContext';
 import './Table.css';
-import { TableHead } from './TableHead';
+import { TableHeadDisplay } from './TableHeadDisplay';
 import { TableFoot } from './TableFoot';
 import { TableRows } from './TableRows';
 
@@ -281,79 +281,6 @@ export function Table({
 			</div>
 		</>
 	);
-}
-
-function TableHeadDisplay({
-	columns,
-	update,
-	scope,
-	cursorX,
-	rowHeight,
-	mouseDownHook,
-	minWidths,
-	arrow,
-	sortingHook,
-}: {
-	columns: Array<string> | undefined;
-	update: boolean | undefined;
-	scope: number;
-	cursorX: number;
-	rowHeight: number;
-	mouseDownHook: {
-		value: boolean;
-		setValue: Function;
-	};
-	minWidths: number[] | null;
-	arrow: () => React.JSX.Element;
-	sortingHook: {
-		sortingCol: string | undefined;
-		sortingDirection: 'asc' | 'dsc' | undefined;
-		setSortingDirection: Function;
-		setSortingCol: Function;
-		sortable: Array<string>;
-	};
-}) {
-	switch (update) {
-		case undefined:
-			if (columns !== undefined) {
-				if (columns.length !== 0) {
-					return (
-						<TableHead
-							columns={columns}
-							resizeElemHeight={(scope + 2) * rowHeight}
-							cursorX={cursorX}
-							mouseHook={mouseDownHook}
-							minWidths={minWidths}
-							arrow={arrow()}
-							sortingHook={sortingHook}
-						/>
-					);
-				}
-			}
-			return <></>;
-		case true:
-			return <></>;
-		case false:
-			if (columns !== undefined) {
-				if (columns.length !== 0) {
-					return (
-						<TableHead
-							key={useId() + useId()}
-							columns={columns}
-							resizeElemHeight={(scope + 2) * rowHeight}
-							cursorX={cursorX}
-							mouseHook={mouseDownHook}
-							minWidths={minWidths}
-							arrow={arrow()}
-							sortingHook={sortingHook}
-						/>
-					);
-				}
-			}
-			return <></>;
-		default:
-			return <></>;
-	}
 }
 
 function TableFootDisplay({

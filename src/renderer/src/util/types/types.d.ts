@@ -1,11 +1,14 @@
-export type { SideBarProps, RouterButtonProps } from './comps/SideBar/SideBarProps';
+export type {
+	SideBarProps,
+	RouterButtonProps,
+} from './comps/SideBar/SideBarProps';
 export type { RouteType } from './comps/SideBar/routes';
 
 export type {
 	CustomerSortingMap,
 	ImportModuleProps,
 	ArticleSortingMap,
-	UploadMode
+	UploadMode,
 } from './pages/Upload/Upload';
 
 export type {
@@ -31,3 +34,5 @@ export type {
 	DeliveryType,
 	ReturnType,
 } from './database/DatabaseTypes';
+
+export type { TableHeadDisplayProps } from './comps/Table/Table';
