@@ -498,6 +498,8 @@ export function Table({
 				}
 			}
 			setCauseRerender(!causeRerender);
+		} else if (e.data.type === 'error') {
+			console.log(e.data.data);
 		}
 	};
 

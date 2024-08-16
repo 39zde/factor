@@ -20,6 +20,13 @@ self.onmessage = function requestHandler(e: MessageEvent) {
 					});
 					transaction.commit();
 				};
+				req.onerror = (ev) =>
+					postMessage({
+						type: 'error',
+						action: e.data.action.type,
+						data: ev,
+						index: e.data.action.pos,
+					});
 			};
 			break;
 		case 'columns':
@@ -56,7 +63,10 @@ function startingRows(
 	};
 
 	dbRequest.onerror = (e: any) => {
-		console.log(e);
+		postMessage({
+			type: 'error',
+			data: e,
+		});
 	};
 
 	dbRequest.onupgradeneeded = () => {
@@ -89,6 +99,11 @@ function startingRows(
 			// if (!cursor) {
 			// }
 		};
+		cursorRequest.onerror = (e) =>
+			postMessage({
+				type: 'error',
+				data: e,
+			});
 	};
 }
 
@@ -112,6 +127,17 @@ function getColumns(name: string, version: number, storeName: string) {
 				cursor = false;
 			}
 		};
+		cursorRequest.onerror = (e) =>
+			postMessage({
+				type: 'error',
+				data: e,
+			});
+	};
+	dbRequest.onerror = (e) => {
+		postMessage({
+			type: 'error',
+			data: e,
+		});
 	};
 }
 
@@ -130,5 +156,19 @@ function getCount(name: string, version: number, storeName: string) {
 		countRequest.onsuccess = () => {
 			postMessage({ type: 'count', data: countRequest.result });
 		};
+
+		countRequest.onerror = (e) => {
+			postMessage({
+				type: 'error',
+				data: e,
+			});
+		};
+	};
+
+	dbRequest.onerror = (e) => {
+		postMessage({
+			type: 'error',
+			data: e,
+		});
 	};
 }
