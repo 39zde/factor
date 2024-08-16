@@ -27,8 +27,8 @@ function createWindow(): void {
 		webPreferences: {
 			preload: join(__dirname, '../preload/index.mjs'),
 			sandbox: false,
-			nodeIntegrationInWorker: true,
-			nodeIntegration: true,
+			nodeIntegrationInWorker: false,
+			// nodeIntegration: false,
 		},
 		// fullscreen: true,
 		resizable: true,
