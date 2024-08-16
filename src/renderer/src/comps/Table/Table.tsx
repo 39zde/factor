@@ -8,16 +8,18 @@ import React, {
 	useContext,
 	useMemo,
 } from 'react';
-import { Table as TableType } from 'dexie';
 import { useLiveQuery } from 'dexie-react-hooks';
+import { ArrowDown, ArrowUp } from 'lucide-react';
+
 import { AppContext } from '@renderer/App';
 import { WindowContext } from '../WindowContext';
-import './Table.css';
 import { TableHeadDisplay } from './TableHeadDisplay';
-import { TableFootDisplay } from './TableFootDisplay';
 import { TableBodyDisplay } from './TableBodyDisplay';
+import { TableFootDisplay } from './TableFootDisplay';
+import './Table.css';
 
-import { ArrowDown, ArrowUp } from 'lucide-react';
+import type { TableProps } from '@util/types/types';
+import type { Table as TableType } from 'dexie';
 
 export function Table({
 	tableName,
@@ -25,13 +27,7 @@ export function Table({
 	entriesHook,
 	updateHook,
 	uniqueKey,
-}: {
-	tableName: string;
-	colsHook?: { cols: Array<string>; setCols: Function };
-	entriesHook?: { entries: number; setEntries: Function };
-	updateHook?: { update: boolean; setUpdate: Function };
-	uniqueKey: string;
-}): React.JSX.Element {
+}: TableProps): React.JSX.Element {
 	const { clientHeight } = useContext(WindowContext);
 	const { database, appearances } = useContext(AppContext);
 	const tableBodyRef = useRef<HTMLTableSectionElement>(null);

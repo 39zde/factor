@@ -39,4 +39,5 @@ export type {
 	TableHeadDisplayProps,
 	TableBodyDisplayProps,
 	TableFootDisplayProps,
+	TableProps,
 } from './comps/Table/Table';
