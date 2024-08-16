@@ -8,6 +8,7 @@ export function ColRemover({
 	count: number;
 	updateHook: { update: boolean; setUpdate: Function };
 }): React.JSX.Element {
+	const {general} = useContext(AppContext)
 	const [showOptions, setShowOptions] = useState<boolean>(false);
 	const conditionRef = useRef<HTMLSelectElement>(null);
 	const stringRef = useRef<HTMLInputElement>(null);
@@ -25,7 +26,7 @@ export function ColRemover({
 	>('empty text');
 	const [showTextInput, setShowTextInput] = useState<boolean>(false);
 	const [showNumberInput, setShowNumberInput] = useState<boolean>(false);
-	const [progress, setProgress] = useState<string>('GO!');
+	const [progress, setProgress] = useState<string>('Go!');
 	const conditionHandler = () => {
 		if (conditionRef.current?.value !== undefined) {
 			//@ts-ignore
@@ -74,7 +75,7 @@ export function ColRemover({
 				case 'progress':
 					setProgress(e.data.message);
 					if (e.data.message === '100.00%') {
-						setProgress('GO!');
+						setProgress('Go!');
 						setShowOptions(false);
 					}
 					break;
