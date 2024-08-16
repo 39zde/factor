@@ -4,9 +4,7 @@
     "electron.vite.config.*",
     "src/main/**/*",
     "src/preload/**/*",
-    "src/renderer/src/util/worker/*.js",
     "src/main/App.tsx",
-    "src/renderer/src/util/worker/import.worker.ts"  
   ],
   "compilerOptions": {
     "composite": true,
