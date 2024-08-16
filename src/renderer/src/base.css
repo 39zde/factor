@@ -111,16 +111,20 @@ select {
 select:focus-visible,
 button:focus-visible,
 input:focus-visible {
-	outline: 4px ridge light-dark(var(--color-secondary),var(--color-secondary-light));
+	outline: 4px ridge light-dark(var(--color-secondary), var(--color-secondary-light));
 }
 
 h1 {
 	font-weight: 600;
-	text-align: center;
 }
 
 h2 {
 	font-weight: 500;
+}
+
+h1,
+h2 {
+	user-select: none;
 	text-align: center;
 }
 

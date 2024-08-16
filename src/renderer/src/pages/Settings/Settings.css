@@ -34,7 +34,11 @@
  	justify-content: space-between;
  	align-items: center;
 
- 	>input[type='number'] {
+ 	& p {
+ 		user-select: none;
+ 	}
+
+ 	& input[type='number'] {
  		text-align: right;
  	}
  }
