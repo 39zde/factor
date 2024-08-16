@@ -140,7 +140,7 @@ export function Table({
 				setScope(0);
 			}
 		}
-	}, [clientHeight]);
+	}, [clientHeight, appearances.rowHeight]);
 
 	const mouseDownHook = {
 		value: isMouseDown,
