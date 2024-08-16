@@ -1,3 +1,4 @@
+import type { CustomerType } from '@util/types/database/DatabaseTypes';
 // eslint-disable-next-line
 self.navigator.locks.query().then((res) => {
 	console.log(res);
@@ -511,10 +512,16 @@ function doCustomers(map: {
 				const cursor: IDBCursorWithValue = e.target.result;
 				if (cursor !== null) {
 					const row = cursor.value;
-					const customerRow = { customerID: '' };
+					const customerRow: CustomerType = { customerID: '' };
 
 					for (const [key, value] of Object.entries(map)) {
-						if (value !== '-') {
+						if (value !== '-' && value.trim().length !== 0) {
+							switch (key) {
+								case '':
+									break;
+								default:
+									console.log('');
+							}
 							customerRow[key] = row[value];
 						}
 					}
