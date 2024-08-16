@@ -29,7 +29,6 @@ const PlaceHolderTableContext: TableContextType = {
 	count: 0,
 	isMouseDown: false,
 	columns: [],
-	dbTable: undefined,
 	cursor: 'initial',
 	cursorX: 0,
 	userSelect: 'initial',
@@ -40,6 +39,10 @@ const PlaceHolderTableContext: TableContextType = {
 	resizeElemHeight: 150,
 	colsRef: null,
 	resizeStyles: [],
+	rows: [],
+	start: 0,
+	dbVersion: 1,
+	accept: 'next',
 };
 
 function tableReducer(
@@ -216,7 +219,7 @@ export function Table({
 			colsHook: colsHook,
 			entriesHook: entriesHook,
 			updateHook: updateHook,
-			db: database.database,
+			dbVersion: database.dbVersion,
 			uniqueKey: uniqueKey,
 			tableBodyRef: tableBodyRef,
 			rowHeight: appearances.rowHeight,
@@ -232,6 +235,9 @@ export function Table({
 			out.userSelect = 'initial'; // "none"
 			out.activeBg = undefined;
 			out.activeCol = undefined;
+			out.dbVersion = args.dbVersion;
+			out.start = 0;
+			out.accept = 'next';
 			// get out.update
 			if (args.updateHook !== undefined) {
 				out.update = args.updateHook.update;

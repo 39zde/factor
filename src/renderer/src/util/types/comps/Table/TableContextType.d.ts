@@ -7,7 +7,6 @@ export type TableContextType = {
 	count: number;
 	isMouseDown: boolean;
 	columns: string[];
-	dbTable: TableType<any, any, any> | undefined;
 	cursor: 'initial' | 'col-resize';
 	cursorX: number;
 	userSelect: 'initial' | 'none';
@@ -18,6 +17,10 @@ export type TableContextType = {
 	resizeElemHeight: number;
 	colsRef: React.RefObject<HTMLTableCellElement>[] | any;
 	resizeStyles: ResizeStyle[];
+	rows: object[];
+	dbVersion: number;
+	start: number;
+	accept: "prev" | "next";
 };
 
 export type ResizeStyle = {
@@ -53,6 +56,8 @@ export type TableDispatchAction = {
 		| 'tableHeight'
 		| 'resizeElemHeight'
 		| 'colsRef'
-		| 'resizeStyles';
+		| 'resizeStyles'
+		| 'rows'
+		| 'accept';
 	newVal: any;
 };
