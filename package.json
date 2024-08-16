@@ -7,7 +7,7 @@
     "type": "module",
     "homepage": "https://39z.de",
     "scripts": {
-        "format": "prettier --write .",
+        "format": "prettier --write . && git commit --all -m formatted (package.json script)",
         "lint": "eslint . -c ./eslint.config.js  --fix",
         "typecheck:node": "tsc --noEmit -p tsconfig.node.json --composite false",
         "typecheck:web": "tsc --noEmit -p tsconfig.web.json --composite false",
