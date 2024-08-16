@@ -159,7 +159,7 @@ export function ColRemover({
 					)}
 					<div className="divider" />
 					<div className="removerActions">
-						<button onClick={() => setShowOptions(false)}>Cancel</button>
+						<button onClick={() => setShowOptions(false)}>{general.language === "deutsch"? "Abbrechen": "Cancel"}</button>
 						<button onClick={goHandler}>{progress}</button>
 					</div>
 				</div>

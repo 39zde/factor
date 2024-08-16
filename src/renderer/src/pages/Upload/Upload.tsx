@@ -183,7 +183,7 @@ export function Upload(): React.JSX.Element {
 				ref={pageRef}
 				style={{ overflow: 'hidden' }}
 			>
-				<h1>Upload</h1>
+				<h1>{general.language === 'deutsch' ? 'Hochladen' : 'Upload'}</h1>
 				<div className="fileSelector">
 					{showTable ? (
 						<></>
@@ -193,7 +193,9 @@ export function Upload(): React.JSX.Element {
 								htmlFor="table_file_upload"
 								className="uploadButton"
 							>
-								Select a CSV File
+								{general.language === 'deutsch'
+									? 'Wählen Sie eine CSV Datei aus'
+									: 'Choose a CSV file'}
 							</label>
 						</>
 					)}
@@ -242,7 +244,7 @@ export function Upload(): React.JSX.Element {
 							className="importButton"
 						>
 							<ImportIcon color="white" size={24} strokeWidth={2} />
-							Import
+							{general.language=== "deutsch" ? "Importieren": "Import"}
 						</button>
 					</div>
 				</div>
@@ -250,9 +252,9 @@ export function Upload(): React.JSX.Element {
 					<>
 						<ul className="tableInfo">
 							<li key={'tableInfo1'}>
-								Entries: {entries.toString() ?? '-'}
+								{general.language=== "deutsch" ? "Einträge": "Entries"}: {entries.toString() ?? '-'}
 							</li>
-							<li key={'tableInfo2'}>Columns: {cols.length ?? '-'}</li>
+							<li key={'tableInfo2'}>{general.language=== "deutsch" ? "Spalten": "Columns"}: {cols.length ?? '-'}</li>
 							<li key={'tableInfo3'}>
 								<RowShifter cols={cols} worker={worker.ImportWorker} />
 							</li>
@@ -324,7 +326,7 @@ export function Upload(): React.JSX.Element {
 										</li>
 										<li>
 											<button onClick={importHandler}>
-												Create or Update Table
+												{general.language=== "deutsch" ? "Tabelle erstellen/erneuern": "Create/Update Table"}
 											</button>
 										</li>
 									</ul>
