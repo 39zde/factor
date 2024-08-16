@@ -11,7 +11,7 @@ export function TableFoot({ columns }: TableFootProps): React.JSX.Element {
 			<tfoot>
 				<tr
 					style={{
-						height: appearances.rowHeight,
+						height: '100%',
 						borderBottom: 'none',
 						borderLeft: 'none',
 						borderRight: 'none',

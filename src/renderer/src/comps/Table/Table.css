@@ -64,7 +64,10 @@
  	overflow-y: hidden;
  	scrollbar-color: light-dark((var(--color-dark-3) var(--color-light-1)), (var(--color-dark-3) var(--color-dark-1)));
  	scrollbar-width: var(--scrollbar-width);
- }
+	& table{
+		height: 100%;
+	}
+}
 
  .tableElement::-webkit-scrollbar-track {
  	background: red;

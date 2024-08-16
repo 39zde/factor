@@ -70,9 +70,19 @@ export function Table({
 			const wrapperHeight =
 				wrapperRef.current?.getBoundingClientRect().height;
 			if (wrapperHeight !== undefined) {
-				const rowCount = Math.round(wrapperHeight) / appearances.rowHeight;
+				let scrollBarHeight: number = 5;
+				const rowCount =
+					Math.round(wrapperHeight - scrollBarHeight) /
+					appearances.rowHeight;
 				// console.log({clientHeight: clientHeight, wrapperHeight: wrapperHeight, rowCount: parseInt(rowCount.toString().split(".")[0])})
-				setScope(parseInt(rowCount.toString().split('.')[0]) - 2);
+				let newScope = parseInt(rowCount.toString().split('.')[0]);
+				if (newScope > 2 && newScope < 15) {
+					setScope(parseInt(rowCount.toString().split('.')[0]) - 2);
+				} else if (newScope >= 15) {
+					setScope(parseInt(rowCount.toString().split('.')[0]) - 3);
+				} else {
+					setScope(2);
+				}
 			} else {
 				setScope(0);
 			}
