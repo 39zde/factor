@@ -4,22 +4,18 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig({
 	main: {
-		assetsInclude: ['src/renderer/src/util/worker/*.js'],
 		plugins: [externalizeDepsPlugin()],
-		worker: {
-			format: 'es',
-		},
 	},
 	preload: {
 		plugins: [externalizeDepsPlugin()],
 	},
 	renderer: {
-		assetsInclude: ['src/renderer/src/util/worker/*.js'],
+		assetsInclude: ['src/renderer/src/util/worker/*.ts'],
 		worker: {
 			format: 'es',
 		},
 		resolve: {
-			extensions: ['.worker.js', '.tsx', '.ts', '.d.ts'],
+			extensions: ['.worker.ts', '.tsx', '.ts', '.d.ts'],
 			alias: {
 				'@renderer': resolve('src/renderer/src'),
 				'@util': resolve('src/renderer/src/util'),
