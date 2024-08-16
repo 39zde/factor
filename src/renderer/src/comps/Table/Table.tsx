@@ -11,7 +11,7 @@ import React, {
 import { AppContext } from '@renderer/App';
 import { WindowContext } from '../WindowContext';
 import { TableHeadDisplay } from './TableHeadDisplay';
-// import { TableBodyDisplay } from './TableBodyDisplay';
+import { TableBodyDisplay } from './TableBodyDisplay';
 import { TableFootDisplay } from './TableFootDisplay';
 import './Table.css';
 
@@ -259,6 +259,15 @@ export function Table({
 					for (const table of open.tables) {
 						if (table.name === args.tableName) {
 							out.dbTable = table;
+
+							// get columns
+							if (args.colsHook === undefined) {
+								out.columns = Object.keys(
+									await table.limit(1).toArray()[0]
+								);
+							}
+
+							// get count
 							if (args.entriesHook === undefined) {
 								out.count = await table.count();
 							} else {
@@ -380,16 +389,7 @@ export function Table({
 									userSelect: tableState.userSelect,
 								}}>
 								<TableHeadDisplay />
-								{/* <TableBodyDisplay
-								uniqueKey={uniqueKey}
-								tableName={tableName}
-								updateHook={updateHook}
-								scope={scope}
-								tableBodyRef={tableBodyRef}
-								count={count}
-								start={start}
-							/>
-								*/}
+								<TableBodyDisplay tableBodyRef={tableBodyRef} />
 								<TableFootDisplayMemo
 									columns={tableState.columns}
 									update={tableState.update}
