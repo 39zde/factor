@@ -5,3 +5,4 @@ out
 *.log*
 .yarn
 resources/
+.perf
