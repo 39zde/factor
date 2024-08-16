@@ -1,4 +1,4 @@
-import { app, shell, BrowserWindow, session, ipcMain } from 'electron';
+import { app, shell, BrowserWindow, ipcMain } from 'electron';
 import { join, resolve } from 'path';
 import { readdir, mkdir, copyFile, readFileSync, writeFileSync } from 'fs';
 import { env } from 'process';
@@ -80,7 +80,7 @@ app.whenReady().then(() => {
 			return console.log('[index.ts] ', 'error reading home dir: ', error);
 		}
 		if (!files.includes('.factor')) {
-			mkdir(homeDir + '/.factor', (e) => {
+			mkdir(homeDir + '/.factor', () => {
 				copyFile(
 					resolve(__dirname, '../../resources/defaultSettings.json'),
 					homeDir + '/.factor/settings.json',
