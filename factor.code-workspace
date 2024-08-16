@@ -16,7 +16,7 @@
 			// config files
 			".editorconfig": true,
 			".eslintignore": true,
-			".gitignore": true,
+			".gitignore": false,
 			".npmrc": true,
 			".prettierignore": true,
 			".prettierrc.yaml": true,
