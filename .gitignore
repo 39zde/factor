@@ -5,4 +5,3 @@ out
 *.log*
 .yarn
 resources/
-react-devtools

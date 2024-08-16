@@ -146,14 +146,6 @@ app.whenReady().then(() => {
 	});
 });
 
-app.whenReady().then(async () => {
-	await session.defaultSession.loadExtension(
-		'C:\\Users\\Leo\\AppData\\Local\\Microsoft\\Edge\\User Data\\Profile 1\\Extensions\\fmkadmapgofadopljbjfkapdkoienihi\\5.3.1_0',
-		{
-			allowFileAccess: true,
-		}
-	);
-});
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
