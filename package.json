@@ -6,9 +6,6 @@
     "author": "39zde",
     "type": "module",
     "homepage": "https://factor.39z.de",
-    "contributors": [
-        "Leonhard Maier < git@39z.de >"
-    ],
     "license": "Apache-2.0",
     "scripts": {
         "format": "prettier --write . && git commit --all -m formatted (package.json script)",
@@ -16,20 +13,21 @@
         "lint": "eslint . -c ./eslint.config.js  --fix",
         "typecheck:node": "tsc --noEmit -p tsconfig.node.json --composite false",
         "typecheck:web": "tsc --noEmit -p tsconfig.web.json --composite false",
-        "typecheck": "npm run typecheck:node && npm run typecheck:web",
+        "typecheck": "yarn run typecheck:node && yarn run typecheck:web",
         "start": "electron-vite preview",
         "dev": "electron-vite dev",
-        "build": "npm run typecheck && electron-vite build",
+        "build": "yarn run typecheck && electron-vite build",
         "postinstall": "electron-builder install-app-deps",
-        "build:unpack": "npm run build && electron-builder --dir",
-        "build:win": "npm run build && electron-builder --win",
+        "build:unpack": "yarn run build && electron-builder --dir",
+        "build:win": "yarn run build && electron-builder --win",
         "build:mac": "electron-vite build && electron-builder --mac",
         "build:linux": "electron-vite build && electron-builder --linux",
         "devtools": "yarn react-devtools"
     },
     "dependencies": {
         "@react-pdf/renderer": "^3.4.4",
-        "lucide-react": "^0.424.0",
+        "globals": "^15.9.0",
+        "lucide-react": "^0.427.0",
         "react": "^18.3.1",
         "react-dom": "^18.3.1"
     },
@@ -40,18 +38,17 @@
         "@electron-toolkit/tsconfig": "^1.0.1",
         "@electron-toolkit/utils": "^3.0.0",
         "@eslint/js": "^8.57.0",
-        "@types/node": "^20.14.14",
+        "@types/node": "^20.14.15",
         "@types/react": "^18.3.3",
         "@types/react-dom": "^18.3.0",
         "@typescript-eslint/parser": "^7.18.0",
         "@vitejs/plugin-react": "^4.3.1",
         "electron": "^31.3.1",
         "electron-builder": "^24.13.3",
-        "electron-updater": "^6.3.2",
+        "electron-updater": "^6.3.3",
         "electron-vite": "^2.3.0",
         "eslint": "^8.57.0",
         "eslint-plugin-react": "^7.35.0",
-        "globals": "^15.9.0",
         "prettier": "^3.3.3",
         "react-devtools": "^5.3.1",
         "typescript": "^5.5.4",
@@ -61,6 +58,6 @@
     },
     "packageManager": "yarn@4.1.1+sha512.ec40d0639bb307441b945d9467139cbb88d14394baac760b52eca038b330d16542d66fef61574271534ace5a200518dabf3b53a85f1f9e4bfa37141b538a9590",
     "engines": {
-        "node": "v20.16.0"
+        "node": "v20.15.1"
     }
 }
