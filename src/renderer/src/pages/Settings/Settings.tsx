@@ -12,6 +12,7 @@ export function Settings() {
 	const langInputRef = useRef<HTMLSelectElement>(null);
 	const decimalSeparatorInputRef = useRef<HTMLSelectElement>(null);
 	const sideBarWidthInputRef = useRef<HTMLInputElement>(null);
+	const scrollSpeedRef = useRef<HTMLInputElement>(null);
 	const [colorTheme, setColorTheme] = useState<
 		'dark' | 'light' | 'light dark'
 	>(
@@ -33,6 +34,9 @@ export function Settings() {
 	);
 	const [sideBarWidth, setSideBarWidth] = useState<number>(
 		context.appearances.sideBarWidth
+	);
+	const [scrollSpeed, setScrollSpeed] = useState<number>(
+		context.general.scrollSpeed
 	);
 
 	const themeInputHandler = () => {
@@ -93,6 +97,14 @@ export function Settings() {
 		}
 	};
 
+	const scrollSpeedInputHandler = () => {
+		if (scrollSpeedRef.current !== null) {
+			if (scrollSpeedRef.current.value !== undefined) {
+				setScrollSpeed(parseInt(scrollSpeedRef.current.value));
+			}
+		}
+	};
+
 	const saveSettings = useCallback(() => {
 		const changed: {
 			value: number | string;
@@ -110,6 +122,7 @@ export function Settings() {
 			},
 			{ value: sideBarWidth, name: 'sideBarWidth', category: 'appearances' },
 			{ value: columnWidth, name: 'columnWidth', category: 'appearances' },
+			{ value: scrollSpeed, name: 'scrollSpeed', category: 'general' },
 		];
 
 		for (const item of items) {
@@ -146,6 +159,7 @@ export function Settings() {
 		decimalSeparator,
 		sideBarWidth,
 		columnWidth,
+		scrollSpeed
 	]);
 
 	return (
@@ -275,6 +289,23 @@ export function Settings() {
 							<option>.</option>
 							<option>,</option>
 						</select>
+					</div>
+					<div className="settingsOption">
+						<p>
+							{context.general.language === 'deutsch'
+								? 'Scroll-Geschwindigkeit '
+								: 'Scrolling speed '}
+							(px)
+						</p>
+						<input
+							onInput={scrollSpeedInputHandler}
+							ref={scrollSpeedRef}
+							type="number"
+							min={1}
+							max={150}
+							step={1}
+							value={scrollSpeed}
+						/>
 					</div>
 				</div>
 				<div className="saveSection">

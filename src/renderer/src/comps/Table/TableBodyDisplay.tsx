@@ -13,7 +13,7 @@ export function TableBodyDisplay({
 }: TableBodyDisplayProps): React.JSX.Element {
 	const tableState = useTableContext();
 	const dispatch = useTableDispatch();
-	const { worker, database } = useContext(AppContext);
+	const { worker, database, general } = useContext(AppContext);
 	const { clientHeight } = useContext(WindowContext);
 	const lastOrdered = useRef<number>(-1);
 	const start = useRef<number>(0);
@@ -22,6 +22,42 @@ export function TableBodyDisplay({
 		start.current = 0;
 	}, [tableState.tableName]);
 
+	function increase() {
+		start.current = Math.max(
+			Math.min(start.current + 1, tableState.count - tableState.scope - 1),
+			1
+		);
+
+		if (!(start.current + tableState.scope > tableState.count)) {
+			lastOrdered.current = start.current + tableState.scope;
+			// console.log("ordering ", lastOrdered.current)
+			worker.TableWorker.postMessage({
+				type: 'stream',
+				storeName: tableState.tableName,
+				dbVersion: database.dbVersion,
+				action: {
+					type: 'next',
+					pos: start.current + tableState.scope,
+				},
+			});
+		}
+	}
+
+	function decrease() {
+		start.current = Math.max(start.current - 1, 1);
+		// console.log("ordering ", lastOrdered.current)
+		lastOrdered.current = start.current - 1;
+		worker.TableWorker.postMessage({
+			type: 'stream',
+			storeName: tableState.tableName,
+			dbVersion: database.dbVersion,
+			action: {
+				type: 'prev',
+				pos: start.current - 1,
+			},
+		});
+	}
+
 	//@ts-ignore
 	const scrollHandler = (e: WheelEvent<HTMLTableSectionElement>): void => {
 		// console.log("scroll")
@@ -29,9 +65,12 @@ export function TableBodyDisplay({
 			return;
 		}
 		if (lastOrdered.current !== -1) {
-			if (Math.abs(lastOrdered.current - tableState.lastReceived) > 10) {
+			if (
+				Math.abs(lastOrdered.current - tableState.lastReceived) >
+				tableState.scope
+			) {
 				// console.log("lastOrdered: ", lastOrdered.current, " lastReceived: ", tableState.lastReceived )
-				// console.log("returning")
+				console.log('returning');
 				return;
 			}
 		}
@@ -43,26 +82,14 @@ export function TableBodyDisplay({
 				newVal: 'next',
 			});
 
-			if (start.current < tableState.count) {
-				start.current = Math.max(
-					Math.min(
-						start.current + 1,
-						tableState.count - tableState.scope - 1
-					),
-					1
-				);
+			for (let i = 0; i < general.scrollSpeed; i++) {
+				if (i == tableState.scope) {
+					break;
+				}
 
-				lastOrdered.current = start.current + tableState.scope;
-				// console.log("ordering ", lastOrdered.current)
-				worker.TableWorker.postMessage({
-					type: 'stream',
-					storeName: tableState.tableName,
-					dbVersion: database.dbVersion,
-					action: {
-						type: 'next',
-						pos: start.current + tableState.scope,
-					},
-				});
+				if (start.current <= tableState.count + 1) {
+					increase();
+				}
 			}
 		} else if (e.deltaY < 0) {
 			// scroll up
@@ -71,19 +98,13 @@ export function TableBodyDisplay({
 				newVal: 'prev',
 			});
 
-			start.current = Math.max(start.current - 1, 1);
-			// console.log("ordering ", lastOrdered.current)
-			if (start.current !== 1) {
-				lastOrdered.current = start.current - 1;
-				worker.TableWorker.postMessage({
-					type: 'stream',
-					storeName: tableState.tableName,
-					dbVersion: database.dbVersion,
-					action: {
-						type: 'prev',
-						pos: start.current - 1,
-					},
-				});
+			for (let i = 0; i < general.scrollSpeed; i++) {
+				if (start.current !== 1) {
+					if (i == tableState.scope) {
+						break;
+					}
+					decrease();
+				}
 			}
 		}
 	};

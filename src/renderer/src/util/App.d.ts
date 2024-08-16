@@ -12,6 +12,7 @@ export interface AppContextType {
 	general: {
 		language: 'english' | 'deutsch';
 		decimalSeparator: '.' | ',';
+		scrollSpeed: number;
 	};
 	worker: {
 		// stores and cleans uploaded data and assigns the date to various tables
@@ -36,5 +37,6 @@ export interface AppSettingsType {
 	general: {
 		language: 'english' | 'deutsch';
 		decimalSeparator: '.' | ',';
+		scrollSpeed: number;
 	};
 }

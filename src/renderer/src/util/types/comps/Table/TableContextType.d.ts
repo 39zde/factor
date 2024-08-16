@@ -37,8 +37,6 @@ export interface TableDispatchAction {
 		| 'mouseMove'
 		| 'mouseEnter'
 		| 'mouseLeave'
-		| 'increase'
-		| 'decrease'
 		| 'scopeChange'
 		| 'changeAccept';
 	index?: number;

@@ -35,6 +35,7 @@ const defaultContext: AppContextType = {
 	general: {
 		decimalSeparator: ',',
 		language: 'english',
+		scrollSpeed: 2,
 	},
 	worker: {
 		ImportWorker: ImportWorker,
@@ -68,6 +69,7 @@ function App(): JSX.Element {
 			general: {
 				decimalSeparator: newContext.general.decimalSeparator,
 				language: newContext.general.language,
+				scrollSpeed: newContext.general.scrollSpeed
 			},
 			worker: {
 				ImportWorker: contextValue.worker.ImportWorker,

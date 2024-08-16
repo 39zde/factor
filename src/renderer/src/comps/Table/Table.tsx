@@ -65,36 +65,6 @@ function tableReducer(
 			}
 			return tableState;
 		}
-		case 'increase': {
-			if (tableState.rows.includes(action.newVal)) {
-				return tableState;
-			}
-			if (action.index !== undefined) {
-				// console.log(action.index)
-				tableState.start = action.index;
-				tableState.lastReceived = action.index;
-			}
-			tableState.rows.splice(0, 1);
-			tableState.rows.push(action.newVal);
-			return {
-				//@ts-expect-error
-				rows: tableState.rows,
-				...tableState,
-			};
-		}
-		case 'decrease': {
-			if (tableState.rows.includes(action.newVal)) {
-				return tableState;
-			}
-			if (action.index !== undefined) {
-				// console.log(action.index)
-				tableState.start = action.index;
-				tableState.lastReceived = action.index;
-			}
-			tableState.rows.pop();
-			tableState.rows.splice(0, 0, action.newVal);
-			return tableState;
-		}
 		case 'set': {
 			//@ts-ignore
 			tableState[action.name] = action.newVal;
@@ -270,6 +240,7 @@ export function Table({
 	updateHook,
 	uniqueKey,
 }: TableProps): React.JSX.Element {
+	const rowColumnWidth = 30
 	const { clientHeight } = useContext(WindowContext);
 	const { database, appearances, worker } = useContext(AppContext);
 	const tableBodyRef = useRef<HTMLTableSectionElement>(null);
@@ -417,6 +388,7 @@ export function Table({
 			switch (e.data.action) {
 				case 'next':
 					if (tableState.accept === 'next') {
+						let rows = tableState.rows
 						// console.log('received data: ', e.data.index);
 						if (!tableState.rows.includes(e.data.data)) {
 							if (e.data.index !== undefined) {
@@ -432,7 +404,6 @@ export function Table({
 								});
 							}
 						}
-						let rows = structuredClone(tableState.rows);
 						rows.splice(0, 1);
 						rows.push(e.data.data);
 						dispatch({
@@ -444,7 +415,7 @@ export function Table({
 					break;
 				case 'prev':
 					if (tableState.accept === 'prev') {
-						// console.log("received data: ", e.data.index)
+						let rows = tableState.rows
 						if (!tableState.rows.includes(e.data.data)) {
 							if (!tableState.rows.includes(e.data.data)) {
 								if (e.data.index !== undefined) {
@@ -460,7 +431,6 @@ export function Table({
 									});
 								}
 							}
-							let rows = structuredClone(tableState.rows);
 							rows.pop();
 							rows.splice(0, 0, e.data.data);
 							dispatch({
@@ -498,7 +468,7 @@ export function Table({
 				type: 'set',
 				name: 'columnWidths',
 				newVal: e.data.data.map((val, index) =>
-					index === 0 ? 25 : appearances.columnWidth
+					index === 0 ? rowColumnWidth : appearances.columnWidth
 				),
 			});
 		} else if (e.data.type === 'count') {
@@ -570,7 +540,7 @@ export function Table({
 				type: 'set',
 				name: 'columnWidths',
 				newVal: colsHook.cols.map((val, index) =>
-					index === 0 ? 25 : appearances.columnWidth
+					index === 0 ? rowColumnWidth : appearances.columnWidth
 				),
 			});
 		}

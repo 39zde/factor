@@ -196,3 +196,8 @@
  	position: absolute;
  	width: 5px;
  }
+
+
+ .tableBody{
+	position: relative;
+ }
