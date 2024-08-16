@@ -408,7 +408,7 @@ function compareItemToCondition(
 			}
 			return false;
 		default:
-			console.log('unknown type of condition');
+			console.log('unknown type of condition', typeof condition, condition);
 			return false;
 	}
 }

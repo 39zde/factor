@@ -27,7 +27,6 @@ export function TableRows({ table, rowHeight, rowCount }: TableRowProps) {
 								minHeight: rowHeight,
 							}}
 							key={`row-${index}-${item['factor_db_id']}`}
-							onResize={(e) => console.log(e)}
 						>
 							<RowItems items={item} colIndex={index} />
 						</tr>

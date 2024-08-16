@@ -89,7 +89,7 @@ function App(): JSX.Element {
 	};
 
 	useMemo(() => {
-		console.log('readingSettings');
+		// console.log('readingSettings');
 		// const locker = new LockManager();
 		navigator.storage.persist();
 		// window.electron.ipcRenderer.send("ping")

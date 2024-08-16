@@ -130,7 +130,7 @@ export function Settings() {
 			for (const item of changed) {
 				newContext[item.category][item.name] = item.value;
 			}
-			console.log(newContext);
+			// console.log(newContext);
 			context.changeContext(newContext);
 		}
 	}, [rowHeight, colorTheme, language, decimalSeparator, sideBarWidth]);
