@@ -45,6 +45,7 @@ const PlaceHolderTableContext: TableContextType = {
 	dbVersion: 1,
 	accept: 'next',
 	lastReceived: 0,
+	cachedRowHeight: 0,
 };
 
 function tableReducer(
@@ -193,27 +194,6 @@ function tableReducer(
 				...tableState,
 			};
 		}
-		case 'scopeChange': {
-			if (tableState.scope > action.newVal) {
-				tableState.rows.pop();
-				tableState.scope = action.newVal;
-			} else if (tableState.scope < action.newVal) {
-				if (action.worker !== undefined) {
-					action.worker.postMessage({
-						type: 'steam',
-						storeName: tableState.tableName,
-						dbVersion: tableState.dbVersion,
-						action: {
-							type: 'next',
-							start: tableState.start,
-							scope: tableState.scope,
-							pos: tableState.start + tableState.scope,
-						},
-					});
-				}
-			}
-			return tableState;
-		}
 		default: {
 			return tableState;
 		}
@@ -241,6 +221,7 @@ export function Table({
 	uniqueKey,
 }: TableProps): React.JSX.Element {
 	const rowColumnWidth = 30;
+	const scrollBarHeight = 5;
 	const { clientHeight } = useContext(WindowContext);
 	const { database, appearances, worker } = useContext(AppContext);
 	const tableBodyRef = useRef<HTMLTableSectionElement>(null);
@@ -276,6 +257,7 @@ export function Table({
 			out.start = 0;
 			out.accept = 'next';
 			out.lastReceived = 0;
+			out.cachedRowHeight = args.rowHeight;
 			// get out.update
 			if (args.updateHook !== undefined) {
 				out.update = args.updateHook.update;
@@ -300,21 +282,67 @@ export function Table({
 		}
 	);
 
-	useEffect(() => {
-		// console.log(clientHeight)
-		if (wrapperRef.current !== null) {
-			const wrapperHeight =
-				wrapperRef.current.getBoundingClientRect().height;
+	function updateScope(newScope: number) {
+		let diff = Math.abs(tableState.scope - newScope);
+		console.log('diff: ', diff);
+		if (newScope < tableState.scope) {
+			let rows = tableState.rows;
+			for (let i = 0; i < diff; i++) {
+				rows.pop();
+			}
+			dispatch({
+				type: 'set',
+				name: 'rows',
+				newVal: rows,
+			});
+			dispatch({
+				type: 'set',
+				name: 'scope',
+				newVal: newScope,
+			});
+			setCauseRerender(!causeRerender);
+		} else if (newScope > tableState.scope) {
+			console.log('action.newVal > tableState.scope');
+			if (worker.TableWorker !== undefined) {
+				for (let i = 0; i < diff; i++) {
+					console.log('post: add');
+					worker.TableWorker.postMessage({
+						type: 'stream',
+						storeName: tableState.tableName,
+						dbVersion: tableState.dbVersion,
+						action: {
+							type: 'add',
+							pos: tableState.start + tableState.scope + 1,
+						},
+					});
+				}
+				dispatch({
+					type: 'set',
+					name: 'scope',
+					newVal: newScope,
+				});
+				setCauseRerender(!causeRerender);
+			}
+		}
+	}
+
+	function updateSizing(
+		scope: number,
+		rowHeight: number,
+		clHeight: number,
+		body: HTMLDivElement | null
+	) {
+		const clientHasHeight = clHeight;
+		if (body !== null) {
+			const wrapperHeight = body.getBoundingClientRect().height;
 			if (wrapperHeight !== undefined) {
-				const scrollBarHeight = 5;
 				const rowCount =
-					Math.round(wrapperHeight - scrollBarHeight) /
-					appearances.rowHeight;
+					Math.round(wrapperHeight - scrollBarHeight) / rowHeight;
 				const newScope = parseInt(rowCount.toString().split('.')[0]);
-				if (newScope > 2 && newScope < 12) {
+				if (newScope > 2 && newScope < 10) {
 					const cleanedScope =
 						parseInt(rowCount.toString().split('.')[0]) - 2;
-					if (tableState.scope === 0) {
+					if (scope === 0) {
 						dispatch({
 							type: 'set',
 							name: 'scope',
@@ -322,25 +350,18 @@ export function Table({
 						});
 						setCauseRerender(!causeRerender);
 					} else {
-						dispatch({
-							type: 'scopeChange',
-							newVal: cleanedScope,
-						});
-						setCauseRerender(!causeRerender);
+						updateScope(cleanedScope);
 					}
 
 					dispatch({
 						type: 'set',
 						name: 'resizeElemHeight',
-						newVal:
-							4 * cleanedScope +
-							(cleanedScope + 2) * appearances.rowHeight +
-							6,
+						newVal: 4 * cleanedScope + (cleanedScope + 2) * rowHeight + 6,
 					});
-				} else if (newScope >= 12) {
+				} else if (newScope >= 10) {
 					const cleanedScope =
 						parseInt(rowCount.toString().split('.')[0]) - 3;
-					if (tableState.scope === 0) {
+					if (scope === 0) {
 						dispatch({
 							type: 'set',
 							name: 'scope',
@@ -348,45 +369,42 @@ export function Table({
 						});
 						setCauseRerender(!causeRerender);
 					} else {
-						dispatch({
-							type: 'scopeChange',
-							newVal: cleanedScope,
-						});
+						updateScope(cleanedScope);
 					}
 					dispatch({
 						type: 'set',
 						name: 'resizeElemHeight',
-						newVal:
-							4 * cleanedScope +
-							(cleanedScope + 2) * appearances.rowHeight +
-							6,
+						newVal: 4 * cleanedScope + (cleanedScope + 2) * rowHeight + 6,
 					});
 				} else {
-					dispatch({
-						type: 'scopeChange',
-						newVal: 2,
-					});
-					setCauseRerender(!causeRerender);
+					updateScope(2);
 
 					dispatch({
 						type: 'set',
 						name: 'resizeElemHeight',
-						newVal: 4 * 2 + (2 + 2) * appearances.rowHeight + 6,
+						newVal: 4 * 2 + (2 + 2) * rowHeight + 6,
 					});
 				}
 			} else {
-				dispatch({
-					type: 'scopeChange',
-					newVal: 0,
-				});
+				updateScope(0);
+
 				dispatch({
 					type: 'set',
 					name: 'resizeElemHeight',
-					newVal: 4 * 0 + (0 + 2) * appearances.rowHeight + 6,
+					newVal: 4 * 0 + (0 + 2) * rowHeight + 6,
 				});
 			}
 		}
-	}, [clientHeight, appearances.rowHeight]);
+	}
+
+	useEffect(() => {
+		updateSizing(
+			tableState.scope,
+			tableState.cachedRowHeight,
+			clientHeight,
+			wrapperRef.current
+		);
+	}, [clientHeight, tableState.cachedRowHeight]);
 
 	worker.TableWorker.onmessage = (e) => {
 		if (e.data.type === 'stream') {
@@ -447,6 +465,20 @@ export function Table({
 						}
 					}
 					break;
+				case 'add':
+					// console.log('add');
+
+					let rows = tableState.rows;
+					console.log('before:', rows.length);
+					rows.push(e.data.data);
+					console.log('after:', rows.length);
+					dispatch({
+						type: 'set',
+						name: 'rows',
+						newVal: rows,
+					});
+
+					break;
 				default:
 					break;
 			}
@@ -485,7 +517,7 @@ export function Table({
 				newVal: e.data.data,
 			});
 			setCauseRerender(!causeRerender);
-		} else if ((e.data.type = 'startingRows')) {
+		} else if (e.data.type === 'startingRows') {
 			// console.log('startingRows');
 			dispatch({
 				type: 'set',
@@ -589,6 +621,17 @@ export function Table({
 			}
 		}
 	}, [tableState.rows, tableState.scope, hasStarted]);
+
+	useEffect(() => {
+		if (appearances.rowHeight !== tableState.cachedRowHeight) {
+			dispatch({
+				type: 'set',
+				name: 'cachedRowHeight',
+				newVal: appearances.rowHeight,
+			});
+		}
+		setCauseRerender(!causeRerender);
+	}, [appearances.rowHeight, tableState.cachedRowHeight]);
 
 	const TableFootDisplayMemo = memo(
 		({ columns, update }: TableFootDisplayProps) => {

@@ -22,6 +22,7 @@ export interface TableContextType {
 	start: number;
 	accept: 'prev' | 'next';
 	lastReceived: number;
+	cachedRowHeight: number;
 }
 
 export interface ResizeStyle {
@@ -63,7 +64,8 @@ export interface TableDispatchAction {
 		| 'accept'
 		| 'lastReceived'
 		| 'start'
-		| 'dbVersion';
+		| 'dbVersion'
+		| 'cachedRowHeight';
 	newVal: any;
 	worker?: Worker;
 }

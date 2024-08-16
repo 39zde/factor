@@ -37,9 +37,9 @@ export function TableRows(): React.JSX.Element {
 							<>
 								<tr
 									style={{
-										maxHeight: appearances.rowHeight,
-										minHeight: appearances.rowHeight,
-										height: appearances.rowHeight,
+										maxHeight: tableState.cachedRowHeight,
+										minHeight: tableState.cachedRowHeight,
+										height: tableState.cachedRowHeight,
 										overflow: 'hidden',
 									}}
 									key={uni}>
