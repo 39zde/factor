@@ -23,8 +23,8 @@ export function TableBodyDisplay({
 	}, [tableState.tableName]);
 
 	function increase() {
-		if (tableState.scope + start.current  <= tableState.count) {
-			start.current = start.current + 1
+		if (tableState.scope + start.current <= tableState.count) {
+			start.current = start.current + 1;
 			lastOrdered.current = start.current + tableState.scope - 1;
 			// console.log('ordering ', lastOrdered.current);
 			worker.TableWorker.postMessage({

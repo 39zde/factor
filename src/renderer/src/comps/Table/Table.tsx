@@ -326,6 +326,7 @@ export function Table({
 							type: 'scopeChange',
 							newVal: cleanedScope,
 						});
+						setCauseRerender(!causeRerender);
 					}
 
 					dispatch({
@@ -345,6 +346,7 @@ export function Table({
 							name: 'scope',
 							newVal: cleanedScope,
 						});
+						setCauseRerender(!causeRerender);
 					} else {
 						dispatch({
 							type: 'scopeChange',
@@ -364,6 +366,8 @@ export function Table({
 						type: 'scopeChange',
 						newVal: 2,
 					});
+					setCauseRerender(!causeRerender);
+
 					dispatch({
 						type: 'set',
 						name: 'resizeElemHeight',
@@ -498,14 +502,6 @@ export function Table({
 	};
 
 	useEffect(() => {
-		if (tableState.rows.length === 0 || tableState.rows.length === 1) {
-			worker.TableWorker.postMessage({
-				type: 'startingRows',
-				storeName: tableState.tableName,
-				dbVersion: database.dbVersion,
-				scope: tableState.scope,
-			});
-		}
 		if (entriesHook === undefined) {
 			worker.TableWorker.postMessage({
 				type: 'count',
@@ -577,6 +573,20 @@ export function Table({
 			newVal: database.dbVersion,
 		});
 	}, [tableState.tableName, database.dbVersion, colsHook, entriesHook]);
+
+	useEffect(() => {
+		if (!hasStarted) {
+			if (tableState.rows.length === 0 && tableState.scope !== 0) {
+				worker.TableWorker.postMessage({
+					type: 'startingRows',
+					storeName: tableState.tableName,
+					dbVersion: database.dbVersion,
+					scope: tableState.scope,
+				});
+				setHasStarted(true);
+			}
+		}
+	}, [tableState.rows, tableState.scope, hasStarted]);
 
 	const TableFootDisplayMemo = memo(
 		({ columns, update }: TableFootDisplayProps) => {
