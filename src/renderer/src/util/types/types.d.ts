@@ -5,6 +5,7 @@ export type {
 	CustomerSortingMap,
 	ImportModuleProps,
 	ArticleSortingMap,
+	UploadMode
 } from './pages/Upload/Upload';
 
 export type {

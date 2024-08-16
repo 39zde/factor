@@ -33,3 +33,6 @@ export interface ImportModuleProps {
 			setSortingMap: (newVal: CustomerSortingMap | ArticleSortingMap) => void;
 };
 }
+
+
+export type UploadMode = 'articles' | 'customers' | 'quotes' | 'invoices' | 'deliveries' | 'returnees'

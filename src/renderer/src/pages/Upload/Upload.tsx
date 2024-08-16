@@ -5,7 +5,12 @@ import { ColRemover } from './ColRemover';
 
 import { Table } from '@comps/Table/Table';
 import './Upload.css';
-import type { CustomerSortingMap, ImportModuleProps, ArticleSortingMap } from '@util/types/types';
+import type {
+	CustomerSortingMap,
+	ImportModuleProps,
+	ArticleSortingMap,
+	UploadMode,
+} from '@util/types/types';
 import { AppContext } from '@renderer/App';
 
 export function Upload(): React.JSX.Element {
@@ -22,38 +27,17 @@ export function Upload(): React.JSX.Element {
 	const tableImportModeInputRef = useRef<HTMLSelectElement>(null);
 	const pageRef = useRef<HTMLDivElement>(null);
 	const [dataSorterHeight, setDataSorterHeight] = useState<number>(0);
-	const [sortingMap, setSortingMap] = useState<CustomerSortingMap |ArticleSortingMap>({customerID: ""});
-	const [tableImportMode, setTableImportMode] = useState<
-		'articles' | 'customers' | 'quotes' | 'invoices' | 'deliveries' | 'returnees'
-	>('customers');
+	const [sortingMap, setSortingMap] = useState<
+		CustomerSortingMap | ArticleSortingMap
+	>({ customerID: '' });
+	const [tableImportMode, setTableImportMode] =
+		useState<UploadMode>('customers');
 	const tableImportModeHandler = (): void => {
 		if (tableImportModeInputRef.current === null) {
 			return;
 		}
-		if (general.language === 'deutsch') {
-			switch (tableImportModeInputRef.current.value) {
-				case 'Artikel':
-					setTableImportMode('articles');
-					break;
-				case 'Kunden':
-					setTableImportMode('customers');
-					break;
-				case 'Angebote':
-					setTableImportMode('quotes');
-					break;
-				case 'Lieferscheine':
-					setTableImportMode('deliveries');
-					break;
-				case 'Rechnungen':
-					setTableImportMode('invoices');
-					break;
-				default:
-					setTableImportMode('customers');
-			}
-		} else {
-			//@ts-expect-error
-			setTableImportMode(tableImportModeInputRef.current.value);
-		}
+		// @ts-expect-error
+		setTableImportMode(tableImportModeInputRef.current.value);
 	};
 
 	const fileHandler = async (): Promise<void> => {
@@ -158,7 +142,6 @@ export function Upload(): React.JSX.Element {
 	};
 
 	const importHandler = async () => {
-		
 		worker.ImportWorker.postMessage({
 			type: 'sort',
 			message: sortingMap,
@@ -237,7 +220,7 @@ export function Upload(): React.JSX.Element {
 							className="importButton"
 						>
 							<ImportIcon color="white" size={24} strokeWidth={2} />
-							{general.language=== "deutsch" ? "Importieren": "Import"}
+							{general.language === 'deutsch' ? 'Importieren' : 'Import'}
 						</button>
 					</div>
 				</div>
@@ -245,9 +228,15 @@ export function Upload(): React.JSX.Element {
 					<>
 						<ul className="tableInfo">
 							<li key={'tableInfo1'}>
-								{general.language=== "deutsch" ? "Einträge": "Entries"}: {entries.toString() ?? '-'}
+								{general.language === 'deutsch'
+									? 'Einträge'
+									: 'Entries'}
+								: {entries.toString() ?? '-'}
 							</li>
-							<li key={'tableInfo2'}>{general.language=== "deutsch" ? "Spalten": "Columns"}: {cols.length ?? '-'}</li>
+							<li key={'tableInfo2'}>
+								{general.language === 'deutsch' ? 'Spalten' : 'Columns'}
+								: {cols.length ?? '-'}
+							</li>
 							<li key={'tableInfo3'}>
 								<RowShifter cols={cols} worker={worker.ImportWorker} />
 							</li>
@@ -290,36 +279,43 @@ export function Upload(): React.JSX.Element {
 												ref={tableImportModeInputRef}
 												defaultValue={'customers'}
 											>
-												<option>
-													{general.language == 'english'
-														? 'articles'
-														: 'Article'}
+												<option value="articles">
+													{general.language == 'deutsch'
+														? 'Artikel'
+														: 'articles'}
 												</option>
-												<option>
-													{general.language == 'english'
-														? 'customers'
-														: 'Kunden'}
+												<option value="customers">
+													{general.language == 'deutsch'
+														? 'Kunden'
+														: 'customers'}
 												</option>
-												<option>
-													{general.language == 'english'
-														? 'quotes'
-														: 'Angebote'}
+												<option value="quotes">
+													{general.language == 'deutsch'
+														? 'Angebote'
+														: 'quotes'}
 												</option>
-												<option>
-													{general.language == 'english'
-														? 'invoices'
-														: 'Rechnungen'}
+												<option value="invoices">
+													{general.language == 'deutsch'
+														? 'Rechnungen'
+														: 'invoices'}
 												</option>
-												<option>
-													{general.language == 'english'
-														? 'deliveries'
-														: 'Lieferscheine'}
+												<option value="deliveries">
+													{general.language == 'deutsch'
+														? 'Lieferscheine'
+														: 'deliveries'}
+												</option>
+												<option value="returnees">
+													{general.language == 'deutsch'
+														? 'Rückgaben'
+														: 'returned items'}
 												</option>
 											</select>
 										</li>
 										<li>
 											<button onClick={importHandler}>
-												{general.language=== "deutsch" ? "Tabelle erstellen/erneuern": "Create/Update Table"}
+												{general.language === 'deutsch'
+													? 'Tabelle erstellen/erneuern'
+													: 'Create/Update Table'}
 											</button>
 										</li>
 									</ul>
