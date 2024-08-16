@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef } from 'react';
+import React, { useCallback, useContext, useEffect, useRef } from 'react';
 
 import { TableRows } from './TableRows';
 
@@ -16,13 +16,15 @@ export function TableBodyDisplay({
 	const dispatch = useTableDispatch();
 	const { worker, database, general, appearances } = useContext(AppContext);
 	const lastOrdered = useRef<number>(-1);
-	const start = useRef<number>(0);
+	const start = useRef<number>(1);
 
 	useEffect(() => {
-		start.current = 0;
+		start.current = 1;
 	}, [tableState.tableName]);
 
-	function increase() {
+	const increase = useCallback(() => {
+		// console.log(lastOrdered.current)
+		// console.log(tableState.lastReceived)
 		if (tableState.scope + start.current <= tableState.count) {
 			start.current = start.current + 1;
 			lastOrdered.current = start.current + tableState.scope - 1;
@@ -37,9 +39,15 @@ export function TableBodyDisplay({
 				},
 			});
 		}
-	}
+	}, [
+		tableState.count,
+		tableState.scope,
+		database.dbVersion,
+		tableState.tableName,
+		tableState.lastReceived,
+	]);
 
-	function decrease() {
+	const decrease = useCallback(() => {
 		if (start.current - 1 >= 1) {
 			start.current = Math.max(start.current - 1, 1);
 			lastOrdered.current = start.current;
@@ -54,56 +62,80 @@ export function TableBodyDisplay({
 				},
 			});
 		}
-	}
+	}, [
+		tableState.count,
+		tableState.scope,
+		database.dbVersion,
+		tableState.tableName,
+		tableState.lastReceived,
+	]);
 
-	const scrollHandler = (e: WheelEvent): void => {
-		if (e.shiftKey === true || tableState.count === undefined) {
-			return;
-		}
-		if (lastOrdered.current !== -1) {
-			if (
-				Math.abs(lastOrdered.current - tableState.lastReceived) >
-				tableState.scope
-			) {
-				// console.log("lastOrdered: ", lastOrdered.current, " lastReceived: ", tableState.lastReceived )
-				// console.log('returning');
+	const scrollHandler = useCallback(
+		(e: WheelEvent): void => {
+			if (e.shiftKey === true || tableState.count === undefined) {
 				return;
 			}
-		}
-
-		if (e.deltaY > 0) {
-			// scroll down
-			dispatch({
-				type: 'changeAccept',
-				newVal: 'next',
-			});
-
-			for (let i = 0; i < general.scrollSpeed; i++) {
-				if (i == tableState.scope) {
-					break;
+			if (lastOrdered.current !== -1) {
+				if (tableState.lastReceived == 0) {
+					start.current = tableState.start;
+					lastOrdered.current = tableState.start + tableState.scope;
+				} else {
+					if (
+						Math.abs(lastOrdered.current - tableState.lastReceived) >
+						tableState.scope
+					) {
+						// console.log(
+						// 	'lastOrdered: ',
+						// 	lastOrdered.current,
+						// 	' lastReceived: ',
+						// 	tableState.lastReceived
+						// );
+						// console.log('returning');
+						return;
+					}
 				}
-				increase();
 			}
-		} else if (e.deltaY < 0) {
-			// scroll up
-			dispatch({
-				type: 'changeAccept',
-				newVal: 'prev',
-			});
 
-			for (let i = 0; i < general.scrollSpeed; i++) {
-				if (i == tableState.scope) {
-					break;
+			if (e.deltaY > 0) {
+				// scroll down
+				dispatch({
+					type: 'changeAccept',
+					newVal: 'next',
+				});
+
+				for (let i = 0; i < general.scrollSpeed; i++) {
+					if (i == tableState.scope) {
+						break;
+					}
+					increase();
 				}
-				decrease();
+			} else if (e.deltaY < 0) {
+				// scroll up
+				dispatch({
+					type: 'changeAccept',
+					newVal: 'prev',
+				});
+
+				for (let i = 0; i < general.scrollSpeed; i++) {
+					if (i == tableState.scope) {
+						break;
+					}
+					decrease();
+				}
 			}
-		}
-	};
+		},
+		[
+			tableState.scope,
+			tableState.lastReceived,
+			general.scrollSpeed,
+			tableState.count,
+		]
+	);
 
 	const iconProps = {
 		color: 'light-dark(var(--color-dark-1),var(--color-light-1))',
-		size: appearances.rowHeight - 10,
-		strokeWidth: 2,
+		size: 20,
+		strokeWidth: 1.5,
 	};
 
 	const upHandler = () => {
@@ -113,6 +145,7 @@ export function TableBodyDisplay({
 		});
 		decrease();
 	};
+
 	const downHandler = () => {
 		dispatch({
 			type: 'changeAccept',
@@ -129,7 +162,7 @@ export function TableBodyDisplay({
 				className="rowNavigator"
 				style={{
 					height: appearances.rowHeight,
-					width: 30,
+					width: 40,
 					top: 0,
 				}}>
 				<ChevronUp {...iconProps} />
@@ -157,8 +190,8 @@ export function TableBodyDisplay({
 				onClick={downHandler}
 				className="rowNavigator"
 				style={{
-					height: appearances.rowHeight - 10,
-					width: 30,
+					height: 20,
+					width: 40,
 					bottom: 0,
 				}}>
 				<ChevronDown {...iconProps} />

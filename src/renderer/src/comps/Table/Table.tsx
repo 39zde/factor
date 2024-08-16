@@ -219,6 +219,7 @@ export function Table({
 	entriesHook,
 	updateHook,
 	uniqueKey,
+	key,
 }: TableProps): React.JSX.Element {
 	const rowColumnWidth = 30;
 	const scrollBarHeight = 5;
@@ -258,6 +259,7 @@ export function Table({
 			out.accept = 'next';
 			out.lastReceived = 0;
 			out.cachedRowHeight = args.rowHeight;
+			out.rows = []
 			// get out.update
 			if (args.updateHook !== undefined) {
 				out.update = args.updateHook.update;
@@ -282,14 +284,25 @@ export function Table({
 		}
 	);
 
+	useEffect(() => {
+		setHasStarted(false);
+	});
+
 	function updateScope(newScope: number) {
 		let diff = Math.abs(tableState.scope - newScope);
-		console.log('diff: ', diff);
 		if (newScope < tableState.scope) {
 			let rows = tableState.rows;
-			for (let i = 0; i < diff; i++) {
-				rows.pop();
+
+			for (let i = tableState.scope; i > newScope; i--) {
+				rows.splice(i, 1);
 			}
+
+			dispatch({
+				type: 'set',
+				name: 'lastReceived',
+				//@ts-ignore
+				newVal: rows[rows.length - 1].row,
+			});
 			dispatch({
 				type: 'set',
 				name: 'rows',
@@ -300,29 +313,26 @@ export function Table({
 				name: 'scope',
 				newVal: newScope,
 			});
+
 			setCauseRerender(!causeRerender);
 		} else if (newScope > tableState.scope) {
-			console.log('action.newVal > tableState.scope');
-			if (worker.TableWorker !== undefined) {
-				for (let i = 0; i < diff; i++) {
-					console.log('post: add');
-					worker.TableWorker.postMessage({
-						type: 'stream',
-						storeName: tableState.tableName,
-						dbVersion: tableState.dbVersion,
-						action: {
-							type: 'add',
-							pos: tableState.start + tableState.scope + 1,
-						},
-					});
-				}
-				dispatch({
-					type: 'set',
-					name: 'scope',
-					newVal: newScope,
+			for (let i = 0; i < diff; i++) {
+				worker.TableWorker.postMessage({
+					type: 'stream',
+					storeName: tableState.tableName,
+					dbVersion: tableState.dbVersion,
+					action: {
+						type: 'add',
+						pos: tableState.start + tableState.scope + i,
+					},
 				});
-				setCauseRerender(!causeRerender);
 			}
+			dispatch({
+				type: 'set',
+				name: 'scope',
+				newVal: newScope,
+			});
+			setCauseRerender(!causeRerender);
 		}
 	}
 
@@ -400,11 +410,11 @@ export function Table({
 	useEffect(() => {
 		updateSizing(
 			tableState.scope,
-			tableState.cachedRowHeight,
+			appearances.rowHeight,
 			clientHeight,
 			wrapperRef.current
 		);
-	}, [clientHeight, tableState.cachedRowHeight]);
+	}, [clientHeight, appearances.rowHeight]);
 
 	worker.TableWorker.onmessage = (e) => {
 		if (e.data.type === 'stream') {
@@ -412,7 +422,12 @@ export function Table({
 				case 'next':
 					if (tableState.accept === 'next') {
 						let rows = tableState.rows;
-						if (!tableState.rows.includes(e.data.data)) {
+						let filtered = rows.filter((value, index, array) => {
+							//@ts-expect-error value is unknown to ts, because it was obtained by onMessage
+							if (value.row === e.data.data.row) return true;
+							return false;
+						});
+						if (filtered.length === 0) {
 							if (e.data.index !== undefined) {
 								dispatch({
 									type: 'set',
@@ -424,36 +439,40 @@ export function Table({
 									name: 'lastReceived',
 									newVal: e.data.index,
 								});
+								rows.splice(0, 1);
+								rows.push(e.data.data);
+								dispatch({
+									type: 'set',
+									name: 'rows',
+									newVal: rows,
+								});
 							}
+							// console.log('received data: ', e.data.index);
 						}
-						rows.splice(0, 1);
-						rows.push(e.data.data);
-						// console.log('received data: ', e.data.index);
-						dispatch({
-							type: 'set',
-							name: 'rows',
-							newVal: rows,
-						});
 					}
 					break;
 				case 'prev':
 					if (tableState.accept === 'prev') {
 						let rows = tableState.rows;
-						if (!tableState.rows.includes(e.data.data)) {
-							if (!tableState.rows.includes(e.data.data)) {
-								if (e.data.index !== undefined) {
-									dispatch({
-										type: 'set',
-										name: 'start',
-										newVal: e.data.index,
-									});
-									dispatch({
-										type: 'set',
-										name: 'lastReceived',
-										newVal: e.data.index,
-									});
-								}
+						let filtered = rows.filter((value, index, array) => {
+							//@ts-expect-error value is unknown to ts, because it was obtained by onMessage
+							if (value.row === e.data.data.row) return true;
+							return false;
+						});
+						if (filtered.length === 0) {
+							if (e.data.index !== undefined) {
+								dispatch({
+									type: 'set',
+									name: 'start',
+									newVal: e.data.index,
+								});
+								dispatch({
+									type: 'set',
+									name: 'lastReceived',
+									newVal: e.data.index,
+								});
 							}
+
 							rows.pop();
 							rows.splice(0, 0, e.data.data);
 							// console.log("received ", e.data.index)
@@ -466,17 +485,25 @@ export function Table({
 					}
 					break;
 				case 'add':
-					// console.log('add');
-
 					let rows = tableState.rows;
-					console.log('before:', rows.length);
-					rows.push(e.data.data);
-					console.log('after:', rows.length);
-					dispatch({
-						type: 'set',
-						name: 'rows',
-						newVal: rows,
+					let filtered = rows.filter((value, index, array) => {
+						//@ts-expect-error value is unknown to ts, because it was obtained by onMessage
+						if (value.row === e.data.data.row) return true;
+						return false;
 					});
+					if (filtered.length === 0) {
+						rows.push(e.data.data);
+						dispatch({
+							type: 'set',
+							name: 'rows',
+							newVal: rows,
+						});
+						dispatch({
+							type: 'set',
+							name: 'lastReceived',
+							newVal: e.data.data.row,
+						});
+					}
 
 					break;
 				default:
@@ -524,6 +551,13 @@ export function Table({
 				name: 'rows',
 				newVal: e.data.data,
 			});
+			if (e.data.data.length !== 0) {
+				dispatch({
+					type: 'set',
+					name: 'lastReceived',
+					newVal: e.data.data[e.data.data.length - 1].row,
+				});
+			}
 			if (Array.isArray(e.data.data)) {
 				if (e.data.data.length == 0) {
 					console.log('rows is 0');
@@ -606,7 +640,7 @@ export function Table({
 			name: 'dbVersion',
 			newVal: database.dbVersion,
 		});
-	}, [tableState.tableName, database.dbVersion, colsHook, entriesHook]);
+	}, [tableState.tableName, database.dbVersion, colsHook, entriesHook, key]);
 
 	useEffect(() => {
 		if (!hasStarted) {
@@ -624,6 +658,7 @@ export function Table({
 
 	useEffect(() => {
 		if (appearances.rowHeight !== tableState.cachedRowHeight) {
+			console.log('updating cache');
 			dispatch({
 				type: 'set',
 				name: 'cachedRowHeight',
@@ -631,7 +666,7 @@ export function Table({
 			});
 		}
 		setCauseRerender(!causeRerender);
-	}, [appearances.rowHeight, tableState.cachedRowHeight]);
+	}, [appearances.rowHeight]);
 
 	const TableFootDisplayMemo = memo(
 		({ columns, update }: TableFootDisplayProps) => {
