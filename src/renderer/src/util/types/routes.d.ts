@@ -7,4 +7,5 @@ export type RouteType =
 	| 'Deliveries'
 	| 'Returnees'
 	| 'Invoices'
-	| 'Quotes';
+	| 'Quotes'
+	| 'ExportPage';
