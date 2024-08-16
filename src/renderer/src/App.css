@@ -26,3 +26,11 @@
  		overflow-x: hidden;
  	}
  }
+
+
+ .helper{
+	z-index: 3;
+	background: light-dark(var(--color-light-1),var(--color-dark-1));
+	position: absolute;
+	top: 0;
+ }

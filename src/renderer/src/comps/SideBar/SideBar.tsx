@@ -16,6 +16,7 @@ import {
 
 import { AppContext } from '@renderer/App';
 import { RouterButton } from './RouterButton';
+import { LowerButton } from './LowerButton';
 
 import { RouteType, SideBarProps } from '@util/types/types';
 
@@ -25,6 +26,8 @@ export default function SideBar({
 	const { appearances, general } = useContext(AppContext);
 	const routeHandler = (newVal: RouteType) => {
 		if (routesHook !== undefined) {
+			routesHook.setShowSettings(false);
+			routesHook.setShowHelp(false);
 			routesHook.setRoute(newVal);
 		}
 	};
@@ -39,12 +42,21 @@ export default function SideBar({
 				<div className="topIcons">
 					<RouterButton
 						handler={routeHandler}
+						active={!routesHook.showHelp && !routesHook.showSettings}
 						icon={
 							<HomeIcon
 								size={24}
-								strokeWidth={routesHook.route === 'Home' ? 2.5 : 2}
+								strokeWidth={
+									routesHook.route === 'Home' &&
+									!routesHook.showHelp &&
+									!routesHook.showSettings
+										? 2.5
+										: 2
+								}
 								color={
-									routesHook.route === 'Home'
+									routesHook.route === 'Home' &&
+									!routesHook.showHelp &&
+									!routesHook.showSettings
 										? 'var(--color-primary)'
 										: 'light-dark(var(--color-dark-1),var(--color-light-1))'
 								}
@@ -58,12 +70,21 @@ export default function SideBar({
 					/>
 					<RouterButton
 						handler={routeHandler}
+						active={!routesHook.showHelp && !routesHook.showSettings}
 						icon={
 							<UploadIcon
 								size={24}
-								strokeWidth={routesHook.route === 'Upload' ? 2.5 : 2}
+								strokeWidth={
+									routesHook.route === 'Upload' &&
+									!routesHook.showHelp &&
+									!routesHook.showSettings
+										? 2.5
+										: 2
+								}
 								color={
-									routesHook.route === 'Upload'
+									routesHook.route === 'Upload' &&
+									!routesHook.showHelp &&
+									!routesHook.showSettings
 										? 'var(--color-primary)'
 										: 'light-dark(var(--color-dark-1),var(--color-light-1))'
 								}
@@ -77,12 +98,21 @@ export default function SideBar({
 					/>
 					<RouterButton
 						handler={routeHandler}
+						active={!routesHook.showHelp && !routesHook.showSettings}
 						icon={
 							<ArrowRightFromLineIcon
 								size={25}
-								strokeWidth={routesHook.route === 'ExportPage' ? 2.5 : 2}
+								strokeWidth={
+									routesHook.route === 'ExportPage' &&
+									!routesHook.showHelp &&
+									!routesHook.showSettings
+										? 2.5
+										: 2
+								}
 								color={
-									routesHook.route === 'ExportPage'
+									routesHook.route === 'ExportPage' &&
+									!routesHook.showHelp &&
+									!routesHook.showSettings
 										? 'var(--color-primary)'
 										: 'light-dark(var(--color-dark-1),var(--color-light-1))'
 								}
@@ -96,13 +126,22 @@ export default function SideBar({
 					/>
 					<div className="divider" />
 					<RouterButton
+						active={!routesHook.showHelp && !routesHook.showSettings}
 						handler={routeHandler}
 						icon={
 							<CuboidIcon
 								size={24}
-								strokeWidth={routesHook.route === 'Articles' ? 2.5 : 2}
+								strokeWidth={
+									routesHook.route === 'Articles' &&
+									!routesHook.showHelp &&
+									!routesHook.showSettings
+										? 2.5
+										: 2
+								}
 								color={
-									routesHook.route === 'Articles'
+									routesHook.route === 'Articles' &&
+									!routesHook.showHelp &&
+									!routesHook.showSettings
 										? 'var(--color-primary)'
 										: 'light-dark(var(--color-dark-1),var(--color-light-1))'
 								}
@@ -115,13 +154,22 @@ export default function SideBar({
 						}
 					/>
 					<RouterButton
+						active={!routesHook.showHelp && !routesHook.showSettings}
 						handler={routeHandler}
 						icon={
 							<UserRoundIcon
 								size={24}
-								strokeWidth={routesHook.route === 'Customers' ? 2.5 : 2}
+								strokeWidth={
+									routesHook.route === 'Customers' &&
+									!routesHook.showHelp &&
+									!routesHook.showSettings
+										? 2.5
+										: 2
+								}
 								color={
-									routesHook.route === 'Customers'
+									routesHook.route === 'Customers' &&
+									!routesHook.showHelp &&
+									!routesHook.showSettings
 										? 'var(--color-primary)'
 										: 'light-dark(var(--color-dark-1),var(--color-light-1))'
 								}
@@ -134,13 +182,22 @@ export default function SideBar({
 						}
 					/>
 					<RouterButton
+						active={!routesHook.showHelp && !routesHook.showSettings}
 						handler={routeHandler}
 						icon={
 							<TruckIcon
 								size={24}
-								strokeWidth={routesHook.route === 'Deliveries' ? 2.5 : 2}
+								strokeWidth={
+									routesHook.route === 'Deliveries' &&
+									!routesHook.showHelp &&
+									!routesHook.showSettings
+										? 2.5
+										: 2
+								}
 								color={
-									routesHook.route === 'Deliveries'
+									routesHook.route === 'Deliveries' &&
+									!routesHook.showHelp &&
+									!routesHook.showSettings
 										? 'var(--color-primary)'
 										: 'light-dark(var(--color-dark-1),var(--color-light-1))'
 								}
@@ -155,13 +212,22 @@ export default function SideBar({
 						}
 					/>
 					<RouterButton
+						active={!routesHook.showHelp && !routesHook.showSettings}
 						handler={routeHandler}
 						icon={
 							<ReceiptTextIcon
 								size={24}
-								strokeWidth={routesHook.route === 'Invoices' ? 2.5 : 2}
+								strokeWidth={
+									routesHook.route === 'Invoices' &&
+									!routesHook.showHelp &&
+									!routesHook.showSettings
+										? 2.5
+										: 2
+								}
 								color={
-									routesHook.route === 'Invoices'
+									routesHook.route === 'Invoices' &&
+									!routesHook.showHelp &&
+									!routesHook.showSettings
 										? 'var(--color-primary)'
 										: 'light-dark(var(--color-dark-1),var(--color-light-1))'
 								}
@@ -174,13 +240,16 @@ export default function SideBar({
 						}
 					/>
 					<RouterButton
+						active={!routesHook.showHelp && !routesHook.showSettings}
 						handler={routeHandler}
 						icon={
 							<FileOutputIcon
 								size={24}
 								strokeWidth={routesHook.route === 'Quotes' ? 2.5 : 2}
 								color={
-									routesHook.route === 'Quotes'
+									routesHook.route === 'Quotes' &&
+									!routesHook.showHelp &&
+									!routesHook.showSettings
 										? 'var(--color-primary)'
 										: 'light-dark(var(--color-dark-1),var(--color-light-1))'
 								}
@@ -193,13 +262,16 @@ export default function SideBar({
 						}
 					/>
 					<RouterButton
+						active={!routesHook.showHelp && !routesHook.showSettings}
 						handler={routeHandler}
 						icon={
 							<RotateCcwIcon
 								size={24}
 								strokeWidth={routesHook.route === 'Returnees' ? 2.5 : 2}
 								color={
-									routesHook.route === 'Returnees'
+									routesHook.route === 'Returnees' &&
+									!routesHook.showHelp &&
+									!routesHook.showSettings
 										? 'var(--color-primary)'
 										: 'light-dark(var(--color-dark-1),var(--color-light-1))'
 								}
@@ -213,45 +285,43 @@ export default function SideBar({
 					/>
 				</div>
 				<div className="bottomIcons">
-					<RouterButton
-						handler={routeHandler}
+					<LowerButton
+						handler={() => {
+							routesHook.setShowSettings(false);
+							routesHook.setShowHelp(true);
+						}}
 						icon={
 							<HelpCircle
 								size={24}
-								strokeWidth={routesHook.route === 'Help' ? 2.5 : 2}
+								strokeWidth={routesHook.showHelp ? 2.5 : 2}
 								color={
-									routesHook.route === 'Help'
+									routesHook.showHelp
 										? 'var(--color-primary)'
 										: 'light-dark(var(--color-dark-1),var(--color-light-1))'
 								}
 							/>
 						}
-						route={routesHook.route}
-						routeName="Help"
-						textOverride={
-							general.language === 'deutsch' ? 'Hilfe' : 'Help'
-						}
+						text="Help"
+						active={routesHook.showHelp}
 					/>
-					<RouterButton
-						handler={routeHandler}
+					<LowerButton
+						handler={() => {
+							routesHook.setShowHelp(false);
+							routesHook.setShowSettings(true);
+						}}
 						icon={
 							<CogIcon
 								size={24}
-								strokeWidth={routesHook.route === 'Settings' ? 2.5 : 2}
+								strokeWidth={routesHook.showSettings ? 2.5 : 2}
 								color={
-									routesHook.route === 'Settings'
+									routesHook.showSettings
 										? 'var(--color-primary)'
 										: 'light-dark(var(--color-dark-1),var(--color-light-1))'
 								}
 							/>
 						}
-						route={routesHook.route}
-						routeName="Settings"
-						textOverride={
-							general.language === 'deutsch'
-								? 'Einstellungen'
-								: 'Settings'
-						}
+						text="Settings"
+						active={routesHook.showSettings}
 					/>
 				</div>
 			</div>

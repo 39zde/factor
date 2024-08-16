@@ -11,7 +11,7 @@ export function Help(): React.JSX.Element {
 	const { general } = useContext(AppContext);
 	return (
 		<>
-			<div className="helpWrapper">
+			<div className="helpWrapper helper">
 				<h1>{general.language === 'deutsch' ? 'Hilfe' : 'Help'}</h1>
 				<div className="helpContentsWrapper">
 					<ul className="helpContentsList">

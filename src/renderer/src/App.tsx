@@ -50,7 +50,8 @@ export const AppContext = createContext<AppContextType>(defaultContext);
 
 function App(): JSX.Element {
 	const [route, setRoute] = useState<RouteType>('Home');
-
+	const [showSettings, setShowSettings] = useState<boolean>(false);
+	const [showHelp, setShowHelp] = useState<boolean>(false);
 	const [contextValue, setContextValue] =
 		useState<AppContextType>(defaultContext);
 
@@ -69,7 +70,7 @@ function App(): JSX.Element {
 			general: {
 				decimalSeparator: newContext.general.decimalSeparator,
 				language: newContext.general.language,
-				scrollSpeed: newContext.general.scrollSpeed
+				scrollSpeed: newContext.general.scrollSpeed,
 			},
 			worker: {
 				ImportWorker: contextValue.worker.ImportWorker,
@@ -129,6 +130,14 @@ function App(): JSX.Element {
 		setRoute: (newRoute: RouteType): void => {
 			setRoute(newRoute);
 		},
+		showSettings: showSettings,
+		setShowSettings: (newVal: boolean): void => {
+			setShowSettings(newVal);
+		},
+		showHelp: showHelp,
+		setShowHelp: (newVal: boolean): void => {
+			setShowHelp(newVal);
+		},
 	};
 
 	return (
@@ -143,6 +152,20 @@ function App(): JSX.Element {
 						<SideBar routesHook={routeHook} />
 						<div className="page">
 							<Router route={route} />
+							{showHelp ? (
+								<>
+									<Pages.Help />
+								</>
+							) : (
+								<></>
+							)}
+							{showSettings ? (
+								<>
+									<Pages.Settings />
+								</>
+							) : (
+								<></>
+							)}
 						</div>
 					</div>
 				</WindowContextProvider>
@@ -155,8 +178,6 @@ function Router({ route }: { route: RouteType }): React.JSX.Element {
 	switch (route) {
 		case 'Home':
 			return <Pages.Home />;
-		case 'Settings':
-			return <Pages.Settings />;
 		case 'Upload':
 			return <Pages.Upload />;
 		case 'Customers':
@@ -173,8 +194,6 @@ function Router({ route }: { route: RouteType }): React.JSX.Element {
 			return <Pages.Returnees />;
 		case 'ExportPage':
 			return <Pages.ExportPage />;
-		case 'Help':
-			return <Pages.Help />;
 		default:
 			return <Pages.Home />;
 	}

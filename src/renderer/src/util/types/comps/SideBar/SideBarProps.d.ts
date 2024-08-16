@@ -4,6 +4,10 @@ export interface SideBarProps {
 	routesHook: {
 		route: RouteType;
 		setRoute: (newVal: RouteType) => void;
+		showSettings: boolean,
+		setShowSettings: (newVal: boolean) => void;
+		showHelp: boolean,
+		setShowHelp: (newVal: boolean) => void;
 	};
 }
 
@@ -13,4 +17,13 @@ export interface RouterButtonProps {
 	routeName: RouteType;
 	icon: React.ReactNode;
 	textOverride?: string;
+	active: boolean;
+}
+
+
+export interface LowerButtonProps {
+	handler: () => void;
+	icon: React.ReactNode;
+	text: string;
+	active: boolean;
 }

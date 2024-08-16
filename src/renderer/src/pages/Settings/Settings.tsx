@@ -164,7 +164,7 @@ export function Settings() {
 
 	return (
 		<>
-			<div className="settingsPage appRoute">
+			<div className="settingsPage appRoute helper">
 				<h1>
 					{context.general.language === 'english'
 						? 'Settings'

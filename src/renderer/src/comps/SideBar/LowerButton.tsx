@@ -1,15 +1,13 @@
 import React, { useState } from 'react';
-import type { RouterButtonProps } from '@util/types/types';
+import type { LowerButtonProps, RouterButtonProps } from '@util/types/types';
 import './SideBar.css';
 
-export function RouterButton({
-	route,
+export function LowerButton({
 	handler,
-	routeName,
 	icon,
-	textOverride,
+	text,
 	active
-}: RouterButtonProps): React.JSX.Element {
+}: LowerButtonProps): React.JSX.Element {
 	const [hover, setHover] = useState<boolean>(false);
 
 	return (
@@ -17,24 +15,20 @@ export function RouterButton({
 			<button
 				onMouseEnter={() => setHover(true)}
 				onMouseLeave={() => setHover(false)}
-				onClick={() => handler(routeName)}
+				onClick={() => handler()}
 				style={{
 					minHeight: 25,
 					background: hover
 						? 'light-dark(var(--color-light-3),var(--color-dark-3))'
-						: route === routeName && active
+						: active
 							? 'light-dark(var(--color-light-1),var(--color-dark-1))'
 							: 'light-dark(var(--color-light-2),var(--color-dark-2))',
-					color: route === routeName && active ? 'var(--color-primary)' : 'initial',
-					fontWeight: route === routeName && active ? 'bold' : 'initial',
+					color:active ? 'var(--color-primary)' : 'initial',
+					fontWeight: active ? 'bold' : 'initial',
 				}}
 				className="sideBarButton">
 				{icon}
-				{textOverride !== undefined ? (
-					<>{textOverride}</>
-				) : (
-					<>{routeName}</>
-				)}
+				{text}
 			</button>
 		</>
 	);

@@ -1,39 +1,27 @@
 export type {
 	SideBarProps,
 	RouterButtonProps,
+	LowerButtonProps,
 } from './comps/SideBar/SideBarProps';
 export type { RouteType } from './comps/SideBar/routes';
 
 export type {
-	CustomerSortingMap,
 	ImportModuleProps,
 	ArticleSortingMap,
 	UploadMode,
 } from './pages/Upload/Upload';
 
 export type {
-	CustomerType,
-	NameType,
-	AddressType,
+	Customer,
 	PersonType,
-	TitleType,
-	PhoneNumberType,
 	EmailType,
+	PhoneNumberType,
+	AddressType,
 	BankType,
-	ArticleType,
-	PriceType,
-	AcquisitionType,
-	LastEncounterType,
-	CategoryType,
-	StepDiscountType,
-	PercentDiscountType,
-	DiscountType,
-	ArticleListItem,
-	QuoteType,
-	InvoiceType,
-	DeliveryType,
-	ReturnType,
-} from './database/DatabaseTypes';
+	CompanyType,
+	ContactType,
+	CustomerSortingMap
+} from './database/CustomerTypes';
 
 export type {
 	TableHeadDisplayProps,
