@@ -111,7 +111,7 @@ select {
 select:focus-visible,
 button:focus-visible,
 input:focus-visible {
-	outline: var(--color-secondary) auto 1px;
+	outline: 4px ridge light-dark(var(--color-secondary),var(--color-secondary-light));
 }
 
 h1 {

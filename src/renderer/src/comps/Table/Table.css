@@ -126,7 +126,7 @@
  	white-space: break-spaces;
  	word-wrap: break-word;
  	word-break: break-word;
-	line-height: 1;
+ 	line-height: 1;
  }
 
  th {
@@ -135,6 +135,14 @@
  	overflow: visible;
  	position: relative;
  	text-align: left;
+ }
+
+ th>tr {
+ 	overflow: visible;
+
+ 	&td {
+ 		overflow: visible;
+ 	}
  }
 
  .guts {

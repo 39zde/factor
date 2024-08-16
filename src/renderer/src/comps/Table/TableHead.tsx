@@ -103,7 +103,7 @@ export function TableHead({
 	const mouseEnterHandler = (index: number): void => {
 		// console.log('setting activeBG to ', index);
 		if (mouseHook !== undefined) {
-			if (!mouseHook.value) {
+			if (mouseHook.value === false) {
 				setActiveBg(index);
 			}
 		}
