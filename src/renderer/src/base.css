@@ -1,4 +1,7 @@
+
+
 :root {
+	/* color-scheme needs to be in the first line, (see App.tsx / styleSheet = useMemo) */
 	 --color-primary: hsl(0, 100%, 65%);
 	 --color-primary-dark: hsl(0, 55%, 48%);
 	 --color-primary-light: hsl(0, 100%, 77%);
@@ -21,7 +24,6 @@
 
 	--color-text: light-dark(var(--color-dark-1),var(--color-light-1));
 
-	color-scheme: dark;
 	color: light-dark(var(--color-dark-1),var(--color-light-1));
 
 }
@@ -89,10 +91,10 @@ select {
 	background: light-dark(var(--color-light-1),var(--color-light-2));
 	color: light-dark(var(--color-dark-1),var(--color-dark-1));
 	border-width: 2px;
-	border-top-color: light-dark(var(--color-light-3),var(--color-light-1));
-	border-right-color: light-dark(var(--color-light-3),var(--color-light-1));
-	border-bottom-color: light-dark(var(--color-light-3),var(--color-light-1));
-	border-left-color: light-dark(var(--color-light-3),var(--color-light-1));
+	border-top-color: light-dark(var(--color-light-3),var(--color-light-2));
+	border-right-color: light-dark(var(--color-light-3),var(--color-light-2));
+	border-bottom-color: light-dark(var(--color-light-3),var(--color-light-2));
+	border-left-color: light-dark(var(--color-light-3),var(--color-light-2));
 	border-style: solid;
 	border-radius: 8px;
 }

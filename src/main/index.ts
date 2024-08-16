@@ -1,6 +1,9 @@
-import { app, shell, BrowserWindow, session } from 'electron';
-import { join } from 'path';
+import { app, shell, BrowserWindow, session, ipcMain } from 'electron';
+import { join, resolve } from 'path';
+import { readdir, mkdir, copyFile, readFileSync, writeFileSync } from 'fs';
+import { env } from 'process';
 import { electronApp, optimizer, is } from '@electron-toolkit/utils';
+
 function createWindow(): void {
 	// Create the browser window.
 	const mainWindow = new BrowserWindow({
@@ -22,9 +25,10 @@ function createWindow(): void {
 						: '',
 		// ...(process.platform === 'linux' ? { icon } : process.platform === "win32" ? {iconICO}: {}),
 		webPreferences: {
-			preload: join(__dirname, '../preload/index.js'),
+			preload: join(__dirname, '../preload/index.mjs'),
 			sandbox: false,
 			nodeIntegrationInWorker: true,
+			nodeIntegration: true,
 		},
 		// fullscreen: true,
 		resizable: true,
@@ -54,6 +58,11 @@ function createWindow(): void {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
+	let homeDir = resolve('$HOME');
+	if (env['HOME'] !== undefined) {
+		homeDir = resolve(env['HOME']);
+	}
+
 	// save system color theme
 	// Set app user model id for windows
 	electronApp.setAppUserModelId('de.39z.factor');
@@ -65,8 +74,69 @@ app.whenReady().then(() => {
 		optimizer.watchWindowShortcuts(window);
 	});
 
+	// create default settings file and .factor directory, if not present
+	readdir(homeDir, (error, files) => {
+		if (error) {
+			return console.log('[index.ts] ', 'error reading home dir: ', error);
+		}
+		if (!files.includes('.factor')) {
+			mkdir(homeDir + '/.factor', (e) => {
+				copyFile(
+					resolve(__dirname, '../../resources/defaultSettings.json'),
+					homeDir + '/.factor/settings.json',
+					(error) => {
+						console.log(error);
+					}
+				);
+			});
+		} else {
+			readdir(homeDir + '/.factor', (error, files) => {
+				if (error) {
+					return console.log(error);
+				}
+				if (!files.includes('settings.json')) {
+					copyFile(
+						resolve(__dirname, '../../resources/defaultSettings.json'),
+						homeDir + '/.factor/settings.json',
+						(error) => {
+							console.log(error);
+						}
+					);
+				}
+			});
+		}
+	});
+
 	// IPC test
-	// ipcMain.on('ping', () => console.log('pong'))
+	ipcMain.on('ping', () => console.log('[index.ts] ', 'pong'));
+
+
+	// save and read settings
+	ipcMain.on('settings', (e, message) => {
+		// console.log(message);
+		switch (message.type) {
+			case 'readSettings':
+				const settingsFile = readFileSync(
+					homeDir + '/.factor/settings.json',
+					'utf8'
+				);
+				const settings = JSON.parse(settingsFile);
+				e.returnValue = settings;
+				break;
+			case 'writeSettings':
+				// console.log("writing Settings")
+				// console.log(message.data);
+				writeFileSync(
+					homeDir + '/.factor/settings.json',
+					JSON.stringify(message.data),
+					'utf8'
+				);
+				e.returnValue = 'success';
+				break;
+			default:
+				console.log('[index.ts] ', 'defaulted Settings');
+		}
+	});
 
 	createWindow();
 

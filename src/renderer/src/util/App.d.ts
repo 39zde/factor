@@ -3,6 +3,7 @@ export type AppContextType = {
 	appearances: {
 		colorTheme: 'light' | 'dark' | 'system';
 		rowHeight: number;
+		sideBarWidth: number;
 	};
 	database: {
 		tables: Array<string>;
@@ -23,6 +24,7 @@ export type AppSettingsType = {
 	appearances: {
 		colorTheme: 'light' | 'dark' | 'system';
 		rowHeight: number;
+		sideBarWidth: number;
 	};
 	database: {
 		tables: Array<string>;
