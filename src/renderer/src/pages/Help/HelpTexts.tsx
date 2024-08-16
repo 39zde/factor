@@ -1,4 +1,4 @@
-import type { HelpTexts } from "@util/types/types";
+import type { HelpTexts } from '@util/types/types';
 export const HelpTextDE: HelpTexts = {
 	usage: {
 		title: 'Nutzung',
@@ -7,11 +7,12 @@ export const HelpTextDE: HelpTexts = {
 				title: 'Tabellennavigation',
 				text: [
 					'Wege zum horizontalen navigieren in der Tabelle: ',
-					'Shift + Scroll ',
-					'Mittlere Maustaste gedrückt halten und in die gewünschte Richtung ziehen',
-					'Scroll-Leiste benutzen',
+					`▸ Shift + Scroll `,
+					'▸ Mittlere Maustaste gedrückt halten und in die gewünschte Richtung ziehen',
+					'▸ Scroll-Leiste benutzen',
+					' ', // alt + 255
 					'Wege zum vertikalen Navigieren: ',
-					'Scroll-Rad benutzen',
+					'▸ Scroll-Rad benutzen',
 				],
 			},
 		],
@@ -40,6 +41,7 @@ export const HelpTextEN: HelpTexts = {
 					'Shift + Scroll ',
 					'Press and hold the mouse wheel and drag towards the wanted direction',
 					'Using the Scrollbar',
+					' ', // alt + 255
 					'Ways to navigate vertically: ',
 					'Use the mouse wheel',
 				],

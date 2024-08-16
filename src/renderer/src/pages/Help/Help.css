@@ -1,0 +1,33 @@
+/* prettier-ignore */
+@import url("../../base.css");
+
+
+.helpWrapper {
+	overflow-y: scroll;
+	scrollbar-gutter: stable both-edges;
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-start;
+	align-items: stretch;
+	gap: 8px;
+	height: 100%;
+	scrollbar-width: thin;
+}
+
+.helpCategoryWrapper {
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-start;
+	align-items: stretch;
+	gap: 4px;
+}
+
+.helpCategoryItemWrapper{
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-start;
+	align-items: stretch;
+	width: 80%;
+	align-self: center;
+	margin: 8px 0;
+}
