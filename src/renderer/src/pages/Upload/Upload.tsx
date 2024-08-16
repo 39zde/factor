@@ -12,9 +12,11 @@ import type {
 	UploadMode,
 } from '@util/types/types';
 import { AppContext } from '@renderer/App';
+import { AppSettingsType } from '@renderer/util/App';
 
 export function Upload(): React.JSX.Element {
-	const { general, worker } = useContext(AppContext);
+	const { general, worker, database, appearances, changeContext } =
+		useContext(AppContext);
 	const fileSelector = useRef<HTMLInputElement>(null);
 	const [showTable, setShowTable] = useState<boolean>(false);
 	const [showFile, setShowFile] = useState<boolean>(false);
@@ -142,6 +144,43 @@ export function Upload(): React.JSX.Element {
 							general.language === 'deutsch'
 								? 'Tabelle erstellen/erneuern'
 								: 'Create/Update Table';
+						if (tableImportModeInputRef.current !== null) {
+							switch (tableImportModeInputRef.current.value) {
+								case 'customers':
+									const newTables = [...database.tables];
+									if (newTables.includes('customers')) {
+										break;
+									}
+									newTables.push('customers');
+									const newContext: AppSettingsType = {
+										appearances: {
+											...appearances,
+										},
+										database: {
+											tables: newTables,
+											dbVersion: database.dbVersion,
+										},
+										general: {
+											...general,
+										},
+									};
+
+									changeContext(newContext);
+							}
+						}
+						const oldContext: AppSettingsType = {
+							appearances: {
+								...appearances,
+							},
+							database: {
+								dbVersion: database.dbVersion + 1,
+								tables: database.tables,
+							},
+							general: {
+								...general,
+							},
+						};
+						changeContext(oldContext);
 						break;
 					case 'error':
 					default:
@@ -153,10 +192,7 @@ export function Upload(): React.JSX.Element {
 
 	return (
 		<>
-			<div
-				className="uploadPage page"
-				ref={tableWrapperRef}
-				style={{ overflow: 'hidden' }}>
+			<div className="uploadPage page" style={{ overflow: 'hidden' }}>
 				<h1>{general.language === 'deutsch' ? 'Hochladen' : 'Upload'}</h1>
 				<div className="fileSelector">
 					{showTable ? (
@@ -266,7 +302,7 @@ export function Upload(): React.JSX.Element {
 					{showTable ? (
 						<>
 							<Table
-								uniqueKey={'factor_db_id'}
+								uniqueKey={'row'}
 								tableName="data_upload"
 								colsHook={colsHook}
 								entriesHook={entriesHook}
@@ -528,10 +564,8 @@ function Customers({
 			companyName: copmanyNameCol,
 			country: countryCol,
 			email: emailCol,
-			first: fistContactCol,
 			firstName: firstNameCol,
 			lastName: lastNameCol,
-			latest: latestContactCol,
 			notes: notesCol,
 			phone: phoneCol,
 			street: streetCol,
