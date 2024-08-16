@@ -25,6 +25,7 @@ export function Upload(): React.JSX.Element {
 	const [update, setUpdate] = useState<boolean>(false); // stop rendering while updating
 	const tableImportModeInputRef = useRef<HTMLSelectElement>(null);
 	const tableWrapperRef = useRef<HTMLDivElement>(null);
+	const importButtonRef = useRef<HTMLButtonElement>(null);
 	const [sortingMap, setSortingMap] = useState<
 		CustomerSortingMap | ArticleSortingMap
 	>({ customerID: '' });
@@ -127,7 +128,26 @@ export function Upload(): React.JSX.Element {
 			content: tableImportMode,
 		});
 		worker.ImportWorker.onmessage = (e) => {
-			console.log(e.data);
+			if (e.data !== undefined) {
+				switch (e.data.type) {
+					case 'progress':
+						if (importButtonRef.current !== null) {
+							// @ts-ignore
+							importButtonRef.current.innerText = e.data.message;
+						}
+						break;
+					case 'success':
+						// @ts-ignore
+						importButtonRef.current.innerText =
+							general.language === 'deutsch'
+								? 'Tabelle erstellen/erneuern'
+								: 'Create/Update Table';
+						break;
+					case 'error':
+					default:
+						window.alert('Import Error: \n' + e.data?.message);
+				}
+			}
 		};
 	};
 
@@ -305,7 +325,9 @@ export function Upload(): React.JSX.Element {
 									</select>
 								</li>
 								<li>
-									<button onClick={importHandler}>
+									<button
+										ref={importButtonRef}
+										onClick={importHandler}>
 										{general.language === 'deutsch'
 											? 'Tabelle erstellen/erneuern'
 											: 'Create/Update Table'}
@@ -516,6 +538,8 @@ function Customers({
 			title: titleCol,
 			web: webCol,
 			zip: zipCol,
+			firstContact: fistContactCol,
+			latestContact: latestContactCol,
 		};
 
 		hook.setSortingMap(map);
