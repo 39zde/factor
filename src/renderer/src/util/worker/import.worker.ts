@@ -181,6 +181,34 @@ const requestHandler = (e: MessageEvent): void => {
 	}
 };
 
+const updateManager = (total: number) => {
+	const increment = 0.1;
+	let ratchet = 0.1;
+	let counter = 0;
+	let progress = 0;
+	function postUpdate(msg: string): void {
+		postMessage({
+			type: 'progress',
+			message: msg,
+		});
+	}
+
+	function update(): void {
+		counter += 1;
+		progress = counter / total;
+		if (progress > ratchet) {
+			ratchet += increment;
+			postUpdate(`${(progress * 100).toFixed(0)}%`);
+			if (progress === 1) {
+				ratchet = 0.1;
+				counter = 0;
+				progress = 0;
+			}
+		}
+	}
+	return update;
+};
+
 function getKeys(row: string) {
 	const keys = row.split(';');
 	return keys;
@@ -298,9 +326,8 @@ function rankColsByCondition(condition: string | null | number | undefined) {
 			keysReq.onsuccess = () => {
 				const keys = Object.keys(keysReq.result);
 				keys.splice(keys.indexOf('factor_db_id'), 1);
-				let progress = 0;
-				let ratchet = 0.1;
 				const counter: object = keysReq.result;
+				const update = updateManager(count * keys.length);
 				for (const [k] of Object.entries(counter)) {
 					counter[k] = 0;
 				}
@@ -311,15 +338,7 @@ function rankColsByCondition(condition: string | null | number | undefined) {
 					const cursor: IDBCursorWithValue | null = e.target.result;
 					if (cursor !== null) {
 						for (const key of keys) {
-							progress += 1;
-							const total = progress / (count * keys.length);
-							if (total > ratchet) {
-								ratchet += 0.1;
-								postMessage({
-									type: 'progress',
-									message: `${(total * 100).toFixed(2)}%`,
-								});
-							}
+							update();
 							const value = cursor.value[key];
 							//@ts-ignore
 							const test = compareItemToCondition(
