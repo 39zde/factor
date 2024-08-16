@@ -9,14 +9,20 @@ import './App.css';
 
 const ImportWorker = (() => {
 	const work = new Worker(
-		new URL('@util/worker/import.worker.ts', import.meta.url)
+		new URL('@util/worker/import.worker.ts', import.meta.url),
+		{
+			type: 'module',
+		}
 	);
 	return work;
 })();
 
 const TableWorker = (() => {
 	const work = new Worker(
-		new URL('@util/worker/table.worker.ts', import.meta.url)
+		new URL('@util/worker/table.worker.ts', import.meta.url),
+		{
+			type: 'module',
+		}
 	);
 	return work;
 })();
