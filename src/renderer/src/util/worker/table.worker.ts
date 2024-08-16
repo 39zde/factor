@@ -31,6 +31,7 @@ self.onmessage = function requestHandler(e: MessageEvent) {
 										type: 'stream',
 										action: 'next',
 										data: streamLowerCursor.value,
+										index: e.data.action.pos,
 									});
 									transaction.commit();
 								}
@@ -55,6 +56,7 @@ self.onmessage = function requestHandler(e: MessageEvent) {
 										type: 'stream',
 										action: 'prev',
 										data: streamUpperCursor.value,
+										index: e.data.action.pos,
 									});
 									transaction.commit();
 								}
@@ -114,7 +116,6 @@ function startingRows(
 		cursorRequest = db
 			.transaction(storeName, 'readwrite', { durability: 'strict' })
 			.objectStore(storeName)
-			.index('customerID')
 			.openCursor();
 
 		cursorRequest.onsuccess = () => {

@@ -16,6 +16,7 @@ export function TableBodyDisplay({
 	const { worker, database } = useContext(AppContext);
 	const [startNumber, setStartNumber] = useState<number>(0);
 	const { clientHeight } = useContext(WindowContext);
+	const lastOrdered = useRef<number>(-1)
 	const start = useRef<number>(0);
 
 	//@ts-ignore
@@ -23,6 +24,14 @@ export function TableBodyDisplay({
 		if (e.shiftKey === true || tableState.count === undefined) {
 			return;
 		}
+		if (lastOrdered.current !== -1){
+			if( Math.abs(lastOrdered.current - tableState.lastReceived) > 10){
+				// console.log("lastOrdered: ", lastOrdered.current, " lastReceived: ", tableState.lastReceived )
+				// console.log("returning")
+				return;
+			}
+		}
+
 		if (e.deltaY > 0) {
 			// scroll down
 			dispatch({
@@ -39,6 +48,8 @@ export function TableBodyDisplay({
 					1
 				);
 				setStartNumber(start.current);
+
+				lastOrdered.current = start.current + tableState.scope
 				worker.TableWorker.postMessage({
 					type: 'steam',
 					storeName: tableState.tableName,
@@ -62,6 +73,7 @@ export function TableBodyDisplay({
 			setStartNumber(start.current);
 
 			if (start.current !== 1) {
+				lastOrdered.current  = start.current - 1
 				worker.TableWorker.postMessage({
 					type: 'steam',
 					storeName: tableState.tableName,

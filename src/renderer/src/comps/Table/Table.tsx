@@ -44,6 +44,7 @@ const PlaceHolderTableContext: TableContextType = {
 	start: 0,
 	dbVersion: 1,
 	accept: 'next',
+	lastReceived: 0,
 };
 
 function tableReducer(
@@ -54,19 +55,24 @@ function tableReducer(
 	//! For Some Reason the new States need to be both 'changed' in the immutable (provided) tableState and also returned. I have not looked further into it, for now it works.
 	switch (action.type) {
 		case 'changeAccept': {
-			tableState.accept = action.newVal;
-			return {
-				//@ts-expect-error we want to override
-				accept: action.newVal,
-				...tableState,
-			};
+			if(action.newVal === "next" ||action.newVal === "prev"){
+				tableState.accept = action.newVal;
+				return {
+					//@ts-expect-error we want to override
+					accept: action.newVal,
+					...tableState,
+				};
+			}
+			return tableState
 		}
 		case 'increase': {
 			if (tableState.rows.includes(action.newVal)) {
 				return tableState;
 			}
 			if (action.index !== undefined) {
+				// console.log(action.index)
 				tableState.start = action.index;
+				tableState.lastReceived = action.index
 			}
 			tableState.rows.splice(0, 1);
 			tableState.rows.push(action.newVal);
@@ -77,7 +83,9 @@ function tableReducer(
 				return tableState;
 			}
 			if (action.index !== undefined) {
+				// console.log(action.index)
 				tableState.start = action.index;
+				tableState.lastReceived = action.index
 			}
 			tableState.rows.pop();
 			tableState.rows.splice(0, 0, action.newVal);
@@ -97,7 +105,6 @@ function tableReducer(
 			return tableState;
 		}
 		case 'mouseUp': {
-			// console.log(tableState.resizeStyles);
 			tableState.cursor = 'initial';
 			tableState.userSelect = 'initial';
 			tableState.isMouseDown = false;
@@ -107,7 +114,6 @@ function tableReducer(
 				background: 'none',
 				cursor: 'initial',
 			};
-			// console.log(tableState.resizeStyles[action.newVal]);
 
 			return {
 				// @ts-expect-error we want to overwrite
@@ -163,7 +169,6 @@ function tableReducer(
 			};
 		}
 		case 'mouseLeave': {
-			// console.log(action.newVal);
 
 			if (tableState.isMouseDown === false) {
 				tableState.activeBg = undefined;
@@ -187,8 +192,6 @@ function tableReducer(
 			};
 		}
 		case 'mouseEnter': {
-			// console.log(action.newVal)
-			// console.log(tableState.resizeStyles[action.newVal])
 			if (tableState.isMouseDown === false) {
 				tableState.activeBg = action.newVal;
 				tableState.resizeStyles[action.newVal] = {
@@ -286,7 +289,7 @@ export function Table({
 			TableWorker: worker.TableWorker,
 		},
 		(args): TableContextType => {
-			let out: TableContextType = PlaceHolderTableContext;
+			const out: TableContextType = PlaceHolderTableContext;
 			out.tableName = args.tableName;
 			out.uniqueKey = args.uniqueKey;
 			out.cursorX = 0;
@@ -298,6 +301,7 @@ export function Table({
 			out.dbVersion = args.dbVersion;
 			out.start = 0;
 			out.accept = 'next';
+			out.lastReceived = 0;
 			// get out.update
 			if (args.updateHook !== undefined) {
 				out.update = args.updateHook.update;
@@ -410,26 +414,27 @@ export function Table({
 			switch (e.data.action) {
 				case 'next':
 					if (tableState.accept === 'next') {
+						// console.log("received data: ", e.data.index)
 						dispatch({
 							type: 'increase',
 							newVal: e.data.data,
-							index: e.data.start,
+							index: e.data.index,
 						});
 					}
 					break;
 				case 'prev':
 					if (tableState.accept === 'prev') {
+						// console.log("received data: ", e.data.index)
 						dispatch({
 							type: 'decrease',
 							newVal: e.data.data,
-							index: e.data.start,
+							index: e.data.index,
 						});
 					}
 					break;
 				default:
 					break;
 			}
-			// console.log("causeRerender")
 			setCauseRerender(!causeRerender);
 		} else if (e.data.type === 'columns') {
 			dispatch({
@@ -456,14 +461,13 @@ export function Table({
 				newVal: e.data.data.map(() => INITIAL_COLUMN_WIDTH),
 			});
 		} else if (e.data.type === 'count') {
-			console.log('count: ', e.data.data);
+			// console.log('count: ', e.data.data);
 			dispatch({
 				type: 'set',
 				name: 'count',
 				newVal: e.data.data,
 			});
 		} else if ((e.data.type = 'startingRows')) {
-			// console.log('rows: ', e.data.data);
 			dispatch({
 				type: 'set',
 				name: 'rows',
@@ -474,7 +478,6 @@ export function Table({
 
 	useEffect(() => {
 		if (colsHook === undefined) {
-			// console.log('no cols');
 			worker.TableWorker.postMessage({
 				type: 'columns',
 				storeName: tableState.tableName,
