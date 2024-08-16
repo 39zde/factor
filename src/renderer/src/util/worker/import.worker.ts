@@ -53,7 +53,7 @@ const requestHandler = (e: MessageEvent): void => {
 				deleteData(db);
 				addData(keys, rows, db);
 				const copy = [...keys];
-				copy.splice(0, 0, 'factor_db_id');
+				copy.splice(0, 0, 'row');
 				return postMessage({
 					type: 'imported',
 					message: [rows.length, copy],
@@ -71,8 +71,8 @@ const requestHandler = (e: MessageEvent): void => {
 			request.onupgradeneeded = () => {
 				// console.log(e)
 				const db = request.result;
-				db.createObjectStore('data_upload', { keyPath: 'factor_db_id' });
-				// let objectStore = db.createObjectStore('data_upload', { keyPath: 'factor_db_id' })
+				db.createObjectStore('data_upload', { keyPath: 'row' });
+				// let objectStore = db.createObjectStore('data_upload', { keyPath: 'row' })
 				// let objectStoreIndex = objectStore.createIndex('keyIndex','key',{unique: true})
 			};
 
@@ -219,7 +219,7 @@ function addData(keys: string[], rows: string[], db: IDBDatabase) {
 	for (let i = 1; i < rows.length; i++) {
 		const columns = rows[i].split(';');
 		const out = {};
-		out['factor_db_id'] = i;
+		out['row'] = i;
 		for (let j = 0; j < keys.length; j++) {
 			out[keys[j]] = columns[j];
 		}
@@ -324,7 +324,7 @@ function rankColsByCondition(condition: string | null | number | undefined) {
 			const keysReq = objStore.get(1);
 			keysReq.onsuccess = () => {
 				const keys = Object.keys(keysReq.result);
-				keys.splice(keys.indexOf('factor_db_id'), 1);
+				keys.splice(keys.indexOf('row'), 1);
 				const counter: object = keysReq.result;
 				const update = updateManager(count * keys.length);
 				for (const [k] of Object.entries(counter)) {
@@ -473,8 +473,9 @@ function doCustomers(map: CustomerMapType) {
 		if (!db.objectStoreNames.contains('customers')) {
 			console.log('creating object store');
 			const store = db.createObjectStore('customers', {
-				keyPath: 'customerID',
+				keyPath: 'row',
 			});
+			store.createIndex('row', 'row', { unique: true });
 			store.createIndex('customerID', 'customerID', { unique: true });
 			store.createIndex('oldCustomerIDs', 'oldCustomerIDs');
 			store.createIndex('companyName', 'companyName');
@@ -544,6 +545,7 @@ function doCustomers(map: CustomerMapType) {
 function parseCustomer(map: CustomerMapType, row: any): CustomerType {
 	let customerRow: CustomerType;
 	customerRow = {
+		row: 0,
 		customerID: '',
 		addresses: [],
 		bank: [],
@@ -935,6 +937,7 @@ type CustomerMapType = {
 };
 
 interface CustomerType {
+	row: number;
 	// unique customer id
 	customerID: string;
 	// (optional) old customer ids, for backward compatibility
