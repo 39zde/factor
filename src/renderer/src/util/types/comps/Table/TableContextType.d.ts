@@ -1,6 +1,6 @@
 import { Table as TableType } from 'dexie';
 
-export type TableContextType = {
+export interface TableContextType {
 	tableName: string;
 	uniqueKey: string;
 	scope: number;
@@ -21,14 +21,15 @@ export type TableContextType = {
 	dbVersion: number;
 	start: number;
 	accept: 'prev' | 'next';
-};
+	lastReceived: number;
+}
 
-export type ResizeStyle = {
+export interface ResizeStyle {
 	background: 'light-dark(var(--color-dark-2),var(--color-light-2))' | 'none';
 	cursor: 'col-resize' | 'initial';
-};
+}
 
-export type TableDispatchAction = {
+export interface TableDispatchAction {
 	type:
 		| 'set'
 		| 'mouseDown'
@@ -61,7 +62,10 @@ export type TableDispatchAction = {
 		| 'colsRef'
 		| 'resizeStyles'
 		| 'rows'
-		| 'accept';
+		| 'accept'
+		| 'lastReceived'
+		| 'start'
+		| 'dbVersion';
 	newVal: any;
 	worker?: Worker;
-};
+}

@@ -95,7 +95,7 @@
  	overflow: hidden;
  	padding: 0px;
  	box-sizing: content-box;
-	
+
  	& * {
  		box-sizing: content-box;
  	}
@@ -116,6 +116,7 @@
  	background: light-dark(var(--color-light-2), var(--color-dark-2));
  	box-sizing: content-box;
 
+
  }
 
  tfoot {
@@ -124,6 +125,18 @@
  	border-bottom: none;
  	border-left: none;
  	border-right: none;
+
+ }
+
+ thead,
+ tfoot {
+ 	& tr>th:first-child>* {
+ 		display: none;
+ 	}
+
+ 	& tr>th:first-child {
+ 		background: light-dark(var(--color-light-1), var(--color-dark-1));
+ 	}
  }
 
  td {

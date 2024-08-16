@@ -55,7 +55,7 @@ function tableReducer(
 	//! For Some Reason the new States need to be both 'changed' in the immutable (provided) tableState and also returned. I have not looked further into it, for now it works.
 	switch (action.type) {
 		case 'changeAccept': {
-			if(action.newVal === "next" ||action.newVal === "prev"){
+			if (action.newVal === 'next' || action.newVal === 'prev') {
 				tableState.accept = action.newVal;
 				return {
 					//@ts-expect-error we want to override
@@ -63,7 +63,7 @@ function tableReducer(
 					...tableState,
 				};
 			}
-			return tableState
+			return tableState;
 		}
 		case 'increase': {
 			if (tableState.rows.includes(action.newVal)) {
@@ -72,11 +72,15 @@ function tableReducer(
 			if (action.index !== undefined) {
 				// console.log(action.index)
 				tableState.start = action.index;
-				tableState.lastReceived = action.index
+				tableState.lastReceived = action.index;
 			}
 			tableState.rows.splice(0, 1);
 			tableState.rows.push(action.newVal);
-			return tableState;
+			return {
+				//@ts-expect-error
+				rows: tableState.rows,
+				...tableState,
+			};
 		}
 		case 'decrease': {
 			if (tableState.rows.includes(action.newVal)) {
@@ -85,7 +89,7 @@ function tableReducer(
 			if (action.index !== undefined) {
 				// console.log(action.index)
 				tableState.start = action.index;
-				tableState.lastReceived = action.index
+				tableState.lastReceived = action.index;
 			}
 			tableState.rows.pop();
 			tableState.rows.splice(0, 0, action.newVal);
@@ -169,7 +173,6 @@ function tableReducer(
 			};
 		}
 		case 'mouseLeave': {
-
 			if (tableState.isMouseDown === false) {
 				tableState.activeBg = undefined;
 				tableState.resizeStyles[action.newVal] = {
@@ -332,13 +335,13 @@ export function Table({
 			const wrapperHeight =
 				wrapperRef.current.getBoundingClientRect().height;
 			if (wrapperHeight !== undefined) {
-				let scrollBarHeight: number = 5;
+				const scrollBarHeight = 5;
 				const rowCount =
 					Math.round(wrapperHeight - scrollBarHeight) /
 					appearances.rowHeight;
-				let newScope = parseInt(rowCount.toString().split('.')[0]);
+				const newScope = parseInt(rowCount.toString().split('.')[0]);
 				if (newScope > 2 && newScope < 12) {
-					let cleanedScope =
+					const cleanedScope =
 						parseInt(rowCount.toString().split('.')[0]) - 2;
 					if (tableState.scope === 0) {
 						dispatch({
@@ -346,6 +349,7 @@ export function Table({
 							name: 'scope',
 							newVal: cleanedScope,
 						});
+						setCauseRerender(!causeRerender);
 					} else {
 						dispatch({
 							type: 'scopeChange',
@@ -362,7 +366,7 @@ export function Table({
 							6,
 					});
 				} else if (newScope >= 12) {
-					let cleanedScope =
+					const cleanedScope =
 						parseInt(rowCount.toString().split('.')[0]) - 3;
 					if (tableState.scope === 0) {
 						dispatch({
@@ -414,22 +418,58 @@ export function Table({
 			switch (e.data.action) {
 				case 'next':
 					if (tableState.accept === 'next') {
-						// console.log("received data: ", e.data.index)
+						// console.log('received data: ', e.data.index);
+						if (!tableState.rows.includes(e.data.data)) {
+							if (e.data.index !== undefined) {
+								dispatch({
+									type: 'set',
+									name: 'start',
+									newVal: e.data.index,
+								});
+								dispatch({
+									type: 'set',
+									name: 'lastReceived',
+									newVal: e.data.index,
+								});
+							}
+						}
+						let rows = structuredClone(tableState.rows);
+						rows.splice(0, 1);
+						rows.push(e.data.data);
 						dispatch({
-							type: 'increase',
-							newVal: e.data.data,
-							index: e.data.index,
+							type: 'set',
+							name: 'rows',
+							newVal: rows,
 						});
 					}
 					break;
 				case 'prev':
 					if (tableState.accept === 'prev') {
 						// console.log("received data: ", e.data.index)
-						dispatch({
-							type: 'decrease',
-							newVal: e.data.data,
-							index: e.data.index,
-						});
+						if (!tableState.rows.includes(e.data.data)) {
+							if (!tableState.rows.includes(e.data.data)) {
+								if (e.data.index !== undefined) {
+									dispatch({
+										type: 'set',
+										name: 'start',
+										newVal: e.data.index,
+									});
+									dispatch({
+										type: 'set',
+										name: 'lastReceived',
+										newVal: e.data.index,
+									});
+								}
+							}
+							let rows = structuredClone(tableState.rows);
+							rows.pop();
+							rows.splice(0, 0, e.data.data);
+							dispatch({
+								type: 'set',
+								name: 'rows',
+								newVal: rows,
+							});
+						}
 					}
 					break;
 				default:
@@ -458,7 +498,9 @@ export function Table({
 			dispatch({
 				type: 'set',
 				name: 'columnWidths',
-				newVal: e.data.data.map(() => INITIAL_COLUMN_WIDTH),
+				newVal: e.data.data.map((val, index) =>
+					index === 0 ? 25 : INITIAL_COLUMN_WIDTH
+				),
 			});
 		} else if (e.data.type === 'count') {
 			// console.log('count: ', e.data.data);
@@ -467,21 +509,32 @@ export function Table({
 				name: 'count',
 				newVal: e.data.data,
 			});
+			setCauseRerender(!causeRerender);
 		} else if ((e.data.type = 'startingRows')) {
+			console.log('startingRows');
 			dispatch({
 				type: 'set',
 				name: 'rows',
 				newVal: e.data.data,
 			});
+			if (Array.isArray(e.data.data)) {
+				if (e.data.data.length == 0) {
+					console.log('rows is 0');
+				}
+			}
+			setCauseRerender(!causeRerender);
 		}
 	};
 
+	useEffect(() => {});
+
 	useEffect(() => {
-		if (colsHook === undefined) {
+		if (tableState.rows.length === 0 || tableState.rows.length === 1) {
 			worker.TableWorker.postMessage({
-				type: 'columns',
+				type: 'startingRows',
 				storeName: tableState.tableName,
 				dbVersion: database.dbVersion,
+				scope: tableState.scope,
 			});
 		}
 		if (entriesHook === undefined) {
@@ -491,12 +544,68 @@ export function Table({
 				dbVersion: database.dbVersion,
 			});
 		}
-
+		// reimplement the reducer init function
+		dispatch({
+			type: 'set',
+			name: 'lastReceived',
+			newVal: 0,
+		});
+		if (colsHook !== undefined) {
+			dispatch({
+				type: 'set',
+				name: 'columns',
+				newVal: colsHook.cols,
+			});
+			dispatch({
+				type: 'set',
+				name: 'colsRef',
+				newVal: colsHook.cols.map(() => createRef<HTMLTableCellElement>()),
+			});
+			dispatch({
+				type: 'set',
+				name: 'resizeStyles',
+				newVal: colsHook.cols.map(() => ({
+					background: 'none',
+					cursor: 'initial',
+				})),
+			});
+			dispatch({
+				type: 'set',
+				name: 'columnWidths',
+				newVal: colsHook.cols.map((val, index) =>
+					index === 0 ? 25 : INITIAL_COLUMN_WIDTH
+				),
+			});
+		}
 		worker.TableWorker.postMessage({
-			type: 'startingRows',
+			type: 'columns',
 			storeName: tableState.tableName,
 			dbVersion: database.dbVersion,
-			scope: tableState.scope,
+		});
+		worker.TableWorker.postMessage({
+			type: 'count',
+			storeName: tableState.tableName,
+			dbVersion: database.dbVersion,
+		});
+
+		if (updateHook !== undefined) {
+			dispatch({
+				type: 'set',
+				name: 'update',
+				newVal: updateHook.update,
+			});
+		} else {
+			dispatch({
+				type: 'set',
+				name: 'update',
+				newVal: false,
+			});
+		}
+
+		dispatch({
+			type: 'set',
+			name: 'dbVersion',
+			newVal: database.dbVersion,
 		});
 	}, [tableState.tableName, database.dbVersion, colsHook, entriesHook]);
 

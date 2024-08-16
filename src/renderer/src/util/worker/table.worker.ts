@@ -1,69 +1,25 @@
 self.onmessage = function requestHandler(e: MessageEvent) {
 	switch (e.data.type) {
-		case 'steam':
+		case 'stream':
 			const dbRequest = indexedDB.open('factor_db', e.data.dbVersion);
 			dbRequest.onsuccess = () => {
 				const streamDB = dbRequest.result;
-				let counterNext = 0;
-				let counterPrev = 0;
 				const transaction = streamDB.transaction(
 					e.data.storeName,
 					'readwrite'
 				);
 				const oStore = transaction.objectStore(e.data.storeName);
-				switch (e.data.action.type) {
-					case 'next':
-						let lower = IDBKeyRange.lowerBound(e.data.action.pos, false);
-
-						const cursorLowerRequest = oStore.openCursor(
-							lower,
-							'nextunique'
-						);
-						cursorLowerRequest.onsuccess = () => {
-							let streamLowerCursor: IDBCursorWithValue | boolean =
-								cursorLowerRequest.result ?? false;
-							if (streamLowerCursor) {
-								if (counterNext <= e.data.action.pos) {
-									counterNext += 1;
-									streamLowerCursor.continue();
-								} else {
-									postMessage({
-										type: 'stream',
-										action: 'next',
-										data: streamLowerCursor.value,
-										index: e.data.action.pos,
-									});
-									transaction.commit();
-								}
-							}
-						};
-						break;
-					case 'prev':
-						let upper = IDBKeyRange.lowerBound(e.data.action.pos, false);
-						const cursorUpperRequest = oStore.openCursor(
-							upper,
-							'nextunique'
-						);
-						cursorUpperRequest.onsuccess = () => {
-							let streamUpperCursor: IDBCursorWithValue | boolean =
-								cursorUpperRequest.result ?? false;
-							if (streamUpperCursor) {
-								if (counterPrev < e.data.action.pos) {
-									counterPrev += 1;
-									streamUpperCursor.continue();
-								} else {
-									postMessage({
-										type: 'stream',
-										action: 'prev',
-										data: streamUpperCursor.value,
-										index: e.data.action.pos,
-									});
-									transaction.commit();
-								}
-							}
-						};
-						break;
-				}
+				const only = IDBKeyRange.only(e.data.action.pos);
+				const req = oStore.get(only);
+				req.onsuccess = () => {
+					postMessage({
+						type: 'stream',
+						action: e.data.action.type,
+						data: req.result,
+						index: req.result['row'],
+					});
+					transaction.commit();
+				};
 			};
 			break;
 		case 'columns':
@@ -110,28 +66,28 @@ function startingRows(
 	dbRequest.onsuccess = () => {
 		let counter: number = 0;
 		const db = dbRequest.result;
-		let cursor: IDBCursorWithValue | false;
 		let cursorRequest: IDBRequest<IDBCursorWithValue | null>;
 
 		cursorRequest = db
-			.transaction(storeName, 'readwrite', { durability: 'strict' })
+			.transaction(storeName, 'readonly')
 			.objectStore(storeName)
 			.openCursor();
 
 		cursorRequest.onsuccess = () => {
-			cursor = cursorRequest.result ?? false;
+			const cursor: IDBCursorWithValue | null = cursorRequest.result;
 			if (cursor) {
-				output.push(cursor.value);
+				// console.log(counter, scope);
 				if (counter < scope) {
+					// console.log(cursor.value);
+					output.push(cursor.value);
 					counter += 1;
 					cursor.continue();
 				} else {
-					cursor = false;
+					return postMessage({ type: 'startingRows', data: output });
 				}
 			}
-			if (!cursor) {
-				postMessage({ type: 'startingRows', data: output });
-			}
+			// if (!cursor) {
+			// }
 		};
 	};
 }

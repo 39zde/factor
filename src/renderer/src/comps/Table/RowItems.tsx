@@ -39,15 +39,15 @@ function TableCell({
 	if (Array.isArray(contents)) {
 		return (
 			<>
-				<ul className="TableCellList">
-					{contents.map((content, index) => {
+				{/* <ul className="TableCellList">
+					{contents.map((content) => {
 						if (typeof content === 'object') {
 							return <></>;
 						} else {
 							return <></>;
 						}
 					})}
-				</ul>
+				</ul> */}
 			</>
 		);
 	} else {

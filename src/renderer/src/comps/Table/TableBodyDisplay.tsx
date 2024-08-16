@@ -1,4 +1,4 @@
-import React, { useContext, useRef, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 
 import { TableRows } from './TableRows';
 
@@ -19,8 +19,13 @@ export function TableBodyDisplay({
 	const lastOrdered = useRef<number>(-1)
 	const start = useRef<number>(0);
 
+	useEffect(()=>{
+		start.current = 0
+	},[tableState.tableName])
+
 	//@ts-ignore
 	const scrollHandler = (e: WheelEvent<HTMLTableSectionElement>): void => {
+		// console.log("scroll")
 		if (e.shiftKey === true || tableState.count === undefined) {
 			return;
 		}
@@ -43,21 +48,20 @@ export function TableBodyDisplay({
 				start.current = Math.max(
 					Math.min(
 						start.current + 1,
-						tableState.count - tableState.scope + 1
+						tableState.count - tableState.scope - 1
 					),
 					1
 				);
 				setStartNumber(start.current);
 
 				lastOrdered.current = start.current + tableState.scope
+				// console.log("ordering ", lastOrdered.current)
 				worker.TableWorker.postMessage({
-					type: 'steam',
+					type: 'stream',
 					storeName: tableState.tableName,
 					dbVersion: database.dbVersion,
 					action: {
 						type: 'next',
-						start: start.current,
-						scope: tableState.scope,
 						pos: start.current + tableState.scope,
 					},
 				});
@@ -71,17 +75,15 @@ export function TableBodyDisplay({
 
 			start.current = Math.max(start.current - 1, 1);
 			setStartNumber(start.current);
-
+			// console.log("ordering ", lastOrdered.current)
 			if (start.current !== 1) {
 				lastOrdered.current  = start.current - 1
 				worker.TableWorker.postMessage({
-					type: 'steam',
+					type: 'stream',
 					storeName: tableState.tableName,
 					dbVersion: database.dbVersion,
 					action: {
 						type: 'prev',
-						start: start.current,
-						scope: tableState.scope,
 						pos: start.current - 1,
 					},
 				});
@@ -96,7 +98,7 @@ export function TableBodyDisplay({
 				className="tableBody"
 				ref={tableBodyRef}
 				onWheel={scrollHandler}>
-				<div
+				<tr
 					spellCheck={causeRerender}
 					style={{
 						position: 'absolute',
@@ -106,7 +108,7 @@ export function TableBodyDisplay({
 						userSelect: 'none',
 						margin: 0,
 						zIndex: -10,
-					}}></div>
+					}}></tr>
 				<TableRows />
 			</tbody>
 		</>

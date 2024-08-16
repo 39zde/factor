@@ -1,11 +1,8 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import type { TableFootProps } from '@renderer/util/types/comps/Table/TableFootProps';
-import { AppContext } from '@renderer/App';
 
 // a copy of table head without the ability to  resize
 export function TableFoot({ columns }: TableFootProps): React.JSX.Element {
-	const { appearances } = useContext(AppContext);
-
 	return (
 		<>
 			<tfoot>
