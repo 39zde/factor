@@ -176,12 +176,20 @@ export function Upload(): React.JSX.Element {
 								<XIcon
 									onMouseEnter={() => setIsRed(true)}
 									onMouseLeave={() => setIsRed(false)}
-									color={isRed ? 'red' : 'white'}
+									color={
+										isRed
+											? 'var(--color-primary)'
+											: 'light-dark(var(--color-dark-2),var(--color-light-2))'
+									}
 									size={24}
 									strokeWidth={2}
 								/>
 							</button>
-							<FileIcon color="white" size={24} strokeWidth={2} />
+							<FileIcon
+								color="light-dark(var(--color-dark-1),var(--color-light-1))"
+								size={24}
+								strokeWidth={2}
+							/>
 							{fileName}
 						</div>
 						<button
