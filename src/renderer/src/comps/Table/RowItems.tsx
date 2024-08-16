@@ -10,7 +10,7 @@ export function RowItems({
 			{Object.keys(items).map((col, index) => {
 				return (
 					<>
-						<TableCell key={`${uniqueParentKey}-${index}`}>
+						<TableCell key={`col${index}${uniqueParentKey}`}>
 							<span className="guts">{items[col]}</span>
 						</TableCell>
 					</>

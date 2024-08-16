@@ -1,24 +1,22 @@
-import { useRef, createRef, useContext } from 'react';
+import React, { useContext } from 'react';
 import type { TableFootProps } from '@renderer/util/types/comps/Table/TableFootProps';
 import { AppContext } from '@renderer/App';
 
 // a copy of table head without the ability to  resize
 export function TableFoot({ columns }: TableFootProps) {
 	const { appearances } = useContext(AppContext);
-	const colRefs = useRef(columns.map(() => createRef<HTMLTableCellElement>()));
 
 	return (
 		<>
 			<tfoot>
 				<tr
-					key={'trf(one of one)'}
 					style={{
 						height: appearances.rowHeight,
 						borderBottom: 'none',
 						borderLeft: 'none',
 						borderRight: 'none',
 					}}>
-					{colRefs !== undefined ? (
+					{columns !== undefined ? (
 						<>
 							{columns.map((item, index) => {
 								if (item !== undefined) {
@@ -36,7 +34,7 @@ export function TableFoot({ columns }: TableFootProps) {
 										</>
 									);
 								} else {
-									return <th key={useId()}></th>;
+									return <th key={`tf-${index}-df`}></th>;
 								}
 							})}
 						</>

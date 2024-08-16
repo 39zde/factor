@@ -10,7 +10,7 @@ export function TableRows({
 	return (
 		<>
 			{table.map((item, index) => {
-				const uni = `td-${item[uniqueKey]}-${index}`;
+				const uni = `row${index}key${item[uniqueKey]}`;
 				return (
 					<>
 						<tr
@@ -19,9 +19,9 @@ export function TableRows({
 								maxHeight: rowHeight,
 								minHeight: rowHeight,
 							}}
-							key={`tr-${item[uniqueKey]}`}>
+							key={uni}>
 							<RowItems
-								key={uni}
+								key={`i-${uni}`}
 								items={item}
 								colIndex={index}
 								uniqueParentKey={uni}

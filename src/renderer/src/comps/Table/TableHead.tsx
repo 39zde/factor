@@ -1,11 +1,4 @@
-import {
-	useState,
-	useEffect,
-	useRef,
-	createRef,
-	useContext,
-	useId,
-} from 'react';
+import { useState, useEffect, useRef, createRef, useContext } from 'react';
 import type { TableHeadProps } from '@util/types/types';
 import { ResizeElement } from './ResizeElement';
 import { AppContext } from '@renderer/App';
@@ -115,9 +108,8 @@ export function TableHead({
 
 	return (
 		<>
-			<thead key={useId()}>
+			<thead>
 				<tr
-					key={useId()}
 					style={{
 						height: appearances.rowHeight,
 						borderTop: 'none',
@@ -135,7 +127,7 @@ export function TableHead({
 											minWidth: 150,
 										}}
 										ref={colRefs.current[index]}
-										key={useId()}
+										key={`thead-tr-th${index}`}
 										onClick={() => sortingHandler(item)}>
 										<span className="guts">{item}</span>
 										{resizeElemHeight !== undefined &&
@@ -146,7 +138,7 @@ export function TableHead({
 														mouseEnterHandler(index)
 													}
 													onMouseLeave={mouseLeaveHandler}
-													key={useId()}
+													key={`rz-${index}`}
 													tableHeight={resizeElemHeight}
 													onMouseDown={(e: any) =>
 														mouseDownHandler(e, index)
@@ -170,6 +162,14 @@ export function TableHead({
 										) : (
 											<></>
 										)}
+									</th>
+								</>
+							);
+						} else {
+							return (
+								<>
+									<th key={`thead-tr-th${index}-default`}>
+										<span className="guts"></span>
 									</th>
 								</>
 							);
