@@ -2,12 +2,10 @@ import { AppContext } from '@renderer/App';
 import React, { useId, useState, useRef, useContext } from 'react';
 export function RowShifter({
 	cols,
-	worker,
 }: {
 	cols: string[];
-	worker: Worker;
 }): React.JSX.Element {
-	const { general } = useContext(AppContext);
+	const { general, worker, database } = useContext(AppContext);
 	const [showOptions, setShowOptions] = useState<boolean>(false);
 	const colInputRef = useRef<HTMLSelectElement>(null);
 	const valueInputRef = useRef<HTMLInputElement>(null);
@@ -58,8 +56,10 @@ export function RowShifter({
 			offset: offsetInput,
 			direction: directionInput,
 		});
-		worker.postMessage({
+		worker.ImportWorker.postMessage({
 			type: 'align',
+			dbVersion: database.dbVersion,
+			dataBaseName: 'factor_db',
 			message: {
 				col: colInput,
 				value: valInput,
@@ -68,7 +68,7 @@ export function RowShifter({
 			},
 		});
 
-		worker.onmessage = (e) => {
+		worker.ImportWorker.onmessage = (e) => {
 			console.log(e.data);
 			setShowOptions(false);
 		};

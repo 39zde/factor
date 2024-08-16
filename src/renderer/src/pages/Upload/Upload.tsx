@@ -28,9 +28,10 @@ export function Upload(): React.JSX.Element {
 	const tableImportModeInputRef = useRef<HTMLSelectElement>(null);
 	const tableWrapperRef = useRef<HTMLDivElement>(null);
 	const importButtonRef = useRef<HTMLButtonElement>(null);
-	const [sortingMap, setSortingMap] = useState<
-		CustomerSortingMap | ArticleSortingMap
-	>({ customerID: '' });
+	const [map, setMap] = useState<CustomerSortingMap | ArticleSortingMap>({
+		row: 'row',
+		id: '',
+	});
 	const [tableImportMode, setTableImportMode] = useState<
 		UploadMode | undefined
 	>(undefined);
@@ -117,17 +118,19 @@ export function Upload(): React.JSX.Element {
 	};
 
 	const sortingMapHook = {
-		sortingMap: sortingMap,
-		setSortingMap: (newVal: ArticleSortingMap | CustomerSortingMap) => {
-			setSortingMap(newVal);
+		map: map,
+		setMap: (newVal: ArticleSortingMap | CustomerSortingMap) => {
+			setMap(newVal);
 		},
 	};
 
 	const importHandler = async () => {
 		worker.ImportWorker.postMessage({
 			type: 'sort',
-			message: sortingMap,
+			message: map,
 			content: tableImportMode,
+			dbVersion: database.dbVersion,
+			dataBaseName: 'factor_db'
 		});
 		worker.ImportWorker.onmessage = (e) => {
 			if (e.data !== undefined) {

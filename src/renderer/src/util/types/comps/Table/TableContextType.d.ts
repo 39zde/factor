@@ -1,6 +1,7 @@
 import { Table as TableType } from 'dexie';
 
 export interface TableContextType {
+	dataBaseName: string;
 	tableName: string;
 	uniqueKey: string;
 	scope: number;
@@ -65,7 +66,8 @@ export interface TableDispatchAction {
 		| 'lastReceived'
 		| 'start'
 		| 'dbVersion'
-		| 'cachedRowHeight';
+		| 'cachedRowHeight'
+		| 'dataBaseName';
 	newVal: any;
 	worker?: Worker;
 }
