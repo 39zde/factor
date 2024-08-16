@@ -28,8 +28,9 @@ export function Upload(): React.JSX.Element {
 	const [sortingMap, setSortingMap] = useState<
 		CustomerSortingMap | ArticleSortingMap
 	>({ customerID: '' });
-	const [tableImportMode, setTableImportMode] =
-		useState<UploadMode>('customers');
+	const [tableImportMode, setTableImportMode] = useState<
+		UploadMode | undefined
+	>(undefined);
 	const tableImportModeHandler = (): void => {
 		if (tableImportModeInputRef.current === null) {
 			return;
