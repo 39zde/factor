@@ -193,7 +193,7 @@ function addData(keys: string[], rows: string[], db: IDBDatabase) {
 	for (let i = 1; i < rows.length; i++) {
 		const columns = rows[i].split(';');
 		const out = {};
-		out.factor_db_id = i;
+		out['factor_db_id'] = i;
 		for (let j = 0; j < keys.length; j++) {
 			out[keys[j]] = columns[j];
 		}
