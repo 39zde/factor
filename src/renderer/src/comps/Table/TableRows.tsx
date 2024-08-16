@@ -15,7 +15,6 @@ export function TableRows({
 					<>
 						<tr
 							style={{
-								height: rowHeight,
 								maxHeight: rowHeight,
 								minHeight: rowHeight,
 							}}

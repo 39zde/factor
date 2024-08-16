@@ -24,7 +24,7 @@ export function TableHeadDisplay({
 					return (
 						<TableHead
 							columns={columns}
-							resizeElemHeight={(scope + 2) * appearances.rowHeight}
+							resizeElemHeight={4*scope + (scope+2)*appearances.rowHeight +6 }
 							cursorX={cursorX}
 							mouseHook={mouseDownHook}
 							sortingHook={sortingHook}

@@ -64,10 +64,11 @@
  	overflow-y: hidden;
  	scrollbar-color: light-dark((var(--color-dark-3) var(--color-light-1)), (var(--color-dark-3) var(--color-dark-1)));
  	scrollbar-width: var(--scrollbar-width);
-	& table{
-		height: 100%;
-	}
-}
+
+ 	& table {
+ 		height: 100%;
+ 	}
+ }
 
  .tableElement::-webkit-scrollbar-track {
  	background: red;
@@ -94,6 +95,10 @@
  	overflow: hidden;
  	padding: 0px;
  	box-sizing: content-box;
+	
+ 	& * {
+ 		box-sizing: content-box;
+ 	}
  }
 
  table {
@@ -109,15 +114,13 @@
  	border-left: none;
  	border-right: none;
  	background: light-dark(var(--color-light-2), var(--color-dark-2));
- 	;
+ 	box-sizing: content-box;
 
  }
 
  tfoot {
  	border-top: 3px solid light-dark(var(--color-dark-3), var(--color-light-3));
- 	;
  	background: light-dark(var(--color-light-2), var(--color-dark-2));
- 	;
  	border-bottom: none;
  	border-left: none;
  	border-right: none;
@@ -130,6 +133,9 @@
  	word-wrap: break-word;
  	word-break: break-word;
  	line-height: 1;
+ 	padding: 0;
+ 	margin: 0;
+
  }
 
  th {
@@ -161,6 +167,7 @@
  	border: none;
  	margin: 0;
  	padding: 0;
+ 	box-sizing: content-box;
  }
 
  th>div {
