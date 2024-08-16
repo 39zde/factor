@@ -10,9 +10,12 @@ export function RowItems({
 			{Object.keys(items).map((col, index) => {
 				return (
 					<>
-						<TableCell key={`col${index}${uniqueParentKey}`}>
-							<span className="guts">{items[col]}</span>
-						</TableCell>
+						<TableCellWrapper key={`col${index}${uniqueParentKey}`}>
+							<TableCell
+								parentKey={`col${index}${uniqueParentKey}`}
+								contents={items[col]}
+							/>
+						</TableCellWrapper>
 					</>
 				);
 			})}
@@ -21,13 +24,53 @@ export function RowItems({
 }
 
 function TableCell({
+	contents,
+}: {
+	parentKey: string;
+	contents:
+		| string
+		| string[]
+		| object
+		| object[]
+		| number
+		| number[]
+		| boolean;
+}): React.JSX.Element {
+	if (Array.isArray(contents)) {
+		return (
+			<>
+				<ul className="TableCellList">
+					{contents.map((content, index) => {
+						if (typeof content === 'object') {
+							return <></>;
+						} else {
+							return <></>;
+						}
+					})}
+				</ul>
+			</>
+		);
+	} else {
+		switch (typeof contents) {
+			case 'object':
+				return <></>;
+			case 'number':
+				return <></>;
+			case 'boolean':
+				return <></>;
+			case 'string':
+				return <></>;
+			default:
+				return <></>;
+		}
+	}
+}
+
+function TableCellWrapper({
 	children,
 }: {
-	key: string;
-	children: ReactElement<
-		{ className: string },
-		JSXElementConstructor<HTMLSpanElement>
-	>;
+	key?: string;
+	children: React.JSX.Element;
 }): React.JSX.Element {
 	const { appearances } = useContext(AppContext);
 	return (
@@ -37,7 +80,7 @@ function TableCell({
 					maxHeight: appearances.rowHeight,
 					height: appearances.rowHeight,
 				}}>
-				{children}
+				<span className="guts">{children}</span>
 			</td>
 		</>
 	);
