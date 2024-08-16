@@ -39,12 +39,14 @@ export function TableHead(): React.JSX.Element {
 												newVal: index,
 											})
 										}
-										onMouseLeave={() =>
-											dispatch({
-												type: 'mouseLeave',
-												newVal: index,
-											})
-										}
+										onMouseLeave={() => {
+											if (!tableState.isMouseDown) {
+												dispatch({
+													type: 'mouseLeave',
+													newVal: index,
+												});
+											}
+										}}
 										key={`rz-${index}`}
 										onMouseDown={() => {
 											dispatch({

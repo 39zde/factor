@@ -378,10 +378,12 @@ export function Table({
 							className="tableElement"
 							ref={wrapperRef}
 							onMouseMove={(e) => {
-								dispatch({
-									type: 'mouseMove',
-									newVal: e.pageX,
-								});
+								if (tableState.isMouseDown) {
+									dispatch({
+										type: 'mouseMove',
+										newVal: e.pageX,
+									});
+								}
 							}}
 							onMouseUp={() => {
 								dispatch({
