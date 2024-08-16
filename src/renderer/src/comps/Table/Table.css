@@ -140,14 +140,9 @@ th > div {
     gap: 5px;
 }
 
-.colSlider {
+.resizeElement {
     top: 0;
-    right: 0;
+    right: -2.5px;
     position: absolute;
-    width: 4px;
-    cursor: col-resize;
-}
-
-.colSlider:hover {
-    background-color: light-dark(var(--color-dark-2),var(--color-light-2));
+    width: 5px;
 }

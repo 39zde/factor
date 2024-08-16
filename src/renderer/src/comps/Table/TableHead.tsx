@@ -23,11 +23,13 @@ export function TableHead({
 	const { general, appearances } = useContext(AppContext);
 	const colRefs = useRef(columns.map(() => createRef<HTMLTableCellElement>()));
 	const [activeCol, setActiveCol] = useState<number>(0);
+	const [activeBg, setActiveBg] = useState<number | undefined>(undefined);
 
 	useEffect(() => {
 		if (mouseHook !== undefined && cursorX !== undefined) {
 			if (mouseHook.value === false) {
 				// stop adjusting the col width
+				setActiveBg(undefined);
 			} else if (mouseHook.value === true) {
 				//start adjusting the col width
 				if (activeCol !== 0) {
@@ -74,9 +76,10 @@ export function TableHead({
 	const mouseDownHandler = (e: MouseEvent, index: number) => {
 		if (mouseHook !== undefined) {
 			// console.log("setting mouse down to true");
-			mouseHook?.setValue(true);
+			mouseHook.setValue(true);
 		}
-		// console.log("setting active INdex to ", +index);
+		console.log('setting active INdex to ', index);
+		setActiveBg(index);
 		setActiveCol(index);
 		// console.log(e);
 	};
@@ -98,6 +101,17 @@ export function TableHead({
 					sortingHook.setSortingDirection('asc');
 				}
 			}
+		}
+	};
+
+	const mouseEnterHandler = (index: number) => {
+		console.log('setting activeBG to ', index);
+		setActiveBg(index);
+	};
+
+	const mouseLeaveHandler = () => {
+		if (mouseHook.value === false) {
+			setActiveBg(undefined);
 		}
 	};
 
@@ -146,11 +160,29 @@ export function TableHead({
 										index !== columns.length - 1 ? (
 											<>
 												<ResizeElement
+													onMouseEnter={() =>
+														mouseEnterHandler(index)
+													}
+													onMouseLeave={mouseLeaveHandler}
 													key={useId()}
 													tableHeight={resizeElemHeight}
 													onMouseDown={(e: any) =>
 														mouseDownHandler(e, index)
 													}
+													style={{
+														background:
+															activeBg !== undefined
+																? activeBg === index
+																	? 'light-dark(var(--color-dark-2),var(--color-light-2))'
+																	: 'none'
+																: 'none',
+														cursor:
+															activeBg !== undefined
+																? activeBg === index
+																	? 'col-resize'
+																	: 'initial'
+																: 'initial',
+													}}
 												/>
 											</>
 										) : (
