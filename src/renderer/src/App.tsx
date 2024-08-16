@@ -25,6 +25,7 @@ const defaultContext: AppContextType = {
 	appearances: {
 		colorTheme: 'system',
 		rowHeight: 38,
+		columnWidth: 160,
 		sideBarWidth: 160,
 	},
 	database: {
@@ -39,7 +40,9 @@ const defaultContext: AppContextType = {
 		ImportWorker: ImportWorker,
 		TableWorker: TableWorker,
 	},
-	changeContext: () => {},
+	changeContext: () => {
+		console.log('change context default');
+	},
 };
 
 export const AppContext = createContext<AppContextType>(defaultContext);
@@ -55,6 +58,7 @@ function App(): JSX.Element {
 			appearances: {
 				colorTheme: newContext.appearances.colorTheme,
 				rowHeight: newContext.appearances.rowHeight,
+				columnWidth: newContext.appearances.columnWidth,
 				sideBarWidth: newContext.appearances.sideBarWidth,
 			},
 			database: {
@@ -75,8 +79,8 @@ function App(): JSX.Element {
 			contextValue.appearances.colorTheme !==
 			contextObj.appearances.colorTheme
 		) {
-			//@ts-ignore
-			document.getElementById('theme').innerHTML =
+			// @ts-expect-error typescript does not know about this html-tag
+			document.getElementById('theme').innerText =
 				`:root{ color-scheme: ${newContext.appearances.colorTheme} ; }`;
 		}
 		const result = window.electron.ipcRenderer.sendSync('settings', {
@@ -90,10 +94,7 @@ function App(): JSX.Element {
 	};
 
 	useMemo(() => {
-		// console.log('readingSettings');
-		// const locker = new LockManager();
 		navigator.storage.persist();
-		// window.electron.ipcRenderer.send("ping")
 		const settingsFile: AppSettingsType =
 			window.electron.ipcRenderer.sendSync('settings', {
 				type: 'readSettings',
@@ -116,8 +117,8 @@ function App(): JSX.Element {
 		};
 
 		setContextValue(context);
-		//@ts-ignore
-		document.getElementById('theme').innerHTML =
+		// @ts-expect-error typescript does not know about this html-tag
+		document.getElementById('theme').innerText =
 			`:root{ color-scheme: ${settingsFile.appearances.colorTheme} ; }`;
 	}, []);
 

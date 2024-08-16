@@ -8,6 +8,7 @@ export function Settings() {
 	const context = useContext(AppContext);
 	const themeInputRef = useRef<HTMLSelectElement>(null);
 	const rowHeightInputRef = useRef<HTMLInputElement>(null);
+	const colWidthInputRef = useRef<HTMLInputElement>(null);
 	const langInputRef = useRef<HTMLSelectElement>(null);
 	const decimalSeparatorInputRef = useRef<HTMLSelectElement>(null);
 	const sideBarWidthInputRef = useRef<HTMLInputElement>(null);
@@ -20,6 +21,9 @@ export function Settings() {
 	);
 	const [rowHeight, setRowHeight] = useState<number>(
 		context.appearances.rowHeight
+	);
+	const [columnWidth, setColumnWidth] = useState<number>(
+		context.appearances.columnWidth
 	);
 	const [language, setLanguage] = useState<'english' | 'deutsch'>(
 		context.general.language
@@ -81,6 +85,14 @@ export function Settings() {
 		}
 	};
 
+	const columnWidthInputHandler = () => {
+		if (colWidthInputRef.current !== null) {
+			if (colWidthInputRef.current.value !== undefined) {
+				setColumnWidth(parseInt(colWidthInputRef.current.value));
+			}
+		}
+	};
+
 	const saveSettings = useCallback(() => {
 		const changed: {
 			value: number | string;
@@ -97,6 +109,7 @@ export function Settings() {
 				category: 'general',
 			},
 			{ value: sideBarWidth, name: 'sideBarWidth', category: 'appearances' },
+			{ value: columnWidth, name: 'columnWidth', category: 'appearances' },
 		];
 
 		for (const item of items) {
@@ -126,7 +139,7 @@ export function Settings() {
 			// console.log(newContext);
 			context.changeContext(newContext);
 		}
-	}, [rowHeight, colorTheme, language, decimalSeparator, sideBarWidth]);
+	}, [rowHeight, colorTheme, language, decimalSeparator, sideBarWidth, columnWidth]);
 
 	return (
 		<>
@@ -173,9 +186,9 @@ export function Settings() {
 					</div>
 					<div className="settingsOption">
 						<p>
-							{context.general.language === 'english'
-								? 'Table Row Height '
-								: 'Tabellenzeilenhöhe '}
+							{context.general.language === 'deutsch'
+								? 'Tabellenzeilenhöhe '
+								: 'Table Row Height '}
 							(px)
 						</p>
 						<input
@@ -186,6 +199,23 @@ export function Settings() {
 							max={60}
 							step={1}
 							value={rowHeight}
+						/>
+					</div>
+					<div className="settingsOption">
+						<p>
+							{context.general.language === 'deutsch'
+								? 'Standartspaltenbreite '
+								: 'Default column width '}
+							(px)
+						</p>
+						<input
+							onInput={columnWidthInputHandler}
+							ref={colWidthInputRef}
+							type="number"
+							min={50}
+							max={400}
+							step={1}
+							value={columnWidth}
 						/>
 					</div>
 					<div className="settingsOption">
@@ -221,8 +251,8 @@ export function Settings() {
 							ref={langInputRef}
 							onInput={langInputHandler}
 							defaultValue={language}>
-							<option>english </option>
-							<option>deutsch </option>
+							<option value={'english'}>english </option>
+							<option value={'deutsch'}>deutsch </option>
 						</select>
 					</div>
 					<div className="settingsOption">

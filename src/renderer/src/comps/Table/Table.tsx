@@ -270,7 +270,6 @@ export function Table({
 	updateHook,
 	uniqueKey,
 }: TableProps): React.JSX.Element {
-	const INITIAL_COLUMN_WIDTH = 150;
 	const { clientHeight } = useContext(WindowContext);
 	const { database, appearances, worker } = useContext(AppContext);
 	const tableBodyRef = useRef<HTMLTableSectionElement>(null);
@@ -499,7 +498,7 @@ export function Table({
 				type: 'set',
 				name: 'columnWidths',
 				newVal: e.data.data.map((val, index) =>
-					index === 0 ? 25 : INITIAL_COLUMN_WIDTH
+					index === 0 ? 25 : appearances.columnWidth
 				),
 			});
 		} else if (e.data.type === 'count') {
@@ -525,8 +524,6 @@ export function Table({
 			setCauseRerender(!causeRerender);
 		}
 	};
-
-	useEffect(() => {});
 
 	useEffect(() => {
 		if (tableState.rows.length === 0 || tableState.rows.length === 1) {
@@ -573,7 +570,7 @@ export function Table({
 				type: 'set',
 				name: 'columnWidths',
 				newVal: colsHook.cols.map((val, index) =>
-					index === 0 ? 25 : INITIAL_COLUMN_WIDTH
+					index === 0 ? 25 : appearances.columnWidth
 				),
 			});
 		}

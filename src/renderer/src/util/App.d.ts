@@ -2,6 +2,7 @@ export interface AppContextType {
 	appearances: {
 		colorTheme: 'light' | 'dark' | 'system';
 		rowHeight: number;
+		columnWidth: number;
 		sideBarWidth: number;
 	};
 	database: {
@@ -25,6 +26,7 @@ export interface AppSettingsType {
 	appearances: {
 		colorTheme: 'light' | 'dark' | 'system';
 		rowHeight: number;
+		columnWidth: number;
 		sideBarWidth: number;
 	};
 	database: {
