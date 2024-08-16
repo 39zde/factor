@@ -6,6 +6,7 @@ import React, {
 	useContext,
 	useMemo,
 	memo,
+	createContext,
 } from 'react';
 import { AppContext } from '@renderer/App';
 import { WindowContext } from '../WindowContext';
@@ -14,7 +15,11 @@ import { TableBodyDisplay } from './TableBodyDisplay';
 import { TableFootDisplay } from './TableFootDisplay';
 import './Table.css';
 
-import type { TableProps, TableFootDisplayProps } from '@util/types/types';
+import type {
+	TableProps,
+	TableFootDisplayProps,
+	TableContextType,
+} from '@util/types/types';
 import type { Table as TableType } from 'dexie';
 
 const TableContext = createContext<TableContextType>({
@@ -48,10 +53,10 @@ export function Table({
 	const wrapperRef = useRef<HTMLDivElement>(null);
 	const [scope, setScope] = useState<number>(0);
 	const start = useRef<number>(0);
-	const [count, setCount] = useState<number>();
+	const [count, setCount] = useState<number>(0);
 	const [cursorX, setCursorX] = useState<number>(0);
 	const [isMouseDown, setIsMouseDown] = useState<boolean>(false);
-	const [columns, setColumns] = useState<string[]>();
+	const [columns, setColumns] = useState<string[]>([]);
 	//@ts-ignore
 	const [dbTable, setDBTable] = useState<TableType<any, any, any>>();
 	const [cursor, setCursor] = useState<'col-resize' | 'initial'>('initial');
@@ -175,41 +180,43 @@ export function Table({
 
 	return (
 		<>
-			<div tabIndex={-1} className="tableWrapper">
-				<div
-					className="tableElement"
-					ref={wrapperRef}
-					onMouseMove={mouseMoveHandler}
-					onMouseUp={mouseUpHandler}>
-					<table
-						style={{
-							cursor: cursor,
-							userSelect: userSelect,
-						}}>
-						<TableHeadDisplay
-							columns={columns}
-							scope={scope}
-							mouseDownHook={mouseDownHook}
-							update={updateHook?.update}
-							cursorX={cursorX}
-						/>
-						<TableBodyDisplay
-							uniqueKey={uniqueKey}
-							tableName={tableName}
-							updateHook={updateHook}
-							scope={scope}
-							tableBodyRef={tableBodyRef}
-							count={count}
-							start={start}
-						/>
+			<TableContext.Provider value={TableContextValue}>
+				<div tabIndex={-1} className="tableWrapper">
+					<div
+						className="tableElement"
+						ref={wrapperRef}
+						onMouseMove={mouseMoveHandler}
+						onMouseUp={mouseUpHandler}>
+						<table
+							style={{
+								cursor: cursor,
+								userSelect: userSelect,
+							}}>
+							<TableHeadDisplay
+								columns={columns}
+								scope={scope}
+								mouseDownHook={mouseDownHook}
+								update={updateHook?.update}
+								cursorX={cursorX}
+							/>
+							<TableBodyDisplay
+								uniqueKey={uniqueKey}
+								tableName={tableName}
+								updateHook={updateHook}
+								scope={scope}
+								tableBodyRef={tableBodyRef}
+								count={count}
+								start={start}
+							/>
 
-						<TableFootDisplayMemo
-							columns={columns}
-							update={updateHook?.update}
-						/>
-					</table>
+							<TableFootDisplayMemo
+								columns={columns}
+								update={updateHook?.update}
+							/>
+						</table>
+					</div>
 				</div>
-			</div>
+			</TableContext.Provider>
 		</>
 	);
 }
