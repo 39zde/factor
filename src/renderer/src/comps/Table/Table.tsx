@@ -34,6 +34,7 @@ export const TableContext = createContext<TableContextType>({
 	columns: [],
 	setColumns: (newVal: string[]): void => {},
 	dbTable: undefined,
+	setDbTable: (newVal: TableType<any,any,any>): void =>{},
 	cursor: 'initial',
 	setCursor: (newVal: 'initial' | 'col-resize'): void => {},
 	cursorX: 0,
@@ -89,6 +90,9 @@ export function Table({
 			setColumns(newVal);
 		},
 		dbTable: dbTable,
+			setDbTable: (newVal: TableType<any, any, any>): void => {
+				setDbTable(newVal);
+			},
 		cursor: cursor,
 		setCursor: (newVal: 'initial' | 'col-resize'): void => {
 			setCursor(newVal);

@@ -12,6 +12,7 @@ export type TableContextType = {
 	columns: string[];
 	setColumns: (newVal: string[]) => void;
 	dbTable: TableType<any, any, any> | undefined;
+	setDbTable: (newVal: TableType<any, any, any>) => void;
 	cursor: 'initial' | 'col-resize';
 	setCursor: (newVal: 'initial' | 'col-resize') => void;
 	cursorX: number;
