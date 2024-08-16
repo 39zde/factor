@@ -10,7 +10,7 @@ export function TableRows({
 	return (
 		<>
 			{table.map((item, index) => {
-				const uni = `td-${item[uniqueKey]}`;
+				const uni = `td-${item[uniqueKey]}-${index}`;
 				return (
 					<>
 						<tr
