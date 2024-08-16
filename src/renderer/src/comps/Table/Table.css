@@ -64,7 +64,7 @@
  	overflow-y: hidden;
  	scrollbar-color: light-dark((var(--color-dark-3) var(--color-light-1)), (var(--color-dark-3) var(--color-dark-1)));
  	scrollbar-width: var(--scrollbar-width);
-
+	position: relative;
  	& table {
  		height: 100%;
  	}
@@ -94,7 +94,7 @@
  	margin: 0;
  	overflow: hidden;
  	padding: 0px;
- 	box-sizing: content-box;
+ 	box-sizing: border-box;
 
  	& * {
  		box-sizing: content-box;
@@ -135,9 +135,15 @@
  	}
 
  	& tr>th:first-child {
- 		background: light-dark(var(--color-light-1), var(--color-dark-1));
+ 		/* background: light-dark(var(--color-light-1), var(--color-dark-1)); */
  	}
  }
+
+ tbody > tr > td:first-child{
+	background: light-dark(var(--color-light-2), var(--color-dark-2));
+
+ }
+
 
  td {
  	text-overflow: clip;
@@ -200,4 +206,24 @@
 
  .tableBody{
 	position: relative;
+	overflow: visible;
+ }
+
+
+ .rowNavigator{
+	position: absolute;
+	background: none;
+	border: none;
+	border-radius: 0;
+	padding: 0;
+	margin: 0;
+	left: 0;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index: 2;
+ }
+
+ .rowNavigator:hover{
+	background:none;
  }

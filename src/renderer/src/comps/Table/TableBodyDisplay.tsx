@@ -6,13 +6,15 @@ import { AppContext } from '@renderer/App';
 import type { TableBodyDisplayProps } from '@util/types/types';
 import { useTableContext, useTableDispatch } from './Table';
 
+import { ChevronDown, ChevronUp } from 'lucide-react';
+
 export function TableBodyDisplay({
 	tableBodyRef,
 	causeRerender,
 }: TableBodyDisplayProps): React.JSX.Element {
 	const tableState = useTableContext();
 	const dispatch = useTableDispatch();
-	const { worker, database, general } = useContext(AppContext);
+	const { worker, database, general, appearances } = useContext(AppContext);
 	const lastOrdered = useRef<number>(-1);
 	const start = useRef<number>(0);
 
@@ -21,39 +23,37 @@ export function TableBodyDisplay({
 	}, [tableState.tableName]);
 
 	function increase() {
-		start.current = Math.max(
-			Math.min(start.current + 1, tableState.count - tableState.scope - 1),
-			1
-		);
-
-		if (!(start.current + tableState.scope > tableState.count)) {
-			lastOrdered.current = start.current + tableState.scope;
-			// console.log("ordering ", lastOrdered.current)
+		if (tableState.scope + start.current  <= tableState.count) {
+			start.current = start.current + 1
+			lastOrdered.current = start.current + tableState.scope - 1;
+			// console.log('ordering ', lastOrdered.current);
 			worker.TableWorker.postMessage({
 				type: 'stream',
 				storeName: tableState.tableName,
 				dbVersion: database.dbVersion,
 				action: {
 					type: 'next',
-					pos: start.current + tableState.scope,
+					pos: lastOrdered.current,
 				},
 			});
 		}
 	}
 
 	function decrease() {
-		start.current = Math.max(start.current - 1, 1);
-		// console.log("ordering ", lastOrdered.current)
-		lastOrdered.current = start.current - 1;
-		worker.TableWorker.postMessage({
-			type: 'stream',
-			storeName: tableState.tableName,
-			dbVersion: database.dbVersion,
-			action: {
-				type: 'prev',
-				pos: start.current - 1,
-			},
-		});
+		if (start.current - 1 >= 1) {
+			start.current = Math.max(start.current - 1, 1);
+			lastOrdered.current = start.current;
+			// console.log('ordering ', lastOrdered.current);
+			worker.TableWorker.postMessage({
+				type: 'stream',
+				storeName: tableState.tableName,
+				dbVersion: database.dbVersion,
+				action: {
+					type: 'prev',
+					pos: lastOrdered.current,
+				},
+			});
+		}
 	}
 
 	//@ts-ignore
@@ -84,10 +84,7 @@ export function TableBodyDisplay({
 				if (i == tableState.scope) {
 					break;
 				}
-
-				if (start.current <= tableState.count + 1) {
-					increase();
-				}
+				increase();
 			}
 		} else if (e.deltaY < 0) {
 			// scroll up
@@ -97,18 +94,47 @@ export function TableBodyDisplay({
 			});
 
 			for (let i = 0; i < general.scrollSpeed; i++) {
-				if (start.current !== 1) {
-					if (i == tableState.scope) {
-						break;
-					}
-					decrease();
+				if (i == tableState.scope) {
+					break;
 				}
+				decrease();
 			}
 		}
 	};
 
+	const iconProps = {
+		color: 'light-dark(var(--color-dark-1),var(--color-light-1))',
+		size: appearances.rowHeight - 10,
+		strokeWidth: 2,
+	};
+
+	const upHandler = () => {
+		dispatch({
+			type: 'changeAccept',
+			newVal: 'prev',
+		});
+		decrease();
+	};
+	const downHandler = () => {
+		dispatch({
+			type: 'changeAccept',
+			newVal: 'next',
+		});
+		increase();
+	};
+
 	return (
 		<>
+			<button
+				onClick={upHandler}
+				className="rowNavigator"
+				style={{
+					height: appearances.rowHeight,
+					width: 30,
+					top: 0,
+				}}>
+				<ChevronUp {...iconProps} />
+			</button>
 			<tbody
 				className="tableBody"
 				ref={tableBodyRef}
@@ -126,6 +152,16 @@ export function TableBodyDisplay({
 					}}></tr>
 				<TableRows />
 			</tbody>
+			<button
+				onClick={downHandler}
+				className="rowNavigator"
+				style={{
+					height: appearances.rowHeight - 10,
+					width: 30,
+					bottom: 0,
+				}}>
+				<ChevronDown {...iconProps} />
+			</button>
 		</>
 	);
 }

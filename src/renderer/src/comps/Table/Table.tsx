@@ -240,13 +240,14 @@ export function Table({
 	updateHook,
 	uniqueKey,
 }: TableProps): React.JSX.Element {
-	const rowColumnWidth = 30
+	const rowColumnWidth = 30;
 	const { clientHeight } = useContext(WindowContext);
 	const { database, appearances, worker } = useContext(AppContext);
 	const tableBodyRef = useRef<HTMLTableSectionElement>(null);
 	const wrapperRef = useRef<HTMLDivElement>(null);
 	const colsRef = useRef<React.RefObject<HTMLTableCellElement>[]>([]).current;
 	const [causeRerender, setCauseRerender] = useState<boolean>(false);
+	const [hasStarted, setHasStarted] = useState<boolean>(false);
 	const [tableState, dispatch] = useReducer(
 		tableReducer,
 		{
@@ -388,14 +389,13 @@ export function Table({
 			switch (e.data.action) {
 				case 'next':
 					if (tableState.accept === 'next') {
-						let rows = tableState.rows
-						// console.log('received data: ', e.data.index);
+						let rows = tableState.rows;
 						if (!tableState.rows.includes(e.data.data)) {
 							if (e.data.index !== undefined) {
 								dispatch({
 									type: 'set',
 									name: 'start',
-									newVal: e.data.index,
+									newVal: e.data.index - tableState.scope + 1,
 								});
 								dispatch({
 									type: 'set',
@@ -406,6 +406,7 @@ export function Table({
 						}
 						rows.splice(0, 1);
 						rows.push(e.data.data);
+						// console.log('received data: ', e.data.index);
 						dispatch({
 							type: 'set',
 							name: 'rows',
@@ -415,7 +416,7 @@ export function Table({
 					break;
 				case 'prev':
 					if (tableState.accept === 'prev') {
-						let rows = tableState.rows
+						let rows = tableState.rows;
 						if (!tableState.rows.includes(e.data.data)) {
 							if (!tableState.rows.includes(e.data.data)) {
 								if (e.data.index !== undefined) {
@@ -433,6 +434,7 @@ export function Table({
 							}
 							rows.pop();
 							rows.splice(0, 0, e.data.data);
+							// console.log("received ", e.data.index)
 							dispatch({
 								type: 'set',
 								name: 'rows',

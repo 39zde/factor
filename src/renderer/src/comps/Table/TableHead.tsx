@@ -14,6 +14,8 @@ export function TableHead(): React.JSX.Element {
 				<tr
 					style={{
 						height: appearances.rowHeight,
+						maxHeight: appearances.rowHeight,
+						minHeight: appearances.rowHeight,
 						borderTop: 'none',
 						borderLeft: 'none',
 						borderRight: 'none',
@@ -24,9 +26,10 @@ export function TableHead(): React.JSX.Element {
 								<th
 									style={{
 										borderTop: 'none',
-										borderLeft: index === 0 ? 'none' : 'inherit',
+										// borderLeft: index === 0 ? 'none' : 'inherit',
 										minWidth: tableState.columnWidths[index],
 										maxWidth: tableState.columnWidths[index],
+										width: tableState.columnWidths[index],
 									}}
 									ref={tableState.colsRef[index]}
 									key={`thead-tr-th${index}`}>
