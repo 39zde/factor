@@ -12,7 +12,13 @@ export default tseslint.config(
 	...tseslint.configs.stylisticTypeChecked,
 	{
 		name: 'project settings',
-		files: ['**/*.{js,jsx,mjs,cjs,ts,tsx}'],
+		files: [
+			'src/renderer/src/env.d.ts',
+			'src/renderer/src/**/*',
+			'src/renderer/src/**/*.tsx',
+			'src/renderer/src/util/worker/*.js',
+			'src/preload/*.d.ts',
+		],
 		ignores: [],
 		plugins: {
 			react,
@@ -24,7 +30,7 @@ export default tseslint.config(
 			},
 			parser: tsParser,
 			parserOptions: {
-				project: './tsconfig.web.json',
+				project: './tsconfig.json',
 				tsconfigRootDir: import.meta.dirname,
 				ecmaFeatures: {
 					jsx: true,
