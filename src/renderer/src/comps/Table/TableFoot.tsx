@@ -1,4 +1,4 @@
-import { useRef, createRef, useContext, useId } from 'react';
+import { useRef, createRef, useContext } from 'react';
 import type { TableFootProps } from '@renderer/util/types/comps/Table/TableFootProps';
 import { AppContext } from '@renderer/App';
 
@@ -11,7 +11,7 @@ export function TableFoot({ columns }: TableFootProps) {
 		<>
 			<tfoot>
 				<tr
-					key={useId()}
+					key={'trf(one of one)'}
 					style={{
 						height: appearances.rowHeight,
 						borderBottom: 'none',
@@ -30,7 +30,7 @@ export function TableFoot({ columns }: TableFootProps) {
 													borderLeft:
 														index === 0 ? 'none' : 'inherit',
 												}}
-												key={useId()}>
+												key={`tf-${index}`}>
 												{item}
 											</th>
 										</>
