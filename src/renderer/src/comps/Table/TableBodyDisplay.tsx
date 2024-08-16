@@ -14,7 +14,6 @@ export function TableBodyDisplay({
 	const tableState = useTableContext();
 	const dispatch = useTableDispatch();
 	const { worker, database } = useContext(AppContext);
-	const [startNumber, setStartNumber] = useState<number>(0);
 	const { clientHeight } = useContext(WindowContext);
 	const lastOrdered = useRef<number>(-1);
 	const start = useRef<number>(0);
@@ -52,7 +51,6 @@ export function TableBodyDisplay({
 					),
 					1
 				);
-				setStartNumber(start.current);
 
 				lastOrdered.current = start.current + tableState.scope;
 				// console.log("ordering ", lastOrdered.current)
@@ -74,7 +72,6 @@ export function TableBodyDisplay({
 			});
 
 			start.current = Math.max(start.current - 1, 1);
-			setStartNumber(start.current);
 			// console.log("ordering ", lastOrdered.current)
 			if (start.current !== 1) {
 				lastOrdered.current = start.current - 1;
@@ -89,7 +86,6 @@ export function TableBodyDisplay({
 				});
 			}
 		}
-		setStartNumber(start.current);
 	};
 
 	return (
