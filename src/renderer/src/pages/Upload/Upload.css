@@ -186,29 +186,21 @@
 
 
  .dataSorter {
- 	display: flex;
- 	height: fit-content;
- 	flex-direction: column;
+	width: 100%;
+	display: flex;
+	height: 100%;
+	justify-content: flex-start;
+	flex-direction: column;
+	align-items: center;
+	gap: 20px;
+	border-top: 1px solid light-dark(var(--color-dark-2),var(--color-light-2));
+	overflow-y: scroll;
+	scrollbar-width: var(--scrollbar-width);
+	scrollbar-color: var(--scrollbar-color);
+	padding-left: 12px;
+	padding-top: 12px;
  }
 
- .dataSorter>div {
- 	height: 50%;
- }
-
- .dataAssigner {
- 	width: 100%;
- 	display: flex;
- 	justify-content: flex-start;
- 	flex-direction: column;
- 	align-items: center;
- 	gap: 20px;
- 	border-top: 1px solid var(--color-text);
- 	overflow-y: scroll;
- 	scrollbar-width: var(--scrollbar-width);
- 	scrollbar-color: var(--scrollbar-color);
- 	padding-bottom: 64px;
- 	padding-left: 12px;
- }
 
  .dataStruct {
  	font-family: monospace;
@@ -239,4 +231,37 @@
 
  .assignWrapper {
  	width: 100%;
+	padding-bottom: 64px;
+ }
+
+
+ .tableInfoWrapper{
+	width: 100%;
+	height: fit-content;
+	justify-content: center;
+	align-items: center;
+	align-self: center;
+	display: flex;
+ }
+
+
+ .uploadTableWrapper{
+	height: 45vh;
+ }
+
+ .sorter{
+	display: flex;
+	width: 90%;
+	justify-content: center;
+	align-items: center;
+	gap: 32px;
+	height: fit-content;
+	flex-direction: row;
+	align-self: center;
+	border-color: light-dark(var(--color-light-3),var(--color-dark-3));
+	border-width: 1px;
+	border-style: solid;
+	padding: 8px 0;
+	border-radius: 100px;
+
  }

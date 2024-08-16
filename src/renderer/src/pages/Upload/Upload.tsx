@@ -25,8 +25,7 @@ export function Upload(): React.JSX.Element {
 	const [update, setUpdate] = useState<boolean>(false); // stop rendering while updating
 	const [mouseInSorter, setMouseInSorter] = useState<boolean>(false);
 	const tableImportModeInputRef = useRef<HTMLSelectElement>(null);
-	const pageRef = useRef<HTMLDivElement>(null);
-	const [dataSorterHeight, setDataSorterHeight] = useState<number>(0);
+	const tableWrapperRef = useRef<HTMLDivElement>(null);
 	const [sortingMap, setSortingMap] = useState<
 		CustomerSortingMap | ArticleSortingMap
 	>({ customerID: '' });
@@ -67,18 +66,6 @@ export function Upload(): React.JSX.Element {
 			setShowFile(true);
 		}
 	}, []);
-
-	useEffect((): void => {
-		if (pageRef.current !== null) {
-			let heightAvail = pageRef.current.getBoundingClientRect().height;
-			for (const child of pageRef.current.children) {
-				if (child.className !== 'dataSorter') {
-					heightAvail -= child.getBoundingClientRect().height;
-				}
-			}
-			setDataSorterHeight(heightAvail);
-		}
-	}, [showTable]);
 
 	const removeFileHandler = (): void => {
 		sessionStorage.removeItem('fileUpload');
@@ -156,7 +143,7 @@ export function Upload(): React.JSX.Element {
 		<>
 			<div
 				className="uploadPage page"
-				ref={pageRef}
+				ref={tableWrapperRef}
 				style={{ overflow: 'hidden' }}>
 				<h1>{general.language === 'deutsch' ? 'Hochladen' : 'Upload'}</h1>
 				<div className="fileSelector">
@@ -220,6 +207,7 @@ export function Upload(): React.JSX.Element {
 						</button>
 					</div>
 				</div>
+				<div className="tableInfoWrapper">
 				{showTable && cols.length !== 0 ? (
 					<>
 						<ul className="tableInfo">
@@ -248,12 +236,10 @@ export function Upload(): React.JSX.Element {
 				) : (
 					<></>
 				)}
-
+				</div>
+				<div className="uploadTableWrapper" ref={tableWrapperRef}>
 				{showTable ? (
 					<>
-						<div
-							className="dataSorter"
-							style={{ height: dataSorterHeight }}>
 							<Table
 								uniqueKey={'factor_db_id'}
 								tableName="data_upload"
@@ -261,19 +247,26 @@ export function Upload(): React.JSX.Element {
 								entriesHook={entriesHook}
 								updateHook={updateHook}
 							/>
-							<div className="dataAssigner">
+						</>
+					) : (
+						<></>
+					)}
+				</div>
+				<div className="dataSorter">
+					{showTable ? (
+						<>
 								<h2>
 									{general.language === 'english'
 										? 'Sort and Assign Data'
 										: 'Daten Sortieren und Einordnen'}
 								</h2>
-								<div className="tableInfo">
-									<ul>
+							<ul className="sorter">
 										<li>
 											<select
 												onInput={tableImportModeHandler}
 												ref={tableImportModeInputRef}
-												defaultValue={'customers'}>
+										defaultValue={undefined}>
+										<option value={undefined}>-</option>
 												<option value="articles">
 													{general.language == 'deutsch'
 														? 'Artikel'
@@ -314,24 +307,24 @@ export function Upload(): React.JSX.Element {
 											</button>
 										</li>
 									</ul>
-								</div>
-
-								<div
-									className="assignWrapper"
-									onMouseEnter={sortEnterHandler}
-									onMouseLeave={sortLeaveHandler}>
+						</>
+					) : (
+						<></>
+					)}
+					<div className="assignWrapper">
+						{tableImportMode !== undefined ? (
+							<>
 									<ImportModule
 										mode={tableImportMode}
 										columns={cols}
 										hook={sortingMapHook}
 									/>
-								</div>
-							</div>
-						</div>
 					</>
 				) : (
 					<></>
 				)}
+					</div>
+				</div>
 			</div>
 		</>
 	);
@@ -541,11 +534,6 @@ function Customers({
 	]);
 	return (
 		<>
-			<h3>
-				{general.language === 'deutsch'
-					? 'Datenstruktur Artikel'
-					: 'Data Structure Articles'}
-			</h3>
 			<div className="customerOptions">
 				<div className="dataRow">
 					{general.language === 'deutsch' ? 'Kundennummer' : 'Customer ID'}
