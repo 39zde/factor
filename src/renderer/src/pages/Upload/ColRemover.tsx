@@ -1,4 +1,5 @@
-import React, { useState, useRef } from 'react';
+import { AppContext } from '@renderer/App';
+import React, { useState, useRef, useContext } from 'react';
 export function ColRemover({
 	worker,
 	count,

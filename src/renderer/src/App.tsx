@@ -13,15 +13,18 @@ const db = new Dexie('factor_db', {
 	cache: 'cloned',
 	allowEmptyDB: true,
 });
-const ImportWorker = new Worker(
-	new URL('@util/worker/import.worker.ts', import.meta.url)
-);
+const ImportWorker = (() => {
+	const work = new Worker(
+		new URL('@util/worker/import.worker.ts', import.meta.url)
+	);
+	return work;
+})();
 
 const defaultContext: AppContextType = {
 	appearances: {
 		colorTheme: 'system',
 		rowHeight: 38,
-		sideBarWidth: 160
+		sideBarWidth: 160,
 	},
 	database: {
 		database: db,
@@ -43,14 +46,15 @@ export const AppContext = createContext<AppContextType>(defaultContext);
 function App(): JSX.Element {
 	const [route, setRoute] = useState<RouteType>('Home');
 
-	const [contextValue, setContextValue] = useState<AppContextType>(defaultContext);
+	const [contextValue, setContextValue] =
+		useState<AppContextType>(defaultContext);
 
 	const changeContextFunction = (newContext: AppSettingsType): void => {
 		const contextObj: AppContextType = {
 			appearances: {
 				colorTheme: newContext.appearances.colorTheme,
 				rowHeight: newContext.appearances.rowHeight,
-				sideBarWidth: newContext.appearances.sideBarWidth
+				sideBarWidth: newContext.appearances.sideBarWidth,
 			},
 			database: {
 				database: contextValue.database.database,
@@ -59,55 +63,62 @@ function App(): JSX.Element {
 			},
 			general: {
 				decimalSeparator: newContext.general.decimalSeparator,
-				language: newContext.general.language
+				language: newContext.general.language,
 			},
-			worker:{
-				ImportWorker: contextValue.worker.ImportWorker
+			worker: {
+				ImportWorker: contextValue.worker.ImportWorker,
 			},
-			changeContext: changeContextFunction
+			changeContext: changeContextFunction,
 		};
-		if(contextValue.appearances.colorTheme !== contextObj.appearances.colorTheme){
+		if (
+			contextValue.appearances.colorTheme !==
+			contextObj.appearances.colorTheme
+		) {
 			//@ts-ignore
-			document.getElementById("theme").innerHTML = `:root{ color-scheme: ${newContext.appearances.colorTheme} ; }`
+			document.getElementById('theme').innerHTML =
+				`:root{ color-scheme: ${newContext.appearances.colorTheme} ; }`;
 		}
-		const result = window.electron.ipcRenderer.sendSync("settings",{type: "writeSettings", data: newContext})
-		if(result !== "success"){
-			window.alert("settings not saved")
+		const result = window.electron.ipcRenderer.sendSync('settings', {
+			type: 'writeSettings',
+			data: newContext,
+		});
+		if (result !== 'success') {
+			window.alert('settings not saved');
 		}
 		setContextValue(contextObj);
-	}
+	};
 
-
-
-	useMemo(()=>{
-		console.log("readingSettings")
+	useMemo(() => {
+		console.log('readingSettings');
 		// const locker = new LockManager();
 		navigator.storage.persist();
 		// window.electron.ipcRenderer.send("ping")
-		let settingsFile: AppSettingsType = window.electron.ipcRenderer.sendSync("settings",{type: "readSettings"})
+		let settingsFile: AppSettingsType = window.electron.ipcRenderer.sendSync(
+			'settings',
+			{ type: 'readSettings' }
+		);
 		let context: AppContextType = {
-			appearances:{
-				...settingsFile.appearances
+			appearances: {
+				...settingsFile.appearances,
 			},
-			database:{
+			database: {
 				...settingsFile.database,
-				database: db
+				database: db,
 			},
 			general: {
-				...settingsFile.general
+				...settingsFile.general,
 			},
-			worker:{
+			worker: {
 				ImportWorker: ImportWorker,
 			},
-			changeContext: changeContextFunction
-		}
+			changeContext: changeContextFunction,
+		};
 
-		setContextValue(context)
-			//@ts-ignore
-			document.getElementById("theme").innerHTML = `:root{ color-scheme: ${settingsFile.appearances.colorTheme} ; }`
-
-	},[])
-
+		setContextValue(context);
+		//@ts-ignore
+		document.getElementById('theme').innerHTML =
+			`:root{ color-scheme: ${settingsFile.appearances.colorTheme} ; }`;
+	}, []);
 
 	const routeHook = {
 		route: route,
@@ -120,11 +131,12 @@ function App(): JSX.Element {
 		<>
 			<AppContext.Provider value={contextValue}>
 				<WindowContextProvider>
-					<div className="appWrapper" style={
-						{paddingLeft: contextValue.appearances.sideBarWidth}
-					}>
+					<div
+						className="appWrapper"
+						style={{ paddingLeft: contextValue.appearances.sideBarWidth }}
+					>
 						<SideBar routesHook={routeHook} />
-						<div className='page'>
+						<div className="page">
 							<Router route={route} />
 						</div>
 					</div>
@@ -144,18 +156,18 @@ function Router({ route }: { route: RouteType }): React.JSX.Element {
 			return <Pages.Upload />;
 		case 'Customers':
 			return <Pages.Customers />;
-		case "Articles":
-			return <Pages.Articles />
-		case "Deliveries":
-			return <Pages.Deliveries />
-		case "Invoices":
-			return <Pages.Invoices />
-		case "Quotes":
-			return <Pages.Quotes />
-		case "Returnees":
-			return <Pages.Returnees />
-		case "ExportPage":
-			return <Pages.ExportPage />
+		case 'Articles':
+			return <Pages.Articles />;
+		case 'Deliveries':
+			return <Pages.Deliveries />;
+		case 'Invoices':
+			return <Pages.Invoices />;
+		case 'Quotes':
+			return <Pages.Quotes />;
+		case 'Returnees':
+			return <Pages.Returnees />;
+		case 'ExportPage':
+			return <Pages.ExportPage />;
 		default:
 			return <Pages.Home />;
 	}

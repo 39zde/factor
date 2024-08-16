@@ -24,7 +24,7 @@ export function Upload(): React.JSX.Element {
 	const [dataSorterHeight, setDataSorterHeight] = useState<number>(0);
 	const [sortingMap, setSortingMap] = useState<CustomerSortingMap |ArticleSortingMap>({customerID: ""});
 	const [tableImportMode, setTableImportMode] = useState<
-		'articles' | 'customers' | 'quotes' | 'invoices' | 'deliveries'
+		'articles' | 'customers' | 'quotes' | 'invoices' | 'deliveries' | 'returnees'
 	>('customers');
 	const tableImportModeHandler = (): void => {
 		if (tableImportModeInputRef.current === null) {
@@ -127,13 +127,6 @@ export function Upload(): React.JSX.Element {
 
 	const sortLeaveHandler = (): void => {
 		setMouseInSorter(false);
-	};
-
-	const sortScrollHandler = (e: WheelEvent): void => {
-		if (mouseInSorter) {
-			if (e.deltaY > 0) {
-			}
-		}
 	};
 
 	const colsHook = {
@@ -369,6 +362,8 @@ function ImportModule({
 		case 'invoices':
 			return <></>;
 		case 'quotes':
+			return <></>;
+		case 'returnees':
 			return <></>;
 		default:
 			return <></>;

@@ -1,9 +1,11 @@
-import { useState, useMemo } from 'react';
+import React, { useState, useMemo, useContext } from 'react';
 
 import './Versions.css';
+import { AppContext } from '@renderer/App';
 
 function Versions(): JSX.Element {
-	const [versions] = useState(window.electron.process.versions);
+	const { general } = useContext(AppContext);
+	const [versions] = useState(window.electron.process.versions ?? '');
 	const [used, setUsed] = useState<string>('');
 	const [free, setFree] = useState<string>('');
 	useMemo(async () => {
@@ -22,25 +24,51 @@ function Versions(): JSX.Element {
 
 	return (
 		<ul className="versions">
-			<li className="electron-version">Electron v{versions.electron}</li>
-			<li className="chrome-version">Chromium v{versions.chrome}</li>
-			<li className="node-version">Node v{versions.node}</li>
-			<li className="storage-usage">Disk usage {used} MB</li>
-			<li className="storage-avail">Free Space {free} GB </li>
-			<li className="platform">
-				Platform {window.electron.process.platform}
+			<li title="electron-version">Electron v{versions.electron}</li>
+			<li title="chrome-version">Chromium v{versions.chrome}</li>
+			<li title="node-version">Node v{versions.node}</li>
+			<li title="occupied disk space from Factor">
+				{general.language === 'deutsch'
+					? 'Speicherplatzbedarf'
+					: 'Disk usage'}{' '}
+				{used} MB
 			</li>
-			<li className="">
-				User&#9;
-				{window.electron.process.platform === 'win32' ? (
-					<>{window.electron.process.env['USERNAME']}</>
-				) : window.electron.process.platform == 'linux' ? (
-					<>{window.electron.process.env['USER']}</>
-				) : window.electron.process.platform == 'macOS' ? (
-					<>{window.electron.process.env['USER']}</>
+			<li title="remaining space on this computer">
+				{general.language === 'deutsch'
+					? 'Speicherplatzverfügbarkeit'
+					: 'Disk usage'}{' '}
+				{free} GB{' '}
+			</li>
+			<li title="platform">
+				{window.electron !== undefined ? (
+					<>Platform {window.electron.process.platform}</>
 				) : (
 					<></>
 				)}
+			</li>
+			<li title="username">
+				{general.language === 'deutsch' ? 'Benutzer' : 'User'}&#9;
+				{window.electron !== undefined ? (
+					<>
+						{window.electron.process.platform === 'win32' ? (
+							<>{window.electron.process.env['USERNAME']}</>
+						) : window.electron.process.platform == 'linux' ? (
+							<>{window.electron.process.env['USER']}</>
+						) : window.electron.process.platform == 'macOS' ? (
+							<>{window.electron.process.env['USER']}</>
+						) : (
+							<></>
+						)}
+					</>
+				) : (
+					<></>
+				)}
+			</li>
+			<li title="Screen Size">
+				{general.language === 'deutsch'
+					? 'Bildschirmauflösung'
+					: 'Screen resolution'}
+				: {window.screen.width}x{window.screen.height}px
 			</li>
 		</ul>
 	);
