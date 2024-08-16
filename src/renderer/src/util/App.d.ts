@@ -15,7 +15,10 @@ export interface AppContextType {
 		decimalSeparator: '.' | ',';
 	};
 	worker: {
+		// stores and cleans uploaded data and assigns the date to various tables
 		ImportWorker: Worker;
+		// streams data from IDB
+		TableWorker: Worker;
 	};
 	changeContext: (newVal: AppSettingsType) => void;
 }

@@ -20,6 +20,13 @@ const ImportWorker = (() => {
 	return work;
 })();
 
+const TableWorker = (() => {
+	const work = new Worker(
+		new URL('@util/worker/table.worker.ts', import.meta.url)
+	);
+	return work;
+})();
+
 const defaultContext: AppContextType = {
 	appearances: {
 		colorTheme: 'system',
@@ -37,6 +44,7 @@ const defaultContext: AppContextType = {
 	},
 	worker: {
 		ImportWorker: ImportWorker,
+		TableWorker: TableWorker,
 	},
 	changeContext: () => {},
 };
@@ -67,6 +75,7 @@ function App(): JSX.Element {
 			},
 			worker: {
 				ImportWorker: contextValue.worker.ImportWorker,
+				TableWorker: contextValue.worker.TableWorker
 			},
 			changeContext: changeContextFunction,
 		};
@@ -110,6 +119,7 @@ function App(): JSX.Element {
 			},
 			worker: {
 				ImportWorker: ImportWorker,
+				TableWorker: TableWorker
 			},
 			changeContext: changeContextFunction,
 		};
