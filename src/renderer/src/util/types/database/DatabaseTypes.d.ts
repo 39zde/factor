@@ -1,10 +1,17 @@
+const TitleRx = new RegExp(
+	'^(?<title>(?<start>^[hHmMFfDd])(?<afterStart>((?<=[Hh])e?r{1,2}.?)|((?<=[Ff])ra?u?.?)|((?<=[Mm])(((iste)?r)|(is)?s).?)|((?<=[Dd])(octo)?r.?)))s?(?<doctorTitle>([dD](octo)?r.?s{0,3}((([mM]ed.?)|([jJ]ur.?)|([Dd]ent.?))s{0,3}){0,2}){1,3})?(?<diploma>(([dD]ipl(oma?)?.?)(-?s{0,2}?((Ing)|(Kf[mr])).?)|([BM].[ABCEMPST]{1}((omp|hem|ath|ci?|hil|con|ech|cc|rim).)?)){0,2}|([mM]ag.))?[W]?$',
+	'gm'
+);
+
 export interface CustomerType {
 	// unique customer id
 	customerID: string;
 	// (optional) old customer ids, for backward compatibility
 	oldCustomerIDs?: string[];
 	// (optional) the Corporate person-hood or company name of there are any
-	company?: CompanyType;
+	companyName?: string;
+	// (optional) company alias
+	alias?: string[];
 	// (optional) All associated real persons
 	persons?: PersonType[];
 	// (optional) associated Addresses
@@ -16,11 +23,11 @@ export interface CustomerType {
 	// (optional)
 	phone?: PhoneNumberType[];
 	// (optional) the date of the fist meeting
-	fistContact?: Date;
+	firstContact?: Date;
 	// (optional) the date of the last encounter
 	latestContact?: Date;
 	// (optional) notes
-	note?: string[];
+	notes?: string[];
 }
 
 export interface NameType {
@@ -64,36 +71,29 @@ export interface PersonType {
 	// (optional)
 	alias?: string[];
 	// (optional) associated email addresses
-	email?: string[];
+	email?: EmailType[];
 	//  (optional) associated phone numbers
 	phone?: PhoneNumberType[];
 	// (optional) notes on that person
 	notes?: string[];
 }
 
-export type TitleType =
-	| 'Herr'
-	| 'Frau'
-	| 'Mr.'
-	| 'Ms.'
-	| 'Dr.'
-	| 'Herr Dr.'
-	| 'Frau Dr.'
-	| 'Herr Dr. med. Dr. jur.'
-	| 'Frau Dr. med. Dr. jur.'
-	| 'Herr Dr. med.'
-	| 'Herr Dr. med. dent.'
-	| 'Frau Dr. med.'
-	| 'Frau Dr. med. dent.'
-	| 'Herr Dr. jur.'
-	| 'Frau Dr. jur.'
-	| 'Herr Dipl.-Ing.'
-	| 'Frau Dipl.-Ing.'
-	| 'Herr Dipl.-Kfm.'
-	| 'Frau Dipl.-Kfr.'
-	| 'Herr Mag.'
-	| 'Frau Mag. '
-	| undefined;
+export interface TitleValidator {
+	isAcceptable(s: string): boolean;
+}
+
+export class TitleType implements TitleValidator {
+	title: string | undefined;
+
+	constructor(input: string) {
+		if (this.isAcceptable(input)) {
+			this.title = input;
+		}
+	}
+	isAcceptable(s: string): boolean {
+		return TitleRx.test(s);
+	}
+}
 
 export interface PhoneNumberType {
 	// (optional) the type of phone number
@@ -208,9 +208,9 @@ export interface LastEncounterType {
 }
 
 // ordered list from first:  parent category -> ...sub categories -> article category
-export type CategoryType = Set<string>;
+type CategoryType = Set<string>;
 
-export interface StepDiscountType {
+interface StepDiscountType {
 	type: 'step';
 	// at what number of items a new price gets applies
 	steps: number[];
@@ -263,7 +263,7 @@ export interface QuoteType extends BaseType {
 	duration?: number;
 }
 
-export interface InvoiceType extends BaseType {
+interface InvoiceType extends BaseType {
 	// unique identifier
 	invoiceID: string;
 	// total price without discount
@@ -278,7 +278,7 @@ export interface DeliveryType extends BaseType {
 	deliveryID: string;
 }
 
-export interface ReturnType extends BaseType {
+export interface ReturneeType extends BaseType {
 	returnID: string;
 	// the Date and time when the item was returned
 	returned: Date;
