@@ -1,16 +1,12 @@
 import React, {
 	useState,
 	useEffect,
-	useCallback,
 	useRef,
 	MouseEvent,
-	WheelEvent,
 	useContext,
 	useMemo,
+	memo,
 } from 'react';
-import { useLiveQuery } from 'dexie-react-hooks';
-import { ArrowDown, ArrowUp } from 'lucide-react';
-
 import { AppContext } from '@renderer/App';
 import { WindowContext } from '../WindowContext';
 import { TableHeadDisplay } from './TableHeadDisplay';
@@ -18,7 +14,7 @@ import { TableBodyDisplay } from './TableBodyDisplay';
 import { TableFootDisplay } from './TableFootDisplay';
 import './Table.css';
 
-import type { TableProps } from '@util/types/types';
+import type { TableProps, TableFootDisplayProps } from '@util/types/types';
 import type { Table as TableType } from 'dexie';
 
 export function Table({
@@ -33,58 +29,15 @@ export function Table({
 	const tableBodyRef = useRef<HTMLTableSectionElement>(null);
 	const wrapperRef = useRef<HTMLDivElement>(null);
 	const [scope, setScope] = useState<number>(0);
-	const [start, setStart] = useState<number>(0);
+	const start = useRef<number>(0);
 	const [count, setCount] = useState<number>();
 	const [cursorX, setCursorX] = useState<number>(0);
 	const [isMouseDown, setIsMouseDown] = useState<boolean>(false);
 	const [columns, setColumns] = useState<string[]>();
 	//@ts-ignore
 	const [dbTable, setDBTable] = useState<TableType<any, any, any>>();
-	const [minWidths, setMinWidths] = useState<number[]>([]);
 	const [cursor, setCursor] = useState<'col-resize' | 'initial'>('initial');
 	const [userSelect, setUserSelect] = useState<'none' | 'initial'>('initial');
-	const [sortingDirection, setSortingDirection] = useState<
-		'asc' | 'dsc' | undefined
-	>(undefined);
-	const [sortingCol, setSortingCol] = useState<string | undefined>(undefined);
-	const [sortable, setSortable] = useState<string[]>([]);
-
-	const table = useLiveQuery(
-		() => {
-			console.log(scope);
-			// console.log(start,scope,clientHeight,dbTable,columns)
-			if (updateHook !== undefined) {
-				// is there an update signal to listen to?
-				if (updateHook.update === true) {
-					// if so, what to do when updating
-					return []; // don't show any rows
-				}
-			}
-			if (
-				dbTable !== undefined &&
-				columns !== undefined &&
-				Number.isNaN(scope) === false
-			) {
-				return dbTable
-					.where(columns[0])
-					.aboveOrEqual(start)
-					.limit(scope)
-					.toArray();
-			} else {
-				return [];
-			}
-		},
-		[
-			start,
-			scope,
-			clientHeight,
-			dbTable,
-			columns,
-			updateHook?.update,
-			sortingCol,
-		],
-		[]
-	);
 
 	useMemo(() => {
 		if (colsHook !== undefined) {
@@ -100,22 +53,6 @@ export function Table({
 				const open = await database.database.open();
 				for (const table of open.tables) {
 					if (table.name === tableName) {
-						const sortableCols: string[] = [];
-						sortableCols.push(table.schema.primKey.name);
-						for (const index of table.schema.indexes) {
-							sortableCols.push(index.name);
-						}
-						// console.log(sortableCols);
-						setSortable(sortableCols);
-
-						if (entriesHook === undefined) {
-							const tableLength = await table.count();
-							setCount(tableLength);
-						}
-						if (colsHook === undefined) {
-							const first = await table.get(1);
-							setColumns(Object.keys(first));
-						}
 						setDBTable(table);
 					}
 				}
@@ -153,65 +90,25 @@ export function Table({
 		},
 	};
 
-	const mouseMoveHandler = useCallback(
-		(e: MouseEvent) => {
-			if (isMouseDown === true) {
-				setCursorX(e.pageX);
-				// console.log(e);
-			}
-		},
-		[isMouseDown]
-	);
+	const mouseMoveHandler = (e: MouseEvent) => {
+		if (isMouseDown === true) {
+			setCursorX(e.pageX);
+			// console.log(e);
+		}
+	};
 
 	const mouseUpHandler = (): void => {
 		setCursor('initial');
 		setUserSelect('initial');
 		setIsMouseDown(false);
 	};
+	const TableFootDisplayMemo = memo(
+		({ columns, update }: TableFootDisplayProps) => {
+			return <TableFootDisplay columns={columns} update={update} />;
+		}
+	);
 
-	const getMinWidths = () => {
-		if (tableBodyRef.current?.children[0].childNodes !== undefined) {
-			const colWidths: number[] = [];
-			for (const td of tableBodyRef.current?.children[0].children) {
-				const width = td.getBoundingClientRect().width;
-				colWidths.push(width + 25);
-			}
-			setMinWidths(colWidths);
-		}
-	};
 
-	const scrollHandler = (e: WheelEvent): void => {
-		if (minWidths.length === 0) {
-			getMinWidths();
-		}
-		if (e.shiftKey === true || count === undefined) {
-			return;
-		}
-		if (e.deltaY > 0) {
-			// scroll down
-			if (start < count) {
-				setStart((value) =>
-					Math.max(Math.min(value + 2, count - scope + 2), 1)
-				);
-			}
-		} else if (e.deltaY < 0) {
-			// scroll up
-			setStart((value) => value - 2);
-		} else {
-		}
-	};
-
-	const sortingHook = {
-		sortingCol: sortingCol,
-		sortingDirection: sortingDirection,
-		setSortingCol: (newVal: string) => {
-			setSortingCol(newVal);
-		},
-		setSortingDirection: (newVal: 'asc' | 'dsc' | undefined) => {
-			setSortingDirection(newVal);
-		},
-		sortable: sortable,
-	};
 
 	return (
 		<>
@@ -228,45 +125,22 @@ export function Table({
 						}}>
 						<TableHeadDisplay
 							columns={columns}
-							cursorX={cursorX}
-							minWidths={minWidths}
-							mouseDownHook={mouseDownHook}
 							scope={scope}
-							rowHeight={appearances.rowHeight}
+							mouseDownHook={mouseDownHook}
 							update={updateHook?.update}
-							sortingHook={sortingHook}
-							arrow={(): React.JSX.Element => {
-								if (sortingDirection === 'asc') {
-									return (
-										<ArrowUp
-											size={18}
-											color="white"
-											strokeWidth={2}
-										/>
-									);
-								} else if (sortingDirection === 'dsc') {
-									return (
-										<ArrowDown
-											size={18}
-											color="white"
-											strokeWidth={2}
-										/>
-									);
-								} else {
-									return <></>;
-								}
-							}}
+							cursorX={cursorX}
 						/>
 						<TableBodyDisplay
 							uniqueKey={uniqueKey}
-							table={table}
+							tableName={tableName}
+							updateHook={updateHook}
+							scope={scope}
 							tableBodyRef={tableBodyRef}
 							count={count}
-							dbTable={dbTable}
-							scrollHandler={scrollHandler}
+							start={start}
 						/>
 
-						<TableFootDisplay
+						<TableFootDisplayMemo
 							columns={columns}
 							update={updateHook?.update}
 						/>

@@ -40,4 +40,5 @@ export type {
 	TableBodyDisplayProps,
 	TableFootDisplayProps,
 	TableProps,
+	TableHeadProps,
 } from './comps/Table/Table';

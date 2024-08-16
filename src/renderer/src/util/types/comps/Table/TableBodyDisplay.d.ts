@@ -2,11 +2,11 @@ import React, { WheelEvent } from 'react';
 import type { Table } from 'dexie';
 
 export interface TableBodyDisplayProps {
+	tableName: string;
 	tableBodyRef: React.RefObject<HTMLTableSectionElement>;
-	scrollHandler: (e: WheelEvent) => void;
-	table: any[] | never[];
-	//@ts-ignore
-	dbTable?: Table<any, any, any>;
 	count?: number;
 	uniqueKey: string;
+	scope: number;
+	updateHook?: { update: boolean; setUpdate: (newVal: boolean) => void };
+	start: React.RefObject;
 }

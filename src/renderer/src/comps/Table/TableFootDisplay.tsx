@@ -13,19 +13,11 @@ export function TableFootDisplay({
 		case false:
 			if (columns !== undefined) {
 				if (columns.length !== 0) {
-					return <TableFoot columns={columns} />;
+					return <TableFoot key={'TableFoot'} columns={columns} />;
 				}
 			}
 			return <></>;
 		case true:
-			return <></>;
-		case false:
-			if (columns !== undefined) {
-				if (columns.length !== 0) {
-					return <TableFoot columns={columns} />;
-				}
-			}
-			return <></>;
 		default:
 			return <></>;
 	}

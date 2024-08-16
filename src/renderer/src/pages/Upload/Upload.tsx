@@ -23,7 +23,6 @@ export function Upload(): React.JSX.Element {
 	const [cols, setCols] = useState<string[]>([]);
 	const [entries, setEntries] = useState<number>(0);
 	const [update, setUpdate] = useState<boolean>(false); // stop rendering while updating
-	const [mouseInSorter, setMouseInSorter] = useState<boolean>(false);
 	const tableImportModeInputRef = useRef<HTMLSelectElement>(null);
 	const tableWrapperRef = useRef<HTMLDivElement>(null);
 	const [sortingMap, setSortingMap] = useState<
@@ -90,14 +89,6 @@ export function Upload(): React.JSX.Element {
 				// ImportWorker.terminate()
 			}
 		};
-	};
-
-	const sortEnterHandler = (): void => {
-		setMouseInSorter(true);
-	};
-
-	const sortLeaveHandler = (): void => {
-		setMouseInSorter(false);
 	};
 
 	const colsHook = {

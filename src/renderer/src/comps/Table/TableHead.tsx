@@ -6,7 +6,7 @@ import {
 	useContext,
 	useId,
 } from 'react';
-import type { TableHeadProps } from '@renderer/util/types/comps/Table/TableHeadProps';
+import type { TableHeadProps } from '@util/types/types';
 import { ResizeElement } from './ResizeElement';
 import { AppContext } from '@renderer/App';
 
@@ -15,8 +15,6 @@ export function TableHead({
 	resizeElemHeight,
 	cursorX,
 	mouseHook,
-	minWidths,
-	arrow,
 	sortingHook,
 }: TableHeadProps) {
 	const { appearances } = useContext(AppContext);
@@ -139,16 +137,7 @@ export function TableHead({
 										ref={colRefs.current[index]}
 										key={useId()}
 										onClick={() => sortingHandler(item)}>
-										<span key={useId()} className="guts">
-											{item}
-											{/* {sortingHook !== undefined &&
-											sortingHook.sortingCol === item ? (
-												// <>{arrow()}</>
-												<></>
-											) : (
-												<></>
-											)} */}
-										</span>
+										<span className="guts">{item}</span>
 										{resizeElemHeight !== undefined &&
 										index !== columns.length - 1 ? (
 											<>
