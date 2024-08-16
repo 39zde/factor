@@ -103,6 +103,12 @@ function App(): JSX.Element {
 	};
 
 	useMemo(() => {
+		navigator.permissions
+			.query({ name: 'persistent-storage' })
+			.then((res) => {
+				// console.log('persistent Storage: ', res);
+			});
+
 		navigator.storage.persist();
 		const settingsFile: AppSettingsType =
 			window.electron.ipcRenderer.sendSync('settings', {
