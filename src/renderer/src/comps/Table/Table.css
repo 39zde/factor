@@ -1,0 +1,154 @@
+@import url('../../base.css');
+
+.tableWrapper {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    overflow: hidden;
+}
+
+.tableWrapper:focus {
+    border: none;
+    outline: none;
+    overflow: hidden;
+}
+
+.tableInfo {
+    /* min-height: 64px; */
+    padding: 12px 0;
+    width: 90%;
+    align-self: center;
+    margin: 10px 0;
+    background: var(--color-bg-6);
+    border-radius: 32px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow-x: visible;
+    overflow-y: visible;
+}
+
+.tableInfo li {
+    display: flex;
+    float: left;
+    border-right: 1px solid var(--color-text-4);
+    /* margin: 20px 20px; */
+    padding: 0 12px;
+    font-size: 14px;
+    line-height: 14px;
+    /* height: 100%; */
+    align-self: center;
+    justify-content: center;
+    align-items: center;
+    height: 36px;
+
+    &:first-child {
+        align-self: center;
+        /* height: fit-content; */
+        height: 36px;
+    }
+
+    &:last-child {
+        border: none;
+    }
+}
+
+.tableElement {
+    height: 100%;
+    align-self: center;
+    width: 90%;
+    overflow-x: scroll;
+    overflow-y: hidden;
+
+    scrollbar-width: var(--scrollbar-width);
+    scrollbar-color: var(--scrollbar-color);
+    scrollbar-gutter: var(--scrollbar-gutter);
+}
+
+.tableElement::-webkit-scrollbar-track {
+    background: red;
+}
+
+.tableElement::-webkit-scrollbar-thumb {
+    /* Foreground */
+    background: green;
+}
+
+table,
+thead,
+th,
+tr,
+td {
+    table-layout: auto;
+    border-collapse: collapse;
+    border-color: var(--color-text-4);
+    border-width: 1px;
+    border-style: solid;
+    font-family: monospace;
+    font-size: small;
+}
+
+table {
+    border-top: none;
+    border-bottom: none;
+    border-left: none;
+    border-right: none;
+}
+
+thead {
+    border-bottom: 3px solid var(--color-text-4);
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    background: var(--color-bg-6);
+}
+
+tfoot {
+    border-top: 3px solid var(--color-text-4);
+    background: var(--color-bg-6);
+    border-bottom: none;
+    border-left: none;
+    border-right: none;
+}
+
+td {
+    word-wrap: none;
+    line-break: strict;
+    white-space: nowrap;
+}
+
+th {
+    padding: 0 5px;
+    resize: horizontal;
+    overflow: visible;
+    position: relative;
+    text-align: left;
+}
+
+.guts {
+    display: flex;
+    width: fit-content;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+th > div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 5px;
+}
+
+.colSlider {
+    top: 0;
+    right: 0;
+    position: absolute;
+    width: 4px;
+    cursor: col-resize;
+}
+
+.colSlider:hover {
+    background-color: var(--color-text-1);
+}

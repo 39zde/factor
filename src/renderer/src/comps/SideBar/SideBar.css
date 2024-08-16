@@ -1,0 +1,49 @@
+@import url('../../base.css');
+
+.sideBarButton {
+    /* border: 1px solid black; */
+    border: none;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-direction: row;
+    padding: 8px;
+    gap: 12px;
+    border-radius: 8px 0 0 8px;
+    cursor: pointer;
+    color: var(--color-text);
+    font-family: var(--font-family);
+    font-size: medium;
+    width: 100%;
+}
+
+.sideBarButton:hover {
+    background-color: var(--color-hover-2);
+}
+
+.sideBar {
+    position: absolute;
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    align-items: stretch;
+    height: 100vh;
+    background-color: var(--color-bg-6);
+    left: 0;
+    width: 138px;
+    padding-left: 12px;
+    gap: 12px;
+}
+
+.topIcons {
+    display: flex;
+    justify-content: flex-start;
+    align-items: start;
+    flex-direction: column;
+    gap: 12px;
+    padding-top: 12px;
+}
+
+.bottomIcons {
+    padding-bottom: 12px;
+}
