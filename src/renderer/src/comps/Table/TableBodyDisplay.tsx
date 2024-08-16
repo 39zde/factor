@@ -56,9 +56,7 @@ export function TableBodyDisplay({
 		}
 	}
 
-	//@ts-ignore
-	const scrollHandler = (e: WheelEvent<HTMLTableSectionElement>): void => {
-		// console.log("scroll")
+	const scrollHandler = (e: WheelEvent): void => {
 		if (e.shiftKey === true || tableState.count === undefined) {
 			return;
 		}
@@ -68,7 +66,7 @@ export function TableBodyDisplay({
 				tableState.scope
 			) {
 				// console.log("lastOrdered: ", lastOrdered.current, " lastReceived: ", tableState.lastReceived )
-				console.log('returning');
+				// console.log('returning');
 				return;
 			}
 		}
@@ -139,6 +137,7 @@ export function TableBodyDisplay({
 			<tbody
 				className="tableBody"
 				ref={tableBodyRef}
+				//@ts-ignore miss match of WheelEvent and SyntheticEvent<HTMLTableSectionElement,WheelEvent>
 				onWheel={scrollHandler}>
 				<tr
 					spellCheck={causeRerender}

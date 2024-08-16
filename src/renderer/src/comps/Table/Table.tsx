@@ -486,7 +486,7 @@ export function Table({
 			});
 			setCauseRerender(!causeRerender);
 		} else if ((e.data.type = 'startingRows')) {
-			console.log('startingRows');
+			// console.log('startingRows');
 			dispatch({
 				type: 'set',
 				name: 'rows',
