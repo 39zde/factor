@@ -1,7 +1,7 @@
 import type { CustomerType } from '@util/types/database/DatabaseTypes';
 // eslint-disable-next-line
 self.navigator.locks.query().then((res) => {
-	console.log(res);
+	// console.log(res);
 	if (res !== undefined) {
 		if (res.held !== undefined && res.pending !== undefined) {
 			if (res.pending.length === 0) {
@@ -11,12 +11,12 @@ self.navigator.locks.query().then((res) => {
 							'import.worker.ts',
 							{ mode: 'exclusive', ifAvailable: true },
 							(e) => {
-								console.log(e);
+								// console.log(e);
 								self.onmessage = requestHandler;
-								console.log('acquired lock');
+								// console.log('acquired lock');
 							}
 						)
-						.then((e) => console.log(e));
+						// .then((e) => console.log(e));
 				}
 			}
 		}
