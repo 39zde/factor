@@ -42,7 +42,7 @@ export default function SideBar({
 						icon={
 							<HomeIcon
 								size={24}
-								strokeWidth={routesHook.route === 'Home' ? 3 : 2}
+								strokeWidth={routesHook.route === 'Home' ? 2.5 : 2}
 								color={
 									routesHook.route === 'Home'
 										? 'var(--color-primary)'
@@ -61,7 +61,7 @@ export default function SideBar({
 						icon={
 							<UploadIcon
 								size={24}
-								strokeWidth={routesHook.route === 'Upload' ? 3 : 2}
+								strokeWidth={routesHook.route === 'Upload' ? 2.5 : 2}
 								color={
 									routesHook.route === 'Upload'
 										? 'var(--color-primary)'
@@ -80,7 +80,7 @@ export default function SideBar({
 						icon={
 							<ArrowRightFromLineIcon
 								size={25}
-								strokeWidth={routesHook.route === 'ExportPage' ? 3 : 2}
+								strokeWidth={routesHook.route === 'ExportPage' ? 2.5 : 2}
 								color={
 									routesHook.route === 'ExportPage'
 										? 'var(--color-primary)'
@@ -100,7 +100,7 @@ export default function SideBar({
 						icon={
 							<CuboidIcon
 								size={24}
-								strokeWidth={routesHook.route === 'Articles' ? 3 : 2}
+								strokeWidth={routesHook.route === 'Articles' ? 2.5 : 2}
 								color={
 									routesHook.route === 'Articles'
 										? 'var(--color-primary)'
@@ -119,7 +119,7 @@ export default function SideBar({
 						icon={
 							<UserRoundIcon
 								size={24}
-								strokeWidth={routesHook.route === 'Customers' ? 3 : 2}
+								strokeWidth={routesHook.route === 'Customers' ? 2.5 : 2}
 								color={
 									routesHook.route === 'Customers'
 										? 'var(--color-primary)'
@@ -138,7 +138,7 @@ export default function SideBar({
 						icon={
 							<TruckIcon
 								size={24}
-								strokeWidth={routesHook.route === 'Deliveries' ? 3 : 2}
+								strokeWidth={routesHook.route === 'Deliveries' ? 2.5 : 2}
 								color={
 									routesHook.route === 'Deliveries'
 										? 'var(--color-primary)'
@@ -159,7 +159,7 @@ export default function SideBar({
 						icon={
 							<ReceiptTextIcon
 								size={24}
-								strokeWidth={routesHook.route === 'Invoices' ? 3 : 2}
+								strokeWidth={routesHook.route === 'Invoices' ? 2.5 : 2}
 								color={
 									routesHook.route === 'Invoices'
 										? 'var(--color-primary)'
@@ -178,7 +178,7 @@ export default function SideBar({
 						icon={
 							<FileOutputIcon
 								size={24}
-								strokeWidth={routesHook.route === 'Quotes' ? 3 : 2}
+								strokeWidth={routesHook.route === 'Quotes' ? 2.5 : 2}
 								color={
 									routesHook.route === 'Quotes'
 										? 'var(--color-primary)'
@@ -197,7 +197,7 @@ export default function SideBar({
 						icon={
 							<RotateCcwIcon
 								size={24}
-								strokeWidth={routesHook.route === 'Returnees' ? 3 : 2}
+								strokeWidth={routesHook.route === 'Returnees' ? 2.5 : 2}
 								color={
 									routesHook.route === 'Returnees'
 										? 'var(--color-primary)'
@@ -218,7 +218,7 @@ export default function SideBar({
 						icon={
 							<HelpCircle
 								size={24}
-								strokeWidth={routesHook.route === 'Help' ? 3 : 2}
+								strokeWidth={routesHook.route === 'Help' ? 2.5 : 2}
 								color={
 									routesHook.route === 'Help'
 										? 'var(--color-primary)'
@@ -237,7 +237,7 @@ export default function SideBar({
 						icon={
 							<CogIcon
 								size={24}
-								strokeWidth={routesHook.route === 'Settings' ? 3 : 2}
+								strokeWidth={routesHook.route === 'Settings' ? 2.5 : 2}
 								color={
 									routesHook.route === 'Settings'
 										? 'var(--color-primary)'

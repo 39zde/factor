@@ -28,7 +28,7 @@
  	height: 50px;
  	padding: 12px;
  	width: 300px;
- 	border-radius: 8px;
+ 	border-radius: 25px;
  	border: 2px dashed light-dark(var(--color-light-3), var(--color-dark-3));
  	background-color: light-dark(var(--color-light-2), var(--color-dark-2));
  	align-items: center;
@@ -66,10 +66,10 @@
  }
 
  .fileDisplay {
- 	height: 50px;
- 	padding: 12px;
- 	width: 300px;
- 	border-radius: 8px;
+ 	height: 46px;
+ 	padding: 12px 50px 12px 12px;
+ 	width: fit-content;
+ 	border-radius: 25px;
  	border-width: 2px;
  	border-color: light-dark(var(--color-light-3), var(--color-dark-3));
  	border-style: solid;
@@ -85,16 +85,24 @@
 
  .removeFile {
  	position: absolute;
+ 	height: 46px;
+ 	display: flex;
+ 	justify-content: center;
+ 	align-items: center;
  	top: 0;
  	right: 0;
- 	border-top-right-radius: 8px;
+ 	/* border-top-right-radius: 8px; */
  	background: none;
  	border: none;
  	cursor: pointer;
+ 	padding: 0 0 4px 0;
+ 	width: 50px;
  }
 
  .removeFile:hover {
  	background: none;
+ 	box-shadow: none;
+ 	transform: none;
  }
 
  .uploader {
@@ -186,19 +194,19 @@
 
 
  .dataSorter {
-	width: 100%;
-	display: flex;
-	height: 100%;
-	justify-content: flex-start;
-	flex-direction: column;
-	align-items: center;
-	gap: 20px;
-	border-top: 1px solid light-dark(var(--color-dark-2),var(--color-light-2));
-	overflow-y: scroll;
-	scrollbar-width: var(--scrollbar-width);
-	scrollbar-color: var(--scrollbar-color);
-	padding-left: 12px;
-	padding-top: 12px;
+ 	width: 100%;
+ 	display: flex;
+ 	height: 100%;
+ 	justify-content: flex-start;
+ 	flex-direction: column;
+ 	align-items: center;
+ 	gap: 20px;
+ 	border-top: 1px solid light-dark(var(--color-dark-2), var(--color-light-2));
+ 	overflow-y: scroll;
+ 	scrollbar-width: var(--scrollbar-width);
+ 	scrollbar-color: var(--scrollbar-color);
+ 	padding-left: 12px;
+ 	padding-top: 12px;
  }
 
 
@@ -231,37 +239,37 @@
 
  .assignWrapper {
  	width: 100%;
-	padding-bottom: 64px;
+ 	padding-bottom: 64px;
  }
 
 
- .tableInfoWrapper{
-	width: 100%;
-	height: fit-content;
-	justify-content: center;
-	align-items: center;
-	align-self: center;
-	display: flex;
+ .tableInfoWrapper {
+ 	width: 100%;
+ 	height: fit-content;
+ 	justify-content: center;
+ 	align-items: center;
+ 	align-self: center;
+ 	display: flex;
  }
 
 
- .uploadTableWrapper{
-	min-height: 45vh;
-	width: 100%;
+ .uploadTableWrapper {
+ 	min-height: 45vh;
+ 	width: 100%;
  }
 
- .sorter{
-	display: flex;
-	width: 90%;
-	justify-content: center;
-	align-items: center;
-	gap: 32px;
-	height: fit-content;
-	flex-direction: row;
-	align-self: center;
-	border-color: light-dark(var(--color-light-3),var(--color-dark-3));
-	border-width: 1px;
-	border-style: solid;
-	padding: 8px 0;
-	border-radius: 100px;
+ .sorter {
+ 	display: flex;
+ 	width: 90%;
+ 	justify-content: center;
+ 	align-items: center;
+ 	gap: 32px;
+ 	height: fit-content;
+ 	flex-direction: row;
+ 	align-self: center;
+ 	border-color: light-dark(var(--color-light-3), var(--color-dark-3));
+ 	border-width: 1px;
+ 	border-style: solid;
+ 	padding: 8px 0;
+ 	border-radius: 100px;
  }

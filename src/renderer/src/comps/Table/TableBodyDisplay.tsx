@@ -127,6 +127,7 @@ export function TableBodyDisplay({
 		<>
 			<button
 				onClick={upHandler}
+				tabIndex={-1}
 				className="rowNavigator"
 				style={{
 					height: appearances.rowHeight,
@@ -153,6 +154,7 @@ export function TableBodyDisplay({
 				<TableRows />
 			</tbody>
 			<button
+				tabIndex={-1}
 				onClick={downHandler}
 				className="rowNavigator"
 				style={{
