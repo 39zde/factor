@@ -61,6 +61,8 @@ export function ColRemover({
 		console.log('starting ranking');
 		worker.postMessage({
 			type: 'rankColsByCondition',
+			dbVersion: database.dbVersion,
+			dataBaseName: 'factor_db',
 			message: {
 				condition: conditionValue,
 				custom: {
@@ -88,7 +90,12 @@ export function ColRemover({
 						console.log(column);
 						if (conditionSuccessCount === count) {
 							updateHook.setUpdate(true);
-							worker.postMessage({ type: 'deleteCol', message: column });
+							worker.postMessage({
+								type: 'deleteCol',
+								message: column,
+								dbVersion: database.dbVersion,
+								dataBaseName: 'factor_db'
+							 });
 						}
 					}
 					break;

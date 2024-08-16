@@ -33,6 +33,7 @@ export function TableBodyDisplay({
 				type: 'stream',
 				storeName: tableState.tableName,
 				dbVersion: database.dbVersion,
+				dataBaseName: tableState.dataBaseName,
 				action: {
 					type: 'next',
 					pos: lastOrdered.current,
@@ -56,6 +57,7 @@ export function TableBodyDisplay({
 				type: 'stream',
 				storeName: tableState.tableName,
 				dbVersion: database.dbVersion,
+				dataBaseName: tableState.dataBaseName,
 				action: {
 					type: 'prev',
 					pos: lastOrdered.current,

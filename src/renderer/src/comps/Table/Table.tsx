@@ -24,6 +24,7 @@ import type {
 } from '@util/types/types';
 
 const PlaceHolderTableContext: TableContextType = {
+	dataBaseName: '',
 	tableName: '',
 	uniqueKey: '',
 	scope: 0,
@@ -214,12 +215,12 @@ export function useTableDispatch() {
 }
 
 export function Table({
+	dataBaseName,
 	tableName,
 	colsHook,
 	entriesHook,
 	updateHook,
 	uniqueKey,
-	key,
 }: TableProps): React.JSX.Element {
 	const rowColumnWidth = 30;
 	const scrollBarHeight = 5;
@@ -233,6 +234,7 @@ export function Table({
 	const [tableState, dispatch] = useReducer(
 		tableReducer,
 		{
+			dataBaseName: dataBaseName,
 			tableName: tableName,
 			colsHook: colsHook,
 			entriesHook: entriesHook,
@@ -246,6 +248,7 @@ export function Table({
 		},
 		(args): TableContextType => {
 			const out: TableContextType = PlaceHolderTableContext;
+			out.dataBaseName = args.dataBaseName
 			out.tableName = args.tableName;
 			out.uniqueKey = args.uniqueKey;
 			out.cursorX = 0;
@@ -286,7 +289,7 @@ export function Table({
 
 	useEffect(() => {
 		setHasStarted(false);
-	});
+	},[]);
 
 	function updateScope(newScope: number) {
 		let diff = Math.abs(tableState.scope - newScope);
@@ -321,6 +324,7 @@ export function Table({
 					type: 'stream',
 					storeName: tableState.tableName,
 					dbVersion: tableState.dbVersion,
+					dataBaseName: tableState.dataBaseName,
 					action: {
 						type: 'add',
 						pos: tableState.start + tableState.scope + i,
@@ -575,6 +579,7 @@ export function Table({
 				type: 'count',
 				storeName: tableState.tableName,
 				dbVersion: database.dbVersion,
+				dataBaseName: tableState.dataBaseName
 			});
 		}
 		// reimplement the reducer init function
@@ -614,11 +619,13 @@ export function Table({
 			type: 'columns',
 			storeName: tableState.tableName,
 			dbVersion: database.dbVersion,
+			dataBaseName: tableState.dataBaseName
 		});
 		worker.TableWorker.postMessage({
 			type: 'count',
 			storeName: tableState.tableName,
 			dbVersion: database.dbVersion,
+			dataBaseName: tableState.dataBaseName
 		});
 
 		if (updateHook !== undefined) {
@@ -640,7 +647,7 @@ export function Table({
 			name: 'dbVersion',
 			newVal: database.dbVersion,
 		});
-	}, [tableState.tableName, database.dbVersion, colsHook, entriesHook, key]);
+	}, [tableState.tableName, database.dbVersion, colsHook, entriesHook]);
 
 	useEffect(() => {
 		if (!hasStarted) {
@@ -650,6 +657,7 @@ export function Table({
 					storeName: tableState.tableName,
 					dbVersion: database.dbVersion,
 					scope: tableState.scope,
+					dataBaseName: tableState.dataBaseName
 				});
 				setHasStarted(true);
 			}

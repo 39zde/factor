@@ -173,7 +173,7 @@ export function Upload(): React.JSX.Element {
 								...appearances,
 							},
 							database: {
-								dbVersion: database.dbVersion + 1,
+								dbVersion: database.dbVersion,
 								tables: database.tables,
 							},
 							general: {
@@ -302,6 +302,8 @@ export function Upload(): React.JSX.Element {
 					{showTable ? (
 						<>
 							<Table
+							   dataBaseName='factor_db'
+								key={useId()}
 								uniqueKey={'row'}
 								tableName="data_upload"
 								colsHook={colsHook}
@@ -310,7 +312,9 @@ export function Upload(): React.JSX.Element {
 							/>
 						</>
 					) : (
-						<></>
+						<>
+							<span key={useId()}></span>
+						</>
 					)}
 				</div>
 				<div className="dataSorter">
