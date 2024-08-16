@@ -14,7 +14,7 @@ import { AppContext } from '@renderer/App';
 import { WindowContext } from '../WindowContext';
 import './Table.css';
 import { TableHeadDisplay } from './TableHeadDisplay';
-import { TableFoot } from './TableFoot';
+import { TableFootDisplay } from './TableFootDisplay';
 import { TableBodyDisplay } from './TableBodyDisplay';
 
 import { ArrowDown, ArrowUp } from 'lucide-react';
@@ -280,35 +280,4 @@ export function Table({
 			</div>
 		</>
 	);
-}
-
-function TableFootDisplay({
-	columns,
-	update,
-	key,
-}: {
-	columns: Array<string> | undefined;
-	update: boolean | undefined;
-	key?: string;
-}) {
-	switch (update) {
-		case undefined:
-			if (columns !== undefined) {
-				if (columns.length !== 0) {
-					return <TableFoot columns={columns} />;
-				}
-			}
-			return <></>;
-		case true:
-			return <></>;
-		case false:
-			if (columns !== undefined) {
-				if (columns.length !== 0) {
-					return <TableFoot columns={columns} />;
-				}
-			}
-			return <></>;
-		default:
-			return <></>;
-	}
 }

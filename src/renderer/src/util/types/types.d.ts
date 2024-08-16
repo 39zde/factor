@@ -35,4 +35,8 @@ export type {
 	ReturnType,
 } from './database/DatabaseTypes';
 
-export type { TableHeadDisplayProps, TableBodyDisplayProps } from './comps/Table/Table';
+export type {
+	TableHeadDisplayProps,
+	TableBodyDisplayProps,
+	TableFootDisplayProps,
+} from './comps/Table/Table';
