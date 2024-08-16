@@ -229,13 +229,6 @@ li {
 	background-color: var(--color-button-6);
 } */
 
-.divider {
-	background: var(--color-hover-3);
-	height: 1px;
-	width: 100%;
-	margin: 4px 0;
-}
-
 .dataSorter {
 	display: flex;
 	height: fit-content;

@@ -7,6 +7,11 @@ import {
 	UploadIcon,
 	UserRoundIcon,
 	ArrowRightFromLineIcon,
+	CuboidIcon,
+	TruckIcon,
+	ReceiptTextIcon,
+	FileOutputIcon,
+	RotateCcwIcon
 } from 'lucide-react';
 import { AppContext } from '@renderer/App';
 import { RouteType } from '@util/types/routes';
@@ -14,7 +19,7 @@ import { RouteType } from '@util/types/routes';
 export default function SideBar({
 	routesHook,
 }: SideBarPros): React.JSX.Element {
-	const {appearances} = useContext(AppContext)
+	const {appearances,general} = useContext(AppContext)
 	const routeHandler = (newRoute: RouteType) => {
 		routesHook.setRoute(newRoute);
 	};
@@ -32,12 +37,15 @@ export default function SideBar({
 						icon={<HomeIcon size={24} strokeWidth={2} color="light-dark(var(--color-dark-1),var(--color-light-1))" />}
 						route={routesHook.route}
 						routeName="Home"
+						textOverride={general.language === "deutsch" ? "Start": "Home"}
 					/>
 					<RouterButton
 						handler={routeHandler}
 						icon={<UploadIcon size={24} strokeWidth={2} color="light-dark(var(--color-dark-1),var(--color-light-1))" />}
 						route={routesHook.route}
 						routeName="Upload"
+						textOverride={general.language === "deutsch" ? "Hochladen": "Upload"}
+
 					/>
 					<RouterButton
 						handler={routeHandler}
@@ -50,16 +58,18 @@ export default function SideBar({
 						}
 						route={routesHook.route}
 						routeName="ExportPage"
-						textOverride="Export"
+						textOverride={general.language === "deutsch" ? "Exportieren": "Export"}
+
 					/>
 					<div className="divider"></div>
 					<RouterButton
 						handler={routeHandler}
 						icon={
-							<UserRoundIcon size={24} strokeWidth={2} color="light-dark(var(--color-dark-1),var(--color-light-1))" />
+							<CuboidIcon size={24} strokeWidth={2} color="light-dark(var(--color-dark-1),var(--color-light-1))" />
 						}
 						route={routesHook.route}
-						routeName="Customers"
+						routeName="Articles"
+						textOverride={general.language === "deutsch" ? "Artikel": "Articles"}
 					/>
 					<RouterButton
 						handler={routeHandler}
@@ -68,6 +78,43 @@ export default function SideBar({
 						}
 						route={routesHook.route}
 						routeName="Customers"
+						textOverride={general.language === "deutsch" ? "Kunden": "Customers"}
+					/>
+					<RouterButton
+						handler={routeHandler}
+						icon={
+							<TruckIcon size={24} strokeWidth={2} color="light-dark(var(--color-dark-1),var(--color-light-1))" />
+						}
+						route={routesHook.route}
+						routeName="Deliveries"
+						textOverride={general.language === "deutsch" ? "Lieferungen": "Deliveries"}
+					/>
+					<RouterButton
+						handler={routeHandler}
+						icon={
+							<ReceiptTextIcon size={24} strokeWidth={2} color="light-dark(var(--color-dark-1),var(--color-light-1))" />
+						}
+						route={routesHook.route}
+						routeName="Invoices"
+						textOverride={general.language === "deutsch" ? "Rechnungen": "Invoices"}
+					/>
+					<RouterButton
+						handler={routeHandler}
+						icon={
+							<FileOutputIcon size={24} strokeWidth={2} color="light-dark(var(--color-dark-1),var(--color-light-1))" />
+						}
+						route={routesHook.route}
+						routeName="Quotes"
+						textOverride={general.language === "deutsch" ? "Angebote": "Quotes"}
+					/>
+					<RouterButton
+						handler={routeHandler}
+						icon={
+							<RotateCcwIcon size={24} strokeWidth={2} color="light-dark(var(--color-dark-1),var(--color-light-1))" />
+						}
+						route={routesHook.route}
+						routeName="Returnees"
+						textOverride={general.language === "deutsch" ? "Rückgaben": "Returnees"}
 					/>
 				</div>
 				<div className="bottomIcons">
@@ -76,6 +123,7 @@ export default function SideBar({
 						icon={<CogIcon size={24} strokeWidth={2} color="light-dark(var(--color-dark-1),var(--color-light-1))" />}
 						route={routesHook.route}
 						routeName="Settings"
+						textOverride={general.language === "deutsch" ? "Einstellungen": "Settings"}
 					/>
 				</div>
 			</div>
