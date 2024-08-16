@@ -53,13 +53,13 @@ function tableReducer(
 	// console.log(action);
 	//! For Some Reason the new States need to be both 'changed' in the immutable (provided) tableState and also returned. I have not looked further into it, for now it works.
 	switch (action.type) {
-		case 'changeAccept':{
-			tableState.accept = action.newVal
-				return {
-					//@ts-expect-error we want to override
-					accept: action.newVal,
-					...tableState
-				}
+		case 'changeAccept': {
+			tableState.accept = action.newVal;
+			return {
+				//@ts-expect-error we want to override
+				accept: action.newVal,
+				...tableState,
+			};
 		}
 		case 'increase': {
 			if (tableState.rows.includes(action.newVal)) {

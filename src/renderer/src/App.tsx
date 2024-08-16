@@ -67,7 +67,7 @@ function App(): JSX.Element {
 			},
 			worker: {
 				ImportWorker: contextValue.worker.ImportWorker,
-				TableWorker: contextValue.worker.TableWorker
+				TableWorker: contextValue.worker.TableWorker,
 			},
 			changeContext: changeContextFunction,
 		};
@@ -110,7 +110,7 @@ function App(): JSX.Element {
 			},
 			worker: {
 				ImportWorker: ImportWorker,
-				TableWorker: TableWorker
+				TableWorker: TableWorker,
 			},
 			changeContext: changeContextFunction,
 		};

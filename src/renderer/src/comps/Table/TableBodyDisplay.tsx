@@ -1,8 +1,4 @@
-import React, {
-	useContext,
-	useRef,
-	useState,
-} from 'react';
+import React, { useContext, useRef, useState } from 'react';
 
 import { TableRows } from './TableRows';
 
@@ -64,7 +60,7 @@ export function TableBodyDisplay({
 
 			start.current = Math.max(start.current - 1, 1);
 			setStartNumber(start.current);
-			
+
 			if (start.current !== 1) {
 				worker.TableWorker.postMessage({
 					type: 'steam',

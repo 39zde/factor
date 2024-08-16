@@ -20,7 +20,7 @@ export type TableContextType = {
 	rows: object[];
 	dbVersion: number;
 	start: number;
-	accept: "prev" | "next";
+	accept: 'prev' | 'next';
 };
 
 export type ResizeStyle = {
@@ -63,5 +63,5 @@ export type TableDispatchAction = {
 		| 'rows'
 		| 'accept';
 	newVal: any;
-	worker?: Worker
+	worker?: Worker;
 };

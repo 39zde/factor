@@ -6,4 +6,8 @@ export type {
 	TableHeadDisplayProps,
 	SortingHookType,
 } from './TableHeadProps';
-export type { TableContextType, ResizeStyle , TableDispatchAction} from './TableContextType';
+export type {
+	TableContextType,
+	ResizeStyle,
+	TableDispatchAction,
+} from './TableContextType';

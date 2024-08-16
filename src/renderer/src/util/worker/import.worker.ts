@@ -20,7 +20,7 @@ self.navigator.locks.query().then((res) => {
 		}
 	}
 });
-
+//@ts-ignore
 const requestHandler = (e: MessageEvent): void => {
 	switch (e.data.type) {
 		case 'import':
@@ -472,9 +472,21 @@ function doCustomers(map: CustomerMapType) {
 
 		if (!db.objectStoreNames.contains('customers')) {
 			console.log('creating object store');
-			db.createObjectStore('customers', {
+			const store = db.createObjectStore('customers', {
 				keyPath: 'customerID',
 			});
+			store.createIndex('customerID', 'customerID', { unique: true });
+			store.createIndex('oldCustomerIDs', 'oldCustomerIDs');
+			store.createIndex('companyName', 'companyName');
+			store.createIndex('alias', 'alias');
+			store.createIndex('persons', 'persons');
+			store.createIndex('addresses', 'addresses');
+			store.createIndex('bank', 'bank');
+			store.createIndex('email', 'email');
+			store.createIndex('phone', 'phone');
+			store.createIndex('firstContact', 'firstContact');
+			store.createIndex('latestContact', 'latestContact');
+			store.createIndex('notes', 'notes');
 		}
 		if (!db.objectStoreNames.contains('articles')) {
 			db.createObjectStore('articles', { keyPath: ['articleID'] });
@@ -520,7 +532,7 @@ function doCustomers(map: CustomerMapType) {
 					if (parseInt(cursor.key.toString()) < count) {
 						cursor.continue();
 					} else {
-						postMessage({type: "success"})
+						postMessage({ type: 'success' });
 						console.log('done adding data');
 					}
 				}

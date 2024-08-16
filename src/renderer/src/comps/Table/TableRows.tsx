@@ -4,7 +4,7 @@ import { useTableContext } from './Table';
 import { AppContext } from '@renderer/App';
 export function TableRows(): React.JSX.Element {
 	const tableState = useTableContext();
-	const { appearances} = useContext(AppContext)
+	const { appearances } = useContext(AppContext);
 	return (
 		<>
 			{tableState.rows.map((item, index) => {
@@ -16,7 +16,7 @@ export function TableRows(): React.JSX.Element {
 								maxHeight: appearances.rowHeight,
 								minHeight: appearances.rowHeight,
 								height: appearances.rowHeight,
-								overflow: "hidden"
+								overflow: 'hidden',
 							}}
 							key={uni}>
 							<RowItems

@@ -1,4 +1,4 @@
-import React, { useContext, ReactElement, JSXElementConstructor } from 'react';
+import React, { useContext } from 'react';
 import { AppContext } from '@renderer/App';
 import type { TableRowItemProps } from '@renderer/util/types/comps/Table/TableRowItemProps';
 export function RowItems({
@@ -55,7 +55,7 @@ function TableCell({
 			case 'object':
 				return <></>;
 			case 'number':
-				return <>{contents.toFixed(2)}</>;
+				return <>{contents}</>;
 			case 'boolean':
 				return <>{contents}</>;
 			case 'string':
@@ -79,7 +79,7 @@ function TableCellWrapper({
 				style={{
 					maxHeight: appearances.rowHeight,
 					height: appearances.rowHeight,
-					minHeight: appearances.rowHeight
+					minHeight: appearances.rowHeight,
 				}}>
 				<span className="guts">{children}</span>
 			</td>
