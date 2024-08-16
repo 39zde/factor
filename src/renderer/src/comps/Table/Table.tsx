@@ -22,7 +22,9 @@ import type {
 } from '@util/types/types';
 import type { Table as TableType } from 'dexie';
 
-const TableContext = createContext<TableContextType>({
+export const TableContext = createContext<TableContextType>({
+	tableName: '',
+	uniqueKey: '',
 	scope: 0,
 	setScope: (newVal: number): void => {},
 	count: 0,
@@ -38,6 +40,8 @@ const TableContext = createContext<TableContextType>({
 	setCursorX: (newVal: number): void => {},
 	userSelect: 'initial',
 	setUserSelect: (newVal: 'none' | 'initial'): void => {},
+	update: false,
+	setUpdate: (newVal: boolean): void => {},
 });
 
 export function Table({
@@ -57,12 +61,14 @@ export function Table({
 	const [cursorX, setCursorX] = useState<number>(0);
 	const [isMouseDown, setIsMouseDown] = useState<boolean>(false);
 	const [columns, setColumns] = useState<string[]>([]);
-	//@ts-ignore
+	//@ts-ignore allowing type of any,any,any to not be restricted of what tables can be used
 	const [dbTable, setDBTable] = useState<TableType<any, any, any>>();
 	const [cursor, setCursor] = useState<'col-resize' | 'initial'>('initial');
 	const [userSelect, setUserSelect] = useState<'none' | 'initial'>('initial');
 	const [TableContextValue, setTableContextValue] = useState<TableContextType>(
 		{
+			tableName: tableName,
+			uniqueKey: uniqueKey,
 			scope: scope,
 			setScope: (newVal: number): void => {
 				setScope(newVal);
@@ -95,6 +101,12 @@ export function Table({
 			userSelect: userSelect,
 			setUserSelect: (newVal: 'none' | 'initial'): void => {
 				setUserSelect(newVal);
+			},
+			update: updateHook?.update,
+			setUpdate: (newVal: boolean): void => {
+				if (updateHook !== undefined) {
+					updateHook.setUpdate(newVal);
+				}
 			},
 		}
 	);
