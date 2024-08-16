@@ -1,5 +1,5 @@
 import React from 'react';
-import type { ResizeElementProps } from '@util/types/table/ResizeElementProps';
+import type { ResizeElementProps } from '@renderer/util/types/comps/Table/ResizeElementProps';
 
 export function ResizeElement({
 	tableHeight,

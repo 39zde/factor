@@ -7,7 +7,7 @@ import {
 	useContext,
 	useId,
 } from 'react';
-import type { TableHeadProps } from '@util/types/table/TableHeadProps';
+import type { TableHeadProps } from '@renderer/util/types/comps/Table/TableHeadProps';
 import { ResizeElement } from './ResizeElement';
 import { AppContext } from '@renderer/App';
 

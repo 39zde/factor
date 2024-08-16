@@ -1,5 +1,5 @@
 import { useRef, createRef, useContext, useId } from 'react';
-import type { TableFootProps } from '@util/types/table/TableFootProps';
+import type { TableFootProps } from '@renderer/util/types/comps/Table/TableFootProps';
 import { AppContext } from '@renderer/App';
 
 // a copy of table head without the ability to  resize

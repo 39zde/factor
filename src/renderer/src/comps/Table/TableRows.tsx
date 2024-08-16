@@ -1,5 +1,5 @@
 import { useId, useState, useEffect } from 'react';
-import type { TableRowProps } from '@util/types/table/TableRowProps';
+import type { TableRowProps } from '@renderer/util/types/comps/Table/TableRowProps';
 import { RowItems } from './RowItems';
 
 export function TableRows({ table, rowHeight, rowCount }: TableRowProps) {
