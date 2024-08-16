@@ -1,9 +1,8 @@
-import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef } from 'react';
 
 import { TableRows } from './TableRows';
 
 import { AppContext } from '@renderer/App';
-import { WindowContext } from '../WindowContext';
 import type { TableBodyDisplayProps } from '@util/types/types';
 import { useTableContext, useTableDispatch } from './Table';
 
@@ -14,7 +13,6 @@ export function TableBodyDisplay({
 	const tableState = useTableContext();
 	const dispatch = useTableDispatch();
 	const { worker, database, general } = useContext(AppContext);
-	const { clientHeight } = useContext(WindowContext);
 	const lastOrdered = useRef<number>(-1);
 	const start = useRef<number>(0);
 
