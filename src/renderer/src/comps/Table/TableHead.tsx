@@ -1,70 +1,61 @@
 import { useState, useEffect, useRef, createRef, useContext } from 'react';
-import type { TableHeadProps } from '@util/types/types';
 import { ResizeElement } from './ResizeElement';
 import { AppContext } from '@renderer/App';
+import { TableContext } from './Table';
 
-export function TableHead({
-	columns,
-	resizeElemHeight,
-	cursorX,
-	mouseHook,
-	sortingHook,
-}: TableHeadProps) {
+export function TableHead() {
 	const { appearances } = useContext(AppContext);
+	const { columns, scope, cursorX, isMouseDown, setIsMouseDown } =
+		useContext(TableContext);
+	const [resizeElemHeight] = useState<number>(
+		4 * scope + (scope + 2) * appearances.rowHeight + 6
+	);
 	const colRefs = useRef(columns.map(() => createRef<HTMLTableCellElement>()));
 	const [activeCol, setActiveCol] = useState<number>(0);
 	const [activeBg, setActiveBg] = useState<number | undefined>(undefined);
 
 	useEffect(() => {
-		if (mouseHook !== undefined && cursorX !== undefined) {
-			if (mouseHook.value === false) {
-				// stop adjusting the col width
-				setActiveBg(undefined);
-			} else if (mouseHook.value === true) {
-				//start adjusting the col width
+		if (isMouseDown === false) {
+			// stop adjusting the col width
+			setActiveBg(undefined);
+		} else if (isMouseDown === true) {
+			//start adjusting the col width
 
-				const currentWidth =
-					colRefs.current[activeCol].current?.getBoundingClientRect()
-						.width;
-				const currentX =
-					colRefs.current[activeCol].current?.getBoundingClientRect().left;
-				// console.log(colRefs.current[activeCol].current?.getBoundingClientRect());
-				if (
-					currentWidth !== undefined &&
-					currentX !== undefined &&
-					cursorX !== null
-				) {
-					const a = currentX;
-					const b = cursorX;
-					const newWidth = Math.abs(Math.abs(b - a));
-					// console.log({
-					// 	currentWidth: currentWidth,
-					// 	cursor: cursorX,
-					// 	currentX: currentX,
-					// 	newWidth: newWidth,
-					// });
+			const currentWidth =
+				colRefs.current[activeCol].current?.getBoundingClientRect().width;
+			const currentX =
+				colRefs.current[activeCol].current?.getBoundingClientRect().left;
+			// console.log(colRefs.current[activeCol].current?.getBoundingClientRect());
+			if (currentWidth !== undefined && currentX !== undefined) {
+				const a = currentX;
+				const b = cursorX;
+				const newWidth = Math.abs(Math.abs(b - a));
+				// console.log({
+				// 	currentWidth: currentWidth,
+				// 	cursor: cursorX,
+				// 	currentX: currentX,
+				// 	newWidth: newWidth,
+				// });
 
-					if (!isNaN(newWidth)) {
-						// console.log(offset)
-						colRefs.current[activeCol].current?.setAttribute(
-							'style',
-							'min-width: ' +
-								newWidth +
-								'px; max-width: ' +
-								newWidth +
-								'px; border-top: none'
-						);
-					}
+				if (!isNaN(newWidth)) {
+					// console.log(offset)
+					colRefs.current[activeCol].current?.setAttribute(
+						'style',
+						'min-width: ' +
+							newWidth +
+							'px; max-width: ' +
+							newWidth +
+							'px; border-top: none'
+					);
 				}
 			}
 		}
-	}, [mouseHook?.value, cursorX, activeCol]);
+	}, [isMouseDown, cursorX, activeCol]);
 
 	const mouseDownHandler = (e: MouseEvent, index: number) => {
-		if (mouseHook !== undefined) {
-			// console.log("setting mouse down to true");
-			mouseHook.setValue(true);
-		}
+		// console.log("setting mouse down to true");
+		setIsMouseDown(true);
+
 		// console.log('setting active INdex to ', index);
 		setActiveBg(index);
 		setActiveCol(index);
@@ -73,15 +64,14 @@ export function TableHead({
 
 	const mouseEnterHandler = (index: number): void => {
 		// console.log('setting activeBG to ', index);
-		if (mouseHook !== undefined) {
-			if (mouseHook.value === false) {
-				setActiveBg(index);
-			}
+
+		if (isMouseDown === false) {
+			setActiveBg(index);
 		}
 	};
 
 	const mouseLeaveHandler = () => {
-		if (mouseHook.value === false) {
+		if (isMouseDown === false) {
 			setActiveBg(undefined);
 		}
 	};

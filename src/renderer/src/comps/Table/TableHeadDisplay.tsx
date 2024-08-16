@@ -1,19 +1,10 @@
 import React, { useContext } from 'react';
 
-import { AppContext } from '@renderer/App';
 import { TableHead } from './TableHead';
-import type { TableHeadDisplayProps } from '@util/types/types';
+import { TableContext } from './Table';
 
-export function TableHeadDisplay({
-	columns,
-	update,
-	scope,
-	cursorX,
-	mouseDownHook,
-	sortingHook,
-}: TableHeadDisplayProps): React.JSX.Element {
-	const { appearances } = useContext(AppContext);
-
+export function TableHeadDisplay(): React.JSX.Element {
+	const { columns, update } = useContext(TableContext);
 	switch (update) {
 		case true:
 			return <></>;
@@ -21,15 +12,7 @@ export function TableHeadDisplay({
 		case undefined:
 			if (columns !== undefined) {
 				if (columns.length !== 0) {
-					return (
-						<TableHead
-							columns={columns}
-							resizeElemHeight={4*scope + (scope+2)*appearances.rowHeight +6 }
-							cursorX={cursorX}
-							mouseHook={mouseDownHook}
-							sortingHook={sortingHook}
-						/>
-					);
+					return <TableHead />;
 				}
 			}
 			return <></>;

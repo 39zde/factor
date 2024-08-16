@@ -65,51 +65,49 @@ export function Table({
 	const [dbTable, setDBTable] = useState<TableType<any, any, any>>();
 	const [cursor, setCursor] = useState<'col-resize' | 'initial'>('initial');
 	const [userSelect, setUserSelect] = useState<'none' | 'initial'>('initial');
-	const [TableContextValue, setTableContextValue] = useState<TableContextType>(
-		{
-			tableName: tableName,
-			uniqueKey: uniqueKey,
-			scope: scope,
-			setScope: (newVal: number): void => {
-				setScope(newVal);
-			},
-			count: count,
-			setCount: (newVal: number): void => {
-				setCount(newVal);
-			},
-			isMouseDown: false,
-			setIsMouseDown: (newVal: boolean): void => {
-				if (typeof newVal === 'boolean') {
-					setCursor('col-resize');
-					setUserSelect('none');
-					setIsMouseDown(newVal);
-				}
-			},
-			columns: columns,
-			setColumns: (newVal: string[]): void => {
-				setColumns(newVal);
-			},
-			dbTable: dbTable,
-			cursor: cursor,
-			setCursor: (newVal: 'initial' | 'col-resize'): void => {
-				setCursor(newVal);
-			},
-			cursorX: cursorX,
-			setCursorX: (newVal: number): void => {
-				setCursorX(newVal);
-			},
-			userSelect: userSelect,
-			setUserSelect: (newVal: 'none' | 'initial'): void => {
-				setUserSelect(newVal);
-			},
-			update: updateHook?.update,
-			setUpdate: (newVal: boolean): void => {
-				if (updateHook !== undefined) {
-					updateHook.setUpdate(newVal);
-				}
-			},
-		}
-	);
+	const [TableContextValue] = useState<TableContextType>({
+		tableName: tableName,
+		uniqueKey: uniqueKey,
+		scope: scope,
+		setScope: (newVal: number): void => {
+			setScope(newVal);
+		},
+		count: count,
+		setCount: (newVal: number): void => {
+			setCount(newVal);
+		},
+		isMouseDown: false,
+		setIsMouseDown: (newVal: boolean): void => {
+			if (typeof newVal === 'boolean') {
+				setCursor('col-resize');
+				setUserSelect('none');
+				setIsMouseDown(newVal);
+			}
+		},
+		columns: columns,
+		setColumns: (newVal: string[]): void => {
+			setColumns(newVal);
+		},
+		dbTable: dbTable,
+		cursor: cursor,
+		setCursor: (newVal: 'initial' | 'col-resize'): void => {
+			setCursor(newVal);
+		},
+		cursorX: cursorX,
+		setCursorX: (newVal: number): void => {
+			setCursorX(newVal);
+		},
+		userSelect: userSelect,
+		setUserSelect: (newVal: 'none' | 'initial'): void => {
+			setUserSelect(newVal);
+		},
+		update: updateHook?.update,
+		setUpdate: (newVal: boolean): void => {
+			if (updateHook !== undefined) {
+				updateHook.setUpdate(newVal);
+			}
+		},
+	});
 
 	useMemo(() => {
 		if (colsHook !== undefined) {
@@ -161,16 +159,6 @@ export function Table({
 		}
 	}, [clientHeight, appearances.rowHeight]);
 
-	const mouseDownHook = {
-		value: isMouseDown,
-		setValue: (newValue: boolean) => {
-			if (typeof newValue === 'boolean') {
-				setCursor('col-resize');
-				setUserSelect('none');
-				setIsMouseDown(newValue);
-			}
-		},
-	};
 
 	const mouseMoveHandler = (e: MouseEvent) => {
 		if (isMouseDown === true) {
@@ -204,13 +192,7 @@ export function Table({
 								cursor: cursor,
 								userSelect: userSelect,
 							}}>
-							<TableHeadDisplay
-								columns={columns}
-								scope={scope}
-								mouseDownHook={mouseDownHook}
-								update={updateHook?.update}
-								cursorX={cursorX}
-							/>
+							<TableHeadDisplay />
 							<TableBodyDisplay
 								uniqueKey={uniqueKey}
 								tableName={tableName}
