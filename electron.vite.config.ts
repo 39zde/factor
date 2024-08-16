@@ -10,12 +10,12 @@ export default defineConfig({
 		plugins: [externalizeDepsPlugin()],
 	},
 	renderer: {
-		assetsInclude: ['src/renderer/src/util/worker/*.ts'],
+		// assetsInclude: ['src/renderer/src/util/worker/*.js'],
 		worker: {
 			format: 'es',
 		},
 		resolve: {
-			extensions: ['.worker.ts', '.tsx', '.ts', '.d.ts'],
+			extensions: ['.tsx', '.ts', '.d.ts'],
 			alias: {
 				'@renderer': resolve('src/renderer/src'),
 				'@util': resolve('src/renderer/src/util'),
