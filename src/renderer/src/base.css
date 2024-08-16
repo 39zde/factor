@@ -104,14 +104,8 @@ select {
 	border-radius: 8px;
 }
 
-select:focus, button:focus, select:focus{
-	border: none;
-	outline: 3px solid var(--color-secondary);
-	outline-offset: 2px;
-}
-
-select:focus-visible, select:focus-visible{
-	border: none;
+select:focus-visible, button:focus-visible, input:focus-visible	{
+	outline:  var(--color-secondary) auto  1px;
 }
 
 h1 {
