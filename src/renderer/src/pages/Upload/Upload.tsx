@@ -78,24 +78,6 @@ export function Upload(): React.JSX.Element {
 		setShowTable(false);
 	};
 
-	const actionHandler = (): void => {
-		const file = sessionStorage.getItem('fileUpload');
-		if (file !== undefined) {
-			worker.ImportWorker.postMessage({ type: 'import', message: file });
-		}
-
-		worker.ImportWorker.onmessage = (e) => {
-			if (e.data.type === 'imported') {
-				colsHook.setCols(e.data.message[1]);
-				entriesHook.setEntries(e.data.message[0]);
-				// sessionStorage.removeItem('fileUpload')
-				// sessionStorage.removeItem('fileName')
-				setShowTable(true);
-				// ImportWorker.terminate()
-			}
-		};
-	};
-
 	const colsHook = {
 		cols: cols,
 		setCols: (newCols: string[]) => {
@@ -193,6 +175,24 @@ export function Upload(): React.JSX.Element {
 		};
 	};
 
+	const actionHandler = (): void => {
+		const file = sessionStorage.getItem('fileUpload');
+		if (file !== undefined) {
+			worker.ImportWorker.postMessage({ type: 'import', message: file, dbVersion: database.dbVersion, dataBaseName: 'factor_db'});
+		}
+		worker.ImportWorker.onmessage = (e) => {
+			if (e.data.type === 'imported') {
+				colsHook.setCols(e.data.message[1]);
+				entriesHook.setEntries(e.data.message[0]);
+
+				// sessionStorage.removeItem('fileUpload')
+				// sessionStorage.removeItem('fileName')
+				setShowTable(true);
+				// ImportWorker.terminate()
+			}
+		};
+	};
+
 	return (
 		<>
 			<div className="uploadPage page" style={{ overflow: 'hidden' }}>
@@ -259,9 +259,12 @@ export function Upload(): React.JSX.Element {
 										: 'flex'
 									: 'none',
 							}}
-							onClick={actionHandler}
-							className="importButton">
-							<ImportIcon color="white" size={24} strokeWidth={2} />
+							onClick={actionHandler}>
+							<ImportIcon
+								color="light-dark(var(--color-dark-1),var(--color-light-1))"
+								size={24}
+								strokeWidth={2}
+							/>
 							{general.language === 'deutsch' ? 'Importieren' : 'Import'}
 						</button>
 					</div>
@@ -283,10 +286,7 @@ export function Upload(): React.JSX.Element {
 									: {cols.length ?? '-'}
 								</li>
 								<li key={'tableInfo3'}>
-									<RowShifter
-										cols={cols}
-										worker={worker.ImportWorker}
-									/>
+									<RowShifter cols={cols} />
 								</li>
 								<li key={'tableInfo4'}>
 									<ColRemover
@@ -429,14 +429,14 @@ function Customers({
 }: {
 	columns: string[];
 	hook: {
-		sortingMap: any;
-		setSortingMap: (newVal: CustomerSortingMap) => void;
+		map: any;
+		setMap: (newVal: CustomerSortingMap | ArticleSortingMap) => void;
 	};
 }) {
 	const { general } = useContext(AppContext);
 
 	const idRef = useRef<HTMLSelectElement>(null);
-	const [idCol, setIdCol] = useState<string>('-');
+	const [idCol, setIdCol] = useState<string>('row');
 	const idHandler = () => {
 		if (idRef.current !== null) {
 			setIdCol(idRef.current.value);
@@ -444,7 +444,7 @@ function Customers({
 	};
 
 	const titleRef = useRef<HTMLSelectElement>(null);
-	const [titleCol, setTitleCol] = useState<string>('-');
+	const [titleCol, setTitleCol] = useState<string>();
 	const titleHandler = () => {
 		if (titleRef.current !== null) {
 			setTitleCol(titleRef.current.value);
@@ -452,7 +452,7 @@ function Customers({
 	};
 
 	const firstNameRef = useRef<HTMLSelectElement>(null);
-	const [firstNameCol, setFirstNameCol] = useState<string>('-');
+	const [firstNameCol, setFirstNameCol] = useState<string>();
 	const firstNameHandler = () => {
 		if (firstNameRef.current !== null) {
 			setFirstNameCol(firstNameRef.current.value);
@@ -460,7 +460,7 @@ function Customers({
 	};
 
 	const lastNameRef = useRef<HTMLSelectElement>(null);
-	const [lastNameCol, setLastNameCol] = useState<string>('-');
+	const [lastNameCol, setLastNameCol] = useState<string>();
 	const lastNameHandler = () => {
 		if (lastNameRef.current !== null) {
 			setLastNameCol(lastNameRef.current.value);
@@ -468,7 +468,7 @@ function Customers({
 	};
 
 	const emailRef = useRef<HTMLSelectElement>(null);
-	const [emailCol, setEmailCol] = useState<string>('-');
+	const [emailCol, setEmailCol] = useState<string>();
 	const emailHandler = () => {
 		if (emailRef.current !== null) {
 			setEmailCol(emailRef.current.value);
@@ -476,7 +476,7 @@ function Customers({
 	};
 
 	const phoneRef = useRef<HTMLSelectElement>(null);
-	const [phoneCol, setPhoneCol] = useState<string>('-');
+	const [phoneCol, setPhoneCol] = useState<string>();
 	const phoneHandler = () => {
 		if (phoneRef.current !== null) {
 			setPhoneCol(phoneRef.current.value);
@@ -484,23 +484,23 @@ function Customers({
 	};
 
 	const webRef = useRef<HTMLSelectElement>(null);
-	const [webCol, setWebCol] = useState<string>('-');
+	const [webCol, setWebCol] = useState<string>();
 	const webHandler = () => {
 		if (webRef.current !== null) {
 			setWebCol(webRef.current.value);
 		}
 	};
 
-	const copmanyNameRef = useRef<HTMLSelectElement>(null);
-	const [copmanyNameCol, setCopmanyNameCol] = useState<string>('-');
-	const copmanyNameHandler = () => {
-		if (copmanyNameRef.current !== null) {
-			setCopmanyNameCol(copmanyNameRef.current.value);
+	const companyNameRef = useRef<HTMLSelectElement>(null);
+	const [companyNameCol, setCompanyNameCol] = useState<string>();
+	const companyNameHandler = () => {
+		if (companyNameRef.current !== null) {
+			setCompanyNameCol(companyNameRef.current.value);
 		}
 	};
 
 	const aliasRef = useRef<HTMLSelectElement>(null);
-	const [aliasCol, setAliasCol] = useState<string>('-');
+	const [aliasCol, setAliasCol] = useState<string>();
 	const aliasHandler = () => {
 		if (aliasRef.current !== null) {
 			setAliasCol(aliasRef.current.value);
@@ -508,7 +508,7 @@ function Customers({
 	};
 
 	const streetRef = useRef<HTMLSelectElement>(null);
-	const [streetCol, setStreetCol] = useState<string>('-');
+	const [streetCol, setStreetCol] = useState<string>();
 	const streetHandler = () => {
 		if (streetRef.current !== null) {
 			setStreetCol(streetRef.current.value);
@@ -516,7 +516,7 @@ function Customers({
 	};
 
 	const zipRef = useRef<HTMLSelectElement>(null);
-	const [zipCol, setZipCol] = useState<string>('-');
+	const [zipCol, setZipCol] = useState<string>();
 	const zipHandler = () => {
 		if (zipRef.current !== null) {
 			setZipCol(zipRef.current.value);
@@ -524,7 +524,7 @@ function Customers({
 	};
 
 	const cityRef = useRef<HTMLSelectElement>(null);
-	const [cityCol, setCityCol] = useState<string>('-');
+	const [cityCol, setCityCol] = useState<string>();
 	const cityHandler = () => {
 		if (cityRef.current !== null) {
 			setCityCol(cityRef.current.value);
@@ -532,68 +532,150 @@ function Customers({
 	};
 
 	const countryRef = useRef<HTMLSelectElement>(null);
-	const [countryCol, setCountryCol] = useState<string>('-');
+	const [countryCol, setCountryCol] = useState<string>();
 	const countryHandler = () => {
 		if (countryRef.current !== null) {
 			setCountryCol(countryRef.current.value);
 		}
 	};
 
-	const fistContactRef = useRef<HTMLSelectElement>(null);
-	const [fistContactCol, setFistContactCol] = useState<string>('-');
+	const firstContactRef = useRef<HTMLSelectElement>(null);
+	const [firstContactCol, setFistContactCol] = useState<string>();
 	const fistContactHandler = () => {
-		if (fistContactRef.current !== null) {
-			setFistContactCol(fistContactRef.current.value);
+		if (firstContactRef.current !== null) {
+			setFistContactCol(firstContactRef.current.value);
 		}
 	};
 
 	const latestContactRef = useRef<HTMLSelectElement>(null);
-	const [latestContactCol, setLatestContactCol] = useState<string>('-');
+	const [latestContactCol, setLatestContactCol] = useState<string>();
 	const latestContactHandler = () => {
 		if (latestContactRef.current !== null) {
 			setLatestContactCol(latestContactRef.current.value);
 		}
 	};
 
-	const notesRef = useRef<HTMLSelectElement>(null);
-	const [notesCol, setNotesCol] = useState<string>('-');
-	const notesHandler = () => {
-		if (notesRef.current !== null) {
-			setNotesCol(notesRef.current.value);
+	const customerNotesRef = useRef<HTMLSelectElement>(null);
+	const [customerNotesCol, setCustomerNotesCol] = useState<string>();
+	const customerNotesHandler = () => {
+		if (customerNotesRef.current !== null) {
+			setCustomerNotesCol(customerNotesRef.current.value);
+		}
+	};
+
+	const addressNotesRef = useRef<HTMLSelectElement>(null);
+	const [addressNotesCol, setAddressNotesCol] = useState<string>();
+	const addressNotesHandler = () => {
+		if (addressNotesRef.current !== null) {
+			setAddressNotesCol(addressNotesRef.current.value);
+		}
+	};
+
+	const personNotesRef = useRef<HTMLSelectElement>(null);
+	const [personNotesCol, setPersonNotesCol] = useState<string>();
+	const personNotesHandler = () => {
+		if (personNotesRef.current !== null) {
+			setPersonNotesCol(personNotesRef.current.value);
+		}
+	};
+
+	const companyNotesRef = useRef<HTMLSelectElement>(null);
+	const [companyNotesCol, setCompanyNotesCol] = useState<string>();
+	const companyNotesHandler = () => {
+		if (companyNotesRef.current !== null) {
+			setCompanyNotesCol(companyNotesRef.current.value);
+		}
+	};
+
+	const bicRef = useRef<HTMLSelectElement>(null);
+	const [bicCol, setBicCol] = useState<string>();
+	const bicHandler = () => {
+		if (bicRef.current !== null) {
+			setBicCol(bicRef.current.value);
+		}
+	};
+
+	const ibanRef = useRef<HTMLSelectElement>(null);
+	const [ibanCol, setIbanCol] = useState<string>();
+	const IbanHandler = () => {
+		if (ibanRef.current !== null) {
+			setIbanCol(ibanRef.current.value);
+		}
+	};
+
+	const bankCodeRef = useRef<HTMLSelectElement>(null);
+	const [bankCodeCol, setBankCodeCol] = useState<string>();
+	const bankCodeHandler = () => {
+		if (bankCodeRef.current !== null) {
+			setBankCodeCol(bankCodeRef.current.value);
+		}
+	};
+
+	const bankNameRef = useRef<HTMLSelectElement>(null);
+	const [bankNameCol, setBankNameCol] = useState<string>();
+	const bankNameHandler = () => {
+		if (bankNameRef.current !== null) {
+			setBankNameCol(bankNameRef.current.value);
+		}
+	};
+
+	const bankNotesRef = useRef<HTMLSelectElement>(null);
+	const [bankNotesCol, setBankNotesCol] = useState<string>();
+	const bankNotesHandler = () => {
+		if (bankNotesRef.current !== null) {
+			setBankNotesCol(bankNotesRef.current.value);
+		}
+	};
+
+	const descriptionRef = useRef<HTMLSelectElement>(null);
+	const [descriptionCol, setDescriptionCol] = useState<string>();
+	const descriptionHandler = () => {
+		if (descriptionRef.current !== null) {
+			setDescriptionCol(descriptionRef.current.value);
 		}
 	};
 
 	useEffect(() => {
 		const map: CustomerSortingMap = {
-			customerID: idCol,
+			row: 'row',
+			id: idCol,
 			alias: aliasCol,
 			city: cityCol,
-			companyName: copmanyNameCol,
+			companyName: companyNameCol,
 			country: countryCol,
 			email: emailCol,
 			firstName: firstNameCol,
 			lastName: lastNameCol,
-			notes: notesCol,
+			customerNotes: customerNotesCol,
 			phone: phoneCol,
 			street: streetCol,
 			title: titleCol,
 			web: webCol,
 			zip: zipCol,
-			firstContact: fistContactCol,
+			firstContact: firstContactCol,
 			latestContact: latestContactCol,
+			addressNotes: addressNotesCol,
+			personNotes: personNotesCol,
+			companyNotes: companyNotesCol,
+			bic: bicCol,
+			iban: ibanCol,
+			bankCode: bankCodeCol,
+			bankName: bankNameCol,
+			bankNotes: bankNotesCol,
+			description: descriptionCol,
 		};
 
-		hook.setSortingMap(map);
+		hook.setMap(map);
 	}, [
-		notesCol,
+		customerNotesCol,
 		latestContactCol,
-		fistContactCol,
+		firstContactCol,
 		countryCol,
 		cityCol,
 		zipCol,
 		streetCol,
 		aliasCol,
-		copmanyNameCol,
+		companyNameCol,
 		webCol,
 		phoneCol,
 		emailCol,
@@ -601,6 +683,15 @@ function Customers({
 		firstNameCol,
 		titleCol,
 		idCol,
+		addressNotesCol,
+		personNotesCol,
+		companyNotesCol,
+		bicCol,
+		ibanCol,
+		bankNameCol,
+		bankNotesCol,
+		bankCodeCol,
+		descriptionCol,
 	]);
 	return (
 		<>
@@ -609,7 +700,9 @@ function Customers({
 					{general.language === 'deutsch' ? 'Kundennummer' : 'Customer ID'}
 					:
 					<select ref={idRef} onInput={idHandler}>
-						<option defaultChecked>-</option>
+						<option defaultChecked value={undefined}>
+							-
+						</option>
 						{columns.map((item) => (
 							<option key={useId()}>{item}</option>
 						))}
@@ -618,7 +711,9 @@ function Customers({
 				<div className="dataRow">
 					{general.language === 'deutsch' ? 'Anrede' : 'Title'}:
 					<select ref={titleRef} onInput={titleHandler}>
-						<option defaultChecked>-</option>
+						<option defaultChecked value={undefined}>
+							-
+						</option>
 						{columns.map((item) => (
 							<option key={useId()}>{item}</option>
 						))}
@@ -627,7 +722,9 @@ function Customers({
 				<div className="dataRow">
 					{general.language === 'deutsch' ? 'Vorname' : 'First Name'}:
 					<select ref={firstNameRef} onInput={firstNameHandler}>
-						<option defaultChecked>-</option>
+						<option defaultChecked value={undefined}>
+							-
+						</option>
 
 						{columns.map((item) => (
 							<option key={useId()}>{item}</option>
@@ -637,7 +734,9 @@ function Customers({
 				<div className="dataRow">
 					{general.language === 'deutsch' ? 'Nachname' : 'Last Name'}:
 					<select ref={lastNameRef} onInput={lastNameHandler}>
-						<option defaultChecked>-</option>
+						<option defaultChecked value={undefined}>
+							-
+						</option>
 
 						{columns.map((item) => (
 							<option key={useId()}>{item}</option>
@@ -647,7 +746,9 @@ function Customers({
 				<div className="dataRow">
 					Email:
 					<select ref={emailRef} onInput={emailHandler}>
-						<option defaultChecked>-</option>
+						<option defaultChecked value={undefined}>
+							-
+						</option>
 
 						{columns.map((item) => (
 							<option key={useId()}>{item}</option>
@@ -660,7 +761,9 @@ function Customers({
 						: 'Phone Number'}
 					:
 					<select ref={phoneRef} onInput={phoneHandler}>
-						<option defaultChecked>-</option>
+						<option defaultChecked value={undefined}>
+							-
+						</option>
 
 						{columns.map((item) => (
 							<option key={useId()}>{item}</option>
@@ -670,7 +773,9 @@ function Customers({
 				<div className="dataRow">
 					Website:
 					<select ref={webRef} onInput={webHandler}>
-						<option defaultChecked>-</option>
+						<option defaultChecked value={undefined}>
+							-
+						</option>
 
 						{columns.map((item) => (
 							<option key={useId()}>{item}</option>
@@ -679,8 +784,10 @@ function Customers({
 				</div>
 				<div className="dataRow">
 					{general.language === 'deutsch' ? 'Firmenname' : 'Company Name'}:
-					<select ref={copmanyNameRef} onInput={copmanyNameHandler}>
-						<option defaultChecked>-</option>
+					<select ref={companyNameRef} onInput={companyNameHandler}>
+						<option defaultChecked value={undefined}>
+							-
+						</option>
 
 						{columns.map((item) => (
 							<option key={useId()}>{item}</option>
@@ -690,7 +797,9 @@ function Customers({
 				<div className="dataRow">
 					Alias:
 					<select ref={aliasRef} onInput={aliasHandler}>
-						<option defaultChecked>-</option>
+						<option defaultChecked value={undefined}>
+							-
+						</option>
 
 						{columns.map((item) => (
 							<option key={useId()}>{item}</option>
@@ -700,7 +809,9 @@ function Customers({
 				<div className="dataRow">
 					{general.language === 'deutsch' ? 'Straße' : 'Street'}:
 					<select ref={streetRef} onInput={streetHandler}>
-						<option defaultChecked>-</option>
+						<option defaultChecked value={undefined}>
+							-
+						</option>
 
 						{columns.map((item) => (
 							<option key={useId()}>{item}</option>
@@ -710,7 +821,9 @@ function Customers({
 				<div className="dataRow">
 					{general.language === 'deutsch' ? 'Postleitzahl' : 'Zip Code'}:
 					<select ref={zipRef} onInput={zipHandler}>
-						<option defaultChecked>-</option>
+						<option defaultChecked value={undefined}>
+							-
+						</option>
 
 						{columns.map((item) => (
 							<option key={useId()}>{item}</option>
@@ -720,7 +833,9 @@ function Customers({
 				<div className="dataRow">
 					{general.language === 'deutsch' ? 'Stadt' : 'City'}:
 					<select ref={cityRef} onInput={cityHandler}>
-						<option defaultChecked>-</option>
+						<option defaultChecked value={undefined}>
+							-
+						</option>
 
 						{columns.map((item) => (
 							<option key={useId()}>{item}</option>
@@ -730,7 +845,9 @@ function Customers({
 				<div className="dataRow">
 					{general.language === 'deutsch' ? 'Land' : 'Country'}:
 					<select ref={countryRef} onInput={countryHandler}>
-						<option defaultChecked>-</option>
+						<option defaultChecked value={undefined}>
+							-
+						</option>
 
 						{columns.map((item) => (
 							<option key={useId()}>{item}</option>
@@ -742,8 +859,10 @@ function Customers({
 						? 'Datum des ersten Treffens'
 						: 'Date of first meeting'}
 					:
-					<select ref={fistContactRef} onInput={fistContactHandler}>
-						<option defaultChecked>-</option>
+					<select ref={firstContactRef} onInput={fistContactHandler}>
+						<option defaultChecked value={undefined}>
+							-
+						</option>
 
 						{columns.map((item) => (
 							<option key={useId()}>{item}</option>
@@ -756,7 +875,9 @@ function Customers({
 						: 'Date of the latest interaction'}
 					:
 					<select ref={latestContactRef} onInput={latestContactHandler}>
-						<option defaultChecked>-</option>
+						<option defaultChecked value={undefined}>
+							-
+						</option>
 
 						{columns.map((item) => (
 							<option key={useId()}>{item}</option>
@@ -764,9 +885,135 @@ function Customers({
 					</select>
 				</div>
 				<div className="dataRow">
-					{general.language === 'deutsch' ? 'Notizen' : 'Notes'}:
-					<select ref={notesRef} onInput={notesHandler}>
-						<option defaultChecked>-</option>
+					{general.language === 'deutsch'
+						? 'Notizen über Kunden'
+						: 'Notes about customer'}
+					:
+					<select ref={customerNotesRef} onInput={customerNotesHandler}>
+						<option defaultChecked value={undefined}>
+							-
+						</option>
+
+						{columns.map((item) => (
+							<option key={useId()}>{item}</option>
+						))}
+					</select>
+				</div>
+				<div className="dataRow">
+					{general.language === 'deutsch'
+						? 'Notizen über Adresse'
+						: 'Notes about address'}
+					:
+					<select ref={addressNotesRef} onInput={addressNotesHandler}>
+						<option defaultChecked value={undefined}>
+							-
+						</option>
+
+						{columns.map((item) => (
+							<option key={useId()}>{item}</option>
+						))}
+					</select>
+				</div>
+				<div className="dataRow">
+					{general.language === 'deutsch'
+						? 'Notizen über Person'
+						: 'Notes about person'}
+					:
+					<select ref={personNotesRef} onInput={personNotesHandler}>
+						<option defaultChecked value={undefined}>
+							-
+						</option>
+
+						{columns.map((item) => (
+							<option key={useId()}>{item}</option>
+						))}
+					</select>
+				</div>
+				<div className="dataRow">
+					{general.language === 'deutsch'
+						? 'Notizen über Person'
+						: 'Notes about person'}
+					:
+					<select ref={companyNotesRef} onInput={companyNotesHandler}>
+						<option defaultChecked value={undefined}>
+							-
+						</option>
+
+						{columns.map((item) => (
+							<option key={useId()}>{item}</option>
+						))}
+					</select>
+				</div>
+				<div className="dataRow">
+					{general.language === 'deutsch' ? 'IABN' : 'IABN'}:
+					<select ref={ibanRef} onInput={IbanHandler}>
+						<option defaultChecked value={undefined}>
+							-
+						</option>
+
+						{columns.map((item) => (
+							<option key={useId()}>{item}</option>
+						))}
+					</select>
+				</div>
+				<div className="dataRow">
+					{general.language === 'deutsch' ? 'BIC' : 'BIC'}:
+					<select ref={bicRef} onInput={bicHandler}>
+						<option defaultChecked value={undefined}>
+							-
+						</option>
+
+						{columns.map((item) => (
+							<option key={useId()}>{item}</option>
+						))}
+					</select>
+				</div>
+				<div className="dataRow">
+					{general.language === 'deutsch' ? 'Bankname' : 'Bank Name'}:
+					<select ref={bankNameRef} onInput={bankNameHandler}>
+						<option defaultChecked value={undefined}>
+							-
+						</option>
+
+						{columns.map((item) => (
+							<option key={useId()}>{item}</option>
+						))}
+					</select>
+				</div>
+				<div className="dataRow">
+					{general.language === 'deutsch' ? 'Bankcode' : 'Bank code'}:
+					<select ref={bankCodeRef} onInput={bankCodeHandler}>
+						<option defaultChecked value={undefined}>
+							-
+						</option>
+
+						{columns.map((item) => (
+							<option key={useId()}>{item}</option>
+						))}
+					</select>
+				</div>
+				<div className="dataRow">
+					{general.language === 'deutsch'
+						? 'Notizen zur Bank'
+						: 'Notes about the bank'}
+					:
+					<select ref={bankNotesRef} onInput={bankNotesHandler}>
+						<option defaultChecked value={undefined}>
+							-
+						</option>
+
+						{columns.map((item) => (
+							<option key={useId()}>{item}</option>
+						))}
+					</select>
+				</div>
+				<div className="dataRow">
+					{general.language === 'deutsch' ? 'Beschreibung' : 'Description'}
+					:
+					<select ref={descriptionRef} onInput={descriptionHandler}>
+						<option defaultChecked value={undefined}>
+							-
+						</option>
 
 						{columns.map((item) => (
 							<option key={useId()}>{item}</option>

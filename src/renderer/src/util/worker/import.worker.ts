@@ -1,5 +1,21 @@
-//@ts-ignore
+// the use of import mdules inside of workers
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import#browser_compatibility
+import {
+	CustomerSortingMap,
+	PersonType,
+	EmailType,
+	PhoneNumberType,
+	AddressType,
+	BankType,
+	CompanyType,
+	Customer,
+} from '../types/types';
+import { rx } from '../func/regex';
+
 self.onmessage = (e: MessageEvent): void => {
+	if (e.data.dataBaseName === undefined) {
+		return;
+	}
 	switch (e.data.type) {
 		case 'import':
 			const data = e.data.message;
@@ -21,13 +37,14 @@ self.onmessage = (e: MessageEvent): void => {
 			}
 			const keys = getKeys(rows[0]);
 
-			const request = indexedDB.open('factor_db');
+			const request = indexedDB.open(e.data.dataBaseName, e.data.dbVersion);
 
 			request.onsuccess = () => {
 				// console.log('success')
 				// console.log(e)
 				// @ts-ignore
 				const db = request.result;
+				self.Storage;
 				deleteData(db);
 				addData(keys, rows, db);
 				const copy = [...keys];
@@ -69,8 +86,13 @@ self.onmessage = (e: MessageEvent): void => {
 			if (alignVariables.direction === 'Left') {
 				offset = offset - 2 * offset;
 			}
-			alignData(alignVariables.col, alignVariables.value, offset);
-
+			alignData(
+				alignVariables.col,
+				alignVariables.value,
+				offset,
+				e.data.dataBaseName,
+				e.data.dbVersion
+			);
 			break;
 		case 'rankColsByCondition':
 			let condition = e.data.message.condition;
@@ -96,35 +118,16 @@ self.onmessage = (e: MessageEvent): void => {
 				default:
 					condition = '';
 			}
-			rankColsByCondition(condition);
+			rankColsByCondition(condition, e.data.dataBaseName, e.data.dbVersion);
 			break;
 		case 'deleteCol':
 			const colToBeDeleted: string = e.data.message;
-			console.log('about to delete col ' + colToBeDeleted);
+			// console.log('about to delete col ' + colToBeDeleted);
 			deleteCol(colToBeDeleted);
 			break;
-
 		case 'sort':
-			interface SortingMap {
-				customerID: string;
-				title?: string;
-				firstName?: string;
-				lastName?: string;
-				email?: string;
-				phone?: string;
-				web?: string;
-				companyName?: string;
-				alias?: string;
-				street?: string;
-				zip?: string;
-				city?: string;
-				country?: string;
-				first?: string;
-				latest?: string;
-				notes?: string;
-			}
-			console.log('do sorting');
-			const columnsMap: SortingMap = e.data.message;
+			// console.log('do sorting');
+			const columnsMap: CustomerSortingMap = e.data.message;
 			const mode:
 				| 'articles'
 				| 'customers'
@@ -135,7 +138,8 @@ self.onmessage = (e: MessageEvent): void => {
 				case 'articles':
 					break;
 				case 'customers':
-					doCustomers(columnsMap);
+					// console.log('do customers');
+					doCustomers(columnsMap, e.data.dataBaseName, e.data.dbVersion);
 					break;
 				case 'quotes':
 					break;
@@ -156,6 +160,58 @@ self.onmessage = (e: MessageEvent): void => {
 				message: `${e.data.type} is an invalid message type`,
 			});
 	}
+};
+
+let PersonTemplate: PersonType = {
+	firstName: '',
+	lastName: '',
+	id: 0,
+	phone: null,
+	title: '',
+	alias: undefined,
+	notes: undefined,
+};
+
+let EmailTemplate: EmailType = {
+	email: '',
+	id: 0,
+	notes: [],
+	type: undefined,
+};
+
+let PhoneTemplate: PhoneNumberType = {
+	id: 0,
+	phone: '',
+	notes: undefined,
+	type: undefined,
+};
+
+let AddressTemplate: AddressType = {
+	city: '',
+	country: '',
+	hash: '',
+	id: 0,
+	street: '',
+	zip: '',
+	notes: undefined,
+	number: undefined,
+	type: undefined,
+};
+
+let CompanyTemplate: CompanyType = {
+	alias: undefined,
+	id: 0,
+	name: '',
+	notes: undefined,
+};
+
+let BankTemplate: BankType = {
+	id: 0,
+	name: '',
+	bankCode: undefined,
+	bic: undefined,
+	iban: '',
+	notes: undefined,
 };
 
 const updateManager = (total: number) => {
@@ -214,8 +270,14 @@ function deleteData(db: IDBDatabase) {
 	objectStore.clear();
 }
 
-function alignData(col: string, searchValue: string, shiftAmount: number) {
-	const request = indexedDB.open('factor_db');
+function alignData(
+	col: string,
+	searchValue: string,
+	shiftAmount: number,
+	dbName: string,
+	dbVersion: number
+) {
+	const request = indexedDB.open(dbName, dbVersion);
 	return (request.onsuccess = () => {
 		const db = request.result;
 		const transaction = db.transaction(['data_upload'], 'readwrite');
@@ -292,8 +354,12 @@ function performShift(to: number, item: object) {
 	return out;
 }
 
-function rankColsByCondition(condition: string | null | number | undefined) {
-	const dbRequest = indexedDB.open('factor_db');
+function rankColsByCondition(
+	condition: string | null | number | undefined,
+	dbName: string,
+	dbVersion: number
+) {
+	const dbRequest = indexedDB.open(dbName, dbVersion);
 	dbRequest.onsuccess = () => {
 		//@ts-ignore
 		const db: IDBDatabase = dbRequest.result;
@@ -385,7 +451,7 @@ function compareItemToCondition(
 					//   return true
 					// }
 					if (typeof value === 'undefined' || typeof value === null) {
-						console.log(index);
+						// console.log(index);
 					}
 				}
 			} else {
@@ -406,7 +472,7 @@ function compareItemToCondition(
 			}
 			return false;
 		default:
-			console.log('unknown type of condition', typeof condition, condition);
+			// console.log('unknown type of condition', typeof condition, condition);
 			return false;
 	}
 }
@@ -420,7 +486,7 @@ function deleteCol(col: string) {
 		const countRequest = objStore.count();
 		countRequest.onsuccess = () => {
 			const count = countRequest.result;
-			console.log('start col deletion');
+			// console.log('start col deletion');
 			objStore.openCursor(null, 'next').onsuccess = (e) => {
 				//@ts-ignore
 				const cursor: IDBCursorWithValue = e.target.result;
@@ -433,7 +499,7 @@ function deleteCol(col: string) {
 					if (parseInt(cursor.key.toString()) < count) {
 						cursor.continue();
 					} else {
-						console.log('deleted col');
+						// console.log('deleted col');
 						postMessage({
 							type: 'colDeletion',
 							message: `deleted col: ${col}`,
@@ -445,758 +511,512 @@ function deleteCol(col: string) {
 	};
 }
 
-function doCustomers(map: CustomerMapType) {
-	const request = indexedDB.open('customers', 1);
-
-	request.onupgradeneeded = () => {
-		const db = request.result;
-
-		if (!db.objectStoreNames.contains('customers')) {
-			console.log('creating object store');
-			const store = db.createObjectStore('customers', {
-				keyPath: 'row',
-			});
-			store.createIndex('row', 'row', { unique: true });
-			store.createIndex('customerID', 'customerID', { unique: true });
-			store.createIndex('oldCustomerIDs', 'oldCustomerIDs');
-			store.createIndex('companyName', 'companyName');
-			store.createIndex('alias', 'alias');
-			store.createIndex('persons', 'persons');
-			store.createIndex('addresses', 'addresses');
-			store.createIndex('bank', 'bank');
-			store.createIndex('email', 'email');
-			store.createIndex('phone', 'phone');
-			store.createIndex('firstContact', 'firstContact');
-			store.createIndex('latestContact', 'latestContact');
-			store.createIndex('notes', 'notes');
-		}
-		if (!db.objectStoreNames.contains('articles')) {
-			db.createObjectStore('articles', { keyPath: ['articleID'] });
-		}
-		if (!db.objectStoreNames.contains('quotes')) {
-			db.createObjectStore('quotes', { keyPath: ['quoteID'] });
-		}
-		if (!db.objectStoreNames.contains('invoices')) {
-			db.createObjectStore('invoices', { keyPath: ['invoiceID'] });
-		}
-		if (!db.objectStoreNames.contains('deliveries')) {
-			db.createObjectStore('deliveries', { keyPath: ['deliveryID'] });
-		}
-		if (!db.objectStoreNames.contains('returnees')) {
-			db.createObjectStore('returnees', { keyPath: ['returnID'] });
-		}
-		console.log('upgraded DB');
-	};
-
+function doCustomers(
+	map: CustomerSortingMap,
+	dbName: string,
+	dbVersion: number
+) {
+	const request = indexedDB.open(dbName, dbVersion);
 	request.onsuccess = () => {
-		const db = request.result;
-		const transaction = db.transaction(
-			['customers', 'data_upload'],
-			'readwrite'
-		);
-		const customers = transaction.objectStore('customers');
-		const data_upload = transaction.objectStore('data_upload');
-		console.log('start count');
-		data_upload.count().onsuccess = (ev) => {
-			//@ts-expect-error
-			const count: number = ev.target.result;
-			const update = updateManager(count);
-			console.log('start cursor');
-			data_upload.openCursor(null, 'next').onsuccess = (e) => {
-				// @ts-expect-error
-				const cursor: IDBCursorWithValue = e.target.result;
-				if (cursor !== null) {
-					const row = cursor.value;
+		const customerDBrequest = indexedDB.open('customer_db', dbVersion);
+		customerDBrequest.onupgradeneeded = createCustomerObjectStores;
+		customerDBrequest.onsuccess = () => {
+			// console.log('opened ', 'customer_db');
+			const db = request.result;
+			const customerDB = customerDBrequest.result;
+			const dbTransaction = db.transaction(['data_upload'], 'readonly');
+			const dataUpload = dbTransaction.objectStore('data_upload');
+			// console.log('count data upload');
+			const dataUploadCountRequest = dataUpload.count();
 
-					const customerRow: CustomerType = parseCustomer(map, row);
-					update();
-					customers.put(customerRow);
-					if (parseInt(cursor.key.toString()) < count) {
+			dataUploadCountRequest.onsuccess = () => {
+				let dataCount = dataUploadCountRequest.result;
+				// console.log('counted data upload: ', dataCount);
+				const update = updateManager(dataCount);
+				// console.log('open cursor');
+				const cursorRequest = dataUpload.openCursor(null, 'next');
+				cursorRequest.onsuccess = () => {
+					const cursor: IDBCursorWithValue | null = cursorRequest.result;
+					if (cursor) {
+						const value = cursor.value;
+						parseCustomer(map, value, customerDB);
+
+						update();
 						cursor.continue();
 					} else {
-						postMessage({ type: 'success' });
-						console.log('done adding data');
+						postMessage({
+							type: 'success',
+							message: 'customers',
+						});
 					}
-				}
+				};
 			};
 		};
 	};
 }
 
-function parseCustomer(map: CustomerMapType, row: any): CustomerType {
-	let customerRow: CustomerType;
-	customerRow = {
-		row: 0,
-		customerID: '',
-		addresses: [],
-		bank: [],
-		companyName: undefined,
-		email: [],
+type RowType = {
+	row: number;
+	[key: string]: any;
+};
+
+function parseCustomer(
+	map: CustomerSortingMap,
+	row: RowType,
+	customerDB: IDBDatabase
+): void {
+	// console.log(map);
+	let customer: Customer = {
+		id: trimWhiteSpace(row[map.id]),
+		row: row.row,
+		addresses: undefined,
+		altIDs: undefined,
+		persons: undefined,
+		banks: undefined,
+		company: undefined,
+		emails: undefined,
+		phones: undefined,
+		description: undefined,
 		firstContact: undefined,
-		latestContact: new Date(),
-		notes: [],
-		oldCustomerIDs: [],
-		persons: [],
-		phone: [],
-		alias: [],
+		latestContact: undefined,
+		created: new Date(),
 	};
-	let tmp: string = '';
 
-	for (const [key, value] of Object.entries(map)) {
-		if (value !== '-' && value.trim().length !== 0) {
-			switch (key) {
-				case 'customerID':
-					tmp = row[value];
-					tmp = tmp.trim();
-					customerRow['customerID'] = tmp;
-					break;
-				case 'title':
-					tmp = row[value];
-					tmp = tmp.trim();
-					let title = new TitleType(tmp);
-					let customerPerson: PersonType = {
-						title: undefined,
-					};
-					if (title.title === undefined) {
-						break;
-					}
-					if (customerRow.persons !== undefined) {
-						if (customerRow.persons.length === 0) {
-							customerPerson.title = title;
-							customerRow.persons.push({ title: title });
+	function updateCustomer(
+		id: string,
+		key: 'persons' | 'emails' | 'addresses' | 'banks' | 'company' | 'phones',
+		value: number
+	) {
+		let transaction = customerDB.transaction('customers', 'readwrite');
+		let oStore = transaction.objectStore('customers');
+		let index = oStore.index('customers-id');
+		let request = index.get(id);
+
+		request.onsuccess = () => {
+			let entry: Customer = request.result;
+			if (entry) {
+				if (key !== 'company') {
+					if (Object.keys(entry).includes(key)) {
+						if (!Array.isArray(entry[key])) {
+							Object.defineProperty(entry, key, {
+								configurable: true,
+								enumerable: true,
+								writable: true,
+								value: [value],
+							});
 						} else {
-							if (customerRow.persons.length === 1) {
-								if (customerRow.persons[0].title === undefined) {
-									customerRow.persons[0].title = title;
-								}
+							if (!entry[key].includes(value)) {
+								entry[key].push(value);
 							}
 						}
-					}
-					break;
-				case 'firstName':
-					tmp = row[value];
-					tmp = tmp.trim();
-					if (tmp.length === 0) {
-						break;
-					}
-					if (customerRow.persons === undefined) {
-						customerRow.persons = [];
-					}
-					if (tmp.includes('&') || tmp.includes('+')) {
-						tmp.replaceAll('&', ':');
-						tmp.replaceAll('+', ':');
-						let firstNames = tmp.split(':');
-						firstNames.forEach((elem, index) => {
-							let firstName = elem.trim();
-							if (customerRow.persons !== undefined) {
-								if (customerRow.persons[index] === undefined) {
-									customerRow.persons[index] = {
-										firstName: firstName,
-									};
-								} else {
-									customerRow.persons[index].firstName = firstName;
-								}
-							}
-						});
 					} else {
-						if (customerRow.persons !== undefined) {
-							if (customerRow.persons.length === 0) {
-								customerRow.persons.push({
-									firstName: tmp,
-								});
-							} else {
-								if (customerRow.persons[0].firstName === undefined) {
-									customerRow.persons[0].firstName = tmp;
-								}
-							}
-						}
-					}
-					break;
-				case 'lastName':
-					tmp = row[value];
-					tmp = tmp.trim();
-					if (tmp.length === 0) {
-						break;
-					}
-					if (customerRow.persons === undefined) {
-						customerRow.persons = [];
-					}
-
-					if (customerRow.persons !== undefined) {
-						if (customerRow.persons.length === 0) {
-							customerRow.persons.push({ lastName: tmp });
-						} else {
-							if (customerRow.persons[0].lastName === undefined) {
-								customerRow.persons[0].lastName = tmp;
-							}
-						}
-					}
-					break;
-				case 'email':
-					tmp = row[value];
-					tmp = tmp.trim();
-					if (tmp.length === 0) {
-						break;
-					}
-					if (customerRow.email === undefined) {
-						customerRow.email = [];
-					}
-					if (customerRow.email !== undefined) {
-						// check if a company name exists
-						if (map['companyName'] !== undefined) {
-							if (row[map['companyName']] !== undefined) {
-								if (row[map['companyName']].trim().length !== 0) {
-									// a company name exists, so assign the emails to the top level
-									if (tmp.includes(',')) {
-										let emails = tmp.split(',');
-										emails.forEach((elem, index) => {
-											if (elem.trim.length !== 0) {
-												if (customerRow.email !== undefined) {
-													if (customerRow.email)
-														customerRow.email[index] = {
-															email: elem.trim(),
-														};
-												}
-											}
-										});
-									} else {
-										customerRow.email.push({ email: tmp });
-									}
-								}
-							}
-						} else {
-							if (
-								map['firstName'] !== undefined ||
-								map['lastName'] !== undefined
-							) {
-								if (customerRow.persons !== undefined) {
-									if (customerRow.persons.length === 0) {
-										customerRow.persons[0] = {
-											email: [{ email: tmp }],
-										};
-									} else {
-										if (customerRow.persons[0].email !== undefined) {
-											customerRow.persons[0].email.push({
-												email: tmp,
-											});
-										}
-									}
-								}
-							}
-						}
-					}
-					break;
-				case 'phone':
-					tmp = row[value];
-					tmp = tmp.trim();
-					if (tmp.length === 0) {
-						break;
-					}
-					if (customerRow.phone === undefined) {
-						customerRow.phone = [];
-					}
-
-					if (customerRow.phone !== undefined) {
-						customerRow.phone.push({ number: tmp });
-					}
-					break;
-				case 'web':
-					tmp = row[value];
-					tmp = tmp.trim();
-					if (tmp.length === 0) {
-						break;
-					}
-					// not yet implemented
-					break;
-				case 'companyName':
-					tmp = row[value];
-					tmp = tmp.trim();
-					if (tmp.length === 0) {
-						break;
-					}
-					if (customerRow.companyName === undefined) {
-						customerRow.companyName = tmp;
-					}
-					break;
-				case 'alias':
-					tmp = row[value];
-					tmp = tmp.trim();
-					if (tmp.length === 0) {
-						break;
-					}
-					// not yet implemented
-					break;
-				case 'street':
-					tmp = row[value];
-					tmp = tmp.trim();
-					if (tmp.length === 0) {
-						break;
-					}
-					if (customerRow.addresses === undefined) {
-						customerRow.addresses = [];
-					}
-
-					if (customerRow.addresses !== undefined) {
-						if (customerRow.addresses.length === 0) {
-							const addressID = crypto.randomUUID();
-							customerRow.addresses.push({
-								addressID: addressID,
-								street: tmp,
-								type: undefined,
-							});
-						} else {
-							customerRow.addresses[0].street = tmp;
-						}
-					}
-					break;
-				case 'zip':
-					tmp = row[value];
-					tmp = tmp.trim();
-					if (tmp.length === 0) {
-						break;
-					}
-					if (customerRow.addresses === undefined) {
-						customerRow.addresses = [];
-					}
-
-					if (customerRow.addresses !== undefined) {
-						if (customerRow.addresses.length === 0) {
-							const addressID = crypto.randomUUID();
-							customerRow.addresses.push({
-								addressID: addressID,
-								zip: tmp,
-								type: undefined,
-							});
-						} else {
-							customerRow.addresses[0].zip = tmp;
-						}
-					}
-					break;
-				case 'city':
-					tmp = row[value];
-					tmp = tmp.trim();
-					if (tmp.length === 0) {
-						break;
-					}
-					if (customerRow.addresses === undefined) {
-						customerRow.addresses = [];
-					}
-
-					if (customerRow.addresses !== undefined) {
-						if (customerRow.addresses.length === 0) {
-							const addressID = crypto.randomUUID();
-							customerRow.addresses.push({
-								addressID: addressID,
-								city: tmp,
-								type: undefined,
-							});
-						} else {
-							customerRow.addresses[0].city = tmp;
-						}
-					}
-					break;
-				case 'country':
-					tmp = row[value];
-					tmp = tmp.trim();
-					if (tmp.length === 0) {
-						break;
-					}
-					if (customerRow.addresses === undefined) {
-						customerRow.addresses = [];
-					}
-
-					if (customerRow.addresses !== undefined) {
-						if (customerRow.addresses.length === 0) {
-							const addressID = crypto.randomUUID();
-							customerRow.addresses.push({
-								addressID: addressID,
-								country: tmp,
-								type: undefined,
-							});
-						} else {
-							customerRow.addresses[0].country = tmp;
-						}
-					}
-					break;
-				case 'firstContact':
-					tmp = row[value];
-					tmp = tmp.trim();
-					if (tmp.length === 0) {
-						break;
-					}
-					let ymd = [
-						parseInt(tmp[0] + tmp[1] + tmp[2] + tmp[3]),
-						parseInt(tmp[4] + tmp[5]),
-						parseInt(tmp[6] + tmp[7]),
-					];
-					for (const item of ymd) {
-						if (isNaN(item)) {
-							break;
-						}
-					}
-					let firstContact = new Date(ymd[0], ymd[1], ymd[2]);
-					if (customerRow.firstContact === undefined) {
-						customerRow.firstContact = firstContact;
-					}
-
-					break;
-				case 'latestContact':
-					tmp = row[value];
-					tmp = tmp.trim();
-					if (tmp.length === 0) {
-						if (customerRow.latestContact === undefined) {
-							customerRow.latestContact = new Date();
-						}
-						break;
-					}
-					let ymd2 = [
-						parseInt(tmp[0] + tmp[1] + tmp[2] + tmp[3]),
-						parseInt(tmp[4] + tmp[5]),
-						parseInt(tmp[6] + tmp[7]),
-					];
-					for (const item of ymd2) {
-						if (isNaN(item)) {
-							break;
-						}
-					}
-					let latestContact = new Date(ymd2[0], ymd2[1], ymd2[2]);
-					if (customerRow.latestContact === undefined) {
-						customerRow.latestContact = latestContact;
-					}
-					break;
-				case 'notes':
-					tmp = row[value];
-					tmp = tmp.trim();
-					if (tmp.length === 0) {
-						break;
-					}
-					if (customerRow.notes === undefined) {
-						customerRow.notes = [];
-					}
-					if (customerRow.notes !== undefined) {
-						let notes = tmp.split(',');
-						notes.forEach((note) => {
-							if (customerRow.notes !== undefined) {
-								customerRow.notes.push(note);
-							}
+						Object.defineProperty(entry, key, {
+							configurable: true,
+							enumerable: true,
+							writable: true,
+							value: [value],
 						});
 					}
-					break;
-				default:
-					break;
-				// console.log('');
+				} else {
+					Object.defineProperty(entry, key, {
+						configurable: true,
+						enumerable: false,
+						writable: true,
+						value: value,
+					});
+				}
+				oStore.put(entry);
+			}
+		};
+	}
+
+	function addParsedData(
+		data:
+			| PersonType[]
+			| EmailType[]
+			| PhoneNumberType[]
+			| AddressType[]
+			| CompanyType[]
+			| BankType[],
+		type: 'persons' | 'emails' | 'addresses' | 'banks' | 'company' | 'phones'
+	): void {
+		if (data.length !== 0) {
+			const transaction = customerDB.transaction(type, 'readwrite');
+			const oStore = transaction.objectStore(type);
+			let CountRequest = oStore.count();
+			// console.log("countRequest")
+			CountRequest.onsuccess = () => {
+				let count = CountRequest.result;
+				for (let [index, value] of data.entries()) {
+					let id = count + index + 1;
+					value.id = id;
+					oStore.add(value);
+					updateCustomer(row[map.id], type, id);
+				}
+			};
+		}
+	}
+
+	if (map.customerNotes !== undefined) {
+		let note = trimWhiteSpace(row[map.customerNotes]);
+		let notes = note.split(',').map((item) => trimWhiteSpace(item));
+		if (customer.notes === undefined) {
+			customer.notes = [];
+		}
+		for (let n of notes) {
+			if (n.trim() !== '') {
+				customer.notes.push(n);
 			}
 		}
 	}
-	// console.table([customerRow])
-	return customerRow;
-}
 
-// types (copy of @util/types/database/DatabaseTypes.d.ts)
-const TitleRx = new RegExp(
-	'^(?<title>(?<start>^[hHmMFfDd])(?<afterStart>((?<=[Hh])e?r{1,2}.?)|((?<=[Ff])ra?u?.?)|((?<=[Mm])(((iste)?r)|(is)?s).?)|((?<=[Dd])(octo)?r.?)))s?(?<doctorTitle>([dD](octo)?r.?s{0,3}((([mM]ed.?)|([jJ]ur.?)|([Dd]ent.?))s{0,3}){0,2}){1,3})?(?<diploma>(([dD]ipl(oma?)?.?)(-?s{0,2}?((Ing)|(Kf[mr])).?)|([BM].[ABCEMPST]{1}((omp|hem|ath|ci?|hil|con|ech|cc|rim).)?)){0,2}|([mM]ag.))?[W]?$',
-	'gm'
-);
+	if (map.description !== undefined) {
+		customer.description = trimWhiteSpace(row[map.description]);
+	}
 
-type CustomerMapType = {
-	customerID: string;
-	title?: string;
-	firstName?: string;
-	lastName?: string;
-	email?: string;
-	phone?: string;
-	web?: string;
-	companyName?: string;
-	alias?: string;
-	street?: string;
-	zip?: string;
-	city?: string;
-	country?: string;
-	firstContact?: string;
-	latestContact?: string;
-	notes?: string;
-};
+	if (map.firstContact !== undefined) {
+		let date = Array.from(row[map.firstContact]);
+		let year = date.splice(0, 4);
+		let month = date.splice(0, 2);
+		customer.firstContact = new Date(
+			parseInt(year.join('')),
+			parseInt(month.join('')) - 1,
+			parseInt(date.join(''))
+		);
+	}
 
-interface CustomerType {
-	row: number;
-	// unique customer id
-	customerID: string;
-	// (optional) old customer ids, for backward compatibility
-	oldCustomerIDs?: string[];
-	// (optional) the Corporate person-hood or company name of there are any
-	companyName?: string;
-	// (optional) company alias
-	alias?: string[];
-	// (optional) All associated real persons
-	persons?: PersonType[];
-	// (optional) associated Addresses
-	addresses?: AddressType[];
-	// banking info
-	bank?: BankType[];
-	// (optional) official or primary email address associate with the customer
-	email?: EmailType[];
-	// (optional)
-	phone?: PhoneNumberType[];
-	// (optional) the date of the fist meeting
-	firstContact?: Date;
-	// (optional) the date of the last encounter
-	latestContact?: Date;
-	// (optional) notes
-	notes?: string[];
-}
+	if (map.latestContact !== undefined) {
+		let date = Array.from(row[map.latestContact]);
+		let year = date.splice(0, 4);
+		let month = date.splice(0, 2);
+		customer.latestContact = new Date(
+			parseInt(year.join('')),
+			parseInt(month.join('')) - 1,
+			parseInt(date.join(''))
+		);
+	}
 
-interface NameType {
-	// (optional) the name of the company
-	name?: string;
-	// (optional) alternative names of the company
-	alias?: string[];
+	let transaction = customerDB.transaction('customers', 'readwrite');
+	let oStore = transaction.objectStore('customers');
+	oStore.put(customer);
 
-	// (optional) company description
-	description?: string;
-	// (optional) any additional Information
-	notes?: string[];
-}
+	let persons: PersonType[] = [];
+	let emails: EmailType[] = [];
+	let phones: PhoneNumberType[] = [];
+	let addresses: AddressType[] = [];
+	let companies: CompanyType[] = [];
+	let banks: BankType[] = [];
 
-interface AddressType {
-	// unique identifier
-	addressID: string;
-	// what kind of address
-	type: 'delivery' | 'billing' | 'both' | undefined;
-	//  (optional) street name
-	street?: string;
-	// (optional) street number eg. 12 or 12a
-	number?: string;
-	// (optional) the city name
-	city?: string;
-	// (optional) postal code
-	zip?: string;
-	// (optional) country or country code
-	country?: string;
-	// (optional) additional notes
-	notes?: string[];
-}
+	// parse Persons
+	if (map.firstName !== undefined || map.lastName !== undefined) {
+		// now we know there is something which fits the scheme of a person
+		if (map.firstName !== undefined) {
+			// if there is a first Name
+			let firstName = trimWhiteSpace(row[map.firstName]);
+			if (firstName.includes('&')) {
+				// its actually to persons (related or married)
+				let names = firstName
+					.split('&')
+					.map((item) => trimWhiteSpace(item));
+				let person1 = structuredClone(PersonTemplate);
+				let person2 = structuredClone(PersonTemplate);
+				person1.firstName = names[0];
+				person2.firstName = names[1];
+				persons.push(person1);
+				persons.push(person2);
+			} else {
+				// only one person
+				let person = structuredClone(PersonTemplate);
+				person.firstName = firstName;
+				persons.push(person);
+			}
+		}
 
-interface PersonType {
-	// (optional) title
-	title?: TitleType;
-	// (optional) first Name (including middle Names)
-	firstName?: string;
-	// (optional) any last Names
-	lastName?: string;
-	// (optional)
-	alias?: string[];
-	// (optional) associated email addresses
-	email?: EmailType[];
-	//  (optional) associated phone numbers
-	phone?: PhoneNumberType[];
-	// (optional) notes on that person
-	notes?: string[];
-}
+		if (map.lastName !== undefined) {
+			// if there is a last name
+			if (persons.length !== 0) {
+				// are the any persons already
+				for (let p of persons) {
+					p.lastName = trimWhiteSpace(row[map.lastName]);
+				}
+			} else {
+				// create a person
+				let person = structuredClone(PersonTemplate);
+				person.lastName = trimWhiteSpace(row[map.lastName]);
+				person.firstName = '';
+				persons.push(person);
+			}
+		}
 
-interface TitleValidator {
-	isAcceptable(s: string): boolean;
-}
-
-class TitleType implements TitleValidator {
-	title: string | undefined;
-
-	constructor(input: string) {
-		if (this.isAcceptable(input)) {
-			this.title = input;
+		if (map.title !== undefined) {
+			if (persons.length !== 0) {
+				for (let p of persons) {
+					p.title = trimWhiteSpace(row[map.title]);
+				}
+			}
 		}
 	}
-	isAcceptable(s: string): boolean {
-		return TitleRx.test(s);
+
+	if (map.companyName === undefined && map.alias !== undefined) {
+		// if the is no company name assume the alias field applies to the person
+		for (let p of persons) {
+			if (p.alias === undefined) {
+				p.alias = [];
+			}
+			p.alias.push(trimWhiteSpace(row[map.alias]));
+		}
+	}
+
+	if (persons.length !== 0 && map.personNotes !== undefined) {
+		// if there are persons and we can assign notes then do so
+		for (let p of persons) {
+			if (p.notes === undefined) {
+				p.notes = [];
+			}
+			let note = trimWhiteSpace(row[map.personNotes]);
+			let notes = note.split(',').map((item) => trimWhiteSpace(item));
+			for (let n of notes) {
+				if (n.trim() !== '') {
+					p.notes.push(n);
+				}
+			}
+		}
+	}
+
+	addParsedData(persons, 'persons');
+
+	// parse address
+	let addressParams = ['city', 'street', 'zip', 'country'];
+	if (
+		map.city !== undefined ||
+		map.street !== undefined ||
+		map.zip !== undefined ||
+		map.country !== undefined
+	) {
+		let address = structuredClone(AddressTemplate);
+		for (const param of addressParams) {
+			if (map[param] !== undefined) {
+				address[param] = trimWhiteSpace(row[map[param]]);
+			}
+		}
+		addresses.push(address);
+	}
+
+	addParsedData(addresses, 'addresses');
+
+	// parse email
+	if (map.email !== undefined) {
+		let mail = trimWhiteSpace(row[map.email]);
+		if (mail.trim() !== '') {
+			let mails = mail.split(',').map((item) => trimWhiteSpace(item));
+			for (const m of mails) {
+				let email = structuredClone(EmailTemplate);
+				let matched = rx.EmailRx.exec(m);
+				if (matched?.[0] !== null && matched?.[0] !== undefined) {
+					email.email = matched[0];
+					if (email.notes === undefined) {
+						email.notes = [];
+					}
+					let note = trimWhiteSpace(m.replace(matched[0], ''));
+					if (note !== '') {
+						email.notes.push(note);
+					}
+				}
+				emails.push(email);
+			}
+		}
+	}
+
+	if (emails.length !== 0 && map.emailNotes !== undefined) {
+		for (let m of emails) {
+			if (!Array.isArray(m.notes)) {
+				m.notes = [];
+			}
+			let note = trimWhiteSpace(row[map.emailNotes]);
+			let notes = note.split(',').map((item) => trimWhiteSpace(item));
+			for (let n of notes) {
+				if (n.trim() !== '') {
+					m.notes.push(n);
+				}
+			}
+		}
+	}
+
+	addParsedData(emails, 'emails');
+
+	// parse phone number
+	if (map.phone !== undefined) {
+		let phone = structuredClone(PhoneTemplate);
+		let number = trimWhiteSpace(row[map.phone]);
+		phone.phone = number.replaceAll('[^0-9+]', '');
+		phones.push(phone);
+	}
+
+	if (phones.length !== 0 && map.phoneNotes !== undefined) {
+		let note = trimWhiteSpace(row[map.phoneNotes]);
+		let notes = note.split(',').map((item) => trimWhiteSpace(item));
+
+		for (let p of phones) {
+			if (!Array.isArray(p.notes)) {
+				p.notes = [];
+			}
+			for (let n of notes) {
+				if (n.trim() !== '') {
+					p.notes.push(n);
+				}
+			}
+		}
+	}
+
+	addParsedData(phones, 'phones');
+
+	// parse company
+	if (map.companyName !== undefined) {
+		let company = structuredClone(CompanyTemplate);
+		company.name = trimWhiteSpace(row[map.companyName]);
+		companies.push(company);
+	}
+
+	if (companies.length !== 0 && map.companyNotes !== undefined) {
+		let note = trimWhiteSpace(row[map.companyNotes]);
+		let notes = note.split(',').map((item) => trimWhiteSpace(item));
+		for (let c of companies) {
+			if (c.notes === undefined) {
+				c.notes = [];
+			}
+			for (let n of notes) {
+				if (n.trim() !== '') {
+					c.notes.push(n);
+				}
+			}
+		}
+	}
+
+	addParsedData(companies, 'company');
+
+	// parse bank
+	if (map.bankName !== undefined) {
+		let bank = structuredClone(BankTemplate);
+		bank.name = trimWhiteSpace(row[map.bankName]);
+		if (map.bankCode !== undefined)
+			bank.bankCode = trimWhiteSpace(row[map.bankCode]);
+		if (map.iban !== undefined) bank.iban = trimWhiteSpace(row[map.iban]);
+		if (map.bic !== undefined) bank.bic = trimWhiteSpace(row[map.bic]);
+		if (map.bankNotes !== undefined) {
+			let note = trimWhiteSpace(row[map.bankNotes]);
+			let notes = note.split(',').map((item) => trimWhiteSpace(item));
+			if (bank.notes === undefined) {
+				bank.notes = [];
+			}
+			for (let n of notes) {
+				if (n.trim() !== '') {
+					bank.notes.push(n);
+				}
+			}
+		}
+		banks.push(bank);
+	}
+
+	addParsedData(banks, 'banks');
+}
+
+function createCustomerObjectStores(e: IDBVersionChangeEvent): void {
+	// console.log('upgrade customer_db');
+	const target: IDBOpenDBRequest = e.target as IDBOpenDBRequest;
+	const db = target.result;
+	const stores = db.objectStoreNames;
+
+	if (!stores.contains('customers')) {
+		const customer = db.createObjectStore('customers', {
+			keyPath: 'row',
+			autoIncrement: true,
+		});
+		customer.createIndex('customers-id', 'id', {
+			unique: true,
+		});
+	}
+
+	if (!stores.contains('persons')) {
+		const persons = db.createObjectStore('persons', {
+			keyPath: 'id',
+			autoIncrement: true,
+		});
+
+		persons.createIndex('persons-lastName', 'lastName', {
+			unique: false,
+		});
+
+		persons.createIndex('persons-firstName', 'firstName', {
+			unique: false,
+		});
+	}
+
+	if (!stores.contains('emails')) {
+		const email = db.createObjectStore('emails', {
+			keyPath: 'id',
+		});
+
+		email.createIndex('emails-email', 'email', {
+			unique: true,
+		});
+	}
+
+	if (!stores.contains('phones')) {
+		const phone = db.createObjectStore('phones', {
+			keyPath: 'id',
+		});
+
+		phone.createIndex('phones-phone', 'phone', {
+			unique: true,
+		});
+	}
+
+	if (!stores.contains('addresses')) {
+		const address = db.createObjectStore('addresses', {
+			keyPath: 'id',
+		});
+
+		address.createIndex('addresses-street', 'street', {
+			unique: false,
+		});
+		address.createIndex('addresses-city', 'city', {
+			unique: false,
+		});
+		address.createIndex('addresses-zip', 'zip', {
+			unique: false,
+		});
+		address.createIndex('addresses-country', 'country', {
+			unique: false,
+		});
+	}
+
+	if (!stores.contains('banks')) {
+		const bank = db.createObjectStore('banks', {
+			keyPath: 'id',
+		});
+
+		bank.createIndex('banks-name', 'name', {
+			multiEntry: true,
+		});
+		bank.createIndex('banks-iban', 'iban', {
+			unique: true,
+		});
+	}
+
+	if (!stores.contains('company')) {
+		db.createObjectStore('company', {
+			keyPath: 'id',
+		});
 	}
 }
 
-interface PhoneNumberType {
-	// (optional) the type of phone number
-	type?:
-		| 'private'
-		| 'business'
-		| 'mobile'
-		| 'landline'
-		| 'family'
-		| 'backup'
-		| 'accounting'
-		| 'marketing'
-		| 'management'
-		| 'office'
-		| 'logistics'
-		| 'emergency'
-		| 'boss';
-	// phone number
-	number: string;
-	// (optional) note for the phone number
-	notes?: string;
-}
-
-interface EmailType {
-	// (optional) the type of email
-	type?:
-		| 'private'
-		| 'business'
-		| 'mobile'
-		| 'landline'
-		| 'family'
-		| 'backup'
-		| 'accounting'
-		| 'marketing'
-		| 'management'
-		| 'office'
-		| 'logistics'
-		| 'emergency'
-		| 'boss'
-		| string;
-	// email
-	email: string;
-	// (optional) note for the phone number
-	notes?: string[];
-}
-
-interface BankType {
-	bank: string;
-	bankCode?: string;
-	IBAN?: string;
-	BIC?: string;
-}
-
-interface ArticleType {
-	// unique article identifier
-	articleID: string;
-	// article Name
-	name: string;
-	// total article count in ownership
-	count: number | 'n/a' | 'N/A';
-	// (optional) meters or Pieces or hours of work
-	unit?: string;
-	// (optional) notes regrading the article
-	notes?: string[];
-	// value added Tax (VAT) in percent
-	VAT: number;
-	// price of one Unit of article
-	price: PriceType;
-	// the last time this article experienced some sort of action
-	lastSeen?: Date;
-	// the security deposit amount for one unit of article
-	securityDeposit?: number;
-	// (optional) notes on what to look out for while shipping
-	shippingNotes?: string[];
-	// (optional) acquisition information
-	acquisition?: AcquisitionType[];
-	// (optional) category Type
-	category?: CategoryType[];
-	// (optional) how the price changes, when ordering more than one unit
-	bulkDiscount?: StepDiscountType | PercentDiscountType;
-}
-
-interface PriceType {
-	withVAT: number;
-	noVAT: number;
-	unit: 'EUR' | 'DM' | 'USD';
-}
-
-interface AcquisitionType {
-	// when the article was obtained
-	date: Date;
-	// who much of it
-	count: number;
-	// at what costs
-	price: PriceType;
-	// (optional) where
-	location?: string;
-	// (optional) additional notes
-	notes?: string[];
-	//(optional) some identifier for purchase
-	purchaseInvoiceID?: string;
-}
-
-interface LastEncounterType {
-	date: Date;
-	// (optional) id of corresponding quote
-	QuoteID?: string;
-	// (optional) id of corresponding invoice
-	InvoiceID?: string;
-	// (optional) id of corresponding delivery note
-	DeliveryID?: string;
-}
-
-// ordered list from first:  parent category -> ...sub categories -> article category
-type CategoryType = Set<string>;
-
-interface StepDiscountType {
-	type: 'step';
-	// at what number of items a new price gets applies
-	steps: number[];
-	prices: Set<number>;
-	// (optional) at what price the discount the should be stopped, regardless of count
-	minPrice?: number;
-}
-
-interface PercentDiscountType {
-	type: 'percent';
-	// when to apply a new percentage
-	steps: Set<number>;
-	// the percentage ( 0 - 100)
-	percentage: Set<number>;
-	// (optional) at what price the discount the should be stopped, regardless of count
-	minPrice?: number;
-}
-
-interface DiscountType {
-	amount: number;
-	unit: 'EUR' | 'DM' | 'USD' | '%';
-}
-
-interface BaseType {
-	customerID: string | string[];
-	// all article Ids and how many of them
-	articleList: ArticleListItem[];
-	date: Date;
-	addressIDs: {
-		// (optional) the address id stored in the CustomerType>addresses[n]>addressID with type "shipping" or "both"
-		shipping?: string;
-		// (optional) the address id stored in the CustomerType>addresses[n]>addressID with type "billing" or "both"
-		billing?: string;
-	};
-}
-
-interface ArticleListItem {
-	// the article ID
-	articleID: string;
-	// how many
-	count: number;
-}
-
-interface QuoteType extends BaseType {
-	// unique id for the quote
-	quoteID: string;
-	// (optional) if the articles are rented when are they going to be returned
-	returning?: Date;
-	// (optional) time in hours
-	duration?: number;
-}
-
-interface InvoiceType extends BaseType {
-	// unique identifier
-	invoiceID: string;
-	// total price without discount
-	price: PriceType;
-	// (optional) total price with discount
-	priceWithDiscount?: PriceType;
-	// (optional) a discount if there are any to apply
-	totalDiscount?: DiscountType;
-}
-
-interface DeliveryType extends BaseType {
-	deliveryID: string;
-}
-
-interface ReturneeType extends BaseType {
-	returnID: string;
-	// the Date and time when the item was returned
-	returned: Date;
-	// (optional) Notes on the returned Items
-	notes?: string[];
+function trimWhiteSpace(input: string): string {
+	if (typeof input !== 'string') {
+		// console.log(typeof input);
+	}
+	let out = input;
+	if (out.length !== 0) {
+		out.replaceAll(rx.WhiteSpaceRx, '');
+	}
+	return out;
 }

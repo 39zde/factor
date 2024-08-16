@@ -1,7 +1,10 @@
 self.onmessage = function requestHandler(e: MessageEvent) {
+	if(e.data.dataBaseName === undefined){
+		return
+	}
 	switch (e.data.type) {
 		case 'stream':
-			const dbRequest = indexedDB.open('factor_db', e.data.dbVersion);
+			const dbRequest = indexedDB.open(e.data.dataBaseName, e.data.dbVersion);
 			dbRequest.onsuccess = () => {
 				const streamDB = dbRequest.result;
 				const transaction = streamDB.transaction(
@@ -30,14 +33,14 @@ self.onmessage = function requestHandler(e: MessageEvent) {
 			};
 			break;
 		case 'columns':
-			getColumns('factor_db', e.data.dbVersion, e.data.storeName);
+			getColumns(e.data.dataBaseName, e.data.dbVersion, e.data.storeName);
 			break;
 		case 'count':
-			getCount('factor_db', e.data.dbVersion, e.data.storeName);
+			getCount(e.data.dataBaseName, e.data.dbVersion, e.data.storeName);
 			break;
 		case 'startingRows':
 			startingRows(
-				'factor_db',
+				e.data.dataBaseName,
 				e.data.dbVersion,
 				e.data.storeName,
 				e.data.scope

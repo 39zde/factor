@@ -1,22 +1,5 @@
 import type { TablePages } from '../pages';
-export interface CustomerSortingMap {
-	customerID: string;
-	title?: string;
-	firstName?: string;
-	lastName?: string;
-	email?: string;
-	phone?: string;
-	web?: string;
-	companyName?: string;
-	alias?: string;
-	street?: string;
-	zip?: string;
-	city?: string;
-	country?: string;
-	firstContact?: string;
-	latestContact?: string;
-	notes?: string;
-}
+import type { CustomerSortingMap } from "../../database/CustomerTypes"
 
 export interface ArticleSortingMap {
 	articleID: string;
@@ -26,8 +9,8 @@ export interface ImportModuleProps {
 	mode: TablePages;
 	columns: string[];
 	hook: {
-		sortingMap: CustomerSortingMap | ArticleSortingMap;
-		setSortingMap: (newVal: CustomerSortingMap | ArticleSortingMap) => void;
+		map: CustomerSortingMap | ArticleSortingMap;
+		setMap: (newVal: CustomerSortingMap | ArticleSortingMap) => void;
 	};
 }
 

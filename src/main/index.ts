@@ -1,4 +1,4 @@
-import { app, shell, BrowserWindow, ipcMain } from 'electron';
+import { app, shell, BrowserWindow, ipcMain, SafeStorage } from 'electron';
 import { join, resolve } from 'path';
 import { readdir, mkdir, copyFile, readFileSync, writeFileSync } from 'fs';
 import { env } from 'process';
@@ -29,6 +29,7 @@ function createWindow(): void {
 			sandbox: false,
 			nodeIntegrationInWorker: false,
 			// nodeIntegration: false,
+			defaultEncoding: 'UTF-8',
 		},
 		// fullscreen: true,
 		resizable: true,
