@@ -29,16 +29,16 @@ export function TableFoot({ columns }: TableFootProps): React.JSX.Element {
 														index === 0 ? 'none' : 'inherit',
 												}}
 												key={`tf-${index}`}>
-												<span className="guts">
-													{item}
-												</span>
+												<span className="guts">{item}</span>
 											</th>
 										</>
 									);
 								} else {
-									return <th key={`tf-${index}-df`}>
-										<span className='guts'></span>
-									</th>;
+									return (
+										<th key={`tf-${index}-df`}>
+											<span className="guts"></span>
+										</th>
+									);
 								}
 							})}
 						</>

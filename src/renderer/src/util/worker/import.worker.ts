@@ -6,17 +6,16 @@ self.navigator.locks.query().then((res) => {
 		if (res.held !== undefined && res.pending !== undefined) {
 			if (res.pending.length === 0) {
 				if (res.held.length === 0) {
-					self.navigator.locks
-						.request(
-							'import.worker.ts',
-							{ mode: 'exclusive', ifAvailable: true },
-							(e) => {
-								// console.log(e);
-								self.onmessage = requestHandler;
-								// console.log('acquired lock');
-							}
-						)
-						// .then((e) => console.log(e));
+					self.navigator.locks.request(
+						'import.worker.ts',
+						{ mode: 'exclusive', ifAvailable: true },
+						(e) => {
+							// console.log(e);
+							self.onmessage = requestHandler;
+							// console.log('acquired lock');
+						}
+					);
+					// .then((e) => console.log(e));
 				}
 			}
 		}

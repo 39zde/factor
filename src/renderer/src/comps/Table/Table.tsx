@@ -108,8 +108,6 @@ export function Table({
 		}
 	);
 
-
-
 	return (
 		<>
 			<div tabIndex={-1} className="tableWrapper">
