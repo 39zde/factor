@@ -1,288 +1,300 @@
-const TitleRx = new RegExp(
-	'^(?<title>(?<start>^[hHmMFfDd])(?<afterStart>((?<=[Hh])e?r{1,2}.?)|((?<=[Ff])ra?u?.?)|((?<=[Mm])(((iste)?r)|(is)?s).?)|((?<=[Dd])(octo)?r.?)))s?(?<doctorTitle>([dD](octo)?r.?s{0,3}((([mM]ed.?)|([jJ]ur.?)|([Dd]ent.?))s{0,3}){0,2}){1,3})?(?<diploma>(([dD]ipl(oma?)?.?)(-?s{0,2}?((Ing)|(Kf[mr])).?)|([BM].[ABCEMPST]{1}((omp|hem|ath|ci?|hil|con|ech|cc|rim).)?)){0,2}|([mM]ag.))?[W]?$',
-	'gm'
-);
+// const TitleRx = new RegExp(
+// 	'^(?<title>(?<start>^[hHmMFfDd])(?<afterStart>((?<=[Hh])e?r{1,2}.?)|((?<=[Ff])ra?u?.?)|((?<=[Mm])(((iste)?r)|(is)?s).?)|((?<=[Dd])(octo)?r.?)))s?(?<doctorTitle>([dD](octo)?r.?s{0,3}((([mM]ed.?)|([jJ]ur.?)|([Dd]ent.?))s{0,3}){0,2}){1,3})?(?<diploma>(([dD]ipl(oma?)?.?)(-?s{0,2}?((Ing)|(Kf[mr])).?)|([BM].[ABCEMPST]{1}((omp|hem|ath|ci?|hil|con|ech|cc|rim).)?)){0,2}|([mM]ag.))?[W]?$',
+// 	'gm'
+// );
 
-export interface CustomerType {
-	// unique customer id
-	customerID: string;
-	// (optional) old customer ids, for backward compatibility
-	oldCustomerIDs?: string[];
-	// (optional) the Corporate person-hood or company name of there are any
-	companyName?: string;
-	// (optional) company alias
-	alias?: string[];
-	// (optional) All associated real persons
-	persons?: PersonType[];
-	// (optional) associated Addresses
-	addresses?: AddressType[];
-	// banking info
-	bank?: BankType[];
-	// (optional) official or primary email address associate with the customer
-	email?: EmailType[];
-	// (optional)
-	phone?: PhoneNumberType[];
-	// (optional) the date of the fist meeting
-	firstContact?: Date;
-	// (optional) the date of the last encounter
-	latestContact?: Date;
-	// (optional) notes
-	notes?: string[];
-}
+// export interface CustomerDataBase {
 
-export interface NameType {
-	// (optional) the name of the company
-	name?: string;
-	// (optional) alternative names of the company
-	alias?: string[];
+// }
 
-	// (optional) company description
-	description?: string;
-	// (optional) any additional Information
-	notes?: string[];
-}
+// export interface CustomerType {
+// 	row: number;
+// 	// unique customer id
+// 	customerID: string;
+// 	// (optional) old customer ids, for backward compatibility
+// 	oldCustomerIDs?: string[];
+// 	// (optional) the Corporate person-hood or company name of there are any
+// 	companyName?: string;
+// 	// (optional) company alias
+// 	alias?: string[];
+// 	// (optional) All associated real persons
+// 	persons?: PersonType[];
+// 	// (optional) associated Addresses
+// 	addresses?: AddressType[];
+// 	// banking info
+// 	bank?: BankType[];
+// 	// (optional) official or primary email address associate with the customer
+// 	email?: EmailType[];
+// 	// (optional)
+// 	phone?: PhoneNumberType[];
+// 	// (optional) the date of the fist meeting
+// 	firstContact?: Date;
+// 	// (optional) the date of the last encounter
+// 	latestContact?: Date;
+// 	// (optional) notes
+// 	notes?: string[];
+// }
 
-export interface AddressType {
-	// unique identifier
-	addressID: string;
-	// what kind of address
-	type?: 'delivery' | 'billing' | 'both';
-	//  (optional) street name
-	street?: string;
-	// (optional) street number eg. 12 or 12a
-	number?: string;
-	// (optional) the city name
-	city?: string;
-	// (optional) postal code
-	zip?: string;
-	// (optional) country or country code
-	country?: string;
-	// (optional) additional notes
-	notes?: string[];
-}
+// export interface NameType {
+// 	// (optional) the name of the company
+// 	name?: string;
+// 	// (optional) alternative names of the company
+// 	alias?: string[];
 
-export interface PersonType {
-	// (optional) title
-	title?: TitleType;
-	// (optional) first Name (including middle Names)
-	firstName?: string;
-	// (optional) any last Names
-	lastName?: string;
-	// (optional)
-	alias?: string[];
-	// (optional) associated email addresses
-	email?: EmailType[];
-	//  (optional) associated phone numbers
-	phone?: PhoneNumberType[];
-	// (optional) notes on that person
-	notes?: string[];
-}
+// 	// (optional) company description
+// 	description?: string;
+// 	// (optional) any additional Information
+// 	notes?: string[];
+// }
 
-export interface TitleValidator {
-	isAcceptable(s: string): boolean;
-}
+// export interface AddressType {
+// 	// unique identifier
+// 	addressID: string;
+// 	// what kind of address
+// 	type?: 'delivery' | 'billing' | 'both';
+// 	//  (optional) street name
+// 	street?: string;
+// 	// (optional) street number eg. 12 or 12a
+// 	number?: string;
+// 	// (optional) the city name
+// 	city?: string;
+// 	// (optional) postal code
+// 	zip?: string;
+// 	// (optional) country or country code
+// 	country?: string;
+// 	// (optional) additional notes
+// 	notes?: string[];
+// }
 
-export class TitleType implements TitleValidator {
-	title: string | undefined;
+// export interface PersonType {
+// 	// (optional) title
+// 	title?: TitleType;
+// 	// (optional) first Name (including middle Names)
+// 	firstName?: string;
+// 	// (optional) any last Names
+// 	lastName?: string;
+// 	// (optional)
+// 	alias?: string[];
+// 	// (optional) associated email addresses
+// 	email?: EmailType[];
+// 	//  (optional) associated phone numbers
+// 	phone?: PhoneNumberType[];
+// 	// (optional) notes on that person
+// 	notes?: string[];
+// }
 
-	constructor(input: string) {
-		if (this.isAcceptable(input)) {
-			this.title = input;
-		}
-	}
-	isAcceptable(s: string): boolean {
-		return TitleRx.test(s);
-	}
-}
+// export interface TitleValidator {
+// 	isAcceptable(s: string): boolean;
+// }
 
-export interface PhoneNumberType {
-	// (optional) the type of phone number
-	type?:
-		| 'private'
-		| 'business'
-		| 'mobile'
-		| 'landline'
-		| 'family'
-		| 'backup'
-		| 'accounting'
-		| 'marketing'
-		| 'management'
-		| 'office'
-		| 'logistics'
-		| 'emergency'
-		| 'boss';
-	// phone number
-	number: string;
-	// (optional) note for the phone number
-	notes?: string;
-}
+// export class TitleType implements TitleValidator {
+// 	title: string | undefined;
 
-export interface EmailType {
-	// (optional) the type of email
-	type?:
-		| 'private'
-		| 'business'
-		| 'mobile'
-		| 'landline'
-		| 'family'
-		| 'backup'
-		| 'accounting'
-		| 'marketing'
-		| 'management'
-		| 'office'
-		| 'logistics'
-		| 'emergency'
-		| 'boss'
-		| 'primary'
-		| 'secondary';
-	// email
-	email: string;
-	// (optional) note for the phone number
-	notes?: string[];
-}
+// 	constructor(input: string) {
+// 		if (this.isAcceptable(input)) {
+// 			this.title = input;
+// 		}
+// 	}
+// 	isAcceptable(s: string): boolean {
+// 		return TitleRx.test(s);
+// 	}
+// }
 
-export interface BankType {
-	bank: string;
-	bankCode?: string;
-	IBAN?: string;
-	BIC?: string;
-}
+// export interface PhoneNumberType {
+// 	// (optional) the type of phone number
+// 	type?:
+// 		| 'private'
+// 		| 'business'
+// 		| 'mobile'
+// 		| 'landline'
+// 		| 'family'
+// 		| 'backup'
+// 		| 'accounting'
+// 		| 'marketing'
+// 		| 'management'
+// 		| 'office'
+// 		| 'logistics'
+// 		| 'emergency'
+// 		| 'boss';
+// 	// phone number
+// 	number: string;
+// 	// (optional) note for the phone number
+// 	notes?: string;
+// }
 
-export interface ArticleType {
-	// unique article identifier
-	articleID: string;
-	// article Name
-	name: string;
-	// total article count in ownership
-	count: number | 'n/a' | 'N/A';
-	// (optional) meters or Pieces or hours of work
-	unit?: string;
-	// (optional) notes regrading the article
-	notes?: string[];
-	// value added Tax (VAT) in percent
-	VAT: number;
-	// price of one Unit of article
-	price: PriceType;
-	// the last time this article experienced some sort of action
-	lastSeen?: Date;
-	// the security deposit amount for one unit of article
-	securityDeposit?: number;
-	// (optional) notes on what to look out for while shipping
-	shippingNotes?: string[];
-	// (optional) acquisition information
-	acquisition?: AcquisitionType[];
-	// (optional) category Type
-	category?: CategoryType[];
-	// (optional) how the price changes, when ordering more than one unit
-	bulkDiscount?: StepDiscountType | PercentDiscountType;
-}
+// export interface EmailType {
+// 	// (optional) the type of email
+// 	type?:
+// 		| 'private'
+// 		| 'business'
+// 		| 'mobile'
+// 		| 'landline'
+// 		| 'family'
+// 		| 'backup'
+// 		| 'accounting'
+// 		| 'marketing'
+// 		| 'management'
+// 		| 'office'
+// 		| 'logistics'
+// 		| 'emergency'
+// 		| 'boss'
+// 		| 'primary'
+// 		| 'secondary';
+// 	// email
+// 	email: string;
+// 	// (optional) note for the phone number
+// 	notes?: string[];
+// }
 
-export interface PriceType {
-	withVAT: number;
-	noVAT: number;
-	unit: 'EUR' | 'DM' | 'USD';
-}
+// export interface BankType {
+// 	bank: string;
+// 	bankCode?: string;
+// 	IBAN?: string;
+// 	BIC?: string;
+// }
 
-export interface AcquisitionType {
-	// when the article was obtained
-	date: Date;
-	// who much of it
-	count: number;
-	// at what costs
-	price: PriceType;
-	// (optional) where
-	location?: string;
-	// (optional) additional notes
-	notes?: string[];
-	//(optional) some identifier for purchase
-	purchaseInvoiceID?: string;
-}
+// export interface ArticleType {
+// 	// unique article identifier
+// 	articleID: string;
+// 	// article Name
+// 	name: string;
+// 	// total article count in ownership
+// 	count: number | 'n/a' | 'N/A';
+// 	// (optional) meters or Pieces or hours of work
+// 	unit?: string;
+// 	// (optional) notes regrading the article
+// 	notes?: string[];
+// 	// value added Tax (VAT) in percent
+// 	VAT: number;
+// 	// price of one Unit of article
+// 	price: PriceType;
+// 	// the last time this article experienced some sort of action
+// 	lastSeen?: Date;
+// 	// the security deposit amount for one unit of article
+// 	securityDeposit?: number;
+// 	// (optional) notes on what to look out for while shipping
+// 	shippingNotes?: string[];
+// 	// (optional) acquisition information
+// 	acquisition?: AcquisitionType[];
+// 	// (optional) category Type
+// 	category?: CategoryType[];
+// 	// (optional) how the price changes, when ordering more than one unit
+// 	bulkDiscount?: StepDiscountType | PercentDiscountType;
+// }
 
-export interface LastEncounterType {
-	date: Date;
-	// (optional) id of corresponding quote
-	QuoteID?: string;
-	// (optional) id of corresponding invoice
-	InvoiceID?: string;
-	// (optional) id of corresponding delivery note
-	DeliveryID?: string;
-}
+// export interface PriceType {
+// 	withVAT: number;
+// 	noVAT: number;
+// 	unit: 'EUR' | 'DM' | 'USD';
+// }
 
-// ordered list from first:  parent category -> ...sub categories -> article category
-type CategoryType = Set<string>;
+// export interface AcquisitionType {
+// 	// when the article was obtained
+// 	date: Date;
+// 	// who much of it
+// 	count: number;
+// 	// at what costs
+// 	price: PriceType;
+// 	// (optional) where
+// 	location?: string;
+// 	// (optional) additional notes
+// 	notes?: string[];
+// 	//(optional) some identifier for purchase
+// 	purchaseInvoiceID?: string;
+// }
 
-interface StepDiscountType {
-	type: 'step';
-	// at what number of items a new price gets applies
-	steps: number[];
-	prices: Set<number>;
-	// (optional) at what price the discount the should be stopped, regardless of count
-	minPrice?: number;
-}
+// export interface LastEncounterType {
+// 	date: Date;
+// 	// (optional) id of corresponding quote
+// 	QuoteID?: string;
+// 	// (optional) id of corresponding invoice
+// 	InvoiceID?: string;
+// 	// (optional) id of corresponding delivery note
+// 	DeliveryID?: string;
+// }
 
-export interface PercentDiscountType {
-	type: 'percent';
-	// when to apply a new percentage
-	steps: Set<number>;
-	// the percentage ( 0 - 100)
-	percentage: Set<number>;
-	// (optional) at what price the discount the should be stopped, regardless of count
-	minPrice?: number;
-}
+// // ordered list from first:  parent category -> ...sub categories -> article category
+// type CategoryType = Set<string>;
 
-export interface DiscountType {
-	amount: number;
-	unit: 'EUR' | 'DM' | 'USD' | '%';
-}
+// interface StepDiscountType {
+// 	type: 'step';
+// 	// at what number of items a new price gets applies
+// 	steps: number[];
+// 	prices: Set<number>;
+// 	// (optional) at what price the discount the should be stopped, regardless of count
+// 	minPrice?: number;
+// }
 
-interface BaseType {
-	customerID: string | string[];
-	// all article Ids and how many of them
-	articleList: ArticleListItem[];
-	date: Date;
-	addressIDs: {
-		// (optional) the address id stored in the CustomerType>addresses[n]>addressID with type "shipping" or "both"
-		shipping?: string;
-		// (optional) the address id stored in the CustomerType>addresses[n]>addressID with type "billing" or "both"
-		billing?: string;
-	};
-}
+// export interface PercentDiscountType {
+// 	type: 'percent';
+// 	// when to apply a new percentage
+// 	steps: Set<number>;
+// 	// the percentage ( 0 - 100)
+// 	percentage: Set<number>;
+// 	// (optional) at what price the discount the should be stopped, regardless of count
+// 	minPrice?: number;
+// }
 
-export interface ArticleListItem {
-	// the article ID
-	articleID: string;
-	// how many
-	count: number;
-}
+// export interface DiscountType {
+// 	amount: number;
+// 	unit: 'EUR' | 'DM' | 'USD' | '%';
+// }
 
-export interface QuoteType extends BaseType {
-	// unique id for the quote
-	quoteID: string;
-	// (optional) if the articles are rented when are they going to be returned
-	returning?: Date;
-	// (optional) time in hours
-	duration?: number;
-}
+// interface BaseType {
+// 	customerID: string | string[];
+// 	// all article Ids and how many of them
+// 	articleList: ArticleListItem[];
+// 	date: Date;
+// 	addressIDs: {
+// 		// (optional) the address id stored in the CustomerType>addresses[n]>addressID with type "shipping" or "both"
+// 		shipping?: string;
+// 		// (optional) the address id stored in the CustomerType>addresses[n]>addressID with type "billing" or "both"
+// 		billing?: string;
+// 	};
+// }
 
-interface InvoiceType extends BaseType {
-	// unique identifier
-	invoiceID: string;
-	// total price without discount
-	price: PriceType;
-	// (optional) total price with discount
-	priceWithDiscount?: PriceType;
-	// (optional) a discount if there are any to apply
-	totalDiscount?: DiscountType;
-}
+// export interface ArticleListItem {
+// 	// the article ID
+// 	articleID: string;
+// 	// how many
+// 	count: number;
+// }
 
-export interface DeliveryType extends BaseType {
-	deliveryID: string;
-}
+// export interface QuoteType extends BaseType {
+// 	// unique id for the quote
+// 	quoteID: string;
+// 	// (optional) if the articles are rented when are they going to be returned
+// 	returning?: Date;
+// 	// (optional) time in hours
+// 	duration?: number;
+// }
 
-export interface ReturneeType extends BaseType {
-	returnID: string;
-	// the Date and time when the item was returned
-	returned: Date;
-	// (optional) Notes on the returned Items
-	notes?: string[];
-}
+// interface InvoiceType extends BaseType {
+// 	// unique identifier
+// 	invoiceID: string;
+// 	// total price without discount
+// 	price: PriceType;
+// 	// (optional) total price with discount
+// 	priceWithDiscount?: PriceType;
+// 	// (optional) a discount if there are any to apply
+// 	totalDiscount?: DiscountType;
+// }
+
+// export interface DeliveryType extends BaseType {
+// 	deliveryID: string;
+// }
+
+// export interface ReturneeType extends BaseType {
+// 	returnID: string;
+// 	// the Date and time when the item was returned
+// 	returned: Date;
+// 	// (optional) Notes on the returned Items
+// 	notes?: string[];
+// }
+
+
+// export class Customer{
+
+
+
+// }
