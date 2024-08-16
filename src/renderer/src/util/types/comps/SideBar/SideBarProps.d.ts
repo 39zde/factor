@@ -6,3 +6,12 @@ export interface SideBarProps {
 		setRoute: Function<RouteType>;
 	};
 }
+
+
+export interface RouterButtonProps {
+	route: RouteType;
+	handler: Function;
+	routeName: RouteType;
+	icon: React.ReactNode;
+	textOverride?: string;
+}

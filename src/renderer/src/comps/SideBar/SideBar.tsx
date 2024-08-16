@@ -1,6 +1,5 @@
-import React, { useState, useContext } from 'react';
+import React, { useContext } from 'react';
 import './SideBar.css';
-import { SideBarProps } from '@util/types/types';
 import {
 	CogIcon,
 	HomeIcon,
@@ -13,8 +12,11 @@ import {
 	FileOutputIcon,
 	RotateCcwIcon,
 } from 'lucide-react';
+
 import { AppContext } from '@renderer/App';
-import { RouteType } from '@util/types/types';
+import { RouterButton } from './RouterButton';
+
+import { RouteType, SideBarProps } from '@util/types/types';
 
 export default function SideBar({
 	routesHook,
@@ -232,50 +234,6 @@ export default function SideBar({
 					/>
 				</div>
 			</div>
-		</>
-	);
-}
-
-function RouterButton({
-	route,
-	handler,
-	routeName,
-	icon,
-	textOverride,
-}: {
-	route: RouteType;
-	handler: Function;
-	routeName: RouteType;
-	icon: React.ReactNode;
-	textOverride?: string;
-}): React.JSX.Element {
-	const [hover, setHover] = useState<boolean>(false);
-
-	return (
-		<>
-			<button
-				onMouseEnter={() => setHover(true)}
-				onMouseLeave={() => setHover(false)}
-				onClick={() => handler(routeName)}
-				style={{
-					minHeight: 25,
-					background: hover
-						? 'light-dark(var(--color-light-3),var(--color-dark-3))'
-						: route === routeName
-							? 'light-dark(var(--color-light-1),var(--color-dark-1))'
-							: 'light-dark(var(--color-light-2),var(--color-dark-2))',
-					color: route === routeName ? 'var(--color-primary)' : 'initial',
-					fontWeight: route === routeName ? 'bold' : 'initial',
-				}}
-				className="sideBarButton"
-			>
-				{icon}
-				{textOverride !== undefined ? (
-					<>{textOverride}</>
-				) : (
-					<>{routeName}</>
-				)}
-			</button>
 		</>
 	);
 }

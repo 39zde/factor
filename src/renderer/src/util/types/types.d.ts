@@ -1,4 +1,4 @@
-export type { SideBarProps } from './comps/SideBar/SideBarProps';
+export type { SideBarProps, RouterButtonProps } from './comps/SideBar/SideBarProps';
 export type { RouteType } from './comps/SideBar/routes';
 
 export type {
