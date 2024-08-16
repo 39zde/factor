@@ -15,8 +15,10 @@ export function TableRows({
 					<>
 						<tr
 							style={{
-								maxHeight: rowHeight,
-								minHeight: rowHeight,
+								maxHeight: appearances.rowHeight,
+								minHeight: appearances.rowHeight,
+								height: appearances.rowHeight,
+								overflow: "hidden"
 							}}
 							key={uni}>
 							<RowItems

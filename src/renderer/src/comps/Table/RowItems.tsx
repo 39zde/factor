@@ -79,6 +79,7 @@ function TableCellWrapper({
 				style={{
 					maxHeight: appearances.rowHeight,
 					height: appearances.rowHeight,
+					minHeight: appearances.rowHeight
 				}}>
 				<span className="guts">{children}</span>
 			</td>
