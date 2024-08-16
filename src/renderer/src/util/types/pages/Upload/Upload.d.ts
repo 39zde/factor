@@ -1,5 +1,5 @@
 import type { TablePages } from '../pages';
-export type CustomerMapType = {
+export interface CustomerSortingMap {
 	customerID: string;
 	title?: string;
 	firstName?: string;
@@ -16,7 +16,7 @@ export type CustomerMapType = {
 	firstContact?: string;
 	latestContact?: string;
 	notes?: string;
-};
+}
 
 export interface ArticleSortingMap {
 	articleID: string;

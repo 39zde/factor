@@ -46,7 +46,7 @@ export interface AddressType {
 	// unique identifier
 	addressID: string;
 	// what kind of address
-	type: 'delivery' | 'billing' | 'both' | undefined;
+	type?: 'delivery' | 'billing' | 'both';
 	//  (optional) street name
 	street?: string;
 	// (optional) street number eg. 12 or 12a
@@ -133,7 +133,8 @@ export interface EmailType {
 		| 'logistics'
 		| 'emergency'
 		| 'boss'
-		| string;
+		| 'primary'
+		| 'secondary';
 	// email
 	email: string;
 	// (optional) note for the phone number

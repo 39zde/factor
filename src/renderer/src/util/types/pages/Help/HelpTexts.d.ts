@@ -1,4 +1,4 @@
-export type HelpTexts = {
+export interface HelpTexts {
 	usage: {
 		title: string;
 		items: HelpItem[];
@@ -7,11 +7,11 @@ export type HelpTexts = {
 		title: string;
 		items: HelpItem[];
 	};
-};
+}
 
-export type HelpItem = {
+export interface HelpItem {
 	// what title this section should be given
 	title: string;
 	// the contents of this section
 	text: string[];
-};
+}

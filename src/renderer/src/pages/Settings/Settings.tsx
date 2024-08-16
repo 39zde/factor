@@ -139,7 +139,14 @@ export function Settings() {
 			// console.log(newContext);
 			context.changeContext(newContext);
 		}
-	}, [rowHeight, colorTheme, language, decimalSeparator, sideBarWidth, columnWidth]);
+	}, [
+		rowHeight,
+		colorTheme,
+		language,
+		decimalSeparator,
+		sideBarWidth,
+		columnWidth,
+	]);
 
 	return (
 		<>
