@@ -36,7 +36,7 @@ function Versions(): JSX.Element {
 			<li title="remaining space on this computer">
 				{general.language === 'deutsch'
 					? 'Speicherplatzverfügbarkeit'
-					: 'Disk usage'}{' '}
+					: 'Free space'}{' '}
 				{free} GB{' '}
 			</li>
 			<li title="platform">
