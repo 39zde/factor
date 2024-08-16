@@ -125,7 +125,8 @@
  	line-break: strict;
  	white-space: break-spaces;
  	word-wrap: break-word;
- 	word-break: break-all;
+ 	word-break: break-word;
+	line-height: 1;
  }
 
  th {

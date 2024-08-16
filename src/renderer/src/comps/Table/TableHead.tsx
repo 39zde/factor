@@ -46,12 +46,12 @@ export function TableHead({
 					const a = currentX;
 					const b = cursorX;
 					const newWidth = Math.abs(Math.abs(b - a));
-					console.log({
-						currentWidth: currentWidth,
-						cursor: cursorX,
-						currentX: currentX,
-						newWidth: newWidth,
-					});
+					// console.log({
+					// 	currentWidth: currentWidth,
+					// 	cursor: cursorX,
+					// 	currentX: currentX,
+					// 	newWidth: newWidth,
+					// });
 
 					if (!isNaN(newWidth)) {
 						// console.log(offset)
@@ -100,9 +100,13 @@ export function TableHead({
 		}
 	};
 
-	const mouseEnterHandler = (index: number) => {
+	const mouseEnterHandler = (index: number): void => {
 		// console.log('setting activeBG to ', index);
-		setActiveBg(index);
+		if (mouseHook !== undefined) {
+			if (!mouseHook.value) {
+				setActiveBg(index);
+			}
+		}
 	};
 
 	const mouseLeaveHandler = () => {

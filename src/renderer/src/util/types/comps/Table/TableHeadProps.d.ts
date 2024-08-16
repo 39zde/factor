@@ -15,8 +15,8 @@ export interface TableHeadProps {
 	sortingHook: {
 		sortingCol: string | undefined;
 		sortingDirection: 'asc' | 'dsc' | undefined;
-		setSortingDirection: (newVal: 'asc' | 'dsc') => void;
-		setSortingCol: (newVal: string) => void;
+		setSortingDirection: (newVal: 'asc' | 'dsc' | undefined) => void;
+		setSortingCol: (newVal: string | undefined) => void;
 		sortable: string[];
 	};
 	key?: string;
