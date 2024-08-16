@@ -43,13 +43,14 @@
 }
 
 .fileInput::after {
-	content: 'Upload File';
+	content: '+';
 	box-sizing: border-box;
 	display: flex;
+	color: light-dark(var(--color-dark-2),var(--color-light-2));
 	justify-content: center;
 	align-items: center;
 	font-family: var(--font-family);
-	font-size: large;
+	font-size: xx-large;
 	height: 100%;
 	width: 100%;
 	top: 0;
@@ -128,15 +129,6 @@ li {
 	opacity: 1;
 }
 
-.alignButton,
-.removerButton {
-
-}
-
-.alignButton:hover,
-.removerButton:hover {
-
-}
 
 .alignOptions {
 	left: -80px;
@@ -170,23 +162,6 @@ li {
 	font-size: medium;
 }
 
-.alignOptions>input,
-.alignOptions>select,
-.removerOptions>input,
-.removerOptions>select {
-	/* border: none;
-	display: flex;
-	justify-content: flex-start;
-	align-items: center;
-	flex-direction: row;
-	padding: 8px;
-	gap: 12px;
-	cursor: pointer;
-	font-family: var(--font-family);
-	font-size: medium;
-	border-radius: 8px; */
-}
-
 .alignActions,
 .removerActions {
 	display: flex;
@@ -207,27 +182,6 @@ li {
 	font-weight: 600;
 }
 
-/* .alignActions>button:first-child,
-.removerActions>button:first-child {
-	background-color: var(--color-button-1);
-	color: var(--color-text);
-} */
-
-/* .alignActions>button:first-child:hover,
-.removerActions>button:first-child:hover {
-	background-color: var(--color-button-2);
-} */
-
-/* .alignActions>button:last-child,
-.removerActions>button:last-child {
-	background-color: var(--color-button-5);
-	color: var(--color-text);
-} */
-
-/* .alignActions>button:last-child:hover,
-.removerActions>button:last-child:hover {
-	background-color: var(--color-button-6);
-} */
 
 .dataSorter {
 	display: flex;

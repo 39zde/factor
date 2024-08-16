@@ -5,6 +5,11 @@
 	 --color-primary: hsl(0, 100%, 65%);
 	 --color-primary-dark: hsl(0, 55%, 48%);
 	 --color-primary-light: hsl(0, 100%, 77%);
+	 --color-secondary: #4878ff;
+	 --color-secondary-dark: #112e80;
+	 --color-secondary-light: #88a7ff;
+
+
 	 --font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,
 	 Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
 
@@ -12,9 +17,9 @@
 	 --color-dark-1:#05090f;
 	 --color-dark-2: #3b3d40;
 	 --color-dark-3: #686a6e;
-	 --color-light-1: hsl(0, 12%, 97%);
-	 --color-light-2: hsl(0, 20%, 89%);
-	 --color-light-3: hsl(0, 15%, 79%);
+	 --color-light-1: #f8f6f6;
+	 --color-light-2: #e9dddd;
+	 --color-light-3: #d1c1c1;
 
 	 --scrollbar-width: thin;
 	 --scrollbar-light: var(--color-dark-3)var(--color-light-1);
@@ -97,6 +102,16 @@ select {
 	border-left-color: light-dark(var(--color-light-3),var(--color-light-2));
 	border-style: solid;
 	border-radius: 8px;
+}
+
+select:focus, button:focus, select:focus{
+	border: none;
+	outline: 3px solid var(--color-secondary);
+	outline-offset: 2px;
+}
+
+select:focus-visible, select:focus-visible{
+	border: none;
 }
 
 h1 {
