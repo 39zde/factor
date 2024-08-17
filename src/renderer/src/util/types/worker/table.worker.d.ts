@@ -4,6 +4,7 @@ export interface TableWorkerRequestMessage {
 	dbVersion: number;
 	storeName: string;
 	action?: TableWorkerRequestMessageAction;
+	scope?: number;
 }
 
 export interface TableWorkerRequestMessageAction {
@@ -21,7 +22,7 @@ export type TableWorkerRequestMessageType =
 
 export interface TableWorkerResponseMessage {
 	type: TableWorkerResponseMessageType;
-	data: Object;
+	data: TableRow | Array<TableRow> | number;
 	index?: number;
 	action?: TableWorkerRequestMessageActionType;
 }
@@ -29,5 +30,12 @@ export interface TableWorkerResponseMessage {
 export type TableWorkerResponseMessageType =
 	| TableWorkerRequestMessageType
 	| 'error'
-	| 'success'
-	| 'progress';
+	| 'success';
+
+export interface TableRow extends BaseRow {
+	row: number;
+}
+
+export type BaseRow = {
+	[key: string]: Array<number | string> | number | string | Date;
+};
