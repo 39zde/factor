@@ -507,7 +507,7 @@ export function Table({
 					updateScope(cleanedScope);
 				} else if (newScope >= 20) {
 					const cleanedScope =
-						parseInt(rowCount.toString().split('.')[0]) - 12;
+						parseInt(rowCount.toString().split('.')[0]) - 6;
 					updateScope(cleanedScope);
 				} else {
 					updateScope(2);
