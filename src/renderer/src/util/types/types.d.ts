@@ -32,3 +32,12 @@ export type {
 } from './comps/Table/Table';
 
 export type { HelpTexts, HelpItem } from './pages/Help/HelpTexts';
+
+export type {
+	TableWorkerRequestMessage,
+	TableWorkerRequestMessageAction,
+	TableWorkerRequestMessageActionType,
+	TableWorkerRequestMessageType,
+	TableWorkerResponseMessage,
+	TableWorkerResponseMessageType,
+} from './worker/table.worker';
