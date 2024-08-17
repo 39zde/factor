@@ -3,7 +3,7 @@ import React, { useCallback, useContext, useEffect, useRef } from 'react';
 import { TableRows } from './TableRows';
 
 import { AppContext } from '@renderer/App';
-import type { TableBodyDisplayProps } from '@renderer/util/types/table.types';
+import type { TableBodyDisplayProps } from '@renderer/util/types/types';
 import { useTableContext, useTableDispatch } from './Table';
 
 import { ChevronDown, ChevronUp } from 'lucide-react';
