@@ -40,11 +40,7 @@ self.onmessage = (e: MessageEvent): void => {
 			const request = indexedDB.open(e.data.dataBaseName, e.data.dbVersion);
 
 			request.onsuccess = () => {
-				// console.log('success')
-				// console.log(e)
-				// @ts-ignore
 				const db = request.result;
-				self.Storage;
 				deleteData(db);
 				addData(keys, rows, db);
 				const copy = [...keys];
@@ -55,8 +51,6 @@ self.onmessage = (e: MessageEvent): void => {
 				});
 			};
 			request.onerror = () => {
-				// console.log('error')
-				// console.log(e)
 				return postMessage({
 					type: 'error',
 					message: 'failed to open database',
@@ -64,11 +58,8 @@ self.onmessage = (e: MessageEvent): void => {
 			};
 
 			request.onupgradeneeded = () => {
-				// console.log(e)
 				const db = request.result;
 				db.createObjectStore('data_upload', { keyPath: 'row' });
-				// let objectStore = db.createObjectStore('data_upload', { keyPath: 'row' })
-				// let objectStoreIndex = objectStore.createIndex('keyIndex','key',{unique: true})
 			};
 
 			break;
@@ -122,11 +113,9 @@ self.onmessage = (e: MessageEvent): void => {
 			break;
 		case 'deleteCol':
 			const colToBeDeleted: string = e.data.message;
-			// console.log('about to delete col ' + colToBeDeleted);
 			deleteCol(colToBeDeleted);
 			break;
 		case 'sort':
-			// console.log('do sorting');
 			const columnsMap: CustomerSortingMap = e.data.message;
 			const mode:
 				| 'articles'
@@ -138,7 +127,6 @@ self.onmessage = (e: MessageEvent): void => {
 				case 'articles':
 					break;
 				case 'customers':
-					// console.log('do customers');
 					doCustomers(columnsMap, e.data.dataBaseName, e.data.dbVersion);
 					break;
 				case 'quotes':
@@ -252,7 +240,6 @@ function addData(keys: string[], rows: string[], db: IDBDatabase) {
 	const objectStore = transaction.objectStore('data_upload');
 	let i = 1;
 	while (i < rows.length) {
-		// console.log(i)
 		const columns = rows[i].split(';');
 		const out = {};
 		out['row'] = i;
@@ -295,14 +282,7 @@ function alignData(
 					}
 
 					if (cursor.value[col] === searchValue) {
-						const shiftedRow = performShift(shiftAmount, cursor.value);
-						cursor.update(shiftedRow).onsuccess = () => {
-							// console.log(cursor.key)
-							// console.log(cursor.primaryKey)
-							// console.log(cursor.source)
-							// console.log(cursor.value)
-							// console.log(cursor.direction)
-						};
+						performShift(shiftAmount, cursor.value);
 					}
 
 					if (parseInt(cursor.key.toString()) < count) {
@@ -322,7 +302,6 @@ function alignData(
 }
 
 function performShift(to: number, item: object) {
-	// console.log(item)
 	const out = item;
 	const copy = item;
 	const keys = Object.keys(item);
@@ -340,7 +319,6 @@ function performShift(to: number, item: object) {
 		}
 	} else if (to < 0) {
 		for (let i = 1; i < keys.length; i++) {
-			// console.log(keys[i],i)
 			if (i < keys.length - Math.abs(to)) {
 				out[keys[i]] = out[keys[i + Math.abs(to)]];
 			} else {
@@ -350,7 +328,6 @@ function performShift(to: number, item: object) {
 	} else {
 		return null;
 	}
-	// console.log(out)
 	return out;
 }
 
@@ -378,11 +355,10 @@ function rankColsByCondition(
 					counter[k] = 0;
 				}
 
-				// console.log(counter, keys)
 				objStore.openCursor(null, 'next').onsuccess = (e) => {
 					//@ts-ignore
 					const cursor: IDBCursorWithValue | null = e.target.result;
-					if (cursor !== null) {
+					if (cursor) {
 						for (const key of keys) {
 							update();
 							const value = cursor.value[key];
@@ -392,7 +368,6 @@ function rankColsByCondition(
 								value,
 								parseInt(cursor.key.toString())
 							);
-							// console.log(test)
 							if (test) {
 								counter[key] = counter[key] + 1;
 							}
@@ -402,7 +377,6 @@ function rankColsByCondition(
 						if (cursor.key < count) {
 							cursor.continue();
 						} else {
-							// console.log(counter)
 							const ranking = Object.entries(counter);
 							ranking.sort((a, b) => b[1] - a[1]);
 							postMessage({ type: 'ranking', message: ranking });
@@ -412,7 +386,6 @@ function rankColsByCondition(
 					} else {
 						// return postMessage({ type: 'error', message: 'cursor is null' })
 					}
-					// console.log(counter)
 				};
 			};
 		};
@@ -438,20 +411,14 @@ function compareItemToCondition(
 			}
 			return false;
 		case 'string':
-			// console.log(value, condition)
 			//@ts-ignore
 			if (condition.length === 0) {
-				// console.log(0)
 				if (typeof value === 'string') {
 					if (value.trim().length === 0) {
 						return true;
 					}
 				} else {
-					// if(value.toString() === value){
-					//   return true
-					// }
 					if (typeof value === 'undefined' || typeof value === null) {
-						// console.log(index);
 					}
 				}
 			} else {
@@ -472,7 +439,6 @@ function compareItemToCondition(
 			}
 			return false;
 		default:
-			// console.log('unknown type of condition', typeof condition, condition);
 			return false;
 	}
 }
@@ -486,20 +452,17 @@ function deleteCol(col: string) {
 		const countRequest = objStore.count();
 		countRequest.onsuccess = () => {
 			const count = countRequest.result;
-			// console.log('start col deletion');
 			objStore.openCursor(null, 'next').onsuccess = (e) => {
 				//@ts-ignore
 				const cursor: IDBCursorWithValue = e.target.result;
 				if (cursor !== null) {
 					const newValue = cursor.value;
 					delete newValue[col];
-					// console.log(Object.entries(newValue).length)
 					cursor.update(newValue);
 
 					if (parseInt(cursor.key.toString()) < count) {
 						cursor.continue();
 					} else {
-						// console.log('deleted col');
 						postMessage({
 							type: 'colDeletion',
 							message: `deleted col: ${col}`,
@@ -521,19 +484,15 @@ function doCustomers(
 		const customerDBrequest = indexedDB.open('customer_db', dbVersion);
 		customerDBrequest.onupgradeneeded = createCustomerObjectStores;
 		customerDBrequest.onsuccess = () => {
-			// console.log('opened ', 'customer_db');
 			const db = request.result;
 			const customerDB = customerDBrequest.result;
 			const dbTransaction = db.transaction(['data_upload'], 'readonly');
 			const dataUpload = dbTransaction.objectStore('data_upload');
-			// console.log('count data upload');
 			const dataUploadCountRequest = dataUpload.count();
 
 			dataUploadCountRequest.onsuccess = () => {
 				let dataCount = dataUploadCountRequest.result;
-				// console.log('counted data upload: ', dataCount);
 				const update = updateManager(dataCount);
-				// console.log('open cursor');
 				const cursorRequest = dataUpload.openCursor(null, 'next');
 				cursorRequest.onsuccess = () => {
 					const cursor: IDBCursorWithValue | null = cursorRequest.result;
@@ -544,12 +503,16 @@ function doCustomers(
 						update();
 						cursor.continue();
 					} else {
-						postMessage({
-							type: 'success',
-							message: 'customers',
-						});
+						return;
 					}
 				};
+			};
+
+			dbTransaction.oncomplete = () => {
+				postMessage({
+					type: 'success',
+					message: 'customers',
+				});
 			};
 		};
 	};
@@ -565,7 +528,6 @@ function parseCustomer(
 	row: RowType,
 	customerDB: IDBDatabase
 ): void {
-	// console.log(map);
 	let customer: Customer = {
 		id: trimWhiteSpace(row[map.id]),
 		row: row.row,
@@ -626,6 +588,7 @@ function parseCustomer(
 					});
 				}
 				oStore.put(entry);
+				transaction.commit();
 			}
 		};
 	}
@@ -644,7 +607,6 @@ function parseCustomer(
 			const transaction = customerDB.transaction(type, 'readwrite');
 			const oStore = transaction.objectStore(type);
 			let CountRequest = oStore.count();
-			// console.log("countRequest")
 			CountRequest.onsuccess = () => {
 				let count = CountRequest.result;
 				for (let [index, value] of data.entries()) {
@@ -653,6 +615,7 @@ function parseCustomer(
 					oStore.add(value);
 					updateCustomer(row[map.id], type, id);
 				}
+				transaction.commit();
 			};
 		}
 	}
@@ -921,7 +884,6 @@ function parseCustomer(
 }
 
 function createCustomerObjectStores(e: IDBVersionChangeEvent): void {
-	// console.log('upgrade customer_db');
 	const target: IDBOpenDBRequest = e.target as IDBOpenDBRequest;
 	const db = target.result;
 	const stores = db.objectStoreNames;
@@ -1009,9 +971,6 @@ function createCustomerObjectStores(e: IDBVersionChangeEvent): void {
 }
 
 function trimWhiteSpace(input: string): string {
-	if (typeof input !== 'string') {
-		// console.log(typeof input);
-	}
 	let out = input;
 	if (out.length !== 0) {
 		out.replaceAll(rx.WhiteSpaceRx, '');

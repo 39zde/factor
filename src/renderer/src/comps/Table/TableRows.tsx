@@ -9,7 +9,7 @@ export function TableRows(): React.JSX.Element {
 		<>
 			{tableState.rows.length === 0 ? (
 				<>
-					{new Array(tableState.scope).fill('').map((item, index) => {
+					{new Array(tableState.scope).fill('').map((_item, index) => {
 						const uni = `row${index}keyDefault${index}`;
 
 						return (
