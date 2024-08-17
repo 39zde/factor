@@ -78,7 +78,7 @@
  	border-color: light-dark(var(--color-dark-3), var(--color-light-3));
  	border-width: 1px;
  	border-style: solid;
- 	font-family: monospace;
+ 	font-family: Consolas, 'Cascadia Code', 'Courier New', Courier, monospace ;
  	font-size: small;
  	margin: 0;
  	overflow: hidden;
