@@ -32,6 +32,7 @@ const PlaceHolderTableContext: TableContextType = {
 	count: 0,
 	isMouseDown: false,
 	columns: [],
+	allColumns: [],
 	cursor: 'initial',
 	cursorX: 0,
 	userSelect: 'initial',
@@ -295,6 +296,7 @@ export function Table({
 				out.columns = args.colsHook.cols
 					.toSpliced(args.colsHook.cols.indexOf('row'), 1)
 					.toSpliced(0, 0, 'row');
+				out.allColumns = out.columns;
 				out.colsRef = args.colsRef;
 				out.colsRef = out.columns.map(() =>
 					createRef<HTMLTableCellElement>()
@@ -327,6 +329,11 @@ export function Table({
 						dispatch({
 							type: 'set',
 							name: 'columns',
+							newVal: colsHook.cols,
+						});
+						dispatch({
+							type: 'set',
+							name: 'allColumns',
 							newVal: colsHook.cols,
 						});
 						// make new colRefs
@@ -363,6 +370,7 @@ export function Table({
 						});
 					}
 					break;
+				case 'allColumns':
 				case 'colsRef':
 				case 'columnWidths':
 				case 'resizeStyles':
@@ -667,6 +675,13 @@ export function Table({
 					dispatch({
 						type: 'set',
 						name: 'columns',
+						newVal: eventData.data
+							.toSpliced(eventData.data.indexOf('row'), 1)
+							.toSpliced(0, 0, 'row'),
+					});
+					dispatch({
+						type: 'set',
+						name: 'allColumns',
 						newVal: eventData.data
 							.toSpliced(eventData.data.indexOf('row'), 1)
 							.toSpliced(0, 0, 'row'),
