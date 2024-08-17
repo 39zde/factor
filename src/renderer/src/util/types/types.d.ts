@@ -24,7 +24,6 @@ export type {
 } from './database/CustomerTypes';
 
 export type {
-	TableHeadDisplayProps,
 	TableBodyDisplayProps,
 	TableFootDisplayProps,
 	TableProps,
