@@ -1,0 +1,47 @@
+ /* prettier-ignore */
+ @import url('../../base.css');
+
+
+ .contextMenu{
+	position: fixed;
+	width: 200px;
+	height: auto;
+	max-height: 500px;
+	overflow-y: scroll;
+	overflow-x: hidden;
+	scrollbar-width: none;
+	background: light-dark(var(--color-light-2),var(--color-dark-2));
+	border-radius: 16px;
+	box-shadow: var(--box-shadow);
+	padding: 0;
+	z-index: 4;
+	border: 1px solid light-dark(var(--color-dark-3),var(--color-light-3))
+ }
+
+ .contextMenuList{
+	padding:0;
+
+	> li {
+		/* border-bottom: 1px solid light-dark(var(--color-dark-3),var(--color-light-3)); */
+		padding: 2px 8px;
+		cursor: pointer;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		user-select: none;
+	}
+
+	> li:first-of-type{
+		border-radius: 16px 16px 0 0;
+	}
+
+	> li:last-of-type{
+		border-bottom: 0;
+		border-radius: 0 0 16px 16px;
+	}
+
+	> li:hover{
+		background: light-dark(var(--color-light-3),var(--color-dark-3));
+		border-radius:  16px;
+	}
+ }
