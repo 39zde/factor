@@ -43,3 +43,8 @@ export type {
 } from './worker/table.worker';
 
 export type { TableRow } from './database/DataBaseData';
+
+export type {
+	ContextMenuProps,
+	MenuItem,
+} from './comps/ContextMenu/ContextMenu';

@@ -8,6 +8,7 @@ export interface TableContextType {
 	count: number;
 	isMouseDown: boolean;
 	columns: string[];
+	allColumns: string[];
 	cursor: 'initial' | 'col-resize';
 	cursorX: number;
 	userSelect: 'initial' | 'none';
@@ -66,7 +67,8 @@ export interface TableDispatchAction {
 		| 'start'
 		| 'dbVersion'
 		| 'cachedRowHeight'
-		| 'dataBaseName';
+		| 'dataBaseName'
+		| 'allColumns';
 	newVal: any;
 	worker?: Worker;
 }

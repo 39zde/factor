@@ -157,7 +157,7 @@
  	width: fit-content;
  	justify-content: flex-start;
  	align-items: center;
- 	overflow: inherit;
+ 	overflow: visible;
  	text-overflow: inherit;
  	line-break: inherit;
  	white-space: inherit;

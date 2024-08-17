@@ -8,12 +8,14 @@ import React, {
 	Dispatch,
 	useEffect,
 	useState,
+	MouseEvent,
 } from 'react';
 import { AppContext } from '@renderer/App';
 import { WindowContext } from '../WindowContext';
 import { TableHeadDisplay } from './TableHeadDisplay';
 import { TableBodyDisplay } from './TableBodyDisplay';
 import { TableFootDisplay } from './TableFootDisplay';
+import { ContextMenu } from '../ContextMenu/ContextMenu';
 import './Table.css';
 
 import type {
@@ -22,6 +24,7 @@ import type {
 	TableContextType,
 	TableDispatchAction,
 	TableWorkerResponseMessage,
+	MenuItem,
 } from '@renderer/util/types/types';
 
 const PlaceHolderTableContext: TableContextType = {
@@ -245,12 +248,15 @@ export function Table({
 	const rowColumnWidth = 30;
 	const scrollBarHeight = 5;
 	const { clientHeight } = useContext(WindowContext);
-	const { database, appearances, worker } = useContext(AppContext);
+	const { database, appearances, worker, general } = useContext(AppContext);
 	const tableBodyRef = useRef<HTMLTableSectionElement>(null);
 	const wrapperRef = useRef<HTMLDivElement>(null);
 	const colsRef = useRef<React.RefObject<HTMLTableCellElement>[]>([]).current;
 	const [causeRerender, setCauseRerender] = useState<boolean>(false);
 	const [hasStarted, setHasStarted] = useState<boolean>(false);
+	const [menuX, setMenuX] = useState<number>(0);
+	const [menuY, setMenuY] = useState<number>(0);
+	const [menuActive, setMenuActive] = useState<boolean>(false);
 	const [tableState, dispatch] = useReducer(
 		tableReducer,
 		{
@@ -746,11 +752,91 @@ export function Table({
 		}
 	};
 
+	const clickHandler = (e: MouseEvent) => {
+		if (e.button === 2) {
+			setMenuActive(true);
+			setMenuX(e.pageX);
+			setMenuY(e.pageY);
+		}
+		if (menuActive) {
+			if (
+				//@ts-ignore
+				e.target.localName !== 'li' &&
+				//@ts-ignore
+				e.target.localName !== 'ul' &&
+				//@ts-ignore
+				e.target.localName !== 'svg' &&
+				//@ts-ignore
+				e.target.localName !== 'path'
+			) {
+				setMenuActive(false);
+			}
+		}
+	};
+
+	const menuItems: Array<MenuItem> = [
+		{
+			name: 'item1',
+			menuItems: [{ name: 'nested1' }],
+		},
+		{
+			name: general.language === 'deutsch' ? 'Spalten' : 'Columns',
+			menuItems: tableState.allColumns.map(
+				(item, index): MenuItem | undefined => {
+					if (index !== 0) {
+						return {
+							name: item,
+							checkBox: tableState.columns.includes(item),
+							action: () => {
+								// let cols = tableState.columns
+								// console.log(cols[index])+
+								console.log(tableState);
+								if (tableState.columns.includes(item)) {
+									dispatch({
+										type: 'set',
+										name: 'columns',
+										newVal: tableState.columns.toSpliced(index, 1),
+									});
+									setCauseRerender(!causeRerender);
+									setCauseRerender(!causeRerender);
+								} else {
+									dispatch({
+										type: 'set',
+										name: 'columns',
+										newVal: tableState.columns.toSpliced(
+											index,
+											0,
+											tableState.allColumns[index]
+										),
+									});
+									setCauseRerender(!causeRerender);
+									setCauseRerender(!causeRerender);
+								}
+								setMenuActive(false)
+							},
+						};
+					} else {
+						return undefined;
+					}
+				}
+			),
+		},
+	];
+
 	return (
 		<>
 			<TableContext.Provider value={tableState}>
 				<TableDispatchContext.Provider value={dispatch}>
-					<div tabIndex={-1} className="tableWrapper">
+					<div
+						tabIndex={-1}
+						className="tableWrapper"
+						onMouseDown={clickHandler}>
+						<ContextMenu
+							active={menuActive}
+							x={menuX}
+							y={menuY}
+							menuItems={menuItems}
+						/>
 						<div
 							className="tableElement"
 							ref={wrapperRef}
