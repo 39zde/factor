@@ -1,6 +1,6 @@
 // the use of import modules inside of workers
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import#browser_compatibility
-import {
+import type {
 	CustomerSortingMap,
 	PersonType,
 	EmailType,

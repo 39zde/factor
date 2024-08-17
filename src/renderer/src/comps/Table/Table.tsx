@@ -21,7 +21,8 @@ import type {
 	TableFootDisplayProps,
 	TableContextType,
 	TableDispatchAction,
-} from '@util/types/types';
+	TableWorkerResponseMessage,
+} from '@renderer/util/types/types';
 
 const PlaceHolderTableContext: TableContextType = {
 	dataBaseName: '',
@@ -248,7 +249,7 @@ export function Table({
 		},
 		(args): TableContextType => {
 			const out: TableContextType = PlaceHolderTableContext;
-			out.dataBaseName = args.dataBaseName
+			out.dataBaseName = args.dataBaseName;
 			out.tableName = args.tableName;
 			out.uniqueKey = args.uniqueKey;
 			out.cursorX = 0;
@@ -262,7 +263,7 @@ export function Table({
 			out.accept = 'next';
 			out.lastReceived = 0;
 			out.cachedRowHeight = args.rowHeight;
-			out.rows = []
+			out.rows = [];
 			// get out.update
 			if (args.updateHook !== undefined) {
 				out.update = args.updateHook.update;
@@ -289,7 +290,7 @@ export function Table({
 
 	useEffect(() => {
 		setHasStarted(false);
-	},[]);
+	}, []);
 
 	function updateScope(newScope: number) {
 		let diff = Math.abs(tableState.scope - newScope);
@@ -420,156 +421,177 @@ export function Table({
 		);
 	}, [clientHeight, appearances.rowHeight]);
 
-	worker.TableWorker.onmessage = (e) => {
-		if (e.data.type === 'stream') {
-			switch (e.data.action) {
-				case 'next':
-					if (tableState.accept === 'next') {
+	worker.TableWorker.onmessage = (e: MessageEvent) => {
+		const eventData = e.data as TableWorkerResponseMessage;
+		switch (eventData.type) {
+			case 'stream':
+				if (eventData.action === undefined) {
+					return;
+				}
+				switch (eventData.action) {
+					case 'add':
 						let rows = tableState.rows;
 						let filtered = rows.filter((value, index, array) => {
 							//@ts-expect-error value is unknown to ts, because it was obtained by onMessage
-							if (value.row === e.data.data.row) return true;
+							if (value.row === eventData.data.row) return true;
 							return false;
 						});
-						if (filtered.length === 0) {
-							if (e.data.index !== undefined) {
+						if (
+							filtered.length === 0 &&
+							typeof eventData.data !== 'number' &&
+							!Array.isArray(eventData.data)
+						) {
+							rows.push(eventData.data);
+							dispatch({
+								type: 'set',
+								name: 'rows',
+								newVal: rows,
+							});
+							dispatch({
+								type: 'set',
+								name: 'lastReceived',
+								newVal: eventData.data.row,
+							});
+						}
+						break;
+					case 'next':
+						if (tableState.accept === 'next') {
+							let rows = tableState.rows;
+							let filtered = rows.filter((value, index, array) => {
+								//@ts-expect-error value is unknown to ts, because it was obtained by onMessage
+								if (value.row === eventData.data.row) return true;
+								return false;
+							});
+							if (
+								filtered.length === 0 &&
+								eventData.index !== undefined &&
+								typeof eventData.data !== 'number' &&
+								!Array.isArray(eventData.data)
+							) {
 								dispatch({
 									type: 'set',
 									name: 'start',
-									newVal: e.data.index - tableState.scope + 1,
+									newVal: eventData.index - tableState.scope + 1,
 								});
 								dispatch({
 									type: 'set',
 									name: 'lastReceived',
-									newVal: e.data.index,
+									newVal: eventData.index,
 								});
 								rows.splice(0, 1);
-								rows.push(e.data.data);
+								rows.push(eventData.data);
 								dispatch({
 									type: 'set',
 									name: 'rows',
 									newVal: rows,
 								});
 							}
-							// console.log('received data: ', e.data.index);
 						}
-					}
-					break;
-				case 'prev':
-					if (tableState.accept === 'prev') {
-						let rows = tableState.rows;
-						let filtered = rows.filter((value, index, array) => {
-							//@ts-expect-error value is unknown to ts, because it was obtained by onMessage
-							if (value.row === e.data.data.row) return true;
-							return false;
-						});
-						if (filtered.length === 0) {
-							if (e.data.index !== undefined) {
+						break;
+					case 'prev':
+						if (tableState.accept === 'prev') {
+							let rows = tableState.rows;
+							let filtered = rows.filter((value, index, array) => {
+								//@ts-expect-error value is unknown to ts, because it was obtained by onMessage
+								if (value.row === eventData.data.row) return true;
+								return false;
+							});
+							if (
+								filtered.length === 0 &&
+								eventData.index !== undefined &&
+								typeof eventData.data !== 'number' &&
+								!Array.isArray(eventData.data)
+							) {
 								dispatch({
 									type: 'set',
 									name: 'start',
-									newVal: e.data.index,
+									newVal: eventData.index,
 								});
 								dispatch({
 									type: 'set',
 									name: 'lastReceived',
-									newVal: e.data.index,
+									newVal: eventData.index,
+								});
+								rows.pop();
+								rows.splice(0, 0, eventData.data);
+								// console.log("received ", eventData.index)
+								dispatch({
+									type: 'set',
+									name: 'rows',
+									newVal: rows,
 								});
 							}
-
-							rows.pop();
-							rows.splice(0, 0, e.data.data);
-							// console.log("received ", e.data.index)
-							dispatch({
-								type: 'set',
-								name: 'rows',
-								newVal: rows,
-							});
 						}
-					}
-					break;
-				case 'add':
-					let rows = tableState.rows;
-					let filtered = rows.filter((value, index, array) => {
-						//@ts-expect-error value is unknown to ts, because it was obtained by onMessage
-						if (value.row === e.data.data.row) return true;
-						return false;
+						break;
+					default:
+						break;
+				}
+				setCauseRerender(!causeRerender);
+				break;
+			case 'columns':
+				dispatch({
+					type: 'set',
+					name: 'columns',
+					newVal: eventData.data,
+				});
+				if (Array.isArray(eventData.data)) {
+					dispatch({
+						type: 'set',
+						name: 'colsRef',
+						newVal: eventData.data.map(() =>
+							createRef<HTMLTableCellElement>()
+						),
 					});
-					if (filtered.length === 0) {
-						rows.push(e.data.data);
-						dispatch({
-							type: 'set',
-							name: 'rows',
-							newVal: rows,
-						});
+					dispatch({
+						type: 'set',
+						name: 'resizeStyles',
+						newVal: eventData.data.map(() => ({
+							background: 'none',
+							cursor: 'initial',
+						})),
+					});
+					dispatch({
+						type: 'set',
+						name: 'columnWidths',
+						newVal: eventData.data.map((val, index) =>
+							index === 0 ? rowColumnWidth : appearances.columnWidth
+						),
+					});
+				}
+				break;
+			case 'count':
+				dispatch({
+					type: 'set',
+					name: 'count',
+					newVal: eventData.data,
+				});
+				setCauseRerender(!causeRerender);
+				break;
+			case 'startingRows':
+				if (Array.isArray(eventData.data)) {
+					dispatch({
+						type: 'set',
+						name: 'rows',
+						newVal: eventData.data,
+					});
+					if (eventData.data.length !== 0) {
 						dispatch({
 							type: 'set',
 							name: 'lastReceived',
-							newVal: e.data.data.row,
+							newVal: eventData.data[eventData.data.length - 1].row,
 						});
 					}
-
-					break;
-				default:
-					break;
-			}
-			setCauseRerender(!causeRerender);
-		} else if (e.data.type === 'columns') {
-			dispatch({
-				type: 'set',
-				name: 'columns',
-				newVal: e.data.data,
-			});
-			dispatch({
-				type: 'set',
-				name: 'colsRef',
-				newVal: e.data.data.map(() => createRef<HTMLTableCellElement>()),
-			});
-			dispatch({
-				type: 'set',
-				name: 'resizeStyles',
-				newVal: e.data.data.map(() => ({
-					background: 'none',
-					cursor: 'initial',
-				})),
-			});
-			dispatch({
-				type: 'set',
-				name: 'columnWidths',
-				newVal: e.data.data.map((val, index) =>
-					index === 0 ? rowColumnWidth : appearances.columnWidth
-				),
-			});
-		} else if (e.data.type === 'count') {
-			// console.log('count: ', e.data.data);
-			dispatch({
-				type: 'set',
-				name: 'count',
-				newVal: e.data.data,
-			});
-			setCauseRerender(!causeRerender);
-		} else if (e.data.type === 'startingRows') {
-			// console.log('startingRows');
-			dispatch({
-				type: 'set',
-				name: 'rows',
-				newVal: e.data.data,
-			});
-			if (e.data.data.length !== 0) {
-				dispatch({
-					type: 'set',
-					name: 'lastReceived',
-					newVal: e.data.data[e.data.data.length - 1].row,
-				});
-			}
-			if (Array.isArray(e.data.data)) {
-				if (e.data.data.length == 0) {
-					console.log('rows is 0');
 				}
-			}
-			setCauseRerender(!causeRerender);
-		} else if (e.data.type === 'error') {
-			console.log(e.data.data);
+				setCauseRerender(!causeRerender);
+				break;
+			case 'error':
+				console.log(eventData);
+				break;
+			case 'success':
+				console.log(eventData);
+				break;
+			default:
+				break;
 		}
 	};
 
@@ -579,7 +601,7 @@ export function Table({
 				type: 'count',
 				storeName: tableState.tableName,
 				dbVersion: database.dbVersion,
-				dataBaseName: tableState.dataBaseName
+				dataBaseName: tableState.dataBaseName,
 			});
 		}
 		// reimplement the reducer init function
@@ -619,13 +641,13 @@ export function Table({
 			type: 'columns',
 			storeName: tableState.tableName,
 			dbVersion: database.dbVersion,
-			dataBaseName: tableState.dataBaseName
+			dataBaseName: tableState.dataBaseName,
 		});
 		worker.TableWorker.postMessage({
 			type: 'count',
 			storeName: tableState.tableName,
 			dbVersion: database.dbVersion,
-			dataBaseName: tableState.dataBaseName
+			dataBaseName: tableState.dataBaseName,
 		});
 
 		if (updateHook !== undefined) {
@@ -657,7 +679,7 @@ export function Table({
 					storeName: tableState.tableName,
 					dbVersion: database.dbVersion,
 					scope: tableState.scope,
-					dataBaseName: tableState.dataBaseName
+					dataBaseName: tableState.dataBaseName,
 				});
 				setHasStarted(true);
 			}

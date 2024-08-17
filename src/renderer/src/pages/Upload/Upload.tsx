@@ -112,7 +112,7 @@ export function Upload(): React.JSX.Element {
 			message: map,
 			content: tableImportMode,
 			dbVersion: database.dbVersion,
-			dataBaseName: 'factor_db'
+			dataBaseName: 'factor_db',
 		});
 		worker.ImportWorker.onmessage = (e) => {
 			if (e.data !== undefined) {
@@ -178,7 +178,12 @@ export function Upload(): React.JSX.Element {
 	const actionHandler = (): void => {
 		const file = sessionStorage.getItem('fileUpload');
 		if (file !== undefined) {
-			worker.ImportWorker.postMessage({ type: 'import', message: file, dbVersion: database.dbVersion, dataBaseName: 'factor_db'});
+			worker.ImportWorker.postMessage({
+				type: 'import',
+				message: file,
+				dbVersion: database.dbVersion,
+				dataBaseName: 'factor_db',
+			});
 		}
 		worker.ImportWorker.onmessage = (e) => {
 			if (e.data.type === 'imported') {
@@ -305,7 +310,7 @@ export function Upload(): React.JSX.Element {
 					{showTable ? (
 						<>
 							<Table
-							   dataBaseName='factor_db'
+								dataBaseName="factor_db"
 								key={useId()}
 								uniqueKey={'row'}
 								tableName="data_upload"

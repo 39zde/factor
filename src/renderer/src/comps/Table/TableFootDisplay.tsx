@@ -2,7 +2,7 @@ import React from 'react';
 
 import { TableFoot } from './TableFoot';
 
-import type { TableFootDisplayProps } from '@util/types/types';
+import type { TableFootDisplayProps } from '@renderer/util/types/table.types';
 
 export function TableFootDisplay({
 	columns,
