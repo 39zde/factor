@@ -40,6 +40,6 @@ export type {
 	TableWorkerRequestMessageType,
 	TableWorkerResponseMessage,
 	TableWorkerResponseMessageType,
-	TableRow,
-	BaseRow,
 } from './worker/table.worker';
+
+export type { TableRow } from './database/DataBaseData';

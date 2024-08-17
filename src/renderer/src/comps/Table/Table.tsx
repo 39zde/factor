@@ -54,8 +54,6 @@ function tableReducer(
 	tableState: TableContextType,
 	action: TableDispatchAction
 ): TableContextType {
-	// console.log(action);
-	//! For Some Reason the new States need to be both 'changed' in the immutable (provided) tableState and also returned. I have not looked further into it, for now it works.
 	switch (action.type) {
 		case 'changeAccept': {
 			if (action.newVal === 'next' || action.newVal === 'prev') {
@@ -66,7 +64,14 @@ function tableReducer(
 					...tableState,
 				};
 			}
-			return tableState;
+			return {
+				// @ts-expect-error we want to overwrite
+				accept:
+					action.newVal === 'next' || action.newVal === 'prev'
+						? action.newVal
+						: tableState.accept,
+				...tableState,
+			};
 		}
 		case 'set': {
 			//@ts-ignore
@@ -79,7 +84,19 @@ function tableReducer(
 			tableState.activeCol = action.newVal;
 			tableState.cursor = 'col-resize';
 			tableState.userSelect = 'none';
-			return tableState;
+			return {
+				// @ts-expect-error we want to overwrite
+				isMouseDown: true,
+				// @ts-expect-error we want to overwrite
+				activeBg: action.newVal,
+				// @ts-expect-error we want to overwrite
+				activeCol: action.newVal,
+				// @ts-expect-error we want to overwrite
+				cursor: 'col-resize',
+				// @ts-expect-error we want to overwrite
+				userSelect: 'none',
+				...tableState,
+			};
 		}
 		case 'mouseUp': {
 			tableState.cursor = 'initial';
@@ -204,7 +221,8 @@ function tableReducer(
 
 const TableContext = createContext<TableContextType>(PlaceHolderTableContext);
 const TableDispatchContext =
-	// @ts-ignore
+	//!TODO find the correct type for this to not need ts-ignore
+	// @ts-ignore unintuitive typing with useReducer in combination with useContext
 	createContext<Dispatch<TableDispatchAction>>(tableReducer);
 
 export function useTableContext() {
@@ -273,7 +291,10 @@ export function Table({
 
 			// get cols
 			if (args.colsHook !== undefined) {
-				out.columns = args.colsHook.cols;
+				// ensure row is always the first
+				out.columns = args.colsHook.cols
+					.toSpliced(args.colsHook.cols.indexOf('row'), 1)
+					.toSpliced(0, 0, 'row');
 				out.colsRef = args.colsRef;
 				out.colsRef = out.columns.map(() =>
 					createRef<HTMLTableCellElement>()
@@ -288,139 +309,252 @@ export function Table({
 		}
 	);
 
-	useEffect(() => {
-		setHasStarted(false);
-	}, []);
-
-	function updateScope(newScope: number) {
-		let diff = Math.abs(tableState.scope - newScope);
-		if (newScope < tableState.scope) {
-			let rows = tableState.rows;
-
-			for (let i = tableState.scope; i > newScope; i--) {
-				rows.splice(i, 1);
+	// reset the table stated to a state as if it were initialized (see the function in useReducer)
+	function resetTableState() {
+		for (const [key, val] of Object.entries(PlaceHolderTableContext)) {
+			switch (key) {
+				case 'count':
+					worker.TableWorker.postMessage({
+						type: 'count',
+						storeName: tableState.tableName,
+						dbVersion: database.dbVersion,
+						dataBaseName: tableState.dataBaseName,
+					});
+					break;
+				case 'columns':
+					if (colsHook !== undefined) {
+						// set the columns
+						dispatch({
+							type: 'set',
+							name: 'columns',
+							newVal: colsHook.cols,
+						});
+						// make new colRefs
+						dispatch({
+							type: 'set',
+							name: 'colsRef',
+							newVal: colsHook.cols.map(() =>
+								createRef<HTMLTableCellElement>()
+							),
+						});
+						// make ne resizeStyles
+						dispatch({
+							type: 'set',
+							name: 'resizeStyles',
+							newVal: colsHook.cols.map(() => ({
+								background: 'none',
+								cursor: 'initial',
+							})),
+						});
+						// make new colWidths
+						dispatch({
+							type: 'set',
+							name: 'columnWidths',
+							newVal: colsHook.cols.map((_value, index) =>
+								index === 0 ? rowColumnWidth : appearances.columnWidth
+							),
+						});
+					} else {
+						worker.TableWorker.postMessage({
+							type: 'columns',
+							storeName: tableState.tableName,
+							dbVersion: database.dbVersion,
+							dataBaseName: tableState.dataBaseName,
+						});
+					}
+					break;
+				case 'colsRef':
+				case 'columnWidths':
+				case 'resizeStyles':
+					break;
+				case 'update':
+					if (updateHook !== undefined) {
+						dispatch({
+							type: 'set',
+							name: 'update',
+							newVal: updateHook.update,
+						});
+					} else {
+						dispatch({
+							type: 'set',
+							name: 'update',
+							newVal: false,
+						});
+					}
+					break;
+				case 'dataBaseName':
+					dispatch({
+						type: 'set',
+						name: 'dataBaseName',
+						newVal: dataBaseName,
+					});
+					break;
+				case 'dbVersion':
+					dispatch({
+						type: 'set',
+						name: 'dbVersion',
+						newVal: database.dbVersion,
+					});
+				case 'uniqueKey':
+					dispatch({
+						type: 'set',
+						name: 'uniqueKey',
+						newVal: uniqueKey,
+					});
+					break;
+				case 'resizeElemHeight':
+				case 'scope':
+					break;
+				default:
+					dispatch({
+						type: 'set',
+						// @ts-expect-error the key are from PlaceHolderTableContext, which is of type TableContextType
+						name: key,
+						newVal: val,
+					});
 			}
-
-			dispatch({
-				type: 'set',
-				name: 'lastReceived',
-				//@ts-ignore
-				newVal: rows[rows.length - 1].row,
-			});
-			dispatch({
-				type: 'set',
-				name: 'rows',
-				newVal: rows,
-			});
-			dispatch({
-				type: 'set',
-				name: 'scope',
-				newVal: newScope,
-			});
-
-			setCauseRerender(!causeRerender);
-		} else if (newScope > tableState.scope) {
-			for (let i = 0; i < diff; i++) {
-				worker.TableWorker.postMessage({
-					type: 'stream',
-					storeName: tableState.tableName,
-					dbVersion: tableState.dbVersion,
-					dataBaseName: tableState.dataBaseName,
-					action: {
-						type: 'add',
-						pos: tableState.start + tableState.scope + i,
-					},
-				});
-			}
-			dispatch({
-				type: 'set',
-				name: 'scope',
-				newVal: newScope,
-			});
-			setCauseRerender(!causeRerender);
 		}
 	}
 
-	function updateSizing(
-		scope: number,
-		rowHeight: number,
-		clHeight: number,
-		body: HTMLDivElement | null
-	) {
-		const clientHasHeight = clHeight;
+	// set the scope
+	// initialize Rows if they have not started yet
+	// add rows, if the scope increased
+	// remove rows, if the scope decreased
+	function updateScope(newScope: number) {
+		if (hasStarted) {
+			let diff = Math.abs(tableState.scope - newScope);
+			if (newScope < tableState.scope && newScope !== 0) {
+				let rows = tableState.rows;
+				// console.log(rows)
+				if (rows.length !== 0) {
+					for (let i = tableState.scope; i > newScope; i--) {
+						rows.splice(i, 1);
+					}
+					dispatch({
+						type: 'set',
+						name: 'lastReceived',
+						newVal: rows[rows.length - 1].row,
+					});
+					dispatch({
+						type: 'set',
+						name: 'rows',
+						newVal: rows,
+					});
+					dispatch({
+						type: 'set',
+						name: 'scope',
+						newVal: newScope,
+					});
+				}
+
+				setCauseRerender(!causeRerender);
+			} else if (newScope > tableState.scope) {
+				for (let i = 0; i < diff; i++) {
+					worker.TableWorker.postMessage({
+						type: 'stream',
+						storeName: tableState.tableName,
+						dbVersion: tableState.dbVersion,
+						dataBaseName: tableState.dataBaseName,
+						action: {
+							type: 'add',
+							pos: tableState.start + tableState.scope + i,
+						},
+					});
+				}
+				dispatch({
+					type: 'set',
+					name: 'scope',
+					newVal: newScope,
+				});
+				setCauseRerender(!causeRerender);
+			}
+		} else {
+			worker.TableWorker.postMessage({
+				type: 'startingRows',
+				storeName: tableState.tableName,
+				dbVersion: database.dbVersion,
+				scope: newScope,
+				dataBaseName: tableState.dataBaseName,
+			});
+			dispatch({
+				type: 'set',
+				name: 'scope',
+				newVal: newScope,
+			});
+		}
+	}
+
+	// calculate the scope from rowHeight and Table height
+	function updateSizing(rowHeight: number, body: HTMLDivElement | null) {
 		if (body !== null) {
 			const wrapperHeight = body.getBoundingClientRect().height;
 			if (wrapperHeight !== undefined) {
+				dispatch({
+					type: 'set',
+					name: 'resizeElemHeight',
+					newVal: wrapperHeight,
+				});
 				const rowCount =
 					Math.round(wrapperHeight - scrollBarHeight) / rowHeight;
 				const newScope = parseInt(rowCount.toString().split('.')[0]);
 				if (newScope > 2 && newScope < 10) {
 					const cleanedScope =
 						parseInt(rowCount.toString().split('.')[0]) - 2;
-					if (scope === 0) {
-						dispatch({
-							type: 'set',
-							name: 'scope',
-							newVal: cleanedScope,
-						});
-						setCauseRerender(!causeRerender);
-					} else {
-						updateScope(cleanedScope);
-					}
-
-					dispatch({
-						type: 'set',
-						name: 'resizeElemHeight',
-						newVal: 4 * cleanedScope + (cleanedScope + 2) * rowHeight + 6,
-					});
-				} else if (newScope >= 10) {
+					updateScope(cleanedScope);
+				} else if (newScope >= 10 && newScope < 20) {
 					const cleanedScope =
 						parseInt(rowCount.toString().split('.')[0]) - 3;
-					if (scope === 0) {
-						dispatch({
-							type: 'set',
-							name: 'scope',
-							newVal: cleanedScope,
-						});
-						setCauseRerender(!causeRerender);
-					} else {
-						updateScope(cleanedScope);
-					}
-					dispatch({
-						type: 'set',
-						name: 'resizeElemHeight',
-						newVal: 4 * cleanedScope + (cleanedScope + 2) * rowHeight + 6,
-					});
+					updateScope(cleanedScope);
+				} else if (newScope >= 20) {
+					const cleanedScope =
+						parseInt(rowCount.toString().split('.')[0]) - 12;
+					updateScope(cleanedScope);
 				} else {
 					updateScope(2);
-
-					dispatch({
-						type: 'set',
-						name: 'resizeElemHeight',
-						newVal: 4 * 2 + (2 + 2) * rowHeight + 6,
-					});
 				}
 			} else {
 				updateScope(0);
-
-				dispatch({
-					type: 'set',
-					name: 'resizeElemHeight',
-					newVal: 4 * 0 + (0 + 2) * rowHeight + 6,
-				});
 			}
 		}
 	}
 
+	// exec once on first render
 	useEffect(() => {
-		updateSizing(
-			tableState.scope,
-			appearances.rowHeight,
-			clientHeight,
-			wrapperRef.current
-		);
+		setHasStarted(false);
+	}, []);
+
+	// dynamically update rowHeight and scope, if the window resizes or the rowHeight changed in settings
+	useEffect(() => {
+		// update the scope, because the window resized
+		updateSizing(appearances.rowHeight, wrapperRef.current);
+
+		//  update rowHeight, when setting change
+		if (appearances.rowHeight !== tableState.cachedRowHeight) {
+			dispatch({
+				type: 'set',
+				name: 'cachedRowHeight',
+				newVal: appearances.rowHeight,
+			});
+			setCauseRerender(!causeRerender);
+		}
+
+		// don't put tableState.scope into the deps array, because the function updateSizing changes tableState.scope, therefore creating a cycle
 	}, [clientHeight, appearances.rowHeight]);
 
+	// the database or db Version has changed init a new table and clear any old values
+	useEffect(() => {
+		setHasStarted(false);
+		resetTableState();
+	}, [tableState.tableName, database.dbVersion, colsHook, entriesHook]);
+
+	// memorize the table foot, because it's mostly 'static'
+	const TableFootDisplayMemo = memo(
+		({ columns, update }: TableFootDisplayProps) => {
+			return <TableFootDisplay columns={columns} update={update} />;
+		}
+	);
+
+	// handle the messages coming from table.worker.ts
 	worker.TableWorker.onmessage = (e: MessageEvent) => {
 		const eventData = e.data as TableWorkerResponseMessage;
 		switch (eventData.type) {
@@ -431,7 +565,7 @@ export function Table({
 				switch (eventData.action) {
 					case 'add':
 						let rows = tableState.rows;
-						let filtered = rows.filter((value, index, array) => {
+						let filtered = rows.filter((value) => {
 							//@ts-expect-error value is unknown to ts, because it was obtained by onMessage
 							if (value.row === eventData.data.row) return true;
 							return false;
@@ -457,7 +591,7 @@ export function Table({
 					case 'next':
 						if (tableState.accept === 'next') {
 							let rows = tableState.rows;
-							let filtered = rows.filter((value, index, array) => {
+							let filtered = rows.filter((value) => {
 								//@ts-expect-error value is unknown to ts, because it was obtained by onMessage
 								if (value.row === eventData.data.row) return true;
 								return false;
@@ -491,7 +625,7 @@ export function Table({
 					case 'prev':
 						if (tableState.accept === 'prev') {
 							let rows = tableState.rows;
-							let filtered = rows.filter((value, index, array) => {
+							let filtered = rows.filter((value) => {
 								//@ts-expect-error value is unknown to ts, because it was obtained by onMessage
 								if (value.row === eventData.data.row) return true;
 								return false;
@@ -529,12 +663,14 @@ export function Table({
 				setCauseRerender(!causeRerender);
 				break;
 			case 'columns':
-				dispatch({
-					type: 'set',
-					name: 'columns',
-					newVal: eventData.data,
-				});
 				if (Array.isArray(eventData.data)) {
+					dispatch({
+						type: 'set',
+						name: 'columns',
+						newVal: eventData.data
+							.toSpliced(eventData.data.indexOf('row'), 1)
+							.toSpliced(0, 0, 'row'),
+					});
 					dispatch({
 						type: 'set',
 						name: 'colsRef',
@@ -553,7 +689,7 @@ export function Table({
 					dispatch({
 						type: 'set',
 						name: 'columnWidths',
-						newVal: eventData.data.map((val, index) =>
+						newVal: eventData.data.map((_value, index) =>
 							index === 0 ? rowColumnWidth : appearances.columnWidth
 						),
 					});
@@ -574,13 +710,13 @@ export function Table({
 						name: 'rows',
 						newVal: eventData.data,
 					});
-					if (eventData.data.length !== 0) {
-						dispatch({
-							type: 'set',
-							name: 'lastReceived',
-							newVal: eventData.data[eventData.data.length - 1].row,
-						});
-					}
+					dispatch({
+						type: 'set',
+						name: 'lastReceived',
+						// @ts-ignore
+						newVal: eventData.data[eventData.data.length - 1].row,
+					});
+					setHasStarted(true);
 				}
 				setCauseRerender(!causeRerender);
 				break;
@@ -594,115 +730,6 @@ export function Table({
 				break;
 		}
 	};
-
-	useEffect(() => {
-		if (entriesHook === undefined) {
-			worker.TableWorker.postMessage({
-				type: 'count',
-				storeName: tableState.tableName,
-				dbVersion: database.dbVersion,
-				dataBaseName: tableState.dataBaseName,
-			});
-		}
-		// reimplement the reducer init function
-		dispatch({
-			type: 'set',
-			name: 'lastReceived',
-			newVal: 0,
-		});
-		if (colsHook !== undefined) {
-			dispatch({
-				type: 'set',
-				name: 'columns',
-				newVal: colsHook.cols,
-			});
-			dispatch({
-				type: 'set',
-				name: 'colsRef',
-				newVal: colsHook.cols.map(() => createRef<HTMLTableCellElement>()),
-			});
-			dispatch({
-				type: 'set',
-				name: 'resizeStyles',
-				newVal: colsHook.cols.map(() => ({
-					background: 'none',
-					cursor: 'initial',
-				})),
-			});
-			dispatch({
-				type: 'set',
-				name: 'columnWidths',
-				newVal: colsHook.cols.map((val, index) =>
-					index === 0 ? rowColumnWidth : appearances.columnWidth
-				),
-			});
-		}
-		worker.TableWorker.postMessage({
-			type: 'columns',
-			storeName: tableState.tableName,
-			dbVersion: database.dbVersion,
-			dataBaseName: tableState.dataBaseName,
-		});
-		worker.TableWorker.postMessage({
-			type: 'count',
-			storeName: tableState.tableName,
-			dbVersion: database.dbVersion,
-			dataBaseName: tableState.dataBaseName,
-		});
-
-		if (updateHook !== undefined) {
-			dispatch({
-				type: 'set',
-				name: 'update',
-				newVal: updateHook.update,
-			});
-		} else {
-			dispatch({
-				type: 'set',
-				name: 'update',
-				newVal: false,
-			});
-		}
-
-		dispatch({
-			type: 'set',
-			name: 'dbVersion',
-			newVal: database.dbVersion,
-		});
-	}, [tableState.tableName, database.dbVersion, colsHook, entriesHook]);
-
-	useEffect(() => {
-		if (!hasStarted) {
-			if (tableState.rows.length === 0 && tableState.scope !== 0) {
-				worker.TableWorker.postMessage({
-					type: 'startingRows',
-					storeName: tableState.tableName,
-					dbVersion: database.dbVersion,
-					scope: tableState.scope,
-					dataBaseName: tableState.dataBaseName,
-				});
-				setHasStarted(true);
-			}
-		}
-	}, [tableState.rows, tableState.scope, hasStarted]);
-
-	useEffect(() => {
-		if (appearances.rowHeight !== tableState.cachedRowHeight) {
-			console.log('updating cache');
-			dispatch({
-				type: 'set',
-				name: 'cachedRowHeight',
-				newVal: appearances.rowHeight,
-			});
-		}
-		setCauseRerender(!causeRerender);
-	}, [appearances.rowHeight]);
-
-	const TableFootDisplayMemo = memo(
-		({ columns, update }: TableFootDisplayProps) => {
-			return <TableFootDisplay columns={columns} update={update} />;
-		}
-	);
 
 	return (
 		<>

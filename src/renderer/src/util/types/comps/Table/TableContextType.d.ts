@@ -1,4 +1,4 @@
-import { Table as TableType } from 'dexie';
+import type { TableRow } from "../../database/DataBaseData";
 
 export interface TableContextType {
 	dataBaseName: string;
@@ -18,7 +18,7 @@ export interface TableContextType {
 	resizeElemHeight: number;
 	colsRef: React.RefObject<HTMLTableCellElement>[] | any;
 	resizeStyles: ResizeStyle[];
-	rows: object[];
+	rows: TableRow[];
 	dbVersion: number;
 	start: number;
 	accept: 'prev' | 'next';
@@ -39,7 +39,6 @@ export interface TableDispatchAction {
 		| 'mouseMove'
 		| 'mouseEnter'
 		| 'mouseLeave'
-		| 'scopeChange'
 		| 'changeAccept';
 	index?: number;
 	name?:
