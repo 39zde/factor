@@ -22,10 +22,7 @@ export interface Customer {
 }
 
 export interface PersonType {
-	/**
-	 * unique person identifier
-	 */
-	id: number;
+	row: number;
 	/**
 	 * title
 	 */
@@ -57,14 +54,14 @@ export interface PersonType {
 }
 
 export interface EmailType {
-	id: number;
+	row: number;
 	email: string;
 	type?: ContactType;
 	notes?: string[];
 }
 
 export interface PhoneNumberType {
-	id: number;
+	row: number;
 	// (optional) the type of phone number
 	type?: ContactType;
 	// phone number
@@ -75,7 +72,7 @@ export interface PhoneNumberType {
 
 export interface AddressType {
 	// unique identifier
-	id: number;
+	row: number;
 	// what kind of address
 	type?: ContactType;
 	//  street name
@@ -95,7 +92,7 @@ export interface AddressType {
 }
 
 export interface BankType {
-	id: number;
+	row: number;
 	name: string;
 	iban?: string;
 	bic?: string;
@@ -104,7 +101,7 @@ export interface BankType {
 }
 
 export interface CompanyType {
-	id: number;
+	row: number;
 	name: string;
 	alias?: string[];
 	notes?: string[];

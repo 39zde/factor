@@ -165,7 +165,7 @@ self.onmessage = (e: MessageEvent): void => {
 let PersonTemplate: PersonType = {
 	firstName: '',
 	lastName: '',
-	id: 0,
+	row: 0,
 	phone: null,
 	title: '',
 	alias: undefined,
@@ -174,13 +174,13 @@ let PersonTemplate: PersonType = {
 
 let EmailTemplate: EmailType = {
 	email: '',
-	id: 0,
+	row: 0,
 	notes: [],
 	type: undefined,
 };
 
 let PhoneTemplate: PhoneNumberType = {
-	id: 0,
+	row: 0,
 	phone: '',
 	notes: undefined,
 	type: undefined,
@@ -190,7 +190,7 @@ let AddressTemplate: AddressType = {
 	city: '',
 	country: '',
 	hash: '',
-	id: 0,
+	row: 0,
 	street: '',
 	zip: '',
 	notes: undefined,
@@ -200,13 +200,13 @@ let AddressTemplate: AddressType = {
 
 let CompanyTemplate: CompanyType = {
 	alias: undefined,
-	id: 0,
+	row: 0,
 	name: '',
 	notes: undefined,
 };
 
 let BankTemplate: BankType = {
-	id: 0,
+	row: 0,
 	name: '',
 	bankCode: undefined,
 	bic: undefined,
@@ -649,7 +649,7 @@ function parseCustomer(
 				let count = CountRequest.result;
 				for (let [index, value] of data.entries()) {
 					let id = count + index + 1;
-					value.id = id;
+					value.row = id;
 					oStore.add(value);
 					updateCustomer(row[map.id], type, id);
 				}
@@ -929,7 +929,6 @@ function createCustomerObjectStores(e: IDBVersionChangeEvent): void {
 	if (!stores.contains('customers')) {
 		const customer = db.createObjectStore('customers', {
 			keyPath: 'row',
-			autoIncrement: true,
 		});
 		customer.createIndex('customers-id', 'id', {
 			unique: true,
@@ -938,8 +937,7 @@ function createCustomerObjectStores(e: IDBVersionChangeEvent): void {
 
 	if (!stores.contains('persons')) {
 		const persons = db.createObjectStore('persons', {
-			keyPath: 'id',
-			autoIncrement: true,
+			keyPath: 'row',
 		});
 
 		persons.createIndex('persons-lastName', 'lastName', {
@@ -953,7 +951,7 @@ function createCustomerObjectStores(e: IDBVersionChangeEvent): void {
 
 	if (!stores.contains('emails')) {
 		const email = db.createObjectStore('emails', {
-			keyPath: 'id',
+			keyPath: 'row',
 		});
 
 		email.createIndex('emails-email', 'email', {
@@ -963,7 +961,7 @@ function createCustomerObjectStores(e: IDBVersionChangeEvent): void {
 
 	if (!stores.contains('phones')) {
 		const phone = db.createObjectStore('phones', {
-			keyPath: 'id',
+			keyPath: 'row',
 		});
 
 		phone.createIndex('phones-phone', 'phone', {
@@ -973,7 +971,7 @@ function createCustomerObjectStores(e: IDBVersionChangeEvent): void {
 
 	if (!stores.contains('addresses')) {
 		const address = db.createObjectStore('addresses', {
-			keyPath: 'id',
+			keyPath: 'row',
 		});
 
 		address.createIndex('addresses-street', 'street', {
@@ -992,7 +990,7 @@ function createCustomerObjectStores(e: IDBVersionChangeEvent): void {
 
 	if (!stores.contains('banks')) {
 		const bank = db.createObjectStore('banks', {
-			keyPath: 'id',
+			keyPath: 'row',
 		});
 
 		bank.createIndex('banks-name', 'name', {
@@ -1005,7 +1003,7 @@ function createCustomerObjectStores(e: IDBVersionChangeEvent): void {
 
 	if (!stores.contains('company')) {
 		db.createObjectStore('company', {
-			keyPath: 'id',
+			keyPath: 'row',
 		});
 	}
 }
