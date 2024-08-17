@@ -20,7 +20,7 @@ export type {
 	BankType,
 	CompanyType,
 	ContactType,
-	CustomerSortingMap
+	CustomerSortingMap,
 } from './database/CustomerTypes';
 
 export type {
