@@ -2,7 +2,7 @@ import React, { useState, createContext, useMemo } from 'react';
 import SideBar from '@comps/SideBar/SideBar';
 import { Pages } from './pages/Pages';
 import { WindowContextProvider } from '@comps/WindowContext';
-import type { RouteType } from './util/types/comps/SideBar/routes';
+import type { RouteType } from './util/types/types';
 import type { AppContextType, AppSettingsType } from '@util/App';
 
 import './App.css';
