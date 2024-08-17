@@ -106,7 +106,7 @@ export function Upload(): React.JSX.Element {
 		},
 	};
 
-	const importHandler = async () => {
+	const importHandler = () => {
 		worker.ImportWorker.postMessage({
 			type: 'sort',
 			message: map,
@@ -133,10 +133,10 @@ export function Upload(): React.JSX.Element {
 							switch (tableImportModeInputRef.current.value) {
 								case 'customers':
 									const newTables = [...database.tables];
-									if (newTables.includes('customers')) {
+									if (newTables.includes('customer_db')) {
 										break;
 									}
-									newTables.push('customers');
+									newTables.push('customer_db');
 									const newContext: AppSettingsType = {
 										appearances: {
 											...appearances,
@@ -153,19 +153,7 @@ export function Upload(): React.JSX.Element {
 									changeContext(newContext);
 							}
 						}
-						const oldContext: AppSettingsType = {
-							appearances: {
-								...appearances,
-							},
-							database: {
-								dbVersion: database.dbVersion,
-								tables: database.tables,
-							},
-							general: {
-								...general,
-							},
-						};
-						changeContext(oldContext);
+
 						break;
 					case 'error':
 					default:

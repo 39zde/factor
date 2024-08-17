@@ -23,7 +23,7 @@ import { RouteType, SideBarProps } from '@util/types/types';
 export default function SideBar({
 	routesHook,
 }: SideBarProps): React.JSX.Element {
-	const { appearances, general } = useContext(AppContext);
+	const { appearances, general, database } = useContext(AppContext);
 	const routeHandler = (newVal: RouteType) => {
 		if (routesHook !== undefined) {
 			routesHook.setShowSettings(false);
@@ -68,6 +68,7 @@ export default function SideBar({
 							general.language === 'deutsch' ? 'Start' : 'Home'
 						}
 					/>
+
 					<RouterButton
 						handler={routeHandler}
 						active={!routesHook.showHelp && !routesHook.showSettings}
@@ -125,164 +126,226 @@ export default function SideBar({
 						}
 					/>
 					<div className="divider" />
-					<RouterButton
-						active={!routesHook.showHelp && !routesHook.showSettings}
-						handler={routeHandler}
-						icon={
-							<CuboidIcon
-								size={24}
-								strokeWidth={
-									routesHook.route === 'Articles' &&
-									!routesHook.showHelp &&
-									!routesHook.showSettings
-										? 2.5
-										: 2
+					{database.tables.includes('article_db') ? (
+						<>
+							<RouterButton
+								active={
+									!routesHook.showHelp && !routesHook.showSettings
 								}
-								color={
-									routesHook.route === 'Articles' &&
-									!routesHook.showHelp &&
-									!routesHook.showSettings
-										? 'var(--color-primary)'
-										: 'light-dark(var(--color-dark-1),var(--color-light-1))'
+								handler={routeHandler}
+								icon={
+									<CuboidIcon
+										size={24}
+										strokeWidth={
+											routesHook.route === 'Articles' &&
+											!routesHook.showHelp &&
+											!routesHook.showSettings
+												? 2.5
+												: 2
+										}
+										color={
+											routesHook.route === 'Articles' &&
+											!routesHook.showHelp &&
+											!routesHook.showSettings
+												? 'var(--color-primary)'
+												: 'light-dark(var(--color-dark-1),var(--color-light-1))'
+										}
+									/>
 								}
-							/>
-						}
-						route={routesHook.route}
-						routeName="Articles"
-						textOverride={
-							general.language === 'deutsch' ? 'Artikel' : 'Articles'
-						}
-					/>
-					<RouterButton
-						active={!routesHook.showHelp && !routesHook.showSettings}
-						handler={routeHandler}
-						icon={
-							<UserRoundIcon
-								size={24}
-								strokeWidth={
-									routesHook.route === 'Customers' &&
-									!routesHook.showHelp &&
-									!routesHook.showSettings
-										? 2.5
-										: 2
-								}
-								color={
-									routesHook.route === 'Customers' &&
-									!routesHook.showHelp &&
-									!routesHook.showSettings
-										? 'var(--color-primary)'
-										: 'light-dark(var(--color-dark-1),var(--color-light-1))'
+								route={routesHook.route}
+								routeName="Articles"
+								textOverride={
+									general.language === 'deutsch'
+										? 'Artikel'
+										: 'Articles'
 								}
 							/>
-						}
-						route={routesHook.route}
-						routeName="Customers"
-						textOverride={
-							general.language === 'deutsch' ? 'Kunden' : 'Customers'
-						}
-					/>
-					<RouterButton
-						active={!routesHook.showHelp && !routesHook.showSettings}
-						handler={routeHandler}
-						icon={
-							<TruckIcon
-								size={24}
-								strokeWidth={
-									routesHook.route === 'Deliveries' &&
-									!routesHook.showHelp &&
-									!routesHook.showSettings
-										? 2.5
-										: 2
+						</>
+					) : (
+						<></>
+					)}
+					{database.tables.includes('customer_db') ? (
+						<>
+							<RouterButton
+								active={
+									!routesHook.showHelp && !routesHook.showSettings
 								}
-								color={
-									routesHook.route === 'Deliveries' &&
-									!routesHook.showHelp &&
-									!routesHook.showSettings
-										? 'var(--color-primary)'
-										: 'light-dark(var(--color-dark-1),var(--color-light-1))'
+								handler={routeHandler}
+								icon={
+									<UserRoundIcon
+										size={24}
+										strokeWidth={
+											routesHook.route === 'Customers' &&
+											!routesHook.showHelp &&
+											!routesHook.showSettings
+												? 2.5
+												: 2
+										}
+										color={
+											routesHook.route === 'Customers' &&
+											!routesHook.showHelp &&
+											!routesHook.showSettings
+												? 'var(--color-primary)'
+												: 'light-dark(var(--color-dark-1),var(--color-light-1))'
+										}
+									/>
 								}
-							/>
-						}
-						route={routesHook.route}
-						routeName="Deliveries"
-						textOverride={
-							general.language === 'deutsch'
-								? 'Lieferungen'
-								: 'Deliveries'
-						}
-					/>
-					<RouterButton
-						active={!routesHook.showHelp && !routesHook.showSettings}
-						handler={routeHandler}
-						icon={
-							<ReceiptTextIcon
-								size={24}
-								strokeWidth={
-									routesHook.route === 'Invoices' &&
-									!routesHook.showHelp &&
-									!routesHook.showSettings
-										? 2.5
-										: 2
-								}
-								color={
-									routesHook.route === 'Invoices' &&
-									!routesHook.showHelp &&
-									!routesHook.showSettings
-										? 'var(--color-primary)'
-										: 'light-dark(var(--color-dark-1),var(--color-light-1))'
+								route={routesHook.route}
+								routeName="Customers"
+								textOverride={
+									general.language === 'deutsch'
+										? 'Kunden'
+										: 'Customers'
 								}
 							/>
-						}
-						route={routesHook.route}
-						routeName="Invoices"
-						textOverride={
-							general.language === 'deutsch' ? 'Rechnungen' : 'Invoices'
-						}
-					/>
-					<RouterButton
-						active={!routesHook.showHelp && !routesHook.showSettings}
-						handler={routeHandler}
-						icon={
-							<FileOutputIcon
-								size={24}
-								strokeWidth={routesHook.route === 'Quotes' ? 2.5 : 2}
-								color={
-									routesHook.route === 'Quotes' &&
-									!routesHook.showHelp &&
-									!routesHook.showSettings
-										? 'var(--color-primary)'
-										: 'light-dark(var(--color-dark-1),var(--color-light-1))'
+						</>
+					) : (
+						<></>
+					)}
+					{database.tables.includes('delivery_db') ? (
+						<>
+							<RouterButton
+								active={
+									!routesHook.showHelp && !routesHook.showSettings
+								}
+								handler={routeHandler}
+								icon={
+									<TruckIcon
+										size={24}
+										strokeWidth={
+											routesHook.route === 'Deliveries' &&
+											!routesHook.showHelp &&
+											!routesHook.showSettings
+												? 2.5
+												: 2
+										}
+										color={
+											routesHook.route === 'Deliveries' &&
+											!routesHook.showHelp &&
+											!routesHook.showSettings
+												? 'var(--color-primary)'
+												: 'light-dark(var(--color-dark-1),var(--color-light-1))'
+										}
+									/>
+								}
+								route={routesHook.route}
+								routeName="Deliveries"
+								textOverride={
+									general.language === 'deutsch'
+										? 'Lieferungen'
+										: 'Deliveries'
 								}
 							/>
-						}
-						route={routesHook.route}
-						routeName="Quotes"
-						textOverride={
-							general.language === 'deutsch' ? 'Angebote' : 'Quotes'
-						}
-					/>
-					<RouterButton
-						active={!routesHook.showHelp && !routesHook.showSettings}
-						handler={routeHandler}
-						icon={
-							<RotateCcwIcon
-								size={24}
-								strokeWidth={routesHook.route === 'Returnees' ? 2.5 : 2}
-								color={
-									routesHook.route === 'Returnees' &&
-									!routesHook.showHelp &&
-									!routesHook.showSettings
-										? 'var(--color-primary)'
-										: 'light-dark(var(--color-dark-1),var(--color-light-1))'
+						</>
+					) : (
+						<></>
+					)}
+					{database.tables.includes('invoice_db') ? (
+						<>
+							<RouterButton
+								active={
+									!routesHook.showHelp && !routesHook.showSettings
+								}
+								handler={routeHandler}
+								icon={
+									<ReceiptTextIcon
+										size={24}
+										strokeWidth={
+											routesHook.route === 'Invoices' &&
+											!routesHook.showHelp &&
+											!routesHook.showSettings
+												? 2.5
+												: 2
+										}
+										color={
+											routesHook.route === 'Invoices' &&
+											!routesHook.showHelp &&
+											!routesHook.showSettings
+												? 'var(--color-primary)'
+												: 'light-dark(var(--color-dark-1),var(--color-light-1))'
+										}
+									/>
+								}
+								route={routesHook.route}
+								routeName="Invoices"
+								textOverride={
+									general.language === 'deutsch'
+										? 'Rechnungen'
+										: 'Invoices'
 								}
 							/>
-						}
-						route={routesHook.route}
-						routeName="Returnees"
-						textOverride={
-							general.language === 'deutsch' ? 'Rückgaben' : 'Returnees'
-						}
-					/>
+						</>
+					) : (
+						<></>
+					)}
+					{database.tables.includes('quote_db') ? (
+						<>
+							<RouterButton
+								active={
+									!routesHook.showHelp && !routesHook.showSettings
+								}
+								handler={routeHandler}
+								icon={
+									<FileOutputIcon
+										size={24}
+										strokeWidth={
+											routesHook.route === 'Quotes' ? 2.5 : 2
+										}
+										color={
+											routesHook.route === 'Quotes' &&
+											!routesHook.showHelp &&
+											!routesHook.showSettings
+												? 'var(--color-primary)'
+												: 'light-dark(var(--color-dark-1),var(--color-light-1))'
+										}
+									/>
+								}
+								route={routesHook.route}
+								routeName="Quotes"
+								textOverride={
+									general.language === 'deutsch'
+										? 'Angebote'
+										: 'Quotes'
+								}
+							/>
+						</>
+					) : (
+						<></>
+					)}
+					{database.tables.includes('returnee_db') ? (
+						<>
+							<RouterButton
+								active={
+									!routesHook.showHelp && !routesHook.showSettings
+								}
+								handler={routeHandler}
+								icon={
+									<RotateCcwIcon
+										size={24}
+										strokeWidth={
+											routesHook.route === 'Returnees' ? 2.5 : 2
+										}
+										color={
+											routesHook.route === 'Returnees' &&
+											!routesHook.showHelp &&
+											!routesHook.showSettings
+												? 'var(--color-primary)'
+												: 'light-dark(var(--color-dark-1),var(--color-light-1))'
+										}
+									/>
+								}
+								route={routesHook.route}
+								routeName="Returnees"
+								textOverride={
+									general.language === 'deutsch'
+										? 'Rückgaben'
+										: 'Returnees'
+								}
+							/>
+						</>
+					) : (
+						<></>
+					)}
 				</div>
 				<div className="bottomIcons">
 					<LowerButton
