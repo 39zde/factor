@@ -16,7 +16,7 @@
 			// config files
 			".editorconfig": true,
 			".eslintignore": true,
-			".gitignore": true,
+			".gitignore": false,
 			".npmrc": true,
 			".prettierignore": true,
 			".prettierrc.yaml": true,
@@ -28,7 +28,8 @@
 			"tsconfig.json": true,
 			"tsconfig.node.json": true,
 			"tsconfig.web.json": true,
-			"yarn.lock": true
+			"yarn.lock": true,
+			".yarnrc.yml": true
 		  }
     },
 
