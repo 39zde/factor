@@ -1,5 +1,5 @@
 import type { TablePages } from '../pages';
-import type { CustomerSortingMap } from "../../database/CustomerTypes"
+import type { CustomerSortingMap } from '../../database/CustomerTypes';
 
 export interface ArticleSortingMap {
 	articleID: string;

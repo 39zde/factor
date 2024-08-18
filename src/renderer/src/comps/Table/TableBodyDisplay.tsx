@@ -20,7 +20,7 @@ export function TableBodyDisplay({
 
 	useEffect(() => {
 		start.current = 1;
-		lastOrdered.current = -1
+		lastOrdered.current = -1;
 	}, [tableState.tableName]);
 
 	const increase = useCallback(() => {

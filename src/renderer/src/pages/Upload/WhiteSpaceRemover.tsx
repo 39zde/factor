@@ -10,7 +10,6 @@ export function WhiteSpaceRemover({
 	const { general, worker } = useContext(AppContext);
 	const [showOptions, setShowOptions] = useState<boolean>(false);
 
-
 	return (
 		<>
 			<div className="colRemover">
@@ -25,10 +24,14 @@ export function WhiteSpaceRemover({
 					className="removerOptions"
 					style={{ display: showOptions ? 'flex' : 'none' }}>
 					<button>
-							{general.language === "deutsch" ? "Mehrfache Leerzeichen entfernen": "Remove multiple spaces"}
+						{general.language === 'deutsch'
+							? 'Mehrfache Leerzeichen entfernen'
+							: 'Remove multiple spaces'}
 					</button>
 					<button>
-							{general.language === "deutsch" ? "Führende/Endende Leerzeichen entfernen": "Trim leading/tailing whitespace"}
+						{general.language === 'deutsch'
+							? 'Führende/Endende Leerzeichen entfernen'
+							: 'Trim leading/tailing whitespace'}
 					</button>
 				</div>
 			</div>

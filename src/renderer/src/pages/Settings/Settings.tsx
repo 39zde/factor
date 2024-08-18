@@ -159,7 +159,7 @@ export function Settings() {
 		decimalSeparator,
 		sideBarWidth,
 		columnWidth,
-		scrollSpeed
+		scrollSpeed,
 	]);
 
 	return (

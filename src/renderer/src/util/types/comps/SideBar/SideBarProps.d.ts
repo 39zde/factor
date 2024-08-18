@@ -4,9 +4,9 @@ export interface SideBarProps {
 	routesHook: {
 		route: RouteType;
 		setRoute: (newVal: RouteType) => void;
-		showSettings: boolean,
+		showSettings: boolean;
 		setShowSettings: (newVal: boolean) => void;
-		showHelp: boolean,
+		showHelp: boolean;
 		setShowHelp: (newVal: boolean) => void;
 	};
 }
@@ -19,7 +19,6 @@ export interface RouterButtonProps {
 	textOverride?: string;
 	active: boolean;
 }
-
 
 export interface LowerButtonProps {
 	handler: () => void;

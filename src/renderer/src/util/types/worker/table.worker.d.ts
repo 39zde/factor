@@ -1,4 +1,4 @@
-import type { TableRow } from "../database/DataBaseData";
+import type { TableRow } from '../database/DataBaseData';
 
 export interface TableWorkerRequestMessage {
 	type: TableWorkerMessageType;
@@ -24,7 +24,7 @@ export type TableWorkerRequestMessageType =
 
 export interface TableWorkerResponseMessage {
 	type: TableWorkerResponseMessageType;
-	data: TableRow | Array<TableRow | string> | number ;
+	data: TableRow | Array<TableRow | string> | number;
 	index?: number;
 	action?: TableWorkerRequestMessageActionType;
 }

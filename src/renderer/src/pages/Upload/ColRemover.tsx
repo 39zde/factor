@@ -9,7 +9,7 @@ export function ColRemover({
 	count: number;
 	updateHook: { update: boolean; setUpdate: (newVal: boolean) => void };
 }): React.JSX.Element {
-	const { general , database} = useContext(AppContext);
+	const { general, database } = useContext(AppContext);
 	const [showOptions, setShowOptions] = useState<boolean>(false);
 	const conditionRef = useRef<HTMLSelectElement>(null);
 	const stringRef = useRef<HTMLInputElement>(null);
@@ -94,8 +94,8 @@ export function ColRemover({
 								type: 'deleteCol',
 								message: column,
 								dbVersion: database.dbVersion,
-								dataBaseName: 'factor_db'
-							 });
+								dataBaseName: 'factor_db',
+							});
 						}
 					}
 					break;

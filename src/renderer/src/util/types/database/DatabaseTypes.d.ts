@@ -292,9 +292,6 @@
 // 	notes?: string[];
 // }
 
-
 // export class Customer{
-
-
 
 // }

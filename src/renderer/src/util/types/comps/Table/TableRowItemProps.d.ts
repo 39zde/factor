@@ -1,4 +1,4 @@
-import type { TableRow } from "../../database/DataBaseData";
+import type { TableRow } from '../../database/DataBaseData';
 
 export interface TableRowItemProps {
 	items: TableRow;
