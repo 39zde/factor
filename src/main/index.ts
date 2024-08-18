@@ -1,8 +1,9 @@
-import { app, shell, BrowserWindow, ipcMain, SafeStorage } from 'electron';
+import { app, shell, BrowserWindow, ipcMain } from 'electron';
 import { join, resolve } from 'path';
 import { readdir, mkdir, copyFile, readFileSync, writeFileSync } from 'fs';
 import { env } from 'process';
 import { electronApp, optimizer, is } from '@electron-toolkit/utils';
+import { AppSettingsType } from '../renderer/src/util/App';
 
 function createWindow(): void {
 	// Create the browser window.
@@ -59,11 +60,6 @@ function createWindow(): void {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
-	let homeDir = resolve('$HOME');
-	if (env['HOME'] !== undefined) {
-		homeDir = resolve(env['HOME']);
-	}
-
 	// save system color theme
 	// Set app user model id for windows
 	electronApp.setAppUserModelId('de.39z.factor');
@@ -76,6 +72,85 @@ app.whenReady().then(() => {
 	});
 
 	// create default settings file and .factor directory, if not present
+	initSettings();
+	// IPC test
+	ipcMain.on('ping', () => console.log('[index.ts] ', 'pong'));
+
+	// save and read settings
+	ipcMain.on('settings', (e, message) => {
+		// console.log(message);
+		switch (message.type) {
+			case 'readSettings':
+				const settings = readSettings();
+				if (settings !== null) {
+					e.returnValue = settings;
+				}
+				break;
+			case 'writeSettings':
+				writeSettings(message.data as AppSettingsType);
+				e.returnValue = 'success';
+				break;
+			default:
+				console.log('[index.ts] ', 'defaulted Settings');
+		}
+	});
+
+	createWindow();
+
+	app.on('activate', function () {
+		// On macOS it's common to re-create a window in the app when the
+		// dock icon is clicked and there are no other windows open.
+		if (BrowserWindow.getAllWindows().length === 0) createWindow();
+	});
+});
+
+// Quit when all windows are closed, except on macOS. There, it's common
+// for applications and their menu bar to stay active until the user quits
+// explicitly with Cmd + Q.
+app.on('window-all-closed', () => {
+	if (process.platform !== 'darwin') {
+		app.quit();
+	}
+});
+
+app.setName('Factor');
+
+// In this file you can include the rest of your app"s specific main process
+// code. You can also put them in separate files and require them here.
+
+function readSettings(): AppSettingsType | null {
+	let homeDir = resolve('$HOME');
+	if (env['HOME'] !== undefined) {
+		homeDir = resolve(env['HOME']);
+	}
+	const settingsFile = readFileSync(homeDir + '/.factor/settings.json', {
+		encoding: 'utf8',
+		flag: 'r',
+	});
+	let settings = JSON.parse(settingsFile);
+	if (typeof settings === 'object') {
+		return settings;
+	}
+	return null;
+}
+
+function writeSettings(settings: AppSettingsType) {
+	let homeDir = resolve('$HOME');
+	if (env['HOME'] !== undefined) {
+		homeDir = resolve(env['HOME']);
+	}
+	writeFileSync(
+		homeDir + '/.factor/settings.json',
+		JSON.stringify(settings),
+		'utf8'
+	);
+}
+
+function initSettings() {
+	let homeDir = resolve('$HOME');
+	if (env['HOME'] !== undefined) {
+		homeDir = resolve(env['HOME']);
+	}
 	readdir(homeDir, (error, files) => {
 		if (error) {
 			return console.log('[index.ts] ', 'error reading home dir: ', error);
@@ -107,56 +182,4 @@ app.whenReady().then(() => {
 			});
 		}
 	});
-
-	// IPC test
-	ipcMain.on('ping', () => console.log('[index.ts] ', 'pong'));
-
-	// save and read settings
-	ipcMain.on('settings', (e, message) => {
-		// console.log(message);
-		switch (message.type) {
-			case 'readSettings':
-				const settingsFile = readFileSync(
-					homeDir + '/.factor/settings.json',
-					'utf8'
-				);
-				const settings = JSON.parse(settingsFile);
-				e.returnValue = settings;
-				break;
-			case 'writeSettings':
-				// console.log("writing Settings")
-				// console.log(message.data);
-				writeFileSync(
-					homeDir + '/.factor/settings.json',
-					JSON.stringify(message.data),
-					'utf8'
-				);
-				e.returnValue = 'success';
-				break;
-			default:
-				console.log('[index.ts] ', 'defaulted Settings');
-		}
-	});
-
-	createWindow();
-
-	app.on('activate', function () {
-		// On macOS it's common to re-create a window in the app when the
-		// dock icon is clicked and there are no other windows open.
-		if (BrowserWindow.getAllWindows().length === 0) createWindow();
-	});
-});
-
-// Quit when all windows are closed, except on macOS. There, it's common
-// for applications and their menu bar to stay active until the user quits
-// explicitly with Cmd + Q.
-app.on('window-all-closed', () => {
-	if (process.platform !== 'darwin') {
-		app.quit();
-	}
-});
-
-app.setName('Factor');
-
-// In this file you can include the rest of your app"s specific main process
-// code. You can also put them in separate files and require them here.
+}
