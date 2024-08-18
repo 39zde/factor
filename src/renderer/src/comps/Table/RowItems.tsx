@@ -2,6 +2,7 @@ import React, { useContext } from 'react';
 import { AppContext } from '@renderer/App';
 import type { TableRowItemProps } from '@renderer/util/types/comps/Table/TableRowItemProps';
 import { useTableContext } from './Table';
+import { NestedTableCell } from './NestedTableCell';
 
 export function RowItems({
 	items,
@@ -17,6 +18,7 @@ export function RowItems({
 							<TableCell
 								parentKey={`col${index}${uniqueParentKey}`}
 								contents={items[columnName]}
+								columnName={columnName}
 							/>
 						</TableCellWrapper>
 					</>
@@ -28,31 +30,14 @@ export function RowItems({
 
 function TableCell({
 	contents,
+	columnName,
 }: {
 	parentKey: string;
-	contents:
-		| string
-		| string[]
-		| object
-		| object[]
-		| number
-		| number[]
-		| boolean;
+	contents: string | object | object[] | number | boolean;
+	columnName: string;
 }): React.JSX.Element {
 	if (Array.isArray(contents)) {
-		return (
-			<>
-				{/* <ul className="TableCellList">
-					{contents.map((content) => {
-						if (typeof content === 'object') {
-							return <></>;
-						} else {
-							return <></>;
-						}
-					})}
-				</ul> */}
-			</>
-		);
+		return <NestedTableCell columnName={columnName} data={contents} />;
 	} else {
 		switch (typeof contents) {
 			case 'object':

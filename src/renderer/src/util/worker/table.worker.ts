@@ -12,53 +12,7 @@ self.onmessage = function requestHandler(e: MessageEvent) {
 	}
 	switch (eventData.type) {
 		case 'stream':
-			const dbRequest = indexedDB.open(
-				eventData.dataBaseName,
-				eventData.dbVersion
-			);
-			dbRequest.onsuccess = () => {
-				const streamDB = dbRequest.result;
-				const transaction = streamDB.transaction(
-					eventData.storeName,
-					'readwrite'
-				);
-				const oStore = transaction.objectStore(eventData.storeName);
-				if (eventData.action === undefined) {
-					return postMessage({
-						type: 'error',
-						data: 'undefined action',
-					});
-				}
-				const only = IDBKeyRange.only(eventData.action.pos);
-				const req = oStore.get(only);
-				req.onsuccess = () => {
-					if (eventData.action === undefined) {
-						return postMessage({
-							type: 'error',
-							data: 'undefined action',
-						});
-					}
-					if (req.result) {
-						let row = req.result as TableRow;
-						let out = fillReferences(streamDB, row);
-						postStream(out, eventData.action.type, eventData.action.pos);
-					}
-				};
-				req.onerror = (ev) => {
-					if (eventData.action === undefined) {
-						return postMessage({
-							type: 'error',
-							data: 'undefined action',
-						});
-					}
-					postMessage({
-						type: 'error',
-						action: eventData.action.type,
-						data: ev,
-						index: eventData.action.pos,
-					});
-				};
-			};
+			stream(eventData);
 			break;
 		case 'columns':
 			getColumns(
@@ -218,40 +172,68 @@ function getCount(name: string, version: number, storeName: string) {
 	};
 }
 
-function fillReferences(dataBase: IDBDatabase, row: TableRow): DerefRow {
-	function fillReference(
-		dataBase: IDBDatabase,
-		storeName: string,
-		position: number,
-		parent: any[],
-		index: number
-	) {
-		const transaction = dataBase.transaction(storeName, 'readonly');
-		const oStore = transaction.objectStore(storeName);
-		const request = oStore.get(position);
-		request.onsuccess = () => {
-			parent[index] = request.result;
-			transaction.commit();
-		};
-	}
-
+function fillReferences(
+	dataBase: IDBDatabase,
+	row: TableRow,
+	actionType: TableWorkerRequestMessageActionType
+): void {
 	const copy = structuredClone(row);
+	let targetCount = 0;
+	type CounterType = {
+		count: number;
+	};
+	const counter: CounterType = {
+		count: 0,
+	};
+	// this handler acts as a sort of event listener
+	const handler = {
+		// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy/Proxy/set#parameters
+		set(target: CounterType, prop: string, value: any) {
+			if (prop !== 'count') return Reflect.set(target, prop, value);
+			// every time we increase the counter we check if it was the last request
+			if (value === targetCount) {
+				// if we are on the last result finally send the back the response
+				// this is a very neat way of handling things
+				postStream(copy, actionType, row.row);
+			}
+			return Reflect.set(target, prop, value);
+		},
+	};
+
+	const proxy = new Proxy(counter, handler);
 	for (const [key, value] of Object.entries(row)) {
 		if (value instanceof ArrayBuffer) {
-			copy[key] = new Array(value.byteLength / 2);
-			for (let i = 0; i < value.byteLength / 2; i++) {
-				fillReference(
-					dataBase,
-					key,
-					new DataView(value).getUint16(i),
-					copy[key],
-					i
-				);
+			//in row $copy.row : $key is of type ArrayBuffer
+			// increase $targetCunt by $increment
+			let increment = new DataView(value).byteLength / 2;
+			targetCount += increment;
+
+			// replace the ArrayBuffer with an regular array in our copy
+			copy[key] = new Array(increment);
+			for (let i = 0; i < increment; i++) {
+				let location = new DataView(value).getInt16(i);
+				// the ArrayBuffer has stored $location at $i
+
+				// query the object store $key at $location
+				const transaction = dataBase.transaction(key, 'readonly');
+				const oStore = transaction.objectStore(key);
+				let only = IDBKeyRange.only(location);
+				let request = oStore.get(only);
+				request.onsuccess = () => {
+					// insert the requested item into our copy
+					copy[key][i] = request.result;
+					// increase the counter
+					proxy.count += 1;
+				};
+				request.onerror = () => {
+					proxy.count += 1;
+				};
 			}
 		}
 	}
-
-	return copy as DerefRow;
+	if (targetCount === 0) {
+		postStream(copy, actionType, copy.row);
+	}
 }
 
 function postStream(
@@ -280,4 +262,53 @@ function postStream(
 			index: position,
 		});
 	}
+}
+
+function stream(eventData: TableWorkerRequestMessage) {
+	const dbRequest = indexedDB.open(
+		eventData.dataBaseName,
+		eventData.dbVersion
+	);
+	dbRequest.onsuccess = () => {
+		const streamDB = dbRequest.result;
+		const transaction = streamDB.transaction(
+			eventData.storeName,
+			'readwrite'
+		);
+		const oStore = transaction.objectStore(eventData.storeName);
+		if (eventData.action === undefined) {
+			return postMessage({
+				type: 'error',
+				data: 'undefined action',
+			});
+		}
+		const only = IDBKeyRange.only(eventData.action.pos);
+		const req = oStore.get(only);
+		req.onsuccess = () => {
+			if (eventData.action === undefined) {
+				return postMessage({
+					type: 'error',
+					data: 'undefined action',
+				});
+			}
+			if (req.result) {
+				let row = req.result as TableRow;
+				fillReferences(streamDB, row, eventData.action.type);
+			}
+		};
+		req.onerror = (ev) => {
+			if (eventData.action === undefined) {
+				return postMessage({
+					type: 'error',
+					data: 'undefined action',
+				});
+			}
+			postMessage({
+				type: 'error',
+				action: eventData.action.type,
+				data: ev,
+				index: eventData.action.pos,
+			});
+		};
+	};
 }

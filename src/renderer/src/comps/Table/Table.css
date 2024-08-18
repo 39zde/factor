@@ -78,7 +78,7 @@
  	border-color: light-dark(var(--color-dark-3), var(--color-light-3));
  	border-width: 1px;
  	border-style: solid;
- 	font-family: Consolas, 'Cascadia Code', 'Courier New', Courier, monospace ;
+ 	font-family: Consolas, 'Cascadia Code', 'Courier New', Courier, monospace;
  	font-size: small;
  	margin: 0;
  	overflow: hidden;
@@ -205,4 +205,16 @@
  .rowNavigator:hover {
  	background: none;
  	box-shadow: none;
+ }
+
+ .nestedCell {
+ 	display: flex;
+ 	flex-direction: column;
+ 	justify-content: flex-start;
+ 	align-items: start;
+
+ 	>p {
+ 		width: fit-content;
+ 		white-space: balance;
+ 	}
  }
