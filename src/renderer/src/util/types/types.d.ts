@@ -21,6 +21,7 @@ export type {
 	CompanyType,
 	ContactType,
 	CustomerSortingMap,
+	CustomerSortingMapProps,
 } from './database/CustomerTypes';
 
 export type {
@@ -42,7 +43,12 @@ export type {
 	TableWorkerResponseMessageType,
 } from './worker/table.worker';
 
-export type { TableRow } from './database/DataBaseData';
+export type {
+	TableRow,
+	DerefRow,
+	CustomerKeys,
+	CustomerReferences,
+} from './database/DataBaseData';
 
 export type {
 	ContextMenuProps,

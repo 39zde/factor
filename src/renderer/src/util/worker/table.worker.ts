@@ -1,4 +1,9 @@
-import type { TableWorkerRequestMessage, TableRow } from '../types/types';
+import type {
+	TableWorkerRequestMessage,
+	TableRow,
+	TableWorkerRequestMessageActionType,
+	DerefRow,
+} from '../types/types';
 
 self.onmessage = function requestHandler(e: MessageEvent) {
 	const eventData = e.data as TableWorkerRequestMessage;
@@ -34,42 +39,10 @@ self.onmessage = function requestHandler(e: MessageEvent) {
 						});
 					}
 					if (req.result) {
-						const result = req.result as TableRow;
-
-						if (!Object.keys(result).includes('row')) {
-							postMessage({
-								type: 'stream',
-								action: eventData.action.type,
-								data: result,
-								index: eventData.action.pos,
-							});
-						} else {
-							if (typeof result.row === 'number') {
-								postMessage({
-									type: 'stream',
-									action: eventData.action.type,
-									data: result,
-									index: result.row,
-								});
-							} else {
-								postMessage({
-									type: 'stream',
-									action: eventData.action.type,
-									data: result,
-									index: eventData.action.pos,
-								});
-							}
-						}
-					} else {
-						console.log(req.result)
-						postMessage({
-							type: 'stream',
-							action: eventData.action.type,
-							data: {row: eventData.action.pos},
-							index: eventData.action.pos,
-						});
+						let row = req.result as TableRow;
+						let out = fillReferences(streamDB, row);
+						postStream(out, eventData.action.type, eventData.action.pos);
 					}
-					transaction.commit();
 				};
 				req.onerror = (ev) => {
 					if (eventData.action === undefined) {
@@ -243,4 +216,68 @@ function getCount(name: string, version: number, storeName: string) {
 			data: e,
 		});
 	};
+}
+
+function fillReferences(dataBase: IDBDatabase, row: TableRow): DerefRow {
+	function fillReference(
+		dataBase: IDBDatabase,
+		storeName: string,
+		position: number,
+		parent: any[],
+		index: number
+	) {
+		const transaction = dataBase.transaction(storeName, 'readonly');
+		const oStore = transaction.objectStore(storeName);
+		const request = oStore.get(position);
+		request.onsuccess = () => {
+			parent[index] = request.result;
+			transaction.commit();
+		};
+	}
+
+	const copy = structuredClone(row);
+	for (const [key, value] of Object.entries(row)) {
+		if (value instanceof ArrayBuffer) {
+			copy[key] = new Array(value.byteLength / 2);
+			for (let i = 0; i < value.byteLength / 2; i++) {
+				fillReference(
+					dataBase,
+					key,
+					new DataView(value).getUint16(i),
+					copy[key],
+					i
+				);
+			}
+		}
+	}
+
+	return copy as DerefRow;
+}
+
+function postStream(
+	oStoreItem: DerefRow,
+	actionType: TableWorkerRequestMessageActionType,
+	position: number
+): void {
+	if (
+		Object.keys(oStoreItem).includes('row') &&
+		typeof oStoreItem.row === 'number'
+	) {
+		// what if there is a row property
+		postMessage({
+			type: 'stream',
+			action: actionType,
+			data: oStoreItem,
+			index: oStoreItem.row,
+		});
+	} else {
+		// if there is now row prop take the one from the request add add  it
+		oStoreItem.row = position;
+		postMessage({
+			type: 'stream',
+			action: actionType,
+			data: oStoreItem,
+			index: position,
+		});
+	}
 }

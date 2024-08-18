@@ -8,17 +8,34 @@ export interface Customer {
 	/**
 	 * Reference Index to persons
 	 */
-	persons?: number[];
-	addresses?: number[];
-	banks?: number[];
+	persons?: ArrayBuffer;
+	addresses?: ArrayBuffer;
+	banks?: ArrayBuffer;
 	company?: number;
-	emails?: number[];
-	phones?: number[];
+	emails?: ArrayBuffer;
+	phones?: ArrayBuffer;
 	description?: string;
 	firstContact?: Date;
 	latestContact?: Date;
 	created: Date;
-	notes?: string[]
+	notes?: string[];
+}
+
+export interface CustomerRow {
+	row: number;
+	id: string;
+	altIDs?: string[];
+	persons?: PersonType[];
+	addresses?: AddressType[];
+	banks?: BankType[];
+	company?: CompanyType;
+	emails?: EmailType[];
+	phones?: PhoneNumberType[];
+	description?: string;
+	firstContact?: Date;
+	latestContact?: Date;
+	created: Date;
+	notes?: string[];
 }
 
 export interface PersonType {
@@ -108,13 +125,11 @@ export interface CompanyType {
 	tax?: TaxInfos;
 }
 
-
 export interface TaxInfos {
 	USTID: string;
 	SteuerNummer: string;
-	SteuerID: string
+	SteuerID: string;
 }
-
 
 export type ContactType =
 	| 'private'
@@ -173,11 +188,41 @@ export interface CustomerSortingMap {
 	description?: string;
 }
 
-export type CustomerDBObjectStores =
-	| 'customer'
-	| 'person'
+export type CustomerSortingMapProps =
+	| 'title'
+	| 'firstName'
+	| 'lastName'
 	| 'email'
 	| 'phone'
-	| 'address'
-	| 'bank'
+	| 'web'
+	| 'companyName'
+	| 'alias'
+	| 'street'
+	| 'zip'
+	| 'city'
+	| 'country'
+	| 'firstContact'
+	| 'latestContact'
+	| 'customerNotes'
+	| 'addressNotes'
+	| 'bankNotes'
+	| 'emailNotes'
+	| 'personNotes'
+	| 'phoneNotes'
+	| 'personNotes'
+	| 'companyNotes'
+	| 'iban'
+	| 'bic'
+	| 'bankName'
+	| 'bankCode'
+	| 'description'
+	| undefined;
+
+export type CustomerDBObjectStores =
+	| 'customers'
+	| 'persons'
+	| 'emails'
+	| 'phones'
+	| 'addresses'
+	| 'banks'
 	| 'company';

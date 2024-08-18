@@ -9,6 +9,8 @@ import type {
 	BankType,
 	CompanyType,
 	Customer,
+	TableRow,
+	CustomerReferences,
 } from '../types/types';
 import { rx } from '../func/regex';
 
@@ -303,7 +305,7 @@ function alignData(
 
 function performShift(to: number, item: object) {
 	const out = item;
-	const copy = item;
+	const copy = structuredClone(item);
 	const keys = Object.keys(item);
 	if (to > 0) {
 		for (let i = 1; i < keys.length; i++) {
@@ -395,7 +397,7 @@ function rankColsByCondition(
 function compareItemToCondition(
 	condition: string | null | number | undefined,
 	value: any,
-	index: number
+	_index: number
 ): boolean {
 	switch (typeof condition) {
 		case 'number':
@@ -518,18 +520,13 @@ function doCustomers(
 	};
 }
 
-type RowType = {
-	row: number;
-	[key: string]: any;
-};
-
 function parseCustomer(
 	map: CustomerSortingMap,
-	row: RowType,
+	row: TableRow,
 	customerDB: IDBDatabase
 ): void {
 	let customer: Customer = {
-		id: trimWhiteSpace(row[map.id]),
+		id: trimWhiteSpace(row[map.id] as string),
 		row: row.row,
 		addresses: undefined,
 		altIDs: undefined,
@@ -544,11 +541,7 @@ function parseCustomer(
 		created: new Date(),
 	};
 
-	function updateCustomer(
-		id: string,
-		key: 'persons' | 'emails' | 'addresses' | 'banks' | 'company' | 'phones',
-		value: number
-	) {
+	function updateCustomer(id: string, key: CustomerReferences, value: number) {
 		let transaction = customerDB.transaction('customers', 'readwrite');
 		let oStore = transaction.objectStore('customers');
 		let index = oStore.index('customers-id');
@@ -559,27 +552,65 @@ function parseCustomer(
 			if (entry) {
 				if (key !== 'company') {
 					if (Object.keys(entry).includes(key)) {
-						if (!Array.isArray(entry[key])) {
-							Object.defineProperty(entry, key, {
-								configurable: true,
-								enumerable: true,
-								writable: true,
-								value: [value],
-							});
-						} else {
-							if (!entry[key].includes(value)) {
-								entry[key].push(value);
+						// the property does exist
+						if (entry[key] instanceof ArrayBuffer) {
+							// is there already something
+							let buf: ArrayBuffer = entry[key];
+
+							//check if the ArrayBuffer already contains our item
+							for (
+								let i = new DataView(buf).byteLength / 2 - 1;
+								i > 0;
+								i--
+							) {
+								if (new DataView(buf).getUint16(i) === value) {
+									return;
+								}
 							}
+
+							// @ts-expect-error no ts implementation (or at least I wasn't able find the correct way)
+							if (buf.resizable === true) {
+								if (buf.byteLength === 128) {
+									return postMessage({
+										type: 'error',
+										message: 'array buffer space is maxed out',
+									});
+								}
+								// @ts-expect-error no ts implementation (or at least I wasn't able find the correct way)
+								buf.resize(buf.byteLength + 2);
+								let view = new DataView(buf);
+								let index = (view.byteLength as number) / 2 - 1;
+								view.setUint16(index, value);
+								entry[key] = buf;
+							}
+						} else {
+							// there is no Array buffer
+							// so we create one
+							// @ts-expect-error no ts implementation (or at least I wasn't able find the correct way)
+							let buf = new ArrayBuffer(2, { maxByteLength: 128 });
+							new DataView(buf).setUint16(0, value);
+							entry[key] = buf;
 						}
 					} else {
+						// the property does not exist
+						// so we create it
+						// the max count of references this buffer holds = max size / size of one item = 128/2 = 64
+						// so one array contains a max 64 references
+						// a reference just an integer , which shows the position of an item in another object store
+
+						//
+						// @ts-expect-error this is valid, see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer/ArrayBuffer#parameters
+						let buf = new ArrayBuffer(2, { maxByteLength: 128 });
+						new DataView(buf).setUint16(0, value);
 						Object.defineProperty(entry, key, {
 							configurable: true,
 							enumerable: true,
 							writable: true,
-							value: [value],
+							value: buf,
 						});
 					}
 				} else {
+					// if the jey is company
 					Object.defineProperty(entry, key, {
 						configurable: true,
 						enumerable: false,
@@ -601,7 +632,7 @@ function parseCustomer(
 			| AddressType[]
 			| CompanyType[]
 			| BankType[],
-		type: 'persons' | 'emails' | 'addresses' | 'banks' | 'company' | 'phones'
+		type: CustomerReferences
 	): void {
 		if (data.length !== 0) {
 			const transaction = customerDB.transaction(type, 'readwrite');
@@ -613,7 +644,7 @@ function parseCustomer(
 					let id = count + index + 1;
 					value.row = id;
 					oStore.add(value);
-					updateCustomer(row[map.id], type, id);
+					updateCustomer(row[map.id] as string, type, id);
 				}
 				transaction.commit();
 			};
@@ -621,7 +652,7 @@ function parseCustomer(
 	}
 
 	if (map.customerNotes !== undefined) {
-		let note = trimWhiteSpace(row[map.customerNotes]);
+		let note = trimWhiteSpace(row[map.customerNotes] as string);
 		let notes = note.split(',').map((item) => trimWhiteSpace(item));
 		if (customer.notes === undefined) {
 			customer.notes = [];
@@ -634,11 +665,11 @@ function parseCustomer(
 	}
 
 	if (map.description !== undefined) {
-		customer.description = trimWhiteSpace(row[map.description]);
+		customer.description = trimWhiteSpace(row[map.description] as string);
 	}
 
 	if (map.firstContact !== undefined) {
-		let date = Array.from(row[map.firstContact]);
+		let date = Array.from(row[map.firstContact] as string);
 		let year = date.splice(0, 4);
 		let month = date.splice(0, 2);
 		customer.firstContact = new Date(
@@ -649,7 +680,7 @@ function parseCustomer(
 	}
 
 	if (map.latestContact !== undefined) {
-		let date = Array.from(row[map.latestContact]);
+		let date = Array.from(row[map.latestContact] as string);
 		let year = date.splice(0, 4);
 		let month = date.splice(0, 2);
 		customer.latestContact = new Date(
@@ -675,7 +706,7 @@ function parseCustomer(
 		// now we know there is something which fits the scheme of a person
 		if (map.firstName !== undefined) {
 			// if there is a first Name
-			let firstName = trimWhiteSpace(row[map.firstName]);
+			let firstName = trimWhiteSpace(row[map.firstName] as string);
 			if (firstName.includes('&')) {
 				// its actually to persons (related or married)
 				let names = firstName
@@ -700,12 +731,12 @@ function parseCustomer(
 			if (persons.length !== 0) {
 				// are the any persons already
 				for (let p of persons) {
-					p.lastName = trimWhiteSpace(row[map.lastName]);
+					p.lastName = trimWhiteSpace(row[map.lastName] as string);
 				}
 			} else {
 				// create a person
 				let person = structuredClone(PersonTemplate);
-				person.lastName = trimWhiteSpace(row[map.lastName]);
+				person.lastName = trimWhiteSpace(row[map.lastName] as string);
 				person.firstName = '';
 				persons.push(person);
 			}
@@ -714,7 +745,7 @@ function parseCustomer(
 		if (map.title !== undefined) {
 			if (persons.length !== 0) {
 				for (let p of persons) {
-					p.title = trimWhiteSpace(row[map.title]);
+					p.title = trimWhiteSpace(row[map.title] as string);
 				}
 			}
 		}
@@ -726,7 +757,7 @@ function parseCustomer(
 			if (p.alias === undefined) {
 				p.alias = [];
 			}
-			p.alias.push(trimWhiteSpace(row[map.alias]));
+			p.alias.push(trimWhiteSpace(row[map.alias] as string));
 		}
 	}
 
@@ -736,7 +767,7 @@ function parseCustomer(
 			if (p.notes === undefined) {
 				p.notes = [];
 			}
-			let note = trimWhiteSpace(row[map.personNotes]);
+			let note = trimWhiteSpace(row[map.personNotes] as string);
 			let notes = note.split(',').map((item) => trimWhiteSpace(item));
 			for (let n of notes) {
 				if (n.trim() !== '') {
@@ -759,7 +790,7 @@ function parseCustomer(
 		let address = structuredClone(AddressTemplate);
 		for (const param of addressParams) {
 			if (map[param] !== undefined) {
-				address[param] = trimWhiteSpace(row[map[param]]);
+				address[param] = trimWhiteSpace(row[map[param]] as string);
 			}
 		}
 		addresses.push(address);
@@ -769,7 +800,7 @@ function parseCustomer(
 
 	// parse email
 	if (map.email !== undefined) {
-		let mail = trimWhiteSpace(row[map.email]);
+		let mail = trimWhiteSpace(row[map.email] as string);
 		if (mail.trim() !== '') {
 			let mails = mail.split(',').map((item) => trimWhiteSpace(item));
 			for (const m of mails) {
@@ -795,7 +826,7 @@ function parseCustomer(
 			if (!Array.isArray(m.notes)) {
 				m.notes = [];
 			}
-			let note = trimWhiteSpace(row[map.emailNotes]);
+			let note = trimWhiteSpace(row[map.emailNotes] as string);
 			let notes = note.split(',').map((item) => trimWhiteSpace(item));
 			for (let n of notes) {
 				if (n.trim() !== '') {
@@ -810,13 +841,13 @@ function parseCustomer(
 	// parse phone number
 	if (map.phone !== undefined) {
 		let phone = structuredClone(PhoneTemplate);
-		let number = trimWhiteSpace(row[map.phone]);
+		let number = trimWhiteSpace(row[map.phone] as string);
 		phone.phone = number.replaceAll('[^0-9+]', '');
 		phones.push(phone);
 	}
 
 	if (phones.length !== 0 && map.phoneNotes !== undefined) {
-		let note = trimWhiteSpace(row[map.phoneNotes]);
+		let note = trimWhiteSpace(row[map.phoneNotes] as string);
 		let notes = note.split(',').map((item) => trimWhiteSpace(item));
 
 		for (let p of phones) {
@@ -836,12 +867,12 @@ function parseCustomer(
 	// parse company
 	if (map.companyName !== undefined) {
 		let company = structuredClone(CompanyTemplate);
-		company.name = trimWhiteSpace(row[map.companyName]);
+		company.name = trimWhiteSpace(row[map.companyName] as string);
 		companies.push(company);
 	}
 
 	if (companies.length !== 0 && map.companyNotes !== undefined) {
-		let note = trimWhiteSpace(row[map.companyNotes]);
+		let note = trimWhiteSpace(row[map.companyNotes] as string);
 		let notes = note.split(',').map((item) => trimWhiteSpace(item));
 		for (let c of companies) {
 			if (c.notes === undefined) {
@@ -860,13 +891,15 @@ function parseCustomer(
 	// parse bank
 	if (map.bankName !== undefined) {
 		let bank = structuredClone(BankTemplate);
-		bank.name = trimWhiteSpace(row[map.bankName]);
+		bank.name = trimWhiteSpace(row[map.bankName] as string);
 		if (map.bankCode !== undefined)
-			bank.bankCode = trimWhiteSpace(row[map.bankCode]);
-		if (map.iban !== undefined) bank.iban = trimWhiteSpace(row[map.iban]);
-		if (map.bic !== undefined) bank.bic = trimWhiteSpace(row[map.bic]);
+			bank.bankCode = trimWhiteSpace(row[map.bankCode] as string);
+		if (map.iban !== undefined)
+			bank.iban = trimWhiteSpace(row[map.iban] as string);
+		if (map.bic !== undefined)
+			bank.bic = trimWhiteSpace(row[map.bic] as string);
 		if (map.bankNotes !== undefined) {
-			let note = trimWhiteSpace(row[map.bankNotes]);
+			let note = trimWhiteSpace(row[map.bankNotes] as string);
 			let notes = note.split(',').map((item) => trimWhiteSpace(item));
 			if (bank.notes === undefined) {
 				bank.notes = [];
