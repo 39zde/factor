@@ -3,7 +3,7 @@ import React, { useState, useMemo, useContext } from 'react';
 import './Versions.css';
 import { AppContext } from '@renderer/App';
 
-function Versions(): JSX.Element {
+function Versions(): React.JSX.Element {
 	const { general } = useContext(AppContext);
 	const [versions] = useState(window.electron.process.versions ?? '');
 	const [used, setUsed] = useState<string>('');
@@ -69,6 +69,11 @@ function Versions(): JSX.Element {
 					? 'Bildschirmauflösung'
 					: 'Screen resolution'}
 				: {window.screen.width}x{window.screen.height}px
+			</li>
+			<li>
+				{
+					
+				}
 			</li>
 		</ul>
 	);

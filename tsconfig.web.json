@@ -7,6 +7,10 @@
     "src/renderer/src/util/worker/*.js",
     "src/preload/*.d.ts",
   ],
+  "exclude": [
+	"./.yarnrc.yml"
+  ],
+  
   "compilerOptions": {
     "composite": true,
     "jsx": "react-jsx",

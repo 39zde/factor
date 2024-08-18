@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import type { LowerButtonProps, RouterButtonProps } from '@util/types/types';
+import type { LowerButtonProps } from '@util/types/types';
 import './SideBar.css';
 
 export function LowerButton({

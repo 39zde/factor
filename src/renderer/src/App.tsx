@@ -105,7 +105,7 @@ function App(): JSX.Element {
 	useMemo(() => {
 		navigator.permissions
 			.query({ name: 'persistent-storage' })
-			.then((res) => {
+			.then((_res) => {
 				// console.log('persistent Storage: ', res);
 			});
 

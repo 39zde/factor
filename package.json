@@ -37,27 +37,27 @@
         "@electron-toolkit/preload": "^3.0.1",
         "@electron-toolkit/tsconfig": "^1.0.1",
         "@electron-toolkit/utils": "^3.0.0",
-        "@eslint/js": "^8.57.0",
-        "@types/node": "^20.15.0",
+        "@eslint/js": "^9.9.0",
+        "@types/node": "^20.16.0",
         "@types/react": "^18.3.3",
         "@types/react-dom": "^18.3.0",
-        "@typescript-eslint/parser": "^7.18.0",
+        "@typescript-eslint/parser": "^8.1.0",
         "@vitejs/plugin-react": "^4.3.1",
         "electron": "^31.4.0",
         "electron-builder": "^24.13.3",
         "electron-updater": "^6.3.3",
         "electron-vite": "^2.3.0",
-        "eslint": "^8.57.0",
+        "eslint": "^9.9.0",
         "eslint-plugin-react": "^7.35.0",
         "prettier": "^3.3.3",
         "react-devtools": "^5.3.1",
         "typescript": "^5.5.4",
-        "typescript-eslint": "^7.18.0",
+        "typescript-eslint": "^8.1.0",
         "vite": "^5.4.1",
         "vite-plugin-mkcert": "^1.17.6"
     },
     "packageManager": "yarn@4.1.1+sha512.ec40d0639bb307441b945d9467139cbb88d14394baac760b52eca038b330d16542d66fef61574271534ace5a200518dabf3b53a85f1f9e4bfa37141b538a9590",
     "engines": {
-        "node": "v20.15.1"
+        "node": "v20.16.0"
     }
 }

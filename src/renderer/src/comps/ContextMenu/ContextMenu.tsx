@@ -92,6 +92,8 @@ export function ContextMenu({
 										)}
 									</>
 								);
+							} else {
+								return <></>;
 							}
 						})
 					) : (
@@ -188,6 +190,8 @@ function NestedContextMenu({
 										</li>
 									</>
 								);
+							} else {
+								return <></>;
 							}
 						})
 					) : (

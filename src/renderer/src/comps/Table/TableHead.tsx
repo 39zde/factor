@@ -1,4 +1,4 @@
-import React, { useContext, memo } from 'react';
+import React, { useContext } from 'react';
 import { ResizeElement } from './ResizeElement';
 import { AppContext } from '@renderer/App';
 import { useTableContext, useTableDispatch } from './Table';

@@ -16,5 +16,6 @@ README.md
 *.svg
 *.png
 *.yaml
+*.yml
 yarn.lock
 *.ico
