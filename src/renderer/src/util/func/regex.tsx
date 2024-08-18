@@ -11,7 +11,7 @@ const diploma =
 	/(?<diploma>(([dD]ipl(oma?)?\.?)(\-?\s{0,2}?((Ing)|(Kf[mr]))\.?)|([BM]\.[ABCEMPST]{1}((omp|hem|ath|ci?|hil|con|ech|cc|rim)\.)?)){0,2}|([mM]ag\.))/gm;
 
 // match any white space coming after a preceding whitespace | match any white space at the start of the string | match any tailing white spaces at the end of the string
-const WhiteSpaceRx = /((?<=\s)\s+)|(^\s+)|(\s+$)/gm
+const WhiteSpaceRx = /(((?<=\s)\s+)|(^\s+)|(\s+$))/gm
 
 const EmailRx = /(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})/i
 

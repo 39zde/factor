@@ -1005,8 +1005,6 @@ function createCustomerObjectStores(e: IDBVersionChangeEvent): void {
 
 function trimWhiteSpace(input: string): string {
 	let out = input;
-	if (out.length !== 0) {
-		out.replaceAll(rx.WhiteSpaceRx, '');
-	}
+	out = out.replaceAll(rx.WhiteSpaceRx, '');
 	return out;
 }
