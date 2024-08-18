@@ -11,6 +11,10 @@
     "composite": true,
     "jsx": "react-jsx",
     "baseUrl": ".",
+	 "module": "ES2022",
+	 "target": "ES2022",
+	 "strict": true,
+	 "noFallthroughCasesInSwitch": false,
     "paths": {
       "@renderer/*": [
         "src/renderer/src/*",

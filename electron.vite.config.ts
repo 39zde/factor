@@ -11,7 +11,6 @@ export default defineConfig({
 		plugins: [externalizeDepsPlugin()],
 	},
 	renderer: {
-		// assetsInclude: ['src/renderer/src/util/worker/*.js'],
 		worker: {
 			format: 'es',
 		},
