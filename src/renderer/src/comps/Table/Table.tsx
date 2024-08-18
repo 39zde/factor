@@ -2,13 +2,13 @@ import React, {
 	useRef,
 	createRef,
 	useContext,
-	memo,
 	createContext,
 	useReducer,
 	Dispatch,
 	useEffect,
 	useState,
 	MouseEvent,
+	useMemo,
 } from 'react';
 import { AppContext } from '@renderer/App';
 import { WindowContext } from '../WindowContext';
@@ -20,7 +20,6 @@ import './Table.css';
 
 import type {
 	TableProps,
-	TableFootDisplayProps,
 	TableContextType,
 	TableDispatchAction,
 	TableWorkerResponseMessage,
@@ -767,54 +766,62 @@ export function Table({
 		}
 	};
 
-	const menuItems: Array<MenuItem> = [
-		{
-			name: 'item1',
-			menuItems: [{ name: 'nested1' }],
-		},
-		{
-			name: general.language === 'deutsch' ? 'Spalten' : 'Columns',
-			menuItems: tableState.allColumns.map(
-				(item, index): MenuItem | undefined => {
-					if (index !== 0) {
-						return {
-							name: item,
-							checkBox: tableState.columns.includes(item),
-							action: () => {
-								// let cols = tableState.columns
-								// console.log(cols[index])+
-								console.log(tableState);
-								if (tableState.columns.includes(item)) {
-									dispatch({
-										type: 'set',
-										name: 'columns',
-										newVal: tableState.columns.toSpliced(index, 1),
-									});
-									setCauseRerender(!causeRerender);
-									setCauseRerender(!causeRerender);
-								} else {
-									dispatch({
-										type: 'set',
-										name: 'columns',
-										newVal: tableState.columns.toSpliced(
-											index,
-											0,
-											tableState.allColumns[index]
-										),
-									});
-									setCauseRerender(!causeRerender);
-									setCauseRerender(!causeRerender);
-								}
-								setMenuActive(false)
-							},
-						};
-					} else {
-						return undefined;
+	const menuItems: Array<MenuItem> = useMemo(
+		() => [
+			{
+				name: general.language === 'deutsch' ? 'Spalten' : 'Columns',
+				menuItems: tableState.allColumns.map(
+					(item, index): MenuItem | undefined => {
+						if (index !== 0) {
+							return {
+								name: item,
+								checkBox: tableState.columns.includes(item),
+								action: () => {
+									// let cols = tableState.columns
+									console.log(tableState.allColumns[index]);
+									if (tableState.columns.includes(item)) {
+										dispatch({
+											type: 'set',
+											name: 'columns',
+											newVal: tableState.columns.toSpliced(
+												tableState.columns.indexOf(item),
+												1
+											),
+										});
+										setCauseRerender(!causeRerender);
+									} else {
+										let insertIndex = index;
+										for (const col of tableState.allColumns) {
+											if (col === item) {
+												break;
+											}
+											if (!tableState.columns.includes(col)) {
+												insertIndex -= 1;
+											}
+										}
+										dispatch({
+											type: 'set',
+											name: 'columns',
+											newVal: tableState.columns.toSpliced(
+												insertIndex,
+												0,
+												tableState.allColumns[index]
+											),
+										});
+										setCauseRerender(!causeRerender);
+									}
+									setMenuActive(false);
+								},
+							};
+						} else {
+							return undefined;
+						}
 					}
-				}
-			),
-		},
-	];
+				),
+			},
+		],
+		[tableState.columns]
+	);
 
 	return (
 		<>
@@ -857,7 +864,10 @@ export function Table({
 									causeRerender={causeRerender}
 									tableBodyRef={tableBodyRef}
 								/>
-							<TableFootDisplay columns={tableState.columns} update={tableState.update} />
+								<TableFootDisplay
+									columns={tableState.columns}
+									update={tableState.update}
+								/>
 							</table>
 						</div>
 					</div>
