@@ -47,6 +47,19 @@ function createWindow(): void {
 		return { action: 'deny' };
 	});
 
+	// save Screen position and size on close
+	mainWindow.on("close",()=>{
+		const settings = readSettings()
+		if(settings !== null){
+			const {x,y,width,height}=mainWindow.getContentBounds()
+			settings.appearances.x = x
+			settings.appearances.y = y
+			settings.appearances.width = width
+			settings.appearances.height = height
+			writeSettings(settings)
+		}
+	})
+
 	// HMR for renderer base on electron-vite cli.
 	// Load the remote URL for development or the local html file for production.
 	if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
