@@ -561,13 +561,6 @@ export function Table({
 		resetTableState();
 	}, [tableState.tableName, database.dbVersion, colsHook, entriesHook]);
 
-	// memorize the table foot, because it's mostly 'static'
-	const TableFootDisplayMemo = memo(
-		({ columns, update }: TableFootDisplayProps) => {
-			return <TableFootDisplay columns={columns} update={update} />;
-		}
-	);
-
 	// handle the messages coming from table.worker.ts
 	worker.TableWorker.onmessage = (e: MessageEvent) => {
 		const eventData = e.data as TableWorkerResponseMessage;
@@ -864,10 +857,7 @@ export function Table({
 									causeRerender={causeRerender}
 									tableBodyRef={tableBodyRef}
 								/>
-								<TableFootDisplayMemo
-									columns={tableState.columns}
-									update={tableState.update}
-								/>
+							<TableFootDisplay columns={tableState.columns} update={tableState.update} />
 							</table>
 						</div>
 					</div>
