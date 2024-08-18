@@ -6,10 +6,14 @@ import { electronApp, optimizer, is } from '@electron-toolkit/utils';
 import { AppSettingsType } from '../renderer/src/util/App';
 
 function createWindow(): void {
+	const settings = readSettings();
 	// Create the browser window.
 	const mainWindow = new BrowserWindow({
-		width: 1000,
-		height: 1000,
+		// load saved window position and size 
+		width: settings?.appearances.width ?? 1000,
+		height: settings?.appearances.height ?? 1000,
+		x: settings?.appearances.x ?? 100,
+		y: settings?.appearances.y ?? 100,
 		frame: true,
 		show: false,
 		alwaysOnTop: false,
