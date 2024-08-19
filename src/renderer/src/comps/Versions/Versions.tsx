@@ -4,7 +4,7 @@ import './Versions.css';
 import { AppContext } from '@renderer/App';
 
 function Versions(): React.JSX.Element {
-	const { general } = useContext(AppContext);
+	const { general, appearances } = useContext(AppContext);
 	const [versions] = useState(window.electron.process.versions ?? '');
 	const [used, setUsed] = useState<string>('');
 	const [free, setFree] = useState<string>('');
@@ -71,9 +71,8 @@ function Versions(): React.JSX.Element {
 				: {window.screen.width}x{window.screen.height}px
 			</li>
 			<li>
-				{
-					
-				}
+				{general.language === 'deutsch' ? 'Fenstergröße' : 'Window size'} :{' '}
+				{appearances.width}x{appearances.height}px
 			</li>
 		</ul>
 	);

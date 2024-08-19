@@ -2,7 +2,12 @@ import { useCallback, useContext, useRef, useState } from 'react';
 import './Settings.css';
 import Versions from '@comps/Versions/Versions';
 import { AppContext } from '@renderer/App';
-import { AppSettingsType } from '@renderer/util/App';
+import {
+	ColorThemeSetting,
+	AppSettingsChange,
+	LanguageSetting,
+	DecimalSeparatorSetting,
+} from '@renderer/util/App';
 import { Save } from 'lucide-react';
 export function Settings() {
 	const context = useContext(AppContext);
@@ -13,12 +18,8 @@ export function Settings() {
 	const decimalSeparatorInputRef = useRef<HTMLSelectElement>(null);
 	const sideBarWidthInputRef = useRef<HTMLInputElement>(null);
 	const scrollSpeedRef = useRef<HTMLInputElement>(null);
-	const [colorTheme, setColorTheme] = useState<
-		'dark' | 'light' | 'light dark'
-	>(
-		context.appearances.colorTheme === 'system'
-			? 'light dark'
-			: context.appearances.colorTheme
+	const [colorTheme, setColorTheme] = useState<ColorThemeSetting>(
+		context.appearances.colorTheme
 	);
 	const [rowHeight, setRowHeight] = useState<number>(
 		context.appearances.rowHeight
@@ -26,12 +27,11 @@ export function Settings() {
 	const [columnWidth, setColumnWidth] = useState<number>(
 		context.appearances.columnWidth
 	);
-	const [language, setLanguage] = useState<'english' | 'deutsch'>(
+	const [language, setLanguage] = useState<LanguageSetting>(
 		context.general.language
 	);
-	const [decimalSeparator, setDecimalSeparator] = useState<',' | '.'>(
-		context.general.decimalSeparator
-	);
+	const [decimalSeparator, setDecimalSeparator] =
+		useState<DecimalSeparatorSetting>(context.general.decimalSeparator);
 	const [sideBarWidth, setSideBarWidth] = useState<number>(
 		context.appearances.sideBarWidth
 	);
@@ -106,51 +106,86 @@ export function Settings() {
 	};
 
 	const saveSettings = useCallback(() => {
-		const changed: {
-			value: number | string;
-			name: string;
-			category: string;
-		}[] = [];
+		let changed: AppSettingsChange = {};
 		const items = [
-			{ value: rowHeight, name: 'rowHeight', category: 'appearances' },
-			{ value: colorTheme, name: 'colorTheme', category: 'appearances' },
-			{ value: language, name: 'language', category: 'general' },
 			{
-				value: decimalSeparator,
+				value: {
+					appearances: {
+						rowHeight: rowHeight,
+					},
+				},
+				name: 'rowHeight',
+				category: 'appearances',
+			},
+			{
+				value: {
+					appearances: {
+						colorTheme: colorTheme,
+					},
+				},
+				name: 'colorTheme',
+				category: 'appearances',
+			},
+			{
+				value: {
+					general: {
+						language: language,
+					},
+				},
+				name: 'language',
+				category: 'general',
+			},
+			{
+				value: {
+					general: {
+						decimalSeparator: decimalSeparator,
+					},
+				},
 				name: 'decimalSeparator',
 				category: 'general',
 			},
-			{ value: sideBarWidth, name: 'sideBarWidth', category: 'appearances' },
-			{ value: columnWidth, name: 'columnWidth', category: 'appearances' },
-			{ value: scrollSpeed, name: 'scrollSpeed', category: 'general' },
+			{
+				value: {
+					appearances: {
+						sideBarWidth: sideBarWidth,
+					},
+				},
+				name: 'sideBarWidth',
+				category: 'appearances',
+			},
+			{
+				value: {
+					appearances: {
+						columnWidth: columnWidth,
+					},
+				},
+				name: 'columnWidth',
+				category: 'appearances',
+			},
+			{
+				value: {
+					general: {
+						scrollSpeed: scrollSpeed,
+					},
+				},
+				name: 'scrollSpeed',
+				category: 'general',
+			},
 		];
 
 		for (const item of items) {
 			if (context[item.category][item.name] !== undefined) {
-				if (context[item.category][item.name] !== item.value) {
-					changed.push(item);
+				if (
+					context[item.category][item.name] !==
+					item.value[item.category][item.name]
+				) {
+					changed = { ...changed, ...item.value };
 				}
 			}
 		}
 
-		if (changed.length > 0) {
-			const newContext: AppSettingsType = {
-				appearances: {
-					...context.appearances,
-				},
-				general: {
-					...context.general,
-				},
-				database: {
-					dbVersion: context.database.dbVersion,
-					tables: context.database.tables,
-				},
-			};
-			for (const item of changed) {
-				newContext[item.category][item.name] = item.value;
-			}
-			// console.log(newContext);
-			context.changeContext(newContext);
+		if (Object.keys(changed).length !== 0) {
+			context.changeContext(changed);
 		}
 	}, [
 		rowHeight,

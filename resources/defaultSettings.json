@@ -3,7 +3,11 @@
       "colorTheme": "light dark",
       "rowHeight": 36,
       "columnWidth": 120,
-      "sideBarWidth": 180
+      "sideBarWidth": 180,
+		"height": 1000,
+		"width": 1000,
+		"x": 100,
+		"y": 100
    },
    "database": {
       "dbVersion": 1,

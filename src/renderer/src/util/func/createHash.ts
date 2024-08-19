@@ -1,4 +1,4 @@
-async function createHash(data: ArrayBuffer): Promise<string> {
+export async function createHash(data: ArrayBuffer): Promise<string> {
 	const hash = await crypto.subtle.digest('SHA-1', data);
 	const view = new Uint8Array(hash);
 	const out = Array.from(view)

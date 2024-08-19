@@ -1,42 +1,67 @@
-export interface AppContextType {
-	appearances: {
-		colorTheme: 'light' | 'dark' | 'system';
-		rowHeight: number;
-		columnWidth: number;
-		sideBarWidth: number;
-	};
-	database: {
-		tables: string[];
-		dbVersion: number;
-	};
-	general: {
-		language: 'english' | 'deutsch';
-		decimalSeparator: '.' | ',';
-		scrollSpeed: number;
-	};
+export interface AppContextType extends AppSettingsType {
 	worker: {
-		// stores and cleans uploaded data and assigns the date to various tables
+		/**
+		 * stores and cleans uploaded data and assigns the date to various tables
+		 */
 		ImportWorker: Worker;
-		// streams data from IDB
+		//
+		/**
+		 * streams data from IDB
+		 */
 		TableWorker: Worker;
 	};
-	changeContext: (newVal: AppSettingsType) => void;
+	/**
+	 * change the app context
+	 */
+	changeContext: (newVal: AppSettingsChange) => void;
 }
 
 export interface AppSettingsType {
 	appearances: {
-		colorTheme: 'light' | 'dark' | 'system';
+		colorTheme: ColorThemeSetting;
 		rowHeight: number;
 		columnWidth: number;
 		sideBarWidth: number;
+		/**
+		 * the inner height of the window
+		 */
+		height: number;
+		/**
+		 * the inner width of the window
+		 */
+		width: number;
+		x: number;
+		y: number;
 	};
 	database: {
+		/**
+		 * what data bases are Populated
+		 */
 		tables: string[];
+		/**
+		 * on what database version we are on. this applies to all all databases
+		 */
 		dbVersion: number;
 	};
 	general: {
-		language: 'english' | 'deutsch';
-		decimalSeparator: '.' | ',';
+		language: LanguageSetting;
+		decimalSeparator: DecimalSeparatorSetting;
+		/**
+		 * how many rows to change on on scroll event
+		 */
 		scrollSpeed: number;
 	};
 }
+
+export type AppSettingsChange =  {
+	[prop in keyof AppSettingsType]?: {
+		[key in keyof AppSettingsType[prop]]?: AppSettingsType[prop][key]
+	}
+}
+
+export type LanguageSetting = 'english' | 'deutsch';
+
+export type DecimalSeparatorSetting = "." | ",";
+
+export type ColorThemeSetting = 'light' | 'dark' | 'light dark';
+

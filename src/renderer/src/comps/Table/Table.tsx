@@ -11,7 +11,6 @@ import React, {
 	useMemo,
 } from 'react';
 import { AppContext } from '@renderer/App';
-import { WindowContext } from '../WindowContext';
 import { TableHeadDisplay } from './TableHeadDisplay';
 import { TableBodyDisplay } from './TableBodyDisplay';
 import { TableFootDisplay } from './TableFootDisplay';
@@ -246,7 +245,6 @@ export function Table({
 }: TableProps): React.JSX.Element {
 	const rowColumnWidth = 30;
 	const scrollBarHeight = 5;
-	const { clientHeight } = useContext(WindowContext);
 	const { database, appearances, worker, general } = useContext(AppContext);
 	const tableBodyRef = useRef<HTMLTableSectionElement>(null);
 	const wrapperRef = useRef<HTMLDivElement>(null);
@@ -552,7 +550,7 @@ export function Table({
 		}
 
 		// don't put tableState.scope into the deps array, because the function updateSizing changes tableState.scope, therefore creating a cycle
-	}, [clientHeight, appearances.rowHeight]);
+	}, [appearances.height, appearances.rowHeight]);
 
 	// the database or db Version has changed init a new table and clear any old values
 	useEffect(() => {
