@@ -1,5 +1,5 @@
 import React from 'react';
-import { PersonType } from '@renderer/util/types/types';
+import { AddressType, PersonType } from '@renderer/util/types/types';
 
 export function NestedTableCell({
 	columnName,
@@ -11,6 +11,8 @@ export function NestedTableCell({
 	switch (columnName) {
 		case 'persons':
 			return <PersonTableCell data={data as PersonType[]} />;
+		case 'addresses':
+			return <AddressTableCell data={data as AddressType[]} />
 		default:
 			return <></>;
 	}
@@ -45,3 +47,71 @@ function PersonTableCell({ data }: { data: PersonType[] }): React.JSX.Element {
 		</>
 	);
 }
+
+
+function AddressTableCell({ data }: { data: AddressType[] }): React.JSX.Element {
+	return (
+		<>
+			<span className="nestedCell">
+				{data.map((item) => {
+					let textRow1 = '';
+					if (item?.street !== undefined) {
+						textRow1 += item.street + ' ';
+					}
+					let textRow2 = '';
+					if (item?.zip !== undefined) {
+						textRow2 += item.zip + ' ';
+					}
+					if (item?.city !== undefined) {
+						textRow2 += item.city + ' ';
+					}
+					let textRow3 = '';
+					if (item?.country !== undefined) {
+						textRow3 += item.country;
+					}
+
+					return (
+						<>
+							<p>{textRow1}</p>
+							<p>{textRow2}</p>
+						</>
+					);
+				})}
+			</span>
+		</>
+	);
+}
+
+function DateTableCell({ data }: { data: AddressType[] }): React.JSX.Element {
+	return (
+		<>
+			<span className="nestedCell">
+				{data.map((item) => {
+					let textRow1 = '';
+					if (item?.street !== undefined) {
+						textRow1 += item.street + ' ';
+					}
+					let textRow2 = '';
+					if (item?.zip !== undefined) {
+						textRow2 += item.zip + ' ';
+					}
+					if (item?.city !== undefined) {
+						textRow2 += item.city + ' ';
+					}
+					let textRow3 = '';
+					if (item?.country !== undefined) {
+						textRow3 += item.country;
+					}
+
+					return (
+						<>
+							<p>{textRow1}</p>
+							<p>{textRow2}</p>
+						</>
+					);
+				})}
+			</span>
+		</>
+	);
+}
+
