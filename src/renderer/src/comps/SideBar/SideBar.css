@@ -29,6 +29,7 @@
  	height: calc(100vh - 24px);
  	max-height: 100vh;
  	background-color: light-dark(var(--color-light-2), var(--color-dark-2));
+	border: var(--box-shadow-border);
  	left: 0;
  	padding: 16px 0;
  	gap: 12px;

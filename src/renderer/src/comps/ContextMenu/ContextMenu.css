@@ -15,7 +15,11 @@
  	box-shadow: var(--box-shadow);
  	padding: 0;
  	z-index: 4;
- 	border: 1px solid light-dark(var(--color-light-3), var(--color-dark-3))
+ 	border: var(--box-shadow-border);
+ }
+
+ .contextMenu:has(li:hover) {
+ 	border-color: light-dark(var(--color-light-3), var(--color-dark-3));
  }
 
  .contextMenuList {
