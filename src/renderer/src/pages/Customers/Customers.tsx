@@ -1,9 +1,7 @@
-import React, { useContext, useRef, useState } from 'react';
-import { AppContext } from '@renderer/App';
+import React, { useRef, useState } from 'react';
 import { Table } from '@renderer/comps/Table/Table';
 import './Customers.css';
 export function Customers(): React.JSX.Element {
-	const { general } = useContext(AppContext);
 	const tableWrapperRef = useRef<HTMLDivElement>(null);
 	const [update, setUpdate] = useState<boolean>(false); // stop rendering while updating
 
@@ -16,7 +14,6 @@ export function Customers(): React.JSX.Element {
 
 	return (
 		<>
-			<h1>{general.language === 'deutsch' ? 'Kunden' : 'Customers'}</h1>
 			<div ref={tableWrapperRef} className="customersWrapper">
 				<Table
 					dataBaseName="customer_db"

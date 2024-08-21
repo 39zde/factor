@@ -189,7 +189,6 @@ export function Upload(): React.JSX.Element {
 	return (
 		<>
 			<div className="uploadPage page" style={{ overflow: 'hidden' }}>
-				<h1>{general.language === 'deutsch' ? 'Hochladen' : 'Upload'}</h1>
 				<div className="fileSelector">
 					{showTable ? (
 						<></>

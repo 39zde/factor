@@ -34,4 +34,5 @@
 	background: light-dark(var(--color-light-1),var(--color-dark-1));
 	position: absolute;
 	top: 0;
+	padding-top: 12px;
  }

@@ -12,7 +12,6 @@ export function Help(): React.JSX.Element {
 	return (
 		<>
 			<div className="helpWrapper helper">
-				<h1>{general.language === 'deutsch' ? 'Hilfe' : 'Help'}</h1>
 				<div className="helpContentsWrapper">
 					<ul className="helpContentsList">
 						<li></li>
