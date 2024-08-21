@@ -1,4 +1,4 @@
-import { useCallback, useContext, useRef, useState } from 'react';
+import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import './Settings.css';
 import Versions from '@comps/Versions/Versions';
 import { AppContext } from '@renderer/App';
@@ -18,6 +18,7 @@ export function Settings() {
 	const decimalSeparatorInputRef = useRef<HTMLSelectElement>(null);
 	const sideBarWidthInputRef = useRef<HTMLInputElement>(null);
 	const scrollSpeedRef = useRef<HTMLInputElement>(null);
+	const [changed, setChanged] = useState<AppSettingsChange>({});
 	const [colorTheme, setColorTheme] = useState<ColorThemeSetting>(
 		context.appearances.colorTheme
 	);
@@ -33,7 +34,7 @@ export function Settings() {
 	const [decimalSeparator, setDecimalSeparator] =
 		useState<DecimalSeparatorSetting>(context.general.decimalSeparator);
 	const [sideBarWidth, setSideBarWidth] = useState<number>(
-		context.appearances.sideBarWidth
+		context.appearances.sideBarWidth + 24
 	);
 	const [scrollSpeed, setScrollSpeed] = useState<number>(
 		context.general.scrollSpeed
@@ -41,8 +42,21 @@ export function Settings() {
 
 	const themeInputHandler = () => {
 		if (themeInputRef.current !== null) {
-			//@ts-expect-error  hard coded option values
-			setColorTheme(themeInputRef.current.value);
+			if (
+				themeInputRef.current.value === 'light' ||
+				themeInputRef.current.value === 'dark' ||
+				themeInputRef.current.value === 'light dark'
+			) {
+				setColorTheme(themeInputRef.current.value);
+				updateChanged({
+					appearances: { colorTheme: themeInputRef.current.value },
+				});
+			} else {
+				setColorTheme('light dark');
+				updateChanged({
+					appearances: { colorTheme: 'light dark' },
+				});
+			}
 		}
 	};
 
@@ -50,10 +64,16 @@ export function Settings() {
 		if (rowHeightInputRef.current !== null) {
 			if (typeof rowHeightInputRef.current.value === 'number') {
 				setRowHeight(rowHeightInputRef.current.value);
+				updateChanged({
+					appearances: { rowHeight: rowHeightInputRef.current.value },
+				});
 			} else if (typeof rowHeightInputRef.current.value === 'string') {
 				const tmp = parseInt(rowHeightInputRef.current.value);
 				if (tmp !== undefined && tmp !== null) {
 					setRowHeight(tmp);
+					updateChanged({
+						appearances: { rowHeight: tmp },
+					});
 				}
 			}
 		}
@@ -66,6 +86,9 @@ export function Settings() {
 				langInputRef.current.value === 'deutsch'
 			) {
 				setLanguage(langInputRef.current.value);
+				updateChanged({
+					general: { language: langInputRef.current.value },
+				});
 			}
 		}
 	};
@@ -77,6 +100,11 @@ export function Settings() {
 				decimalSeparatorInputRef.current.value === '.'
 			) {
 				setDecimalSeparator(decimalSeparatorInputRef.current.value);
+				updateChanged({
+					general: {
+						decimalSeparator: decimalSeparatorInputRef.current.value,
+					},
+				});
 			}
 		}
 	};
@@ -85,6 +113,11 @@ export function Settings() {
 		if (sideBarWidthInputRef.current !== null) {
 			if (sideBarWidthInputRef.current.value !== undefined) {
 				setSideBarWidth(parseInt(sideBarWidthInputRef.current.value));
+				updateChanged({
+					appearances: {
+						sideBarWidth: parseInt(sideBarWidthInputRef.current.value) -24,
+					},
+				});
 			}
 		}
 	};
@@ -93,6 +126,11 @@ export function Settings() {
 		if (colWidthInputRef.current !== null) {
 			if (colWidthInputRef.current.value !== undefined) {
 				setColumnWidth(parseInt(colWidthInputRef.current.value));
+				updateChanged({
+					appearances: {
+						columnWidth: parseInt(colWidthInputRef.current.value),
+					},
+				});
 			}
 		}
 	};
@@ -101,110 +139,42 @@ export function Settings() {
 		if (scrollSpeedRef.current !== null) {
 			if (scrollSpeedRef.current.value !== undefined) {
 				setScrollSpeed(parseInt(scrollSpeedRef.current.value));
+				updateChanged({
+					general: { scrollSpeed: parseInt(scrollSpeedRef.current.value) },
+				});
 			}
 		}
 	};
 
-	const saveSettings = useCallback(() => {
-		let changed: AppSettingsChange = {};
-		const items = [
-			{
-				value: {
-					appearances: {
-						rowHeight: rowHeight,
-					},
-				},
-				name: 'rowHeight',
-				category: 'appearances',
-			},
-			{
-				value: {
-					appearances: {
-						colorTheme: colorTheme,
-					},
-				},
-				name: 'colorTheme',
-				category: 'appearances',
-			},
-			{
-				value: {
-					general: {
-						language: language,
-					},
-				},
-				name: 'language',
-				category: 'general',
-			},
-			{
-				value: {
-					general: {
-						decimalSeparator: decimalSeparator,
-					},
-				},
-				name: 'decimalSeparator',
-				category: 'general',
-			},
-			{
-				value: {
-					appearances: {
-						sideBarWidth: sideBarWidth,
-					},
-				},
-				name: 'sideBarWidth',
-				category: 'appearances',
-			},
-			{
-				value: {
-					appearances: {
-						columnWidth: columnWidth,
-					},
-				},
-				name: 'columnWidth',
-				category: 'appearances',
-			},
-			{
-				value: {
-					general: {
-						scrollSpeed: scrollSpeed,
-					},
-				},
-				name: 'scrollSpeed',
-				category: 'general',
-			},
-		];
-
-		for (const item of items) {
-			if (context[item.category][item.name] !== undefined) {
-				if (
-					context[item.category][item.name] !==
-					item.value[item.category][item.name]
-				) {
-					changed = { ...changed, ...item.value };
-				}
+	const updateChanged = useCallback(
+		(change: AppSettingsChange) => {
+			let copy = changed;
+			let parentKey = Object.keys(change)[0];
+			let key = Object.keys(change[parentKey])[0];
+			if (copy[parentKey] === undefined) {
+				Object.defineProperty(copy, parentKey, {
+					configurable: true,
+					enumerable: true,
+					writable: true,
+					value: change[parentKey],
+				});
+			} else {
+				copy[parentKey][key] = change[parentKey][key];
 			}
-		}
+			setChanged(copy);
+		},
+		[changed]
+	);
 
+	const saveSettings = useCallback(() => {
 		if (Object.keys(changed).length !== 0) {
 			context.changeContext(changed);
 		}
-	}, [
-		rowHeight,
-		colorTheme,
-		language,
-		decimalSeparator,
-		sideBarWidth,
-		columnWidth,
-		scrollSpeed,
-	]);
+	}, [changed, context]);
 
 	return (
 		<>
 			<div className="settingsPage appRoute helper">
-				<h1>
-					{context.general.language === 'english'
-						? 'Settings'
-						: 'Einstellungen'}
-				</h1>
 
 				<div className="settingOptions">
 					<h2>
@@ -222,7 +192,7 @@ export function Settings() {
 							className="settingsSelect"
 							ref={themeInputRef}
 							onInput={themeInputHandler}
-							defaultValue={context.appearances.colorTheme}>
+							defaultValue={colorTheme}>
 							<option value={'light dark'}>
 								{context.general.language === 'deutsch'
 									? 'Systemfarbschema '
@@ -320,7 +290,7 @@ export function Settings() {
 						<select
 							ref={decimalSeparatorInputRef}
 							onInput={decimalSeparatorInputHandler}
-							defaultValue={context.general.decimalSeparator}>
+							defaultValue={decimalSeparator}>
 							<option>.</option>
 							<option>,</option>
 						</select>

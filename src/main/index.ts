@@ -9,7 +9,7 @@ function createWindow(): void {
 	const settings = readSettings();
 	// Create the browser window.
 	const mainWindow = new BrowserWindow({
-		// load saved window position and size 
+		// load saved window position and size
 		width: settings?.appearances.width ?? 1000,
 		height: settings?.appearances.height ?? 1000,
 		x: settings?.appearances.x ?? 100,
@@ -52,17 +52,17 @@ function createWindow(): void {
 	});
 
 	// save Screen position and size on close
-	mainWindow.on("close",()=>{
-		const settings = readSettings()
-		if(settings !== null){
-			const {x,y,width,height}=mainWindow.getContentBounds()
-			settings.appearances.x = x
-			settings.appearances.y = y
-			settings.appearances.width = width
-			settings.appearances.height = height
-			writeSettings(settings)
+	mainWindow.on('close', () => {
+		const settings = readSettings();
+		if (settings !== null) {
+			const { x, y, width, height } = mainWindow.getContentBounds();
+			settings.appearances.x = x;
+			settings.appearances.y = y;
+			settings.appearances.width = width;
+			settings.appearances.height = height;
+			writeSettings(settings);
 		}
-	})
+	});
 
 	// HMR for renderer base on electron-vite cli.
 	// Load the remote URL for development or the local html file for production.
@@ -99,9 +99,9 @@ app.whenReady().then(() => {
 		switch (message.type) {
 			case 'readSettings':
 				const settings = readSettings();
-				if (settings !== null) {
-					e.returnValue = settings;
-				}
+
+				e.returnValue = settings;
+
 				break;
 			case 'writeSettings':
 				writeSettings(message.data as AppSettingsType);

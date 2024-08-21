@@ -77,65 +77,57 @@ function App(): JSX.Element {
 		useState<AppContextType>(defaultContext);
 
 	const changeContextFunction = (changed: AppSettingsChange): void => {
-		let settings: AppSettingsType = {
-			appearances: {
-				sideBarWidth: changed.appearances?.sideBarWidth ?? contextValue.appearances.sideBarWidth,
-				rowHeight: changed.appearances?.rowHeight ?? contextValue.appearances.rowHeight,
-				colorTheme: changed.appearances?.colorTheme ?? contextValue.appearances.colorTheme,
-				columnWidth: changed.appearances?.columnWidth ?? contextValue.appearances.columnWidth,
-				height: contextValue.appearances.height,
-				width: contextValue.appearances.width,
-				x: contextValue.appearances.x,
-				y: contextValue.appearances.y
-			},
-			database: {
-				dbVersion: changed.database?.dbVersion ?? contextValue.database.dbVersion,
-				tables: changed.database?.tables ?? contextValue.database.tables
-			},
-			general: {
-				decimalSeparator: changed.general?.decimalSeparator ?? contextValue.general.decimalSeparator,
-				language: changed.general?.language ?? contextValue.general.language,
-				scrollSpeed: changed.general?.scrollSpeed ?? contextValue.general.scrollSpeed
-			},
-		};
+		if (contextValue !== undefined) {
+			let copy: AppSettingsType = {
+				appearances: {
+					...contextValue.appearances,
+				},
+				database: {
+					...contextValue.database,
+				},
+				general: {
+					...contextValue.general,
+				},
+			};
 
-		const newContext = {
-			...settings,
-			worker: {
-				ImportWorker: contextValue.worker.ImportWorker,
-				TableWorker: contextValue.worker.TableWorker,
-			},
-			changeContext: changeContextFunction,
-		};
-		if (changed.appearances?.colorTheme !== undefined) {
-			// @ts-expect-error typescript does not know about this html-tag
-			document.getElementById('theme').innerText =
-				`:root{ color-scheme: ${changed.appearances.colorTheme} ; }`;
-		}
-		let changedProps = Object.keys(changed);
-		if (changedProps.length === 1 && changedProps.includes('appearances')) {
-			let props = Object.keys(changed[changedProps[0]]);
-			if (
-				(props.includes('width') || props.includes('height')) &&
-				(props.length === 1 || props.length === 2)
-			) {
-				// if the window resizes don't bother to save to file: return
-				// we only save those values, when the window closes (see main/index.ts)
-				// @ts-ignore
-				setContextValue(newContext as AppContextType);
-				return;
+			for (const [key, value] of Object.entries(changed)) {
+				for (const [nestedKey, nestedValue] of Object.entries(value)) {
+					copy[key][nestedKey] = nestedValue;
+					if (nestedKey === 'colorTheme') {
+						// @ts-expect-error typescript does not know about this html-tag
+						document.getElementById('theme').innerText =
+							`:root{ color-scheme: ${nestedValue}} ; }`;
+					}
+				}
 			}
-		}
 
-		const result = window.electron.ipcRenderer.sendSync('settings', {
-			type: 'writeSettings',
-			data: settings,
-		});
-		if (result !== 'success') {
-			window.alert('settings not saved');
+			const result = window.electron.ipcRenderer.sendSync('settings', {
+				type: 'writeSettings',
+				data: copy,
+			});
+			if (result !== 'success') {
+				window.alert('settings not saved');
+			}
+
+			let newContext = copy as AppContextType;
+			newContext.worker = contextValue.worker;
+			newContext.changeContext = changeContextFunction;
+
+			if (changed.appearances !== undefined) {
+				if (
+					changed.appearances.width !== undefined ||
+					changed.appearances.height !== undefined
+				) {
+					// if the window resizes don't bother to save to file: return
+					// we only save those values, when the window closes (see main/index.ts)
+
+					setContextValue(newContext);
+					return;
+				}
+			}
+
+			setContextValue(newContext);
 		}
-		// @ts-ignore
-		setContextValue(newContext as AppContextType);
 	};
 
 	const resizeHandler = () => {
@@ -178,11 +170,22 @@ function App(): JSX.Element {
 			},
 			changeContext: changeContextFunction,
 		};
-
-		setContextValue(context);
+		context.appearances.width = getWidth();
+		context.appearances.height = getHeight();
 		// @ts-expect-error typescript does not know about this html-tag
 		document.getElementById('theme').innerText =
 			`:root{ color-scheme: ${settingsFile.appearances.colorTheme} ; }`;
+		setContextValue(context);
+
+		window.indexedDB.databases().then((dbs) => {
+			let tables: string[] = [];
+			for (const item of dbs) {
+				if (item.name !== undefined) {
+					tables.push(item.name);
+				}
+			}
+			changeContextFunction({ database: { tables: tables } });
+		});
 	}, []);
 
 	useEffect(() => {
@@ -211,7 +214,7 @@ function App(): JSX.Element {
 				<div
 					className="appWrapper"
 					style={{
-						paddingLeft: contextValue.appearances.sideBarWidth,
+						paddingLeft: contextValue.appearances.sideBarWidth + 24,
 					}}>
 					<SideBar routesHook={routeHook} />
 					<div className="page">
