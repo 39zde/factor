@@ -1,0 +1,17 @@
+Short Term
+
+[ ] add nested cols
+[ ] all col order
+[ ] remember col sizes
+[ ] localize column names
+
+Long Term
+
+[ ] support editing
+[ ] add articles table
+[ ] add deliveries table
+[ ] add invoices table
+[ ] add quotes table
+[ ] add returnees table
+[ ] add export/backup support
+[ ] add document creation

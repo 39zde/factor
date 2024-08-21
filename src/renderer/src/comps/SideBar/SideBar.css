@@ -10,7 +10,7 @@
  	flex-direction: row;
  	padding: 12px 8px 12px 16px;
  	gap: 12px;
- 	border-radius: 25px 0 0 25px;
+ 	border-radius: 0;
  	cursor: pointer;
  	color: light-dark(var(--color-dark-1), var(--color-light-1));
  	font-family: var(--font-family);
@@ -26,13 +26,16 @@
  	justify-content: space-between;
  	flex-direction: column;
  	align-items: stretch;
- 	height: 100vh;
+ 	height: calc(100vh - 24px);
  	max-height: 100vh;
  	background-color: light-dark(var(--color-light-2), var(--color-dark-2));
  	left: 0;
- 	padding-left: 12px;
+ 	padding: 16px 0;
  	gap: 12px;
-	z-index: 3
+ 	z-index: 4;
+ 	margin: 12px;
+ 	box-shadow: var(--box-shadow);
+	border-radius: 16px;
  }
 
  .topIcons {
@@ -41,11 +44,9 @@
  	align-items: start;
  	flex-direction: column;
  	gap: 12px;
- 	padding-top: 12px;
  }
 
  .bottomIcons {
- 	padding-bottom: 12px;
  	display: flex;
  	flex-direction: column;
  	justify-content: flex-start;

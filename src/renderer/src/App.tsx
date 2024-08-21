@@ -134,7 +134,6 @@ function App(): JSX.Element {
 		if (result !== 'success') {
 			window.alert('settings not saved');
 		}
-		console.log(newContext);
 		// @ts-ignore
 		setContextValue(newContext as AppContextType);
 	};
