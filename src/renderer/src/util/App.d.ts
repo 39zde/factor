@@ -49,19 +49,19 @@ export interface AppSettingsType {
 	};
 }
 
-export type AppSettingsChange =  {
+export type AppSettingsChange = {
 	[prop in keyof AppSettingsType]?: {
-		[key in keyof AppSettingsType[prop]]?: AppSettingsType[prop][key]
-	}
-}
+		[key in keyof AppSettingsType[prop]]?: AppSettingsType[prop][key];
+	};
+};
 
 export type LanguageSetting = 'english' | 'deutsch';
 
-export type DecimalSeparatorSetting = "." | ",";
+export type DecimalSeparatorSetting = '.' | ',';
 
 export type ColorThemeSetting = 'light' | 'dark' | 'light dark';
 
 export type AppAction = {
-	type: "set" | "setHW";
+	type: 'set' | 'setHW';
 	change: AppSettingsChange;
-}
+};

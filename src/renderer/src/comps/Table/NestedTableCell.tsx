@@ -26,7 +26,7 @@ export function NestedTableCell({
 		case 'notes':
 			return <NotesTableCell data={data as string[]} />;
 		case 'company':
-			return <CompanyTableCell data={data as CompanyType[]} />
+			return <CompanyTableCell data={data as CompanyType[]} />;
 		default:
 			return <></>;
 	}

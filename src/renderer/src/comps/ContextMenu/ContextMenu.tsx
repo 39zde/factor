@@ -40,7 +40,7 @@ export function ContextMenu({
 								return (
 									<>
 										<li
-											key={item.name + index.toString() + "-1"}
+											key={item.name + index.toString() + '-1'}
 											onClick={() => {
 												if (item.action !== undefined) {
 													item.action();
@@ -151,7 +151,7 @@ function NestedContextMenu({
 								return (
 									<>
 										<li
-											key={item.name + index.toString() + "-2"}
+											key={item.name + index.toString() + '-2'}
 											onClick={() => {
 												if (item.action !== undefined) {
 													item.action();

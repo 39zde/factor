@@ -24,7 +24,9 @@ export default function SideBar({
 	routesHook,
 }: SideBarProps): React.JSX.Element {
 	const { appearances, general, database } = useAppContext();
-	const [sideBarWidth, setSideBarWidth] = useState<number>(appearances.sideBarWidth)
+	const [sideBarWidth, setSideBarWidth] = useState<number>(
+		appearances.sideBarWidth
+	);
 	const routeHandler = (newVal: RouteType) => {
 		if (routesHook !== undefined) {
 			routesHook.setShowSettings(false);
@@ -33,10 +35,9 @@ export default function SideBar({
 		}
 	};
 
-	useEffect(()=>{
-		setSideBarWidth(appearances.sideBarWidth)
-	},[appearances.sideBarWidth])
-
+	useEffect(() => {
+		setSideBarWidth(appearances.sideBarWidth);
+	}, [appearances.sideBarWidth]);
 
 	return (
 		<>
