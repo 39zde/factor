@@ -5,7 +5,7 @@
     "main": "./out/main/index.js",
     "author": "39zde",
     "type": "module",
-    "homepage": "https://factor.39z.de",
+    "homepage": "https://github.com/39zde/factor",
     "license": "Apache-2.0",
     "scripts": {
         "format": "prettier --write . && git commit --all -m formatted (package.json script)",
