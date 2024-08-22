@@ -1,5 +1,5 @@
-import { AppContext } from '@renderer/App';
-import React, { useState, useRef, useContext } from 'react';
+import React, { useState, useRef } from 'react';
+import { useAppContext } from '@renderer/App';
 export function ColRemover({
 	worker,
 	count,
@@ -9,7 +9,7 @@ export function ColRemover({
 	count: number;
 	updateHook: { update: boolean; setUpdate: (newVal: boolean) => void };
 }): React.JSX.Element {
-	const { general, database } = useContext(AppContext);
+	const { general, database } = useAppContext();
 	const [showOptions, setShowOptions] = useState<boolean>(false);
 	const conditionRef = useRef<HTMLSelectElement>(null);
 	const stringRef = useRef<HTMLInputElement>(null);

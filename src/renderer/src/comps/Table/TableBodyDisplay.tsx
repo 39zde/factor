@@ -1,8 +1,8 @@
-import React, { useCallback, useContext, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 
 import { TableRows } from './TableRows';
 
-import { AppContext } from '@renderer/App';
+import { useAppContext } from '@renderer/App';
 import type { TableBodyDisplayProps } from '@renderer/util/types/types';
 import { useTableContext, useTableDispatch } from './Table';
 
@@ -14,7 +14,7 @@ export function TableBodyDisplay({
 }: TableBodyDisplayProps): React.JSX.Element {
 	const tableState = useTableContext();
 	const dispatch = useTableDispatch();
-	const { worker, database, general, appearances } = useContext(AppContext);
+	const { worker, database, general, appearances } = useAppContext();
 	const lastOrdered = useRef<number>(-1);
 	const start = useRef<number>(1);
 

@@ -1,7 +1,7 @@
-import { AppContext } from '@renderer/App';
-import React, { useId, useState, useRef, useContext } from 'react';
+import React, { useId, useState, useRef } from 'react';
+import { useAppContext } from '@renderer/App';
 export function RowShifter({ cols }: { cols: string[] }): React.JSX.Element {
-	const { general, worker, database } = useContext(AppContext);
+	const { general, worker, database } = useAppContext();
 	const [showOptions, setShowOptions] = useState<boolean>(false);
 	const colInputRef = useRef<HTMLSelectElement>(null);
 	const valueInputRef = useRef<HTMLInputElement>(null);

@@ -1,6 +1,6 @@
-import React, { useContext } from 'react';
+import React from 'react';
 
-import { AppContext } from '@renderer/App';
+import { useAppContext } from '@renderer/App';
 import type { HelpTexts } from '@util/types/types';
 
 import { HelpTextDE, HelpTextEN } from './HelpTexts';
@@ -8,7 +8,7 @@ import { HelpTextDE, HelpTextEN } from './HelpTexts';
 import './Help.css';
 
 export function Help(): React.JSX.Element {
-	const { general } = useContext(AppContext);
+	const { general } = useAppContext();
 	return (
 		<>
 			<div className="helpWrapper helper">

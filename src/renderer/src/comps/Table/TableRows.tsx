@@ -1,10 +1,10 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { RowItems } from './RowItems';
 import { useTableContext } from './Table';
-import { AppContext } from '@renderer/App';
+import { useAppContext } from '@renderer/App';
 export function TableRows(): React.JSX.Element {
 	const tableState = useTableContext();
-	const { appearances } = useContext(AppContext);
+	const { appearances } = useAppContext();
 	return (
 		<>
 			{tableState.rows.length === 0 ? (

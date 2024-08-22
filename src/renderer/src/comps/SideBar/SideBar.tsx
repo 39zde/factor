@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useEffect, useState } from 'react';
 import './SideBar.css';
 import {
 	CogIcon,
@@ -14,7 +14,7 @@ import {
 	HelpCircle,
 } from 'lucide-react';
 
-import { AppContext } from '@renderer/App';
+import { useAppContext } from '@renderer/App';
 import { RouterButton } from './RouterButton';
 import { LowerButton } from './LowerButton';
 
@@ -23,7 +23,8 @@ import { RouteType, SideBarProps } from '@util/types/types';
 export default function SideBar({
 	routesHook,
 }: SideBarProps): React.JSX.Element {
-	const { appearances, general, database } = useContext(AppContext);
+	const { appearances, general, database } = useAppContext();
+	const [sideBarWidth, setSideBarWidth] = useState<number>(appearances.sideBarWidth)
 	const routeHandler = (newVal: RouteType) => {
 		if (routesHook !== undefined) {
 			routesHook.setShowSettings(false);
@@ -32,12 +33,17 @@ export default function SideBar({
 		}
 	};
 
+	useEffect(()=>{
+		setSideBarWidth(appearances.sideBarWidth)
+	},[appearances.sideBarWidth])
+
+
 	return (
 		<>
 			<div
 				className="sideBar"
 				style={{
-					width: appearances.sideBarWidth,
+					width: sideBarWidth,
 				}}>
 				<div className="topIcons">
 					<RouterButton

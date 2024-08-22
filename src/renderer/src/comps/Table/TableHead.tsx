@@ -1,10 +1,10 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { ResizeElement } from './ResizeElement';
-import { AppContext } from '@renderer/App';
+import { useAppContext } from '@renderer/App';
 import { useTableContext, useTableDispatch } from './Table';
 
 export function TableHead(): React.JSX.Element {
-	const { appearances } = useContext(AppContext);
+	const { appearances } = useAppContext();
 	const tableState = useTableContext();
 	const dispatch = useTableDispatch();
 

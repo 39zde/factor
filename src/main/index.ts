@@ -99,9 +99,7 @@ app.whenReady().then(() => {
 		switch (message.type) {
 			case 'readSettings':
 				const settings = readSettings();
-
 				e.returnValue = settings;
-
 				break;
 			case 'writeSettings':
 				writeSettings(message.data as AppSettingsType);

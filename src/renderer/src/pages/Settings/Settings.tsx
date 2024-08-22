@@ -1,7 +1,7 @@
-import { useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import './Settings.css';
 import Versions from '@comps/Versions/Versions';
-import { AppContext } from '@renderer/App';
+import { useAppContext, useChangeContext } from '@renderer/App';
 import {
 	ColorThemeSetting,
 	AppSettingsChange,
@@ -10,7 +10,8 @@ import {
 } from '@renderer/util/App';
 import { Save } from 'lucide-react';
 export function Settings() {
-	const context = useContext(AppContext);
+	const context = useAppContext();
+	const dispatch = useChangeContext();
 	const themeInputRef = useRef<HTMLSelectElement>(null);
 	const rowHeightInputRef = useRef<HTMLInputElement>(null);
 	const colWidthInputRef = useRef<HTMLInputElement>(null);
@@ -115,7 +116,8 @@ export function Settings() {
 				setSideBarWidth(parseInt(sideBarWidthInputRef.current.value));
 				updateChanged({
 					appearances: {
-						sideBarWidth: parseInt(sideBarWidthInputRef.current.value) -24,
+						sideBarWidth:
+							parseInt(sideBarWidthInputRef.current.value) - 24,
 					},
 				});
 			}
@@ -168,14 +170,16 @@ export function Settings() {
 
 	const saveSettings = useCallback(() => {
 		if (Object.keys(changed).length !== 0) {
-			context.changeContext(changed);
+			dispatch({
+				type: 'set',
+				change: changed,
+			});
 		}
 	}, [changed, context]);
 
 	return (
 		<>
 			<div className="settingsPage appRoute helper">
-
 				<div className="settingOptions">
 					<h2>
 						{context.general.language === 'english'

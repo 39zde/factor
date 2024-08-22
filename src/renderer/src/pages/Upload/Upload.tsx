@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useContext, useId } from 'react';
+import React, { useEffect, useRef, useState, useId } from 'react';
 import { ImportIcon, FileIcon, XIcon } from 'lucide-react';
 import { RowShifter } from './RowShifter';
 import { ColRemover } from './ColRemover';
@@ -11,12 +11,11 @@ import type {
 	ArticleSortingMap,
 	UploadMode,
 } from '@util/types/types';
-import { AppContext } from '@renderer/App';
-import { AppSettingsType } from '@renderer/util/App';
+import { useAppContext, useChangeContext } from '@renderer/App';
 
 export function Upload(): React.JSX.Element {
-	const { general, worker, database, appearances, changeContext } =
-		useContext(AppContext);
+	const { general, worker, database } = useAppContext();
+	const dispatch = useChangeContext();
 	const fileSelector = useRef<HTMLInputElement>(null);
 	const [showTable, setShowTable] = useState<boolean>(false);
 	const [showFile, setShowFile] = useState<boolean>(false);
@@ -132,25 +131,19 @@ export function Upload(): React.JSX.Element {
 						if (tableImportModeInputRef.current !== null) {
 							switch (tableImportModeInputRef.current.value) {
 								case 'customers':
-									const newTables = [...database.tables];
+									const newTables = database.tables;
 									if (newTables.includes('customer_db')) {
 										break;
 									}
 									newTables.push('customer_db');
-									const newContext: AppSettingsType = {
-										appearances: {
-											...appearances,
+									dispatch({
+										type: 'set',
+										change: {
+											database: {
+												tables: newTables,
+											},
 										},
-										database: {
-											tables: newTables,
-											dbVersion: database.dbVersion,
-										},
-										general: {
-											...general,
-										},
-									};
-
-									changeContext(newContext);
+									});
 							}
 						}
 
@@ -425,7 +418,7 @@ function Customers({
 		setMap: (newVal: CustomerSortingMap | ArticleSortingMap) => void;
 	};
 }) {
-	const { general } = useContext(AppContext);
+	const { general } = useAppContext();
 
 	const idRef = useRef<HTMLSelectElement>(null);
 	const [idCol, setIdCol] = useState<string>('row');

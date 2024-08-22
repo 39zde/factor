@@ -4,6 +4,8 @@ import React, {
 	useMemo,
 	useCallback,
 	useEffect,
+	useReducer,
+	useContext,
 } from 'react';
 import SideBar from '@comps/SideBar/SideBar';
 import { Pages } from './pages/Pages';
@@ -12,6 +14,7 @@ import type {
 	AppContextType,
 	AppSettingsType,
 	AppSettingsChange,
+	AppAction,
 } from '@util/App';
 
 import './App.css';
@@ -60,12 +63,171 @@ const defaultContext: AppContextType = {
 		ImportWorker: ImportWorker,
 		TableWorker: TableWorker,
 	},
-	changeContext: () => {
-		console.log('change context default');
-	},
 };
 
-export const AppContext = createContext<AppContextType>(defaultContext);
+function appReducer(
+	appState: AppContextType,
+	action: AppAction
+): AppContextType {
+	switch (action.type) {
+		case 'set': {
+			const result = window.electron.ipcRenderer.sendSync('settings', {
+				type: 'writeSettings',
+				data: {
+					appearances: {
+						colorTheme:
+							action.change?.appearances?.colorTheme !== undefined
+								? action.change.appearances.colorTheme
+								: appState.appearances.colorTheme,
+						columnWidth:
+							action.change?.appearances?.columnWidth !== undefined
+								? action.change.appearances.columnWidth
+								: appState.appearances.columnWidth,
+						height: appState.appearances.height,
+						rowHeight:
+							action.change?.appearances?.rowHeight !== undefined
+								? action.change.appearances.rowHeight
+								: appState.appearances.rowHeight,
+						sideBarWidth:
+							action.change?.appearances?.sideBarWidth !== undefined
+								? action.change.appearances.sideBarWidth
+								: appState.appearances.sideBarWidth,
+						width: appState.appearances.width,
+						x: appState.appearances.x,
+						y: appState.appearances.y,
+					},
+					database: {
+						dbVersion:
+							action.change?.database?.dbVersion !== undefined
+								? action.change.database.dbVersion
+								: appState.database.dbVersion,
+						tables:
+							action.change?.database?.tables !== undefined
+								? action.change.database.tables
+								: appState.database.tables,
+					},
+					general: {
+						decimalSeparator:
+							action.change?.general?.decimalSeparator !== undefined
+								? action.change.general.decimalSeparator
+								: appState.general.decimalSeparator,
+						language:
+							action.change?.general?.language !== undefined
+								? action.change.general.language
+								: appState.general.language,
+						scrollSpeed:
+							action.change?.general?.scrollSpeed !== undefined
+								? action.change.general.scrollSpeed
+								: appState.general.scrollSpeed,
+					},
+				},
+			});
+			if (result !== 'success') {
+				window.alert('settings not saved');
+			}
+			return {
+				appearances: {
+					colorTheme:
+						action.change?.appearances?.colorTheme !== undefined
+							? action.change.appearances.colorTheme
+							: appState.appearances.colorTheme,
+					columnWidth:
+						action.change?.appearances?.columnWidth !== undefined
+							? action.change.appearances.columnWidth
+							: appState.appearances.columnWidth,
+					height: appState.appearances.height,
+					rowHeight:
+						action.change?.appearances?.rowHeight !== undefined
+							? action.change.appearances.rowHeight
+							: appState.appearances.rowHeight,
+					sideBarWidth:
+						action.change?.appearances?.sideBarWidth !== undefined
+							? action.change.appearances.sideBarWidth
+							: appState.appearances.sideBarWidth,
+					width: appState.appearances.width,
+					x: appState.appearances.x,
+					y: appState.appearances.y,
+				},
+				database: {
+					dbVersion:
+						action.change?.database?.dbVersion !== undefined
+							? action.change.database.dbVersion
+							: appState.database.dbVersion,
+					tables:
+						action.change?.database?.tables !== undefined
+							? action.change.database.tables
+							: appState.database.tables,
+				},
+				general: {
+					decimalSeparator:
+						action.change?.general?.decimalSeparator !== undefined
+							? action.change.general.decimalSeparator
+							: appState.general.decimalSeparator,
+					language:
+						action.change?.general?.language !== undefined
+							? action.change.general.language
+							: appState.general.language,
+					scrollSpeed:
+						action.change?.general?.scrollSpeed !== undefined
+							? action.change.general.scrollSpeed
+							: appState.general.scrollSpeed,
+				},
+				worker: {
+					ImportWorker: appState.worker.ImportWorker,
+					TableWorker: appState.worker.TableWorker,
+				},
+			};
+		}
+		case 'setHW': {
+			return {
+				appearances: {
+					colorTheme: appState.appearances.colorTheme,
+					columnWidth: appState.appearances.columnWidth,
+					height:
+						action.change.appearances?.height !== undefined
+							? action.change.appearances.height
+							: appState.appearances.height,
+					rowHeight: appState.appearances.rowHeight,
+					sideBarWidth: appState.appearances.sideBarWidth,
+					width:
+						action.change.appearances?.width !== undefined
+							? action.change.appearances.width
+							: appState.appearances.width,
+					x: appState.appearances.x,
+					y: appState.appearances.y,
+				},
+				database: {
+					dbVersion: appState.database.dbVersion,
+					tables: appState.database.tables,
+				},
+				general: {
+					decimalSeparator: appState.general.decimalSeparator,
+					language: appState.general.language,
+					scrollSpeed: appState.general.scrollSpeed,
+				},
+				worker: {
+					ImportWorker: appState.worker.ImportWorker,
+					TableWorker: appState.worker.TableWorker,
+				},
+			};
+		}
+
+		default:
+			console.log('app State error');
+			return appState;
+	}
+}
+
+const AppContext = createContext<AppContextType>(defaultContext);
+//@ts-expect-error reducer error
+const ChangeContext = createContext<React.Dispatch<AppAction>>(appReducer);
+
+export function useAppContext() {
+	return useContext(AppContext);
+}
+export function useChangeContext() {
+	return useContext(ChangeContext);
+}
 
 function App(): JSX.Element {
 	const [route, setRoute] = useState<RouteType>('Home');
@@ -73,62 +235,47 @@ function App(): JSX.Element {
 	const [showHelp, setShowHelp] = useState<boolean>(false);
 	const getHeight = useCallback(() => window.innerHeight, []);
 	const getWidth = useCallback(() => window.innerWidth, []);
-	const [contextValue, setContextValue] =
-		useState<AppContextType>(defaultContext);
+	const [appState, dispatch] = useReducer(
+		appReducer,
+		{ defaultContext, document, TableWorker, ImportWorker, window },
+		(args): AppContextType => {
+			let dataBasesPromise = args.window.indexedDB.databases();
+			let out: AppContextType;
+			let storedSettings: AppSettingsType | null =
+				args.window.electron.ipcRenderer.sendSync('settings', {
+					type: 'readSettings',
+				});
+			if (storedSettings !== null) {
+				out = {
+					...storedSettings,
+					worker: {
+						ImportWorker: args.ImportWorker,
+						TableWorker: args.TableWorker,
+					},
+				};
+				let themeTag = args.document.getElementById('theme');
+				if (themeTag !== null) {
+					themeTag.innerText = `:root{ color-scheme: ${storedSettings.appearances.colorTheme} ; }`;
+				}
+			} else {
+				out = args.defaultContext;
+			}
 
-	const changeContextFunction = (changed: AppSettingsChange): void => {
-		if (contextValue !== undefined) {
-			let copy: AppSettingsType = {
-				appearances: {
-					...contextValue.appearances,
-				},
-				database: {
-					...contextValue.database,
-				},
-				general: {
-					...contextValue.general,
-				},
-			};
-
-			for (const [key, value] of Object.entries(changed)) {
-				for (const [nestedKey, nestedValue] of Object.entries(value)) {
-					copy[key][nestedKey] = nestedValue;
-					if (nestedKey === 'colorTheme') {
-						// @ts-expect-error typescript does not know about this html-tag
-						document.getElementById('theme').innerText =
-							`:root{ color-scheme: ${nestedValue}} ; }`;
+			dataBasesPromise.then((dbs) => {
+				let tables: string[] = [];
+				for (const item of dbs) {
+					if (item.name !== undefined) {
+						tables.push(item.name);
 					}
 				}
-			}
-
-			const result = window.electron.ipcRenderer.sendSync('settings', {
-				type: 'writeSettings',
-				data: copy,
+				out.database.tables = tables;
 			});
-			if (result !== 'success') {
-				window.alert('settings not saved');
-			}
+			out.appearances.height = window.innerHeight;
+			out.appearances.width = window.innerWidth;
 
-			let newContext = copy as AppContextType;
-			newContext.worker = contextValue.worker;
-			newContext.changeContext = changeContextFunction;
-
-			if (changed.appearances !== undefined) {
-				if (
-					changed.appearances.width !== undefined ||
-					changed.appearances.height !== undefined
-				) {
-					// if the window resizes don't bother to save to file: return
-					// we only save those values, when the window closes (see main/index.ts)
-
-					setContextValue(newContext);
-					return;
-				}
-			}
-
-			setContextValue(newContext);
+			return out;
 		}
-	};
+	);
 
 	const resizeHandler = () => {
 		let height = getHeight();
@@ -139,7 +286,10 @@ function App(): JSX.Element {
 				height: height,
 			},
 		};
-		changeContextFunction(newValues);
+		dispatch({
+			type: 'setHW',
+			change: newValues,
+		});
 	};
 
 	useMemo(() => {
@@ -150,42 +300,6 @@ function App(): JSX.Element {
 			});
 
 		navigator.storage.persist();
-		const settingsFile: AppSettingsType =
-			window.electron.ipcRenderer.sendSync('settings', {
-				type: 'readSettings',
-			});
-		const context: AppContextType = {
-			appearances: {
-				...settingsFile.appearances,
-			},
-			database: {
-				...settingsFile.database,
-			},
-			general: {
-				...settingsFile.general,
-			},
-			worker: {
-				ImportWorker: ImportWorker,
-				TableWorker: TableWorker,
-			},
-			changeContext: changeContextFunction,
-		};
-		context.appearances.width = getWidth();
-		context.appearances.height = getHeight();
-		// @ts-expect-error typescript does not know about this html-tag
-		document.getElementById('theme').innerText =
-			`:root{ color-scheme: ${settingsFile.appearances.colorTheme} ; }`;
-		setContextValue(context);
-
-		window.indexedDB.databases().then((dbs) => {
-			let tables: string[] = [];
-			for (const item of dbs) {
-				if (item.name !== undefined) {
-					tables.push(item.name);
-				}
-			}
-			changeContextFunction({ database: { tables: tables } });
-		});
 	}, []);
 
 	useEffect(() => {
@@ -210,31 +324,33 @@ function App(): JSX.Element {
 
 	return (
 		<>
-			<AppContext.Provider value={contextValue}>
-				<div
-					className="appWrapper"
-					style={{
-						paddingLeft: contextValue.appearances.sideBarWidth + 24,
-					}}>
-					<SideBar routesHook={routeHook} />
-					<div className="page">
-						<Router route={route} />
-						{showHelp ? (
-							<>
-								<Pages.Help />
-							</>
-						) : (
-							<></>
-						)}
-						{showSettings ? (
-							<>
-								<Pages.Settings />
-							</>
-						) : (
-							<></>
-						)}
+			<AppContext.Provider value={appState}>
+				<ChangeContext.Provider value={dispatch}>
+					<div
+						className="appWrapper"
+						style={{
+							paddingLeft: appState.appearances.sideBarWidth + 24,
+						}}>
+						<SideBar routesHook={routeHook} />
+						<div className="page">
+							<Router route={route} />
+							{showHelp ? (
+								<>
+									<Pages.Help />
+								</>
+							) : (
+								<></>
+							)}
+							{showSettings ? (
+								<>
+									<Pages.Settings />
+								</>
+							) : (
+								<></>
+							)}
+						</div>
 					</div>
-				</div>
+				</ChangeContext.Provider>
 			</AppContext.Provider>
 		</>
 	);

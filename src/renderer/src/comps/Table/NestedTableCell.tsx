@@ -1,5 +1,11 @@
 import React from 'react';
-import { AddressType, EmailType, PersonType, PhoneNumberType } from '@renderer/util/types/types';
+import {
+	AddressType,
+	CompanyType,
+	EmailType,
+	PersonType,
+	PhoneNumberType,
+} from '@renderer/util/types/types';
 
 export function NestedTableCell({
 	columnName,
@@ -14,11 +20,13 @@ export function NestedTableCell({
 		case 'addresses':
 			return <AddressTableCell data={data as AddressType[]} />;
 		case 'emails':
-			return <EmailTableCell data={data as EmailType[]} />
+			return <EmailTableCell data={data as EmailType[]} />;
 		case 'phones':
-			return <PhoneTableCell data={data as PhoneNumberType[]} />
+			return <PhoneTableCell data={data as PhoneNumberType[]} />;
 		case 'notes':
-			return <NotesTableCell data={data as string[]} />
+			return <NotesTableCell data={data as string[]} />;
+		case 'company':
+			return <CompanyTableCell data={data as CompanyType[]} />
 		default:
 			return <></>;
 	}
@@ -96,9 +104,9 @@ function EmailTableCell({ data }: { data: EmailType[] }): React.JSX.Element {
 		<>
 			<span className="nestedCell">
 				{data.map((item) => {
-					let text1 ="";
-					if(item?.email !== undefined){
-						text1 += item.email
+					let text1 = '';
+					if (item?.email !== undefined) {
+						text1 += item.email;
 					}
 					return (
 						<>
@@ -111,15 +119,18 @@ function EmailTableCell({ data }: { data: EmailType[] }): React.JSX.Element {
 	);
 }
 
-
-function PhoneTableCell({ data }: { data: PhoneNumberType[] }): React.JSX.Element {
+function PhoneTableCell({
+	data,
+}: {
+	data: PhoneNumberType[];
+}): React.JSX.Element {
 	return (
 		<>
 			<span className="nestedCell">
 				{data.map((item) => {
-					let text1 ="";
-					if(item?.phone !== undefined){
-						text1 += item.phone
+					let text1 = '';
+					if (item?.phone !== undefined) {
+						text1 += item.phone;
 					}
 					return (
 						<>
@@ -148,3 +159,26 @@ function NotesTableCell({ data }: { data: string[] }): React.JSX.Element {
 	);
 }
 
+function CompanyTableCell({
+	data,
+}: {
+	data: CompanyType[];
+}): React.JSX.Element {
+	return (
+		<>
+			<span className="nestedCell">
+				{data.map((item) => {
+					let text1 = '';
+					if (item?.name !== undefined) {
+						text1 += item.name;
+					}
+					return (
+						<>
+							<p>{text1}</p>
+						</>
+					);
+				})}
+			</span>
+		</>
+	);
+}

@@ -1,10 +1,10 @@
-import React, { useState, useMemo, useContext } from 'react';
+import React, { useState, useMemo } from 'react';
 
 import './Versions.css';
-import { AppContext } from '@renderer/App';
+import { useAppContext } from '@renderer/App';
 
 function Versions(): React.JSX.Element {
-	const { general, appearances } = useContext(AppContext);
+	const { general, appearances } = useAppContext();
 	const [versions] = useState(window.electron.process.versions ?? '');
 	const [used, setUsed] = useState<string>('');
 	const [free, setFree] = useState<string>('');

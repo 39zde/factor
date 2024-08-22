@@ -10,7 +10,7 @@ import React, {
 	MouseEvent,
 	useMemo,
 } from 'react';
-import { AppContext } from '@renderer/App';
+import { useAppContext } from '@renderer/App';
 import { TableHeadDisplay } from './TableHeadDisplay';
 import { TableBodyDisplay } from './TableBodyDisplay';
 import { TableFootDisplay } from './TableFootDisplay';
@@ -245,7 +245,7 @@ export function Table({
 }: TableProps): React.JSX.Element {
 	const rowColumnWidth = 30;
 	const scrollBarHeight = 5;
-	const { database, appearances, worker, general } = useContext(AppContext);
+	const { database, appearances, worker, general } = useAppContext();
 	const tableBodyRef = useRef<HTMLTableSectionElement>(null);
 	const wrapperRef = useRef<HTMLDivElement>(null);
 	const colsRef = useRef<React.RefObject<HTMLTableCellElement>[]>([]).current;

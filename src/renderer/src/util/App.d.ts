@@ -10,10 +10,6 @@ export interface AppContextType extends AppSettingsType {
 		 */
 		TableWorker: Worker;
 	};
-	/**
-	 * change the app context
-	 */
-	changeContext: (newVal: AppSettingsChange) => void;
 }
 
 export interface AppSettingsType {
@@ -65,3 +61,7 @@ export type DecimalSeparatorSetting = "." | ",";
 
 export type ColorThemeSetting = 'light' | 'dark' | 'light dark';
 
+export type AppAction = {
+	type: "set" | "setHW";
+	change: AppSettingsChange;
+}

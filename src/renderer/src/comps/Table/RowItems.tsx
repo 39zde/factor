@@ -1,5 +1,5 @@
-import React, { useContext } from 'react';
-import { AppContext } from '@renderer/App';
+import React from 'react';
+import { useAppContext } from '@renderer/App';
 import type { TableRowItemProps } from '@renderer/util/types/comps/Table/TableRowItemProps';
 import { useTableContext } from './Table';
 import { NestedTableCell } from './NestedTableCell';
@@ -41,6 +41,12 @@ function TableCell({
 	} else {
 		switch (typeof contents) {
 			case 'object':
+				switch (contents.constructor.name) {
+					case 'Date':
+						return <>{(contents as Date).toLocaleDateString()}</>;
+					case 'Object':
+						return <>Company</>;
+				}
 				return <></>;
 			case 'number':
 				return <>{contents}</>;
@@ -49,7 +55,7 @@ function TableCell({
 			case 'string':
 				return <>{contents}</>;
 			default:
-				return <>[default]</>;
+				return <></>;
 		}
 	}
 }
@@ -60,7 +66,7 @@ function TableCellWrapper({
 	key?: string;
 	children: React.JSX.Element | string;
 }): React.JSX.Element {
-	const { appearances } = useContext(AppContext);
+	const { appearances } = useAppContext();
 	return (
 		<>
 			<td
