@@ -41,7 +41,10 @@ export type {
 	TableWorkerRequestMessageType,
 	TableWorkerResponseMessage,
 	TableWorkerResponseMessageType,
+	DoneHandler,
 } from './worker/table.worker';
+
+export type { AddDataArgs } from './worker/import.worker';
 
 export type {
 	TableRow,

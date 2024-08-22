@@ -11,6 +11,7 @@ import type {
 	Customer,
 	TableRow,
 	CustomerReferences,
+	AddDataArgs,
 } from '../types/types';
 import { rx } from '../func/regex';
 
@@ -44,7 +45,7 @@ self.onmessage = (e: MessageEvent): void => {
 			request.onsuccess = () => {
 				const db = request.result;
 				deleteData(db);
-				addData(keys, rows, db);
+				addData({ keys, rows, db });
 				const copy = [...keys];
 				copy.splice(0, 0, 'row');
 				return postMessage({
@@ -237,7 +238,7 @@ function getKeys(row: string) {
 	return keys;
 }
 
-function addData(keys: string[], rows: string[], db: IDBDatabase) {
+function addData({ keys, rows, db }: AddDataArgs) {
 	const transaction = db.transaction(['data_upload'], 'readwrite');
 	const objectStore = transaction.objectStore('data_upload');
 	let i = 1;
@@ -546,78 +547,68 @@ function parseCustomer(
 		let oStore = transaction.objectStore('customers');
 		let index = oStore.index('customers-id');
 		let request = index.get(id);
-
 		request.onsuccess = () => {
 			let entry: Customer = request.result;
 			if (entry) {
-				if (key !== 'company') {
-					if (Object.keys(entry).includes(key)) {
-						// the property does exist
-						if (entry[key] instanceof ArrayBuffer) {
-							// is there already something
-							let buf: ArrayBuffer = entry[key];
+				if (Object.keys(entry).includes(key)) {
+					// the property does exist
+					if (entry[key] instanceof ArrayBuffer) {
+						// is there already something
+						let buf: ArrayBuffer = entry[key];
 
-							//check if the ArrayBuffer already contains our item
-							for (
-								let i = new DataView(buf).byteLength / 2 - 1;
-								i > 0;
-								i--
-							) {
-								if (new DataView(buf).getUint16(i) === value) {
-									return;
-								}
+						//check if the ArrayBuffer already contains our item
+						for (
+							let i = new DataView(buf).byteLength / 2 - 1;
+							i > 0;
+							i--
+						) {
+							if (new DataView(buf).getUint16(i) === value) {
+								return;
 							}
+						}
 
-							// @ts-expect-error no ts implementation (or at least I wasn't able find the correct way)
-							if (buf.resizable === true) {
-								if (buf.byteLength === 128) {
-									return postMessage({
-										type: 'error',
-										message: 'array buffer space is maxed out',
-									});
-								}
-								// @ts-expect-error no ts implementation (or at least I wasn't able find the correct way)
-								buf.resize(buf.byteLength + 2);
-								let view = new DataView(buf);
-								let index = (view.byteLength as number) / 2 - 1;
-								view.setUint16(index, value);
-								entry[key] = buf;
+						// @ts-expect-error no ts implementation (or at least I wasn't able find the correct way)
+						if (buf.resizable === true) {
+							if (buf.byteLength === 128) {
+								return postMessage({
+									type: 'error',
+									message: 'array buffer space is maxed out',
+								});
 							}
-						} else {
-							// there is no Array buffer
-							// so we create one
 							// @ts-expect-error no ts implementation (or at least I wasn't able find the correct way)
-							let buf = new ArrayBuffer(2, { maxByteLength: 128 });
-							new DataView(buf).setUint16(0, value);
+							buf.resize(buf.byteLength + 2);
+							let view = new DataView(buf);
+							let index = (view.byteLength as number) / 2 - 1;
+							view.setUint16(index, value);
 							entry[key] = buf;
 						}
 					} else {
-						// the property does not exist
-						// so we create it
-						// the max count of references this buffer holds = max size / size of one item = 128/2 = 64
-						// so one array contains a max 64 references
-						// a reference just an integer , which shows the position of an item in another object store
-
-						//
-						// @ts-expect-error this is valid, see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer/ArrayBuffer#parameters
+						// there is no Array buffer
+						// so we create one
+						// @ts-expect-error no ts implementation (or at least I wasn't able find the correct way)
 						let buf = new ArrayBuffer(2, { maxByteLength: 128 });
 						new DataView(buf).setUint16(0, value);
-						Object.defineProperty(entry, key, {
-							configurable: true,
-							enumerable: true,
-							writable: true,
-							value: buf,
-						});
+						entry[key] = buf;
 					}
 				} else {
-					// if the jey is company
+					// the property does not exist
+					// so we create it
+					// the max count of references this buffer holds = max size / size of one item = 128/2 = 64
+					// so one array contains a max 64 references
+					// a reference just an integer , which shows the position of an item in another object store
+
+					//
+					// @ts-expect-error this is valid, see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer/ArrayBuffer#parameters
+					let buf = new ArrayBuffer(2, { maxByteLength: 128 });
+					new DataView(buf).setUint16(0, value);
 					Object.defineProperty(entry, key, {
 						configurable: true,
-						enumerable: false,
+						enumerable: true,
 						writable: true,
-						value: value,
+						value: buf,
 					});
 				}
+
 				oStore.put(entry);
 				transaction.commit();
 			}
