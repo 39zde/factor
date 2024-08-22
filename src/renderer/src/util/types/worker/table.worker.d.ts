@@ -1,4 +1,4 @@
-import type { TableRow } from '../database/DataBaseData';
+import type { DerefRow, TableRow } from '../database/DataBaseData';
 
 export interface TableWorkerRequestMessage {
 	type: TableWorkerMessageType;
@@ -33,3 +33,8 @@ export type TableWorkerResponseMessageType =
 	| TableWorkerRequestMessageType
 	| 'error'
 	| 'success';
+
+export type DoneHandler = {
+	data: DerefRow[];
+	add: DerefRow;
+};

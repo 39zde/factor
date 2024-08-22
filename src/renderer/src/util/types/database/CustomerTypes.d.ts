@@ -11,7 +11,7 @@ export interface Customer {
 	persons?: ArrayBuffer;
 	addresses?: ArrayBuffer;
 	banks?: ArrayBuffer;
-	company?: number;
+	company?: ArrayBuffer;
 	emails?: ArrayBuffer;
 	phones?: ArrayBuffer;
 	description?: string;

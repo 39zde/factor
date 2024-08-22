@@ -3,6 +3,7 @@ import type {
 	TableRow,
 	TableWorkerRequestMessageActionType,
 	DerefRow,
+	DoneHandler,
 } from '../types/types';
 
 self.onmessage = function requestHandler(e: MessageEvent) {
@@ -53,8 +54,6 @@ function startingRows(
 	storeName: string,
 	scope: number
 ) {
-	let output: any[] = [];
-
 	const dbRequest = indexedDB.open(name, version);
 
 	dbRequest.onblocked = () => {
@@ -73,36 +72,49 @@ function startingRows(
 	};
 
 	dbRequest.onsuccess = () => {
+		let received: number = 0;
 		let counter: number = 0;
+		let done: DoneHandler = {
+			data: [],
+			add: { row: 0 },
+		};
+
+		const doneListener = {
+			set(
+				target: DoneHandler,
+				prop: keyof DoneHandler,
+				value: boolean | DerefRow
+			) {
+				if (prop === 'add' && typeof value === 'object') {
+					let data = target['data'];
+					data.push(value);
+					Reflect.set(target, 'data', data);
+					received += 1;
+					if (received === scope) {
+						postMessage({ type: 'startingRows', data: target.data });
+					}
+					return Reflect.set(target, prop, value);
+				} else {
+					return Reflect.set(target, prop, value);
+				}
+			},
+		};
+
 		const db = dbRequest.result;
-		let cursorRequest: IDBRequest<IDBCursorWithValue | null>;
-
-		cursorRequest = db
-			.transaction(storeName, 'readonly')
-			.objectStore(storeName)
-			.openCursor();
-
+		const transaction = db.transaction(storeName, 'readonly');
+		const oStore = transaction.objectStore(storeName);
+		const cursorRequest = oStore.openCursor(null, 'nextunique');
+		const doneHandler = new Proxy(done, doneListener);
 		cursorRequest.onsuccess = () => {
 			const cursor: IDBCursorWithValue | null = cursorRequest.result;
 			if (cursor) {
-				// console.log(counter, scope);
+				fillReferences(db, cursor.value, undefined, doneHandler);
 				if (counter < scope) {
-					// console.log(cursor.value);
-					output.push(cursor.value);
 					counter += 1;
 					cursor.continue();
-				} else {
-					return postMessage({ type: 'startingRows', data: output });
 				}
 			}
-			// if (!cursor) {
-			// }
 		};
-		cursorRequest.onerror = (e) =>
-			postMessage({
-				type: 'error',
-				data: e,
-			});
 	};
 }
 
@@ -175,7 +187,8 @@ function getCount(name: string, version: number, storeName: string) {
 function fillReferences(
 	dataBase: IDBDatabase,
 	row: TableRow,
-	actionType: TableWorkerRequestMessageActionType
+	actionType?: TableWorkerRequestMessageActionType,
+	doneHandler?: DoneHandler
 ): void {
 	const copy = structuredClone(row);
 	let targetCount = 0;
@@ -194,7 +207,13 @@ function fillReferences(
 			if (value === targetCount) {
 				// if we are on the last result finally send the back the response
 				// this is a very neat way of handling things
-				postStream(copy, actionType, row.row);
+				if (actionType !== undefined) {
+					postStream(copy, actionType, row.row);
+				}
+
+				if (doneHandler !== undefined) {
+					doneHandler.add = copy;
+				}
 			}
 			return Reflect.set(target, prop, value);
 		},
@@ -232,7 +251,9 @@ function fillReferences(
 		}
 	}
 	if (targetCount === 0) {
-		postStream(copy, actionType, copy.row);
+		if (actionType !== undefined) {
+			postStream(copy, actionType, copy.row);
+		}
 	}
 }
 
