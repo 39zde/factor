@@ -23,3 +23,7 @@ has n = `ArrayBuffer.byteLength` / `2` references. The reference (the `Uint32` n
 ![customers_db](./resources/img/customers_db.png)
 
 Also have a look at `./src/renderer/src/util/types/database`
+
+## Workspace
+
+Some Files are hidden by default in `factor.code-workspace`. Development so far happened in [VSCodium](https://github.com/VSCodium/vscodium). You may choose whatever IDE you like.
