@@ -329,7 +329,7 @@ function App(): JSX.Element {
 					<div
 						className="appWrapper"
 						style={{
-							paddingLeft: appState.appearances.sideBarWidth + 24,
+							paddingLeft: appState.appearances.sideBarWidth + 26,
 						}}>
 						<SideBar routesHook={routeHook} />
 						<div className="page">

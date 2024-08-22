@@ -35,7 +35,7 @@ export function Settings() {
 	const [decimalSeparator, setDecimalSeparator] =
 		useState<DecimalSeparatorSetting>(context.general.decimalSeparator);
 	const [sideBarWidth, setSideBarWidth] = useState<number>(
-		context.appearances.sideBarWidth + 24
+		context.appearances.sideBarWidth + 26
 	);
 	const [scrollSpeed, setScrollSpeed] = useState<number>(
 		context.general.scrollSpeed
@@ -117,7 +117,7 @@ export function Settings() {
 				updateChanged({
 					appearances: {
 						sideBarWidth:
-							parseInt(sideBarWidthInputRef.current.value) - 24,
+							parseInt(sideBarWidthInputRef.current.value) - 26,
 					},
 				});
 			}
