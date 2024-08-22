@@ -71,6 +71,12 @@ function appReducer(
 ): AppContextType {
 	switch (action.type) {
 		case 'set': {
+			if (action.change.appearances?.colorTheme !== undefined) {
+				let themeTag = document.getElementById('theme');
+				if (themeTag !== null) {
+					themeTag.innerText = `:root{ color-scheme: ${action.change.appearances?.colorTheme} ; }`;
+				}
+			}
 			const result = window.electron.ipcRenderer.sendSync('settings', {
 				type: 'writeSettings',
 				data: {
