@@ -26,4 +26,4 @@ Also have a look at `./src/renderer/src/util/types/database`
 
 ## Workspace
 
-Some Files are hidden by default in `factor.code-workspace`. Development so far happened in [VSCodium](https://github.com/VSCodium/vscodium). You may choose whatever IDE you like.
+Some files are hidden by default in `factor.code-workspace`. Development so far happened in [VSCodium](https://github.com/VSCodium/vscodium). You may choose whatever IDE you like.
