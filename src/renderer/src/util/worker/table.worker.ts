@@ -60,7 +60,7 @@ function startingRows(
 		console.log('blocked');
 	};
 
-	dbRequest.onerror = (e: any) => {
+	dbRequest.onerror = (e: Event) => {
 		postMessage({
 			type: 'error',
 			data: e,
@@ -74,7 +74,7 @@ function startingRows(
 	dbRequest.onsuccess = () => {
 		let received: number = 0;
 		let counter: number = 0;
-		let done: DoneHandler = {
+		const done: DoneHandler = {
 			data: [],
 			add: { row: 0 },
 		};
@@ -86,7 +86,7 @@ function startingRows(
 				value: boolean | DerefRow
 			) {
 				if (prop === 'add' && typeof value === 'object') {
-					let data = target['data'];
+					const data = target['data'];
 					data.push(value);
 					Reflect.set(target, 'data', data);
 					received += 1;
@@ -201,7 +201,7 @@ function fillReferences(
 	// this handler acts as a sort of event listener
 	const handler = {
 		// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy/Proxy/set#parameters
-		set(target: CounterType, prop: string, value: any) {
+		set(target: CounterType, prop: string, value: number) {
 			if (prop !== 'count') return Reflect.set(target, prop, value);
 			// every time we increase the counter we check if it was the last request
 			if (value === targetCount) {
@@ -224,20 +224,20 @@ function fillReferences(
 		if (value instanceof ArrayBuffer) {
 			//in row $copy.row : $key is of type ArrayBuffer
 			// increase $targetCunt by $increment
-			let increment = new DataView(value).byteLength / 2;
+			const increment = new DataView(value).byteLength / 2;
 			targetCount += increment;
 
 			// replace the ArrayBuffer with an regular array in our copy
 			copy[key] = new Array(increment);
 			for (let i = 0; i < increment; i++) {
-				let location = new DataView(value).getInt16(i);
+				const location = new DataView(value).getInt16(i);
 				// the ArrayBuffer has stored $location at $i
 
 				// query the object store $key at $location
 				const transaction = dataBase.transaction(key, 'readonly');
 				const oStore = transaction.objectStore(key);
-				let only = IDBKeyRange.only(location);
-				let request = oStore.get(only);
+				const only = IDBKeyRange.only(location);
+				const request = oStore.get(only);
 				request.onsuccess = () => {
 					// insert the requested item into our copy
 					copy[key][i] = request.result;
@@ -313,7 +313,7 @@ function stream(eventData: TableWorkerRequestMessage) {
 				});
 			}
 			if (req.result) {
-				let row = req.result as TableRow;
+				const row = req.result as TableRow;
 				fillReferences(streamDB, row, eventData.action.type);
 			}
 		};

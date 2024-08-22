@@ -142,7 +142,7 @@ function readSettings(): AppSettingsType | null {
 		encoding: 'utf8',
 		flag: 'r',
 	});
-	let settings = JSON.parse(settingsFile);
+	const settings = JSON.parse(settingsFile);
 	if (typeof settings === 'object') {
 		return settings;
 	}

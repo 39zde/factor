@@ -1,5 +1,4 @@
-import React, { WheelEvent } from 'react';
-import type { Table } from 'dexie';
+import React from 'react';
 
 export interface TableBodyDisplayProps {
 	tableBodyRef: React.RefObject<HTMLTableSectionElement>;

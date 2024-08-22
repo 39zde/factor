@@ -153,7 +153,7 @@ self.onmessage = (e: MessageEvent): void => {
 	}
 };
 
-let PersonTemplate: PersonType = {
+const PersonTemplate: PersonType = {
 	firstName: '',
 	lastName: '',
 	row: 0,
@@ -163,21 +163,21 @@ let PersonTemplate: PersonType = {
 	notes: undefined,
 };
 
-let EmailTemplate: EmailType = {
+const EmailTemplate: EmailType = {
 	email: '',
 	row: 0,
 	notes: [],
 	type: undefined,
 };
 
-let PhoneTemplate: PhoneNumberType = {
+const PhoneTemplate: PhoneNumberType = {
 	row: 0,
 	phone: '',
 	notes: undefined,
 	type: undefined,
 };
 
-let AddressTemplate: AddressType = {
+const AddressTemplate: AddressType = {
 	city: '',
 	country: '',
 	hash: '',
@@ -189,14 +189,14 @@ let AddressTemplate: AddressType = {
 	type: undefined,
 };
 
-let CompanyTemplate: CompanyType = {
+const CompanyTemplate: CompanyType = {
 	alias: undefined,
 	row: 0,
 	name: '',
 	notes: undefined,
 };
 
-let BankTemplate: BankType = {
+const BankTemplate: BankType = {
 	row: 0,
 	name: '',
 	bankCode: undefined,
@@ -414,22 +414,23 @@ function compareItemToCondition(
 			}
 			return false;
 		case 'string':
-			//@ts-ignore
-			if (condition.length === 0) {
-				if (typeof value === 'string') {
-					if (value.trim().length === 0) {
-						return true;
+			if(typeof condition === "string"){
+				if (condition.length === 0) {
+					if (typeof value === 'string') {
+						if (value.trim().length === 0) {
+							return true;
+						}
+					} else {
+						if (typeof value === 'undefined' || typeof value === null) {
+						}
 					}
 				} else {
-					if (typeof value === 'undefined' || typeof value === null) {
+					if (value === condition) {
+						return true;
 					}
 				}
-			} else {
-				if (value === condition) {
-					return true;
-				}
+				return false;
 			}
-			return false;
 
 		case undefined:
 			if (value === undefined && value !== null) {
@@ -455,10 +456,10 @@ function deleteCol(col: string) {
 		const countRequest = objStore.count();
 		countRequest.onsuccess = () => {
 			const count = countRequest.result;
-			objStore.openCursor(null, 'next').onsuccess = (e) => {
-				//@ts-ignore
-				const cursor: IDBCursorWithValue = e.target.result;
-				if (cursor !== null) {
+			let cursorRequest = objStore.openCursor(null, 'next');
+			cursorRequest.onsuccess = (e) => {
+				const cursor: IDBCursorWithValue | null = cursorRequest.result;
+				if (cursor) {
 					const newValue = cursor.value;
 					delete newValue[col];
 					cursor.update(newValue);
@@ -494,7 +495,7 @@ function doCustomers(
 			const dataUploadCountRequest = dataUpload.count();
 
 			dataUploadCountRequest.onsuccess = () => {
-				let dataCount = dataUploadCountRequest.result;
+				const dataCount = dataUploadCountRequest.result;
 				const update = updateManager(dataCount);
 				const cursorRequest = dataUpload.openCursor(null, 'next');
 				cursorRequest.onsuccess = () => {
@@ -526,7 +527,7 @@ function parseCustomer(
 	row: TableRow,
 	customerDB: IDBDatabase
 ): void {
-	let customer: Customer = {
+	const customer: Customer = {
 		id: trimWhiteSpace(row[map.id] as string),
 		row: row.row,
 		addresses: undefined,
@@ -543,18 +544,18 @@ function parseCustomer(
 	};
 
 	function updateCustomer(id: string, key: CustomerReferences, value: number) {
-		let transaction = customerDB.transaction('customers', 'readwrite');
-		let oStore = transaction.objectStore('customers');
-		let index = oStore.index('customers-id');
-		let request = index.get(id);
+		const transaction = customerDB.transaction('customers', 'readwrite');
+		const oStore = transaction.objectStore('customers');
+		const index = oStore.index('customers-id');
+		const request = index.get(id);
 		request.onsuccess = () => {
-			let entry: Customer = request.result;
+			const entry: Customer = request.result;
 			if (entry) {
 				if (Object.keys(entry).includes(key)) {
 					// the property does exist
 					if (entry[key] instanceof ArrayBuffer) {
 						// is there already something
-						let buf: ArrayBuffer = entry[key];
+						const buf: ArrayBuffer = entry[key];
 
 						//check if the ArrayBuffer already contains our item
 						for (
@@ -577,8 +578,8 @@ function parseCustomer(
 							}
 							// @ts-expect-error no ts implementation (or at least I wasn't able find the correct way)
 							buf.resize(buf.byteLength + 2);
-							let view = new DataView(buf);
-							let index = (view.byteLength as number) / 2 - 1;
+							const view = new DataView(buf);
+							const index = (view.byteLength as number) / 2 - 1;
 							view.setUint16(index, value);
 							entry[key] = buf;
 						}
@@ -586,7 +587,7 @@ function parseCustomer(
 						// there is no Array buffer
 						// so we create one
 						// @ts-expect-error no ts implementation (or at least I wasn't able find the correct way)
-						let buf = new ArrayBuffer(2, { maxByteLength: 128 });
+						const buf = new ArrayBuffer(2, { maxByteLength: 128 });
 						new DataView(buf).setUint16(0, value);
 						entry[key] = buf;
 					}
@@ -599,7 +600,7 @@ function parseCustomer(
 
 					//
 					// @ts-expect-error this is valid, see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer/ArrayBuffer#parameters
-					let buf = new ArrayBuffer(2, { maxByteLength: 128 });
+					const buf = new ArrayBuffer(2, { maxByteLength: 128 });
 					new DataView(buf).setUint16(0, value);
 					Object.defineProperty(entry, key, {
 						configurable: true,
@@ -628,11 +629,11 @@ function parseCustomer(
 		if (data.length !== 0) {
 			const transaction = customerDB.transaction(type, 'readwrite');
 			const oStore = transaction.objectStore(type);
-			let CountRequest = oStore.count();
+			const CountRequest = oStore.count();
 			CountRequest.onsuccess = () => {
-				let count = CountRequest.result;
-				for (let [index, value] of data.entries()) {
-					let id = count + index + 1;
+				const count = CountRequest.result;
+				for (const [index, value] of data.entries()) {
+					const id = count + index + 1;
 					value.row = id;
 					oStore.add(value);
 					updateCustomer(row[map.id] as string, type, id);
@@ -643,12 +644,12 @@ function parseCustomer(
 	}
 
 	if (map.customerNotes !== undefined) {
-		let note = trimWhiteSpace(row[map.customerNotes] as string);
-		let notes = note.split(',').map((item) => trimWhiteSpace(item));
+		const note = trimWhiteSpace(row[map.customerNotes] as string);
+		const notes = note.split(',').map((item) => trimWhiteSpace(item));
 		if (customer.notes === undefined) {
 			customer.notes = [];
 		}
-		for (let n of notes) {
+		for (const n of notes) {
 			if (n.trim() !== '') {
 				customer.notes.push(n);
 			}
@@ -660,9 +661,9 @@ function parseCustomer(
 	}
 
 	if (map.firstContact !== undefined) {
-		let date = Array.from(row[map.firstContact] as string);
-		let year = date.splice(0, 4);
-		let month = date.splice(0, 2);
+		const date = Array.from(row[map.firstContact] as string);
+		const year = date.splice(0, 4);
+		const month = date.splice(0, 2);
 		customer.firstContact = new Date(
 			parseInt(year.join('')),
 			parseInt(month.join('')) - 1,
@@ -671,9 +672,9 @@ function parseCustomer(
 	}
 
 	if (map.latestContact !== undefined) {
-		let date = Array.from(row[map.latestContact] as string);
-		let year = date.splice(0, 4);
-		let month = date.splice(0, 2);
+		const date = Array.from(row[map.latestContact] as string);
+		const year = date.splice(0, 4);
+		const month = date.splice(0, 2);
 		customer.latestContact = new Date(
 			parseInt(year.join('')),
 			parseInt(month.join('')) - 1,
@@ -681,37 +682,37 @@ function parseCustomer(
 		);
 	}
 
-	let transaction = customerDB.transaction('customers', 'readwrite');
-	let oStore = transaction.objectStore('customers');
+	const transaction = customerDB.transaction('customers', 'readwrite');
+	const oStore = transaction.objectStore('customers');
 	oStore.put(customer);
 
-	let persons: PersonType[] = [];
-	let emails: EmailType[] = [];
-	let phones: PhoneNumberType[] = [];
-	let addresses: AddressType[] = [];
-	let companies: CompanyType[] = [];
-	let banks: BankType[] = [];
+	const persons: PersonType[] = [];
+	const emails: EmailType[] = [];
+	const phones: PhoneNumberType[] = [];
+	const addresses: AddressType[] = [];
+	const companies: CompanyType[] = [];
+	const banks: BankType[] = [];
 
 	// parse Persons
 	if (map.firstName !== undefined || map.lastName !== undefined) {
 		// now we know there is something which fits the scheme of a person
 		if (map.firstName !== undefined) {
 			// if there is a first Name
-			let firstName = trimWhiteSpace(row[map.firstName] as string);
+			const firstName = trimWhiteSpace(row[map.firstName] as string);
 			if (firstName.includes('&')) {
 				// its actually to persons (related or married)
-				let names = firstName
+				const names = firstName
 					.split('&')
 					.map((item) => trimWhiteSpace(item));
-				let person1 = structuredClone(PersonTemplate);
-				let person2 = structuredClone(PersonTemplate);
+				const person1 = structuredClone(PersonTemplate);
+				const person2 = structuredClone(PersonTemplate);
 				person1.firstName = names[0];
 				person2.firstName = names[1];
 				persons.push(person1);
 				persons.push(person2);
 			} else {
 				// only one person
-				let person = structuredClone(PersonTemplate);
+				const person = structuredClone(PersonTemplate);
 				person.firstName = firstName;
 				persons.push(person);
 			}
@@ -721,12 +722,12 @@ function parseCustomer(
 			// if there is a last name
 			if (persons.length !== 0) {
 				// are the any persons already
-				for (let p of persons) {
+				for (const p of persons) {
 					p.lastName = trimWhiteSpace(row[map.lastName] as string);
 				}
 			} else {
 				// create a person
-				let person = structuredClone(PersonTemplate);
+				const person = structuredClone(PersonTemplate);
 				person.lastName = trimWhiteSpace(row[map.lastName] as string);
 				person.firstName = '';
 				persons.push(person);
@@ -735,7 +736,7 @@ function parseCustomer(
 
 		if (map.title !== undefined) {
 			if (persons.length !== 0) {
-				for (let p of persons) {
+				for (const p of persons) {
 					p.title = trimWhiteSpace(row[map.title] as string);
 				}
 			}
@@ -744,7 +745,7 @@ function parseCustomer(
 
 	if (map.companyName === undefined && map.alias !== undefined) {
 		// if the is no company name assume the alias field applies to the person
-		for (let p of persons) {
+		for (const p of persons) {
 			if (p.alias === undefined) {
 				p.alias = [];
 			}
@@ -754,13 +755,13 @@ function parseCustomer(
 
 	if (persons.length !== 0 && map.personNotes !== undefined) {
 		// if there are persons and we can assign notes then do so
-		for (let p of persons) {
+		for (const p of persons) {
 			if (p.notes === undefined) {
 				p.notes = [];
 			}
-			let note = trimWhiteSpace(row[map.personNotes] as string);
-			let notes = note.split(',').map((item) => trimWhiteSpace(item));
-			for (let n of notes) {
+			const note = trimWhiteSpace(row[map.personNotes] as string);
+			const notes = note.split(',').map((item) => trimWhiteSpace(item));
+			for (const n of notes) {
 				if (n.trim() !== '') {
 					p.notes.push(n);
 				}
@@ -771,14 +772,14 @@ function parseCustomer(
 	addParsedData(persons, 'persons');
 
 	// parse address
-	let addressParams = ['city', 'street', 'zip', 'country'];
+	const addressParams = ['city', 'street', 'zip', 'country'];
 	if (
 		map.city !== undefined ||
 		map.street !== undefined ||
 		map.zip !== undefined ||
 		map.country !== undefined
 	) {
-		let address = structuredClone(AddressTemplate);
+		const address = structuredClone(AddressTemplate);
 		for (const param of addressParams) {
 			if (map[param] !== undefined) {
 				address[param] = trimWhiteSpace(row[map[param]] as string);
@@ -791,18 +792,18 @@ function parseCustomer(
 
 	// parse email
 	if (map.email !== undefined) {
-		let mail = trimWhiteSpace(row[map.email] as string);
+		const mail = trimWhiteSpace(row[map.email] as string);
 		if (mail.trim() !== '') {
-			let mails = mail.split(',').map((item) => trimWhiteSpace(item));
+			const mails = mail.split(',').map((item) => trimWhiteSpace(item));
 			for (const m of mails) {
-				let email = structuredClone(EmailTemplate);
-				let matched = rx.EmailRx.exec(m);
+				const email = structuredClone(EmailTemplate);
+				const matched = rx.EmailRx.exec(m);
 				if (matched?.[0] !== null && matched?.[0] !== undefined) {
 					email.email = matched[0];
 					if (email.notes === undefined) {
 						email.notes = [];
 					}
-					let note = trimWhiteSpace(m.replace(matched[0], ''));
+					const note = trimWhiteSpace(m.replace(matched[0], ''));
 					if (note !== '') {
 						email.notes.push(note);
 					}
@@ -813,13 +814,13 @@ function parseCustomer(
 	}
 
 	if (emails.length !== 0 && map.emailNotes !== undefined) {
-		for (let m of emails) {
+		for (const m of emails) {
 			if (!Array.isArray(m.notes)) {
 				m.notes = [];
 			}
-			let note = trimWhiteSpace(row[map.emailNotes] as string);
-			let notes = note.split(',').map((item) => trimWhiteSpace(item));
-			for (let n of notes) {
+			const note = trimWhiteSpace(row[map.emailNotes] as string);
+			const notes = note.split(',').map((item) => trimWhiteSpace(item));
+			for (const n of notes) {
 				if (n.trim() !== '') {
 					m.notes.push(n);
 				}
@@ -831,21 +832,21 @@ function parseCustomer(
 
 	// parse phone number
 	if (map.phone !== undefined) {
-		let phone = structuredClone(PhoneTemplate);
-		let number = trimWhiteSpace(row[map.phone] as string);
+		const phone = structuredClone(PhoneTemplate);
+		const number = trimWhiteSpace(row[map.phone] as string);
 		phone.phone = number.replaceAll('[^0-9+]', '');
 		phones.push(phone);
 	}
 
 	if (phones.length !== 0 && map.phoneNotes !== undefined) {
-		let note = trimWhiteSpace(row[map.phoneNotes] as string);
-		let notes = note.split(',').map((item) => trimWhiteSpace(item));
+		const note = trimWhiteSpace(row[map.phoneNotes] as string);
+		const notes = note.split(',').map((item) => trimWhiteSpace(item));
 
-		for (let p of phones) {
+		for (const p of phones) {
 			if (!Array.isArray(p.notes)) {
 				p.notes = [];
 			}
-			for (let n of notes) {
+			for (const n of notes) {
 				if (n.trim() !== '') {
 					p.notes.push(n);
 				}
@@ -857,19 +858,19 @@ function parseCustomer(
 
 	// parse company
 	if (map.companyName !== undefined) {
-		let company = structuredClone(CompanyTemplate);
+		const company = structuredClone(CompanyTemplate);
 		company.name = trimWhiteSpace(row[map.companyName] as string);
 		companies.push(company);
 	}
 
 	if (companies.length !== 0 && map.companyNotes !== undefined) {
-		let note = trimWhiteSpace(row[map.companyNotes] as string);
-		let notes = note.split(',').map((item) => trimWhiteSpace(item));
-		for (let c of companies) {
+		const note = trimWhiteSpace(row[map.companyNotes] as string);
+		const notes = note.split(',').map((item) => trimWhiteSpace(item));
+		for (const c of companies) {
 			if (c.notes === undefined) {
 				c.notes = [];
 			}
-			for (let n of notes) {
+			for (const n of notes) {
 				if (n.trim() !== '') {
 					c.notes.push(n);
 				}
@@ -881,7 +882,7 @@ function parseCustomer(
 
 	// parse bank
 	if (map.bankName !== undefined) {
-		let bank = structuredClone(BankTemplate);
+		const bank = structuredClone(BankTemplate);
 		bank.name = trimWhiteSpace(row[map.bankName] as string);
 		if (map.bankCode !== undefined)
 			bank.bankCode = trimWhiteSpace(row[map.bankCode] as string);
@@ -890,12 +891,12 @@ function parseCustomer(
 		if (map.bic !== undefined)
 			bank.bic = trimWhiteSpace(row[map.bic] as string);
 		if (map.bankNotes !== undefined) {
-			let note = trimWhiteSpace(row[map.bankNotes] as string);
-			let notes = note.split(',').map((item) => trimWhiteSpace(item));
+			const note = trimWhiteSpace(row[map.bankNotes] as string);
+			const notes = note.split(',').map((item) => trimWhiteSpace(item));
 			if (bank.notes === undefined) {
 				bank.notes = [];
 			}
-			for (let n of notes) {
+			for (const n of notes) {
 				if (n.trim() !== '') {
 					bank.notes.push(n);
 				}

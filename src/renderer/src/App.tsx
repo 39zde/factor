@@ -72,7 +72,7 @@ function appReducer(
 	switch (action.type) {
 		case 'set': {
 			if (action.change.appearances?.colorTheme !== undefined) {
-				let themeTag = document.getElementById('theme');
+				const themeTag = document.getElementById('theme');
 				if (themeTag !== null) {
 					themeTag.innerText = `:root{ color-scheme: ${action.change.appearances?.colorTheme} ; }`;
 				}
@@ -245,9 +245,9 @@ function App(): JSX.Element {
 		appReducer,
 		{ defaultContext, document, TableWorker, ImportWorker, window },
 		(args): AppContextType => {
-			let dataBasesPromise = args.window.indexedDB.databases();
+			const dataBasesPromise = args.window.indexedDB.databases();
 			let out: AppContextType;
-			let storedSettings: AppSettingsType | null =
+			const storedSettings: AppSettingsType | null =
 				args.window.electron.ipcRenderer.sendSync('settings', {
 					type: 'readSettings',
 				});
@@ -259,7 +259,7 @@ function App(): JSX.Element {
 						TableWorker: args.TableWorker,
 					},
 				};
-				let themeTag = args.document.getElementById('theme');
+				const themeTag = args.document.getElementById('theme');
 				if (themeTag !== null) {
 					themeTag.innerText = `:root{ color-scheme: ${storedSettings.appearances.colorTheme} ; }`;
 				}
@@ -268,7 +268,7 @@ function App(): JSX.Element {
 			}
 
 			dataBasesPromise.then((dbs) => {
-				let tables: string[] = [];
+				const tables: string[] = [];
 				for (const item of dbs) {
 					if (item.name !== undefined) {
 						tables.push(item.name);
@@ -284,8 +284,8 @@ function App(): JSX.Element {
 	);
 
 	const resizeHandler = () => {
-		let height = getHeight();
-		let width = getWidth();
+		const height = getHeight();
+		const width = getWidth();
 		const newValues: AppSettingsChange = {
 			appearances: {
 				width: width,

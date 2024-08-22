@@ -150,9 +150,9 @@ export function Settings() {
 
 	const updateChanged = useCallback(
 		(change: AppSettingsChange) => {
-			let copy = changed;
-			let parentKey = Object.keys(change)[0];
-			let key = Object.keys(change[parentKey])[0];
+			const copy = changed;
+			const parentKey = Object.keys(change)[0];
+			const key = Object.keys(change[parentKey])[0];
 			if (copy[parentKey] === undefined) {
 				Object.defineProperty(copy, parentKey, {
 					configurable: true,

@@ -433,9 +433,9 @@ export function Table({
 	// remove rows, if the scope decreased
 	function updateScope(newScope: number) {
 		if (hasStarted) {
-			let diff = Math.abs(tableState.scope - newScope);
+			const diff = Math.abs(tableState.scope - newScope);
 			if (newScope < tableState.scope && newScope !== 0) {
-				let rows = tableState.rows;
+				const rows = tableState.rows;
 				// console.log(rows)
 				if (rows.length !== 0) {
 					for (let i = tableState.scope; i > newScope; i--) {
@@ -568,8 +568,8 @@ export function Table({
 				}
 				switch (eventData.action) {
 					case 'add':
-						let rows = tableState.rows;
-						let filtered = rows.filter((value) => {
+						const rows = tableState.rows;
+						const filtered = rows.filter((value) => {
 							//@ts-expect-error value is unknown to ts, because it was obtained by onMessage
 							if (value.row === eventData.data.row) return true;
 							return false;
@@ -594,8 +594,8 @@ export function Table({
 						break;
 					case 'next':
 						if (tableState.accept === 'next') {
-							let rows = tableState.rows;
-							let filtered = rows.filter((value) => {
+							const rows = tableState.rows;
+							const filtered = rows.filter((value) => {
 								//@ts-expect-error value is unknown to ts, because it was obtained by onMessage
 								if (value.row === eventData.data.row) return true;
 								return false;
@@ -628,8 +628,8 @@ export function Table({
 						break;
 					case 'prev':
 						if (tableState.accept === 'prev') {
-							let rows = tableState.rows;
-							let filtered = rows.filter((value) => {
+							const rows = tableState.rows;
+							const filtered = rows.filter((value) => {
 								//@ts-expect-error value is unknown to ts, because it was obtained by onMessage
 								if (value.row === eventData.data.row) return true;
 								return false;

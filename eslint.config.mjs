@@ -1,5 +1,5 @@
+// @ts-check
 import globals from 'globals';
-import eslint from '@eslint/js';
 import tseslint from 'typescript-eslint';
 import react from 'eslint-plugin-react';
 import * as tsParser from '@typescript-eslint/parser';
@@ -7,9 +7,9 @@ import * as tsParser from '@typescript-eslint/parser';
 // set ESLINT_USE_FLAT_CONFIG=true as as system environment variable
 
 export default tseslint.config(
-	eslint.configs.recommended,
-	...tseslint.configs.recommendedTypeChecked,
-	...tseslint.configs.stylisticTypeChecked,
+	tseslint.configs.eslintRecommended,
+	tseslint.configs.base,
+	...tseslint.configs.recommended,
 	{
 		name: 'project settings',
 		files: [
@@ -19,19 +19,48 @@ export default tseslint.config(
 			'src/renderer/src/util/worker/*.js',
 			'src/preload/*.d.ts',
 		],
-		ignores: [],
+		ignores: [
+			'node_modules',
+			'dist',
+			'contributing.md',
+			'roadmap.md',
+			'./resources/*',
+			'./out/*',
+			'./dist/*',
+			'pnpm-lock.yaml',
+			'LICENSE.md',
+			'tsconfig.json',
+			'tsconfig.*.json',
+			'.prettierrc.yaml',
+			'.prettierignore',
+			'.yarnrc.yaml',
+			'.npmrc',
+			'.gitignore',
+			'.editorconfig',
+			'README.md',
+			'*.svg',
+			'*.png',
+			'*.yaml',
+			'yarn.lock',
+			'.yml',
+			'*.ico',
+			'./electron.vite.config.ts',
+			'./eslint.config.js',
+		],
 		plugins: {
 			react,
 		},
-		rules: {},
 		languageOptions: {
 			globals: {
 				...globals.browser,
 			},
 			parser: tsParser,
+			ecmaVersion: 'latest',
+			sourceType: 'module',
 			parserOptions: {
-				project: './tsconfig.json',
+				project: ['./tsconfig.web.json'],
 				tsconfigRootDir: import.meta.dirname,
+				ecmaVersion: 'latest',
 				ecmaFeatures: {
 					jsx: true,
 				},

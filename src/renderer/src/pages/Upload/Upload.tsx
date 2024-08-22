@@ -118,7 +118,6 @@ export function Upload(): React.JSX.Element {
 				switch (e.data.type) {
 					case 'progress':
 						if (importButtonRef.current !== null) {
-							// @ts-ignore
 							importButtonRef.current.innerText = e.data.message;
 						}
 						break;

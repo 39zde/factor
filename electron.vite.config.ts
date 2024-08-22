@@ -22,6 +22,6 @@ export default defineConfig({
 				'@comps': resolve('src/renderer/src/comps'),
 			},
 		},
-		plugins: [react(), mkcert()],
+		plugins: [react(), mkcert(), ],
 	},
 });
