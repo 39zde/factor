@@ -1,4 +1,6 @@
-# factor
+# Factor
+
+![Logo](./resources/icons/android/solo_whiteldpi.png)
 
 An invoicing application built with TypeScript:React on top of IndexDB packaged with Electron
 
@@ -17,7 +19,7 @@ I have not run any benchmarks yet, but scrolling a in a Table with:
 
 can be done easily. Even in dev mode and on old hardware, thanks to using WebWorkers [2].
 
-For now the uploading of data can only be done in csv with semi-colon (;) separated fields with customers as the only upload option. There are still a bunch of things to do (see `roadmap.md`), before adding new tables. 
+For now the uploading of data can only be done in csv with semi-colon (;) separated fields with customers as the only upload option. There are still a bunch of things to do (see `roadmap.md`), before adding new tables.
 
 
 ## Development
