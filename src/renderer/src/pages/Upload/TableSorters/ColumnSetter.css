@@ -1,0 +1,11 @@
+ /* prettier-ignore */
+ @import url('../../../base.css');
+
+.dataRow {
+	display: inline-flex;
+	align-items: center;
+	gap: 15px;
+	justify-content: space-between;
+	padding: 0 20px;
+	width: 100%;
+}
