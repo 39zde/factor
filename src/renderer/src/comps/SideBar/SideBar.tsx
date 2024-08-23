@@ -371,7 +371,7 @@ export default function SideBar({
 								}
 							/>
 						}
-						text="Help"
+						text={general.language === 'deutsch' ? 'Hilfe' : 'Help'}
 						active={routesHook.showHelp}
 					/>
 					<LowerButton
@@ -390,7 +390,11 @@ export default function SideBar({
 								}
 							/>
 						}
-						text="Settings"
+						text={
+							general.language === 'deutsch'
+								? 'Einstellungen'
+								: 'Settings'
+						}
 						active={routesHook.showSettings}
 					/>
 				</div>
