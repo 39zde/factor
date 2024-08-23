@@ -4,7 +4,7 @@
 - [ ] allow to order cols
 - [ ] remember col sizes
 - [ ] localize column names
-- [ ] Add synthetic test data
+- [x] Add synthetic test data
 
 ## Long Term
 - [ ] support editing
