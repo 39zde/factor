@@ -169,3 +169,8 @@ h3 {
 	width: 100%;
 	border-radius: none;
 }
+
+a{
+ text-decoration: underline;
+ color: light-dark(var(--color-dark-1),var(--color-light-1))
+}

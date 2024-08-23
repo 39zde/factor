@@ -98,7 +98,15 @@
  }
 
  tbody>tr>td:first-child {
- 	background: light-dark(var(--color-light-2), var(--color-dark-2));
+	 background: light-dark(var(--color-light-2), var(--color-dark-2));
+	 > span{
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		text-align: center;
+		width: 100%;
+	}
+
  }
 
  td {

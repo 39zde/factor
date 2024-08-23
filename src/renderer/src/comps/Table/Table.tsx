@@ -192,7 +192,7 @@ function tableReducer(
 				tableState.activeBg = action.newVal;
 				tableState.resizeStyles[action.newVal] = {
 					background:
-						'light-dark(var(--color-dark-2),var(--color-light-2))',
+						'light-dark(var(--color-dark-2),var(--color-dark-3))',
 					cursor: 'col-resize',
 				};
 			}
