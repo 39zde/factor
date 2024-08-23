@@ -44,6 +44,7 @@ self.onmessage = function requestHandler(e: MessageEvent) {
 			);
 			break;
 		default:
+			postMessage({ type: 'error', data: 'unknown request type' });
 			break;
 	}
 };
@@ -63,7 +64,7 @@ function startingRows(
 	dbRequest.onerror = (e: Event) => {
 		postMessage({
 			type: 'error',
-			data: e,
+			data: { msg: 'starting Rows db Request Error', error: e },
 		});
 	};
 
@@ -253,6 +254,9 @@ function fillReferences(
 	if (targetCount === 0) {
 		if (actionType !== undefined) {
 			postStream(copy, actionType, copy.row);
+		}
+		if (doneHandler !== undefined) {
+			doneHandler.add = copy;
 		}
 	}
 }
