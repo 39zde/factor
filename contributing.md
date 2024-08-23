@@ -27,3 +27,7 @@ Also have a look at `./src/renderer/src/util/types/database`
 ## Workspace
 
 Some files are hidden by default in `factor.code-workspace`. Development so far happened in [VSCodium](https://github.com/VSCodium/vscodium). You may choose whatever IDE you like.
+
+## Sample Data
+
+The Sample Data was generated with [fakery.dev](https://fakery.dev/). All Sample data is stored in `./resources/data`
