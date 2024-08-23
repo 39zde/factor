@@ -25,6 +25,7 @@ import type {
 	MenuItem,
 } from '@renderer/util/types/types';
 
+/** Starting Table context */
 const PlaceHolderTableContext: TableContextType = {
 	dataBaseName: '',
 	tableName: '',
@@ -53,6 +54,7 @@ const PlaceHolderTableContext: TableContextType = {
 	hasStarted: false,
 };
 
+/** dispatch function for the TableContext */
 function tableReducer(
 	tableState: TableContextType,
 	action: TableDispatchAction
@@ -315,7 +317,7 @@ export function Table({
 		}
 	);
 
-	// reset the table stated to a state as if it were initialized (see the function in useReducer)
+	/** reset the table stated to a state as if it were initialized (see the function in useReducer) */
 	function resetTableState() {
 		for (const [key, val] of Object.entries(PlaceHolderTableContext)) {
 			switch (key as keyof TableContextType) {
@@ -479,10 +481,11 @@ export function Table({
 		}
 	}
 
-	// set the scope
-	// initialize Rows if they have not started yet
-	// add rows, if the scope increased
-	// remove rows, if the scope decreased
+	/** set the scope
+		 initialize Rows if they have not started yet
+		 add rows, if the scope increased
+	 	remove rows, if the scope decreased
+	*/
 	function updateScope(newScope: number) {
 		if (tableState.hasStarted) {
 			const diff = Math.abs(tableState.scope - newScope);
@@ -547,7 +550,7 @@ export function Table({
 		}
 	}
 
-	// calculate the scope from rowHeight and Table height
+	/** calculate the scope from rowHeight and Table height */
 	function updateSizing(rowHeight: number, body: HTMLDivElement | null) {
 		if (body !== null) {
 			const wrapperHeight = body.getBoundingClientRect().height;
