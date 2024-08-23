@@ -13,6 +13,7 @@ export type {
 
 export type {
 	Customer,
+	CustomerRow,
 	PersonType,
 	EmailType,
 	PhoneNumberType,
@@ -20,6 +21,8 @@ export type {
 	BankType,
 	CompanyType,
 	ContactType,
+	CustomerDBObjectStores,
+	TaxInfos,
 	CustomerSortingMap,
 	CustomerSortingMapProps,
 } from './database/CustomerTypes';
@@ -30,6 +33,7 @@ export type {
 	TableProps,
 	TableDispatchAction,
 	TableContextType,
+	ResizeStyle,
 } from './comps/Table/Table';
 
 export type { HelpTexts, HelpItem } from './pages/Help/HelpTexts';
@@ -51,6 +55,7 @@ export type {
 	DerefRow,
 	CustomerKeys,
 	CustomerReferences,
+	BaseRow,
 } from './database/DataBaseData';
 
 export type {

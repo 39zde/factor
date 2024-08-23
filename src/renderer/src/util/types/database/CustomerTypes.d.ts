@@ -1,26 +1,34 @@
 export interface Customer {
 	row: number;
+	/** An unique ID  */
 	id: string;
-	/**
-	 * old or alternative Identifiers
-	 */
+	/** old or alternative Identifiers */
 	altIDs?: string[];
-	/**
-	 * Reference Index to persons
-	 */
+	/** Reference Index to persons */
 	persons?: ArrayBuffer;
+	/** Reference Index to addresses oStore */
 	addresses?: ArrayBuffer;
+	/** Reference Index to banks oStore */
 	banks?: ArrayBuffer;
+	/** Reference Index to company oStore  */
 	company?: ArrayBuffer;
+	/** Reference Index to emails oStore  */
 	emails?: ArrayBuffer;
+	/** Reference Index to phones oStore  */
 	phones?: ArrayBuffer;
+	/** Description of the customer; What do they do? */
 	description?: string;
+	/** Date of the first interaction  */
 	firstContact?: Date;
+	/** Date of the most recent interaction  */
 	latestContact?: Date;
+	/** When was this customer added to the database; will be added automatically */
 	created: Date;
+	/** Anything to remember about the customer */
 	notes?: string[];
 }
 
+/** Dereferenced Version of Customer. This is what will be posted to main tread */
 export interface CustomerRow {
 	row: number;
 	id: string;
@@ -40,33 +48,19 @@ export interface CustomerRow {
 
 export interface PersonType {
 	row: number;
-	/**
-	 * title
-	 */
+	/** title */
 	title: TitleType;
-	/**
-	 * first Name (including middle Names)
-	 */
+	/** first Name (including middle Names) */
 	firstName: string;
-	/**
-	 * any last Names
-	 */
+	/** any last Names */
 	lastName: string;
-	/**
-	 * (optional)
-	 */
+	/** (optional) */
 	alias?: string[];
-	/**
-	 * Reference numbers  to associated email addresses
-	 */
+	/** Reference numbers  to associated email addresses */
 	email?: number[];
-	/**
-	 *  Reference numbers associated phone information
-	 */
+	/**  Reference numbers associated phone information */
 	phone?: number[] | null | undefined;
-	/**
-	 * (optional) notes on that person
-	 *  */
+	/** (optional) notes on that person */
 	notes?: string[];
 }
 
@@ -88,24 +82,20 @@ export interface PhoneNumberType {
 }
 
 export interface AddressType {
-	// unique identifier
+	/** unique identifier */
 	row: number;
-	// what kind of address
+	/** what kind of address */
 	type?: ContactType;
-	//  street name
+	/**  street name */
 	street: string;
-	// (optional) street number eg. 12 or 12a
-	number?: string;
-	// (optional) the city name
+	/** (optional) the city name */
 	city: string;
-	// postal code
+	/** postal code */
 	zip: string;
-	// country or country code
+	/** country or country code */
 	country: string;
-	// (optional) additional notes
+	/** (optional) additional notes */
 	notes?: string[];
-	// hash of street number city zip and country
-	hash: string;
 }
 
 export interface BankType {
@@ -188,35 +178,7 @@ export interface CustomerSortingMap {
 	description?: string;
 }
 
-export type CustomerSortingMapProps =
-	| 'title'
-	| 'firstName'
-	| 'lastName'
-	| 'email'
-	| 'phone'
-	| 'web'
-	| 'companyName'
-	| 'alias'
-	| 'street'
-	| 'zip'
-	| 'city'
-	| 'country'
-	| 'firstContact'
-	| 'latestContact'
-	| 'customerNotes'
-	| 'addressNotes'
-	| 'bankNotes'
-	| 'emailNotes'
-	| 'personNotes'
-	| 'phoneNotes'
-	| 'personNotes'
-	| 'companyNotes'
-	| 'iban'
-	| 'bic'
-	| 'bankName'
-	| 'bankCode'
-	| 'description'
-	| undefined;
+export type CustomerSortingMapProps = keyof CustomerSortingMap;
 
 export type CustomerDBObjectStores =
 	| 'customers'
