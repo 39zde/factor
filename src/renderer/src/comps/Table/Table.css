@@ -16,42 +16,6 @@
  	overflow: hidden;
  }
 
- .tableInfo {
- 	padding: 12px 0;
- 	width: 90%;
- 	align-self: center;
- 	margin: 10px 0;
- 	border-radius: 32px;
- 	display: flex;
- 	justify-content: center;
- 	align-items: center;
- 	overflow-x: visible;
- 	overflow-y: visible;
- 	border: 1px solid light-dark(var(--color-light-3), var(--color-dark-3));
- }
-
- .tableInfo li {
- 	display: flex;
- 	float: left;
- 	border-right: 1px solid light-dark(var(--color-light-3), var(--color-dark-3));
- 	padding: 0 12px;
- 	font-size: 14px;
- 	line-height: 14px;
- 	/* height: 100%; */
- 	align-self: center;
- 	justify-content: center;
- 	align-items: center;
- 	height: 36px;
-
- 	&:first-child {
- 		align-self: center;
- 		height: 36px;
- 	}
-
- 	&:last-child {
- 		border: none;
- 	}
- }
 
  .tableElement {
  	height: 100%;
@@ -59,7 +23,6 @@
  	width: 100%;
  	overflow-x: scroll;
  	overflow-y: hidden;
- 	scrollbar-color: light-dark((var(--color-dark-3) var(--color-light-1)), (var(--color-dark-3) var(--color-dark-1)));
  	scrollbar-width: var(--scrollbar-width);
  	position: relative;
 
@@ -68,6 +31,19 @@
  	}
  }
 
+@media (prefers-color-scheme: light) {
+	.tableElement{
+		scrollbar-color: var(--color-light-3) var(--color-light-2);
+	}
+}
+
+@media (prefers-color-scheme: dark) {
+	.tableElement{
+		scrollbar-color: var(--color-dark-3) var(--color-dark-2);
+	}
+}
+
+
  table,
  thead,
  th,
@@ -75,7 +51,7 @@
  td {
  	table-layout: auto;
  	border-collapse: collapse;
- 	border-color: light-dark(var(--color-dark-3), var(--color-light-3));
+ 	border-color: light-dark(var(--color-dark-3), var(--color-dark-3));
  	border-width: 1px;
  	border-style: solid;
  	font-family: Consolas, 'Cascadia Code', 'Courier New', Courier, monospace;
@@ -94,11 +70,11 @@
 	border-radius: 16px 16px 0 0 ;
 	border-style: solid;
 	border-width: 1px;
-	border-color: light-dark(var(--color-dark-3), var(--color-light-3));
+	border-color: light-dark(var(--color-dark-3), var(--color-dark-3));
  }
 
  thead {
- 	border-bottom: 3px solid light-dark(var(--color-dark-3), var(--color-light-3));
+ 	border-bottom: 3px solid light-dark(var(--color-dark-3), var(--color-dark-3));
  	border-top: none;
  	border-left: none;
  	border-right: none;
@@ -107,7 +83,7 @@
  }
 
  tfoot {
- 	border-top: 3px solid light-dark(var(--color-dark-3), var(--color-light-3));
+ 	border-top: 3px solid light-dark(var(--color-dark-3), var(--color-dark-3));
  	background: light-dark(var(--color-light-2), var(--color-dark-2));
  	border-bottom: none;
  	border-left: none;

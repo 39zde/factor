@@ -50,6 +50,7 @@ const PlaceHolderTableContext: TableContextType = {
 	accept: 'next',
 	lastReceived: 0,
 	cachedRowHeight: 0,
+	hasStarted: false,
 };
 
 function tableReducer(
@@ -250,7 +251,6 @@ export function Table({
 	const wrapperRef = useRef<HTMLDivElement>(null);
 	const colsRef = useRef<React.RefObject<HTMLTableCellElement>[]>([]).current;
 	const [causeRerender, setCauseRerender] = useState<boolean>(false);
-	const [hasStarted, setHasStarted] = useState<boolean>(false);
 	const [menuX, setMenuX] = useState<number>(0);
 	const [menuY, setMenuY] = useState<number>(0);
 	const [menuActive, setMenuActive] = useState<boolean>(false);
@@ -286,6 +286,7 @@ export function Table({
 			out.lastReceived = 0;
 			out.cachedRowHeight = args.rowHeight;
 			out.rows = [];
+			out.hasStarted = false;
 			// get out.update
 			if (args.updateHook !== undefined) {
 				out.update = args.updateHook.update;
@@ -317,7 +318,7 @@ export function Table({
 	// reset the table stated to a state as if it were initialized (see the function in useReducer)
 	function resetTableState() {
 		for (const [key, val] of Object.entries(PlaceHolderTableContext)) {
-			switch (key) {
+			switch (key as keyof TableContextType) {
 				case 'count':
 					worker.TableWorker.postMessage({
 						type: 'count',
@@ -414,15 +415,66 @@ export function Table({
 					});
 					break;
 				case 'resizeElemHeight':
+				case 'cachedRowHeight':
 				case 'scope':
+				case 'cursorX':
+				case 'lastReceived':
 					break;
-				default:
+				case 'isMouseDown':
+				case 'hasStarted':
 					dispatch({
 						type: 'set',
-						// @ts-expect-error the key are from PlaceHolderTableContext, which is of type TableContextType
-						name: key,
-						newVal: val,
+						name: key as keyof TableContextType,
+						newVal: false,
 					});
+					break;
+				case 'accept':
+					dispatch({
+						type: 'set',
+						name: 'accept',
+						newVal: 'next',
+					});
+					break;
+				case 'activeBg':
+				case 'activeCol':
+					dispatch({
+						type: 'set',
+						name: key as keyof TableContextType,
+						newVal: undefined,
+					});
+					break;
+				case 'cursor':
+					dispatch({
+						type: 'set',
+						name: 'cursor',
+						newVal: 'initial',
+					});
+					break;
+				case 'start':
+					dispatch({
+						type: 'set',
+						name: 'start',
+						newVal: 0,
+					});
+					break;
+				case 'tableName':
+					dispatch({
+						type: 'set',
+						name: 'tableName',
+						newVal: tableName,
+					});
+					break;
+				case 'rows':
+					worker.TableWorker.postMessage({
+						type: 'startingRows',
+						storeName: tableState.tableName,
+						dbVersion: database.dbVersion,
+						scope: tableState.scope,
+						dataBaseName: tableState.dataBaseName,
+					});
+					break;
+				default:
+					break;
 			}
 		}
 	}
@@ -432,7 +484,7 @@ export function Table({
 	// add rows, if the scope increased
 	// remove rows, if the scope decreased
 	function updateScope(newScope: number) {
-		if (hasStarted) {
+		if (tableState.hasStarted) {
 			const diff = Math.abs(tableState.scope - newScope);
 			if (newScope < tableState.scope && newScope !== 0) {
 				const rows = tableState.rows;
@@ -531,7 +583,11 @@ export function Table({
 
 	// exec once on first render
 	useEffect(() => {
-		setHasStarted(false);
+		dispatch({
+			type: 'set',
+			name: 'hasStarted',
+			newVal: false,
+		});
 	}, []);
 
 	// dynamically update rowHeight and scope, if the window resizes or the rowHeight changed in settings
@@ -554,7 +610,6 @@ export function Table({
 
 	// the database or db Version has changed init a new table and clear any old values
 	useEffect(() => {
-		setHasStarted(false);
 		resetTableState();
 	}, [tableState.tableName, database.dbVersion, colsHook, entriesHook]);
 
@@ -727,7 +782,11 @@ export function Table({
 						// @ts-ignore
 						newVal: eventData.data[eventData.data.length - 1].row,
 					});
-					setHasStarted(true);
+					dispatch({
+						type: 'set',
+						name: 'hasStarted',
+						newVal: true,
+					});
 				}
 				setCauseRerender(!causeRerender);
 				break;

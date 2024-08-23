@@ -34,6 +34,17 @@
 }
 
 
+@media (prefers-color-scheme: light) {
+	div{
+		scrollbar-color: var(--color-light-3) var(--color-light-2);
+	}
+}
+
+@media (prefers-color-scheme: dark) {
+	div{
+		scrollbar-color: var(--color-dark-3) var(--color-dark-1);
+	}
+}
 
 
 *,

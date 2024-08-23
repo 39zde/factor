@@ -25,7 +25,7 @@
  }
 
  .fileInput {
- 	height: 50px;
+ 	height: 40px;
  	padding: 12px;
  	width: 300px;
  	border-radius: 25px;
@@ -66,7 +66,7 @@
  }
 
  .fileDisplay {
- 	height: 46px;
+ 	height: 40px;
  	padding: 12px 50px 12px 12px;
  	width: fit-content;
  	border-radius: 25px;
@@ -85,7 +85,7 @@
 
  .removeFile {
  	position: absolute;
- 	height: 46px;
+ 	height: 40px;
  	display: flex;
  	justify-content: center;
  	align-items: center;
@@ -215,14 +215,45 @@
  	font-size: larger;
  }
 
- .dataRow {
- 	display: inline-flex;
+ .tableInfo {
+ 	padding: 12px 0;
+ 	width: 95%;
+ 	align-self: center;
+ 	margin: 10px 0;
+ 	border-radius: 16px;
+ 	display: flex;
+ 	justify-content: center;
  	align-items: center;
- 	gap: 15px;
- 	justify-content: space-between;
- 	padding: 0 20px;
- 	width: 100%;
+ 	overflow-x: visible;
+ 	overflow-y: visible;
+ 	background-color: light-dark(var(--color-light-2), var(--color-dark-2));
+ 	/* box-shadow: var(--box-shadow); */
+
  }
+
+ .tableInfo li {
+ 	display: flex;
+ 	float: left;
+ 	border-right: 1px solid light-dark(var(--color-light-3), var(--color-dark-3));
+ 	padding: 0 12px;
+ 	font-size: 14px;
+ 	line-height: 14px;
+ 	/* height: 100%; */
+ 	align-self: center;
+ 	justify-content: center;
+ 	align-items: center;
+ 	height: 36px;
+
+ 	&:first-child {
+ 		align-self: center;
+ 		height: 36px;
+ 	}
+
+ 	&:last-child {
+ 		border: none;
+ 	}
+ }
+
 
  .customerOptions {
  	/* display: flex;
