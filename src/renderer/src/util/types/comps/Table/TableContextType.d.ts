@@ -25,50 +25,29 @@ export interface TableContextType {
 	accept: 'prev' | 'next';
 	lastReceived: number;
 	cachedRowHeight: number;
+	hasStarted: boolean;
 }
 
 export interface ResizeStyle {
-	background: 'light-dark(var(--color-dark-2),var(--color-light-2))' | 'none';
+	background: 'light-dark(var(--color-dark-2),var(--color-dark-3))' | 'none';
 	cursor: 'col-resize' | 'initial';
 }
 
 export interface TableDispatchAction {
-	type:
-		| 'set'
-		| 'mouseDown'
-		| 'mouseUp'
-		| 'mouseMove'
-		| 'mouseEnter'
-		| 'mouseLeave'
-		| 'changeAccept';
+	type: TableDispatchActionType;
 	index?: number;
-	name?:
-		| 'scope'
-		| 'count'
-		| 'cursorX'
-		| 'isMouseDown'
-		| 'columns'
-		| 'dbTable'
-		| 'cursor'
-		| 'userSelect'
-		| 'uniqueKey'
-		| 'tableName'
-		| 'update'
-		| 'activeBg'
-		| 'activeCol'
-		| 'columnWidths'
-		| 'tableHeight'
-		| 'resizeElemHeight'
-		| 'colsRef'
-		| 'resizeStyles'
-		| 'rows'
-		| 'accept'
-		| 'lastReceived'
-		| 'start'
-		| 'dbVersion'
-		| 'cachedRowHeight'
-		| 'dataBaseName'
-		| 'allColumns';
-	newVal: any;
+	name?: 'set' extends TableDispatchAction['type']
+		? keyof TableContextType
+		: undefined;
+	newVal: TableContextType[TableDispatchAction['name']];
 	worker?: Worker;
 }
+
+export type TableDispatchActionType =
+	| 'set'
+	| 'mouseDown'
+	| 'mouseUp'
+	| 'mouseMove'
+	| 'mouseEnter'
+	| 'mouseLeave'
+	| 'changeAccept';
