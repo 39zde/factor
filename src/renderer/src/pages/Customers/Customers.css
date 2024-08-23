@@ -1,4 +1,8 @@
-.customersWrapper{
+.page:has(.customersWrapper) {
+	align-content: center;
+}
+
+.customersWrapper {
 	height: 95%;
-	width: 100%
+	width: 100%;
 }
