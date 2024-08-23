@@ -17,7 +17,7 @@ I have not run any benchmarks yet, but scrolling a in a Table with:
  - column with of 250px
  - 5 dereferencing operations per row
 
-can be done easily. Even in dev mode and on old hardware, thanks to using WebWorkers [2].
+can be done easily. Even in dev mode and on old hardware, thanks to using WebWorkers [2]. Certainly more performant, than using Dexie.js, the library used before migrating to the custom solution.
 
 For now the uploading of data can only be done in csv with semi-colon (;) separated fields with customers as the only upload option. There are still a bunch of things to do (see `roadmap.md`), before adding new tables.
 
