@@ -9,7 +9,7 @@ Theming is done via the [light-dark](https://developer.mozilla.org/en-US/docs/We
 
 ## Settings/Context
 
-The AppSettings are being saved at the $HOME/.factor/settings.json file, to persist values between restarts. Be aware, that there will be a new folder created. There are plans to changes this behavior to choose the recommended folder by the system, but for now, thats what it is.
+The AppSettings are being saved at the $HOME/.factor/settings.json file, to persist values between restarts. Be aware, that there will be a new folder created. There are plans to change this behavior to choose the recommended folder by the system, but for now, that's what it is.
 
 ## Yarn Package Manager
 
