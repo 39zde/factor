@@ -671,6 +671,11 @@ export function Table({
 									name: 'lastReceived',
 									newVal: eventData.index,
 								});
+								dispatch({
+									type: 'set',
+									name: 'start',
+									newVal: eventData.data.row - tableState.scope,
+								});
 								rows.splice(0, 1);
 								rows.push(eventData.data);
 								dispatch({
