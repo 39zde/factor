@@ -12,6 +12,7 @@ import type {
 	TableRow,
 	CustomerReferences,
 	AddDataArgs,
+	DateInput,
 } from '../types/types';
 import { rx } from '../func/regex';
 
@@ -204,6 +205,24 @@ const BankTemplate: BankType = {
 	iban: '',
 	notes: undefined,
 };
+
+function parseDate(input: string, type: DateInput): Date {
+	switch (type) {
+		case 'YYYYMMDD':
+			let arrayed = Array.from(input);
+			const year = arrayed.splice(0, 4);
+			const month = arrayed.splice(0, 2);
+			return new Date(
+				parseInt(year.join('')),
+				parseInt(month.join('')) - 1,
+				parseInt(arrayed.join(''))
+			);
+		case 'YYYY-MM-DD hh:mm:ss':
+			return new Date(input);
+		default:
+			return new Date();
+	}
+}
 
 const updateManager = (total: number) => {
 	const increment = 0.1;
@@ -414,7 +433,7 @@ function compareItemToCondition(
 			}
 			return false;
 		case 'string':
-			if(typeof condition === "string"){
+			if (typeof condition === 'string') {
 				if (condition.length === 0) {
 					if (typeof value === 'string') {
 						if (value.trim().length === 0) {
@@ -661,24 +680,16 @@ function parseCustomer(
 	}
 
 	if (map.firstContact !== undefined) {
-		const date = Array.from(row[map.firstContact] as string);
-		const year = date.splice(0, 4);
-		const month = date.splice(0, 2);
-		customer.firstContact = new Date(
-			parseInt(year.join('')),
-			parseInt(month.join('')) - 1,
-			parseInt(date.join(''))
+		customer.firstContact = parseDate(
+			row[map.firstContact] as string,
+			'YYYY-MM-DD hh:mm:ss'
 		);
 	}
 
 	if (map.latestContact !== undefined) {
-		const date = Array.from(row[map.latestContact] as string);
-		const year = date.splice(0, 4);
-		const month = date.splice(0, 2);
-		customer.latestContact = new Date(
-			parseInt(year.join('')),
-			parseInt(month.join('')) - 1,
-			parseInt(date.join(''))
+		customer.firstContact = parseDate(
+			row[map.latestContact] as string,
+			'YYYY-MM-DD hh:mm:ss'
 		);
 	}
 

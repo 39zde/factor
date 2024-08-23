@@ -44,7 +44,7 @@ export type {
 	DoneHandler,
 } from './worker/table.worker';
 
-export type { AddDataArgs } from './worker/import.worker';
+export type { AddDataArgs, DateInput } from './worker/import.worker';
 
 export type {
 	TableRow,
