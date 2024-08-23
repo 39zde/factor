@@ -29,6 +29,7 @@ yarn install
 yarn dev
 yarn devtools
 ```
+Note: See "Yarn Package Manager" in `CONTRIBUTING.md` on how to use node's `corepack`
 
 # Links
 + [1] https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Basic_Terminology#key_characteristics
