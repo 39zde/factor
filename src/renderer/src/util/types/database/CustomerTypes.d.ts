@@ -46,6 +46,7 @@ export interface CustomerRow {
 	notes?: string[];
 }
 
+/** customer_db>persons oStore item */
 export interface PersonType {
 	row: number;
 	/** title */
@@ -64,6 +65,7 @@ export interface PersonType {
 	notes?: string[];
 }
 
+/** customer_db>emails oStore item */
 export interface EmailType {
 	row: number;
 	email: string;
@@ -71,6 +73,7 @@ export interface EmailType {
 	notes?: string[];
 }
 
+/** customer_db>phones oStore item */
 export interface PhoneNumberType {
 	row: number;
 	// (optional) the type of phone number
@@ -81,6 +84,7 @@ export interface PhoneNumberType {
 	notes?: string[];
 }
 
+/** customer_db>addresses oStore item */
 export interface AddressType {
 	/** unique identifier */
 	row: number;
@@ -98,6 +102,7 @@ export interface AddressType {
 	notes?: string[];
 }
 
+/** customer_db>banks oStore item */
 export interface BankType {
 	row: number;
 	name: string;
@@ -107,6 +112,7 @@ export interface BankType {
 	notes?: string[];
 }
 
+/** customer_db>company oStore item */
 export interface CompanyType {
 	row: number;
 	name: string;

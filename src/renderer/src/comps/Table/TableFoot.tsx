@@ -1,7 +1,7 @@
 import React from 'react';
 import type { TableFootProps } from '@renderer/util/types/comps/Table/TableFootProps';
 
-// a copy of table head without the ability to  resize
+/** mostly  a copy of table head without the ability to  resize */
 export function TableFoot({ columns }: TableFootProps): React.JSX.Element {
 	return (
 		<>
