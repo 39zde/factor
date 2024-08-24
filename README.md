@@ -8,7 +8,7 @@ An invoicing application built with TypeScript:React on top of IndexDB packaged 
 The most important step is already done, which is the Table Component in in `./src/renderer/src/comps/Table`.
 The approach of using IndexedDB is surprisingly performant, better than expected. So why go with IndexedDB?
 Well it is already built into the browser, meaning no added dependencies. Even though IndexedDB is a NOSQL-type Database[1],
-and the awkward async callbacks, without using `await`, building references into an object store (oStore) and referencing them is quite performant.
+the awkward async callbacks without using `await` and building references into an object store (oStore)is quite performant.
 I have not run any benchmarks yet, but scrolling a in a Table with:
  - entries: 4000+ entries
  - scope: 27
@@ -17,7 +17,7 @@ I have not run any benchmarks yet, but scrolling a in a Table with:
  - column with of 250px
  - 5 dereferencing operations per row
 
-can be done easily. Even in dev mode and on old hardware, thanks to using WebWorkers [2]. Certainly more performant, than using Dexie.js, the library used before migrating to the custom solution.
+can be done easily. Even in dev mode and on old hardware, thanks to using WebWorkers [2]. Certainly more performant, than using Dexie.js, the library used before migrating to the custom solution. That being said there is much more performance to be gained at various places. So far it looks very promising
 
 For now the uploading of data can only be done in csv with semi-colon (;) separated fields with customers as the only upload option. There are still a bunch of things to do (see `roadmap.md`), before adding new tables.
 
