@@ -30,7 +30,7 @@
 	color: light-dark(var(--color-dark-1), var(--color-light-1));
 
 	--box-shadow: 0 2px 12px -2px light-dark(var(--color-dark-3), var(--color-light-3));
-	--box-shadow-border: 1px solid light-dark(var(--color-light-2), var(--color-dark-3));
+	--box-shadow-border: 1px solid light-dark(var(--color-light-2)80, var(--color-dark-3)80);
 }
 
 
