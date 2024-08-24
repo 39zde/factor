@@ -122,6 +122,11 @@ function appReducer(
 								undefined
 									? action.change.database.databases.article_db
 									: appState.database.databases.article_db,
+							document_db:
+								action.change?.database?.databases?.document_db !==
+								undefined
+									? action.change.database.databases.document_db
+									: appState.database.databases.document_db,
 						},
 					},
 					general: {

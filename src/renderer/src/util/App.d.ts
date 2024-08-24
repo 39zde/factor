@@ -31,17 +31,13 @@ export interface AppSettingsType {
 		y: number;
 	};
 	database: {
-		/**
-		 * what data bases are populated and with what oStores
-		 */
+		/** what data bases are populated and with what oStores */
 		databases: {
 			customer_db: CustomerDBObjectStores[] | null;
 			article_db: ArticleDBObjectStores[] | null;
 			document_db: DocumentDBObjectStores[] | null;
 		};
-		/**
-		 * on what database version we are on. this applies to all all databases
-		 */
+		/** on what database version we are on. this applies to all all databases */
 		dbVersion: number;
 	};
 	general: {
