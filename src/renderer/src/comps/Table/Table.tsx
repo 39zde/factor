@@ -14,6 +14,7 @@ import { useAppContext } from '@renderer/App';
 import { TableHeadDisplay } from './TableHeadDisplay';
 import { TableBodyDisplay } from './TableBodyDisplay';
 import { TableFootDisplay } from './TableFootDisplay';
+import { ColumnOrderer } from './ColumnOrderer';
 import { ContextMenu } from '../ContextMenu/ContextMenu';
 import './Table.css';
 
@@ -825,62 +826,67 @@ export function Table({
 		}
 	};
 
-	const menuItems: Array<MenuItem> = useMemo(
-		() => [
-			{
-				name: general.language === 'deutsch' ? 'Spalten' : 'Columns',
-				menuItems: tableState.allColumns.map(
-					(item, index): MenuItem | undefined => {
-						if (index !== 0) {
-							return {
-								name: item,
-								checkBox: tableState.columns.includes(item),
-								action: () => {
-									// let cols = tableState.columns
-									console.log(tableState.allColumns[index]);
-									if (tableState.columns.includes(item)) {
-										dispatch({
-											type: 'set',
-											name: 'columns',
-											newVal: tableState.columns.toSpliced(
-												tableState.columns.indexOf(item),
-												1
-											),
-										});
-										setCauseRerender(!causeRerender);
-									} else {
-										let insertIndex = index;
-										for (const col of tableState.allColumns) {
-											if (col === item) {
-												break;
-											}
-											if (!tableState.columns.includes(col)) {
-												insertIndex -= 1;
-											}
-										}
-										dispatch({
-											type: 'set',
-											name: 'columns',
-											newVal: tableState.columns.toSpliced(
-												insertIndex,
-												0,
-												tableState.allColumns[index]
-											),
-										});
-										setCauseRerender(!causeRerender);
-									}
-									setMenuActive(false);
-								},
-							};
-						} else {
-							return undefined;
-						}
-					}
+	const columnChecker = (index: number, item: string) => {
+		if (tableState.columns.includes(item)) {
+			dispatch({
+				type: 'set',
+				name: 'columns',
+				newVal: tableState.columns.toSpliced(
+					tableState.columns.indexOf(item),
+					1
 				),
-			},
-		],
-		[tableState.columns]
-	);
+			});
+		} else {
+			let insertIndex = index;
+			for (const col of tableState.allColumns) {
+				if (col === item) {
+					break;
+				}
+				// if there is a column before our item, which is not visible, subtract 1 from the insertion index
+				if (!tableState.columns.includes(col)) {
+					insertIndex -= 1;
+				}
+			}
+			dispatch({
+				type: 'set',
+				name: 'columns',
+				newVal: tableState.columns.toSpliced(
+					insertIndex,
+					0,
+					tableState.allColumns[index]
+				),
+			});
+		}
+		setCauseRerender(!causeRerender);
+	};
+
+	const menuItems: Array<MenuItem> = [
+		{
+			name: general.language === 'deutsch' ? 'Spalten' : 'Columns',
+			menuItems: tableState.allColumns.map(
+				(item, index): MenuItem | undefined => {
+					if (index !== 0) {
+						return {
+							name: item,
+							checkBox: tableState.columns.includes(item) ?? true,
+							action: () => {
+								columnChecker(index, item);
+							},
+						};
+					} else {
+						return undefined;
+					}
+				}
+			),
+		},
+		{
+			name:
+				general.language === 'deutsch'
+					? 'Spalten Reihenfolge'
+					: 'Column Order',
+			component: <ColumnOrderer />,
+		},
+	];
 
 	return (
 		<>

@@ -1,8 +1,10 @@
+import React from 'react';
 export interface ContextMenuProps {
 	active: boolean;
 	x: number;
 	y: number;
 	menuItems: Array<MenuItem | undefined> | undefined;
+	component?: React.JSX.Element | undefined;
 }
 
 export type MenuItem = {
@@ -14,4 +16,6 @@ export type MenuItem = {
 	 * true or false means the is a check box and also shows the state of which
 	 */
 	checkBox?: boolean | undefined;
+	/** if defined overrides menuItems */
+	component?: React.JSX.Element;
 };
