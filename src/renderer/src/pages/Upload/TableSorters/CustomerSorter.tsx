@@ -259,7 +259,7 @@ export function CustomerSorter({
 		<>
 			<div className="customerOptions">
 				<p>Customer</p>
-				<div>
+				<div className="dataRowWrapper">
 					{customerFields.map((item, index) => {
 						return (
 							<>
@@ -284,7 +284,7 @@ export function CustomerSorter({
 						? 'Zur Person'
 						: 'About the Person'}
 				</p>
-				<div>
+				<div className="dataRowWrapper">
 					{personFields.map((item, index) => {
 						return (
 							<>
@@ -305,7 +305,7 @@ export function CustomerSorter({
 					})}
 				</div>
 				<p>{general.language === 'deutsch' ? 'Adresse' : 'Address'}</p>
-				<div>
+				<div className="dataRowWrapper">
 					{addressFields.map((item, index) => {
 						return (
 							<>
@@ -347,7 +347,7 @@ export function CustomerSorter({
 					})}
 				</div>
 				<p>{general.language === 'deutsch' ? 'Bank' : 'Bank'}</p>
-				<div>
+				<div className="dataRowWrapper">
 					{bankFields.map((item, index) => {
 						return (
 							<>
@@ -368,7 +368,7 @@ export function CustomerSorter({
 					})}
 				</div>
 				<p>{general.language === 'deutsch' ? 'Firma' : 'Company'}</p>
-				<div>
+				<div className="dataRowWrapper">
 					{companyFields.map((item, index) => {
 						return (
 							<>
@@ -389,7 +389,7 @@ export function CustomerSorter({
 					})}
 				</div>
 				<p>{general.language === 'deutsch' ? 'Email' : 'Email'}</p>
-				<div>
+				<div className="dataRowWrapper">
 					{emailFields.map((item, index) => {
 						return (
 							<>
@@ -410,7 +410,7 @@ export function CustomerSorter({
 					})}
 				</div>
 				<p>{general.language === 'deutsch' ? 'Telefon' : 'Phone'}</p>
-				<div>
+				<div className="dataRowWrapper">
 					{phoneFields.map((item, index) => {
 						return (
 							<>

@@ -9,3 +9,11 @@
 	padding: 0 20px;
 	width: 100%;
 }
+
+.dataRowWrapper{
+	display: flex;
+	justify-content: flex-start;
+	align-items: stretch;
+	gap: 12px;
+	flex-direction: column;
+}
