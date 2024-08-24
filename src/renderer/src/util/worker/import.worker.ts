@@ -181,12 +181,10 @@ const PhoneTemplate: PhoneNumberType = {
 const AddressTemplate: AddressType = {
 	city: '',
 	country: '',
-	hash: '',
 	row: 0,
 	street: '',
 	zip: '',
 	notes: undefined,
-	number: undefined,
 	type: undefined,
 };
 
