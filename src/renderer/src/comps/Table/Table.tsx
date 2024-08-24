@@ -817,14 +817,8 @@ export function Table({
 		}
 		if (menuActive) {
 			if (
-				//@ts-ignore
-				e.target.localName !== 'li' &&
-				//@ts-ignore
-				e.target.localName !== 'ul' &&
-				//@ts-ignore
-				e.target.localName !== 'svg' &&
-				//@ts-ignore
-				e.target.localName !== 'path'
+				//@ts-expect-error ts does not know about this dom element
+				e.target.ariaModal !== 'true'
 			) {
 				setMenuActive(false);
 			}

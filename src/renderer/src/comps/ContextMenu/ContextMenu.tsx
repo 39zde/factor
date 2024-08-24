@@ -27,6 +27,7 @@ export function ContextMenu({
 	return (
 		<>
 			<div
+				aria-modal="true"
 				className="contextMenu"
 				style={{
 					top: y,
@@ -40,6 +41,7 @@ export function ContextMenu({
 								return (
 									<>
 										<li
+											aria-modal="true"
 											key={item.name + index.toString() + '-1'}
 											onClick={() => {
 												if (item.action !== undefined) {
@@ -80,6 +82,7 @@ export function ContextMenu({
 										{index !== menuItems.length - 1 ? (
 											<>
 												<div
+													aria-modal="true"
 													style={{
 														height: 1,
 														width: '100%',
@@ -138,6 +141,7 @@ function NestedContextMenu({
 	return (
 		<>
 			<div
+				aria-modal="true"
 				className="contextMenu"
 				style={{
 					top: y,
@@ -157,6 +161,7 @@ function NestedContextMenu({
 													item.action();
 												}
 											}}
+											aria-modal="true"
 											onMouseDown={(e: MouseEvent) => {
 												if (item.menuItems !== undefined) {
 													setNestedActive(!nestedActive);
@@ -172,6 +177,7 @@ function NestedContextMenu({
 											{item.menuItems !== undefined ? (
 												<>
 													<ChevronRightIcon
+														aria-modal="true"
 														color="light-dark(var(--color-dark-1),var(--color-light-1))"
 														size={16}
 														strokeWidth={1.5}
