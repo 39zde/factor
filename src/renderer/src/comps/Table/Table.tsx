@@ -926,7 +926,9 @@ export function Table({
 									cursor: tableState.cursor,
 									userSelect: tableState.userSelect,
 								}}>
-								<TableHeadDisplay />
+								<TableHeadDisplay
+									causeRerender={causeRerender}
+								/>
 								<TableBodyDisplay
 									causeRerender={causeRerender}
 									tableBodyRef={tableBodyRef}

@@ -3,14 +3,18 @@ import { ResizeElement } from './ResizeElement';
 import { useAppContext } from '@renderer/App';
 import { useTableContext, useTableDispatch } from './Table';
 
-export function TableHead(): React.JSX.Element {
+export function TableHead({
+	causeRerender,
+}: {
+	causeRerender: boolean;
+}): React.JSX.Element {
 	const { appearances } = useAppContext();
 	const tableState = useTableContext();
 	const dispatch = useTableDispatch();
 
 	return (
 		<>
-			<thead>
+			<thead spellCheck={causeRerender}>
 				<tr
 					style={{
 						height: appearances.rowHeight,
