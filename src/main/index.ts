@@ -1,6 +1,6 @@
 import { app, shell, BrowserWindow, ipcMain } from 'electron';
 import { join, resolve } from 'path';
-import { readdir, mkdir, copyFile, readFileSync, writeFileSync } from 'fs';
+import { readdir, mkdir, copyFile, readFileSync, writeFileSync, copyFileSync, readdirSync, mkdirSync } from 'fs';
 import { env } from 'process';
 import { electronApp, optimizer, is } from '@electron-toolkit/utils';
 import { AppSettingsType } from '../renderer/src/util/App';
@@ -166,35 +166,12 @@ function initSettings() {
 	if (env['HOME'] !== undefined) {
 		homeDir = resolve(env['HOME']);
 	}
-	readdir(homeDir, (error, files) => {
-		if (error) {
-			return console.log('[index.ts] ', 'error reading home dir: ', error);
-		}
-		if (!files.includes('.factor')) {
-			mkdir(homeDir + '/.factor', () => {
-				copyFile(
-					resolve(__dirname, '../../resources/defaultSettings.json'),
-					homeDir + '/.factor/settings.json',
-					(error) => {
-						console.log(error);
-					}
-				);
-			});
-		} else {
-			readdir(homeDir + '/.factor', (error, files) => {
-				if (error) {
-					return console.log(error);
-				}
-				if (!files.includes('settings.json')) {
-					copyFile(
-						resolve(__dirname, '../../resources/defaultSettings.json'),
-						homeDir + '/.factor/settings.json',
-						(error) => {
-							console.log(error);
-						}
-					);
-				}
-			});
-		}
-	});
+	let homeDirContents = readdirSync(homeDir, "utf8")
+	if(!homeDirContents.includes(".factor")){
+		mkdirSync(homeDir + "/.factor")
+	}
+	let factorContents = readdirSync(homeDir+"/.factor", "utf8")
+	if(!factorContents.includes("settings.json")){
+		copyFileSync(__dirname+ "../../../resources/defaultSettings.json",homeDir +"/.factor/settings.json")
+	}
 }
