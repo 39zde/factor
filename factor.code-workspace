@@ -16,7 +16,7 @@
 			// config files
 			".editorconfig": true,
 			".eslintignore": true,
-			".gitignore": false,
+			".gitignore": true,
 			".npmrc": true,
 			".prettierignore": true,
 			".prettierrc.yaml": true,
@@ -24,12 +24,13 @@
 			"dev-app-update.yaml": true,
 			"electron-builder.yaml": true,
 			"electron.vite.config.ts":true,
-			"eslint.config.js": true,
+			"eslint.config.mjs": true,
 			"tsconfig.json": true,
 			"tsconfig.node.json": true,
 			"tsconfig.web.json": true,
 			"yarn.lock": true,
-			".yarnrc.yml": true
+			".yarnrc.yml": true,
+			"LICENSE": true,
 		  }
     },
 
