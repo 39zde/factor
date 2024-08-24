@@ -55,7 +55,7 @@ const defaultContext: AppContextType = {
 		tables: [],
 	},
 	general: {
-		decimalSeparator: ',',
+		decimalSeparator: '.',
 		language: 'english',
 		scrollSpeed: 2,
 	},
