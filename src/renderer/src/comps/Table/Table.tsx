@@ -8,7 +8,6 @@ import React, {
 	useEffect,
 	useState,
 	MouseEvent,
-	useMemo,
 } from 'react';
 import { useAppContext } from '@renderer/App';
 import { TableHeadDisplay } from './TableHeadDisplay';

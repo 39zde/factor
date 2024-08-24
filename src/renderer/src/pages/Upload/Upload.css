@@ -255,11 +255,6 @@
 
 
  .customerOptions {
- 	/* display: flex;
-    justify-content: flex-start;
-    align-items: stretch;
-    flex-direction: column;
-    */
  	gap: 15px;
  	display: grid;
  	grid-template: auto / 1fr 1fr;
