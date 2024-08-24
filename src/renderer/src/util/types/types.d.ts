@@ -62,3 +62,7 @@ export type {
 	ContextMenuProps,
 	MenuItem,
 } from './comps/ContextMenu/ContextMenu';
+
+export type { ArticleDBObjectStores } from './database/ArticleTypes';
+
+export type { DocumentDBObjectStores } from './database/DocumentTypes';

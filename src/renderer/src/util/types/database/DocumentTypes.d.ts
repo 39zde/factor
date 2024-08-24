@@ -31,3 +31,5 @@
 // 	// (optional) Notes on the returned Items
 // 	notes?: string[];
 // }
+
+export type  DocumentDBObjectStores = 'deliveries' | 'invoices' | "quotes" | 'returnees'

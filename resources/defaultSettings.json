@@ -11,7 +11,11 @@
    },
    "database": {
       "dbVersion": 1,
-      "tables": []
+      "databases":{
+			"customer_db": null,
+			"article_db": null,
+			"document_db": null
+		}
    },
    "general": {
       "decimalSeparator": ".",

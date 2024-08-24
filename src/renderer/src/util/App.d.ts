@@ -1,3 +1,4 @@
+import type { CustomerDBObjectStores, ArticleDBObjectStores, DocumentDBObjectStores } from './types/types';
 export interface AppContextType extends AppSettingsType {
 	worker: {
 		/**
@@ -31,9 +32,13 @@ export interface AppSettingsType {
 	};
 	database: {
 		/**
-		 * what data bases are Populated
+		 * what data bases are populated and with what oStores
 		 */
-		tables: string[];
+		databases: {
+			customer_db: CustomerDBObjectStores[] | null;
+			article_db: ArticleDBObjectStores[] | null;
+			document_db: DocumentDBObjectStores[] | null;
+		};
 		/**
 		 * on what database version we are on. this applies to all all databases
 		 */

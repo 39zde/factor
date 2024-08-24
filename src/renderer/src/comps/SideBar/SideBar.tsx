@@ -133,7 +133,7 @@ export default function SideBar({
 						}
 					/>
 					<div className="divider" />
-					{database.tables.includes('article_db') ? (
+					{database.databases.article_db !== null ? (
 						<>
 							<RouterButton
 								active={
@@ -171,7 +171,7 @@ export default function SideBar({
 					) : (
 						<></>
 					)}
-					{database.tables.includes('customer_db') ? (
+					{database.databases.customer_db !== null ? (
 						<>
 							<RouterButton
 								active={
@@ -209,7 +209,8 @@ export default function SideBar({
 					) : (
 						<></>
 					)}
-					{database.tables.includes('delivery_db') ? (
+					{database.databases.document_db !== null &&
+					database.databases.document_db.includes('deliveries') ? (
 						<>
 							<RouterButton
 								active={
@@ -247,7 +248,8 @@ export default function SideBar({
 					) : (
 						<></>
 					)}
-					{database.tables.includes('invoice_db') ? (
+					{database.databases.document_db !== null &&
+					database.databases.document_db.includes('invoices') ? (
 						<>
 							<RouterButton
 								active={
@@ -285,7 +287,8 @@ export default function SideBar({
 					) : (
 						<></>
 					)}
-					{database.tables.includes('quote_db') ? (
+					{database.databases.document_db !== null &&
+					database.databases.document_db.includes('quotes') ? (
 						<>
 							<RouterButton
 								active={
@@ -319,7 +322,8 @@ export default function SideBar({
 					) : (
 						<></>
 					)}
-					{database.tables.includes('returnee_db') ? (
+					{database.databases.document_db !== null &&
+					database.databases.document_db.includes('returnees') ? (
 						<>
 							<RouterButton
 								active={

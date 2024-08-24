@@ -104,3 +104,5 @@
 // 	// how many
 // 	count: number;
 // }
+
+export type ArticleDBObjectStores = string

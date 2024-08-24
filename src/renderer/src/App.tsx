@@ -52,7 +52,11 @@ const defaultContext: AppContextType = {
 	},
 	database: {
 		dbVersion: 1,
-		tables: [],
+		databases: {
+			article_db: null,
+			customer_db: null,
+			document_db: null,
+		},
 	},
 	general: {
 		decimalSeparator: '.',
@@ -107,10 +111,18 @@ function appReducer(
 							action.change?.database?.dbVersion !== undefined
 								? action.change.database.dbVersion
 								: appState.database.dbVersion,
-						tables:
-							action.change?.database?.tables !== undefined
-								? action.change.database.tables
-								: appState.database.tables,
+						databases: {
+							customer_db:
+								action.change?.database?.databases?.customer_db !==
+								undefined
+									? action.change.database.databases.customer_db
+									: appState.database.databases.customer_db,
+							article_db:
+								action.change?.database?.databases?.article_db !==
+								undefined
+									? action.change.database.databases.article_db
+									: appState.database.databases.article_db,
+						},
 					},
 					general: {
 						decimalSeparator:
@@ -159,10 +171,23 @@ function appReducer(
 						action.change?.database?.dbVersion !== undefined
 							? action.change.database.dbVersion
 							: appState.database.dbVersion,
-					tables:
-						action.change?.database?.tables !== undefined
-							? action.change.database.tables
-							: appState.database.tables,
+					databases: {
+						customer_db:
+							action.change?.database?.databases?.customer_db !==
+							undefined
+								? action.change.database.databases.customer_db
+								: appState.database.databases.customer_db,
+						article_db:
+							action.change?.database?.databases?.article_db !==
+							undefined
+								? action.change.database.databases.article_db
+								: appState.database.databases.article_db,
+						document_db:
+							action.change?.database?.databases?.document_db !==
+							undefined
+								? action.change.database.databases.document_db
+								: appState.database.databases.document_db,
+					},
 				},
 				general: {
 					decimalSeparator:
@@ -204,7 +229,11 @@ function appReducer(
 				},
 				database: {
 					dbVersion: appState.database.dbVersion,
-					tables: appState.database.tables,
+					databases: {
+						customer_db: appState.database.databases.customer_db,
+						article_db: appState.database.databases.article_db,
+						document_db: appState.database.databases.document_db,
+					},
 				},
 				general: {
 					decimalSeparator: appState.general.decimalSeparator,
@@ -267,15 +296,56 @@ function App(): JSX.Element {
 				out = args.defaultContext;
 			}
 
-			dataBasesPromise.then((dbs) => {
-				const tables: string[] = [];
-				for (const item of dbs) {
-					if (item.name !== undefined) {
-						tables.push(item.name);
+			dataBasesPromise
+				.then((dbs) => {
+					let requests: Promise<{
+						dbName: string;
+						db: IDBDatabase | string;
+					}>[] = [];
+					for (const item of dbs) {
+						if (item.name !== undefined && item.version !== undefined) {
+							if (
+								item.name === 'customer_db' ||
+								item.name === 'article_db'
+							) {
+								requests.push(
+									new Promise((resolve, reject) => {
+										let request = indexedDB.open(
+											item.name as string,
+											item.version
+										);
+										request.onsuccess = () => {
+											resolve({
+												dbName: item.name as string,
+												db: request.result,
+											});
+										};
+										request.onerror = () => {
+											reject(
+												`error: failed to open ${item.name} database`
+											);
+										};
+									})
+								);
+							}
+						}
 					}
-				}
-				out.database.tables = tables;
-			});
+					return Promise.all(requests);
+				})
+				.then((result) => {
+					for (const item of result) {
+						if (typeof item.db !== 'string') {
+							out.database.databases[item.dbName] = Array.from(
+								item.db.objectStoreNames
+							);
+						} else {
+							out.database.databases[item.dbName] = null;
+						}
+					}
+				})
+				.catch((error) => {
+					console.log(error);
+				});
 			out.appearances.height = window.innerHeight;
 			out.appearances.width = window.innerWidth;
 
