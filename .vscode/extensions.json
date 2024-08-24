@@ -2,6 +2,10 @@
     "recommendations": [
         "dbaeumer.vscode-eslint",
         "rvest.vs-code-prettier-eslint",
-        "editorconfig.editorconfig"
+        "editorconfig.editorconfig",
+        "formulahendry.auto-rename-tag",
+        "aaron-bond.better-comments",
+        "ms-vscode.vscode-typescript-next",
+        "esbenp.prettier-vscode"
     ]
 }
