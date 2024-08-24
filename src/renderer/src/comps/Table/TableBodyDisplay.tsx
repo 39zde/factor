@@ -160,6 +160,7 @@ export function TableBodyDisplay({
 	return (
 		<>
 			<button
+				spellCheck={causeRerender}
 				onClick={upHandler}
 				tabIndex={-1}
 				className="rowNavigator"
@@ -175,17 +176,6 @@ export function TableBodyDisplay({
 				ref={tableBodyRef}
 				//@ts-ignore miss match of WheelEvent and SyntheticEvent<HTMLTableSectionElement,WheelEvent>
 				onWheel={scrollHandler}>
-				<tr
-					spellCheck={causeRerender}
-					style={{
-						position: 'absolute',
-						height: 0,
-						width: 0,
-						display: 'none',
-						userSelect: 'none',
-						margin: 0,
-						zIndex: -10,
-					}}></tr>
 				<TableRows />
 			</tbody>
 			<button
