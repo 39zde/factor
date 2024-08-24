@@ -402,6 +402,12 @@ function App(): JSX.Element {
 		<>
 			<AppContext.Provider value={appState}>
 				<ChangeContext.Provider value={dispatch}>
+					<link
+						rel="stylesheet"
+						href={new URL(`./util/theme/scrollbarColor-${appState.appearances.colorTheme}.css`, import.meta.url).href}
+						type='text/css'
+						hrefLang=''
+					/>
 					<div
 						className="appWrapper"
 						style={{

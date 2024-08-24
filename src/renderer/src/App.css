@@ -22,7 +22,6 @@
  		width: 100%;
  		scrollbar-gutter: stable both-edges;
  		scrollbar-width: var(--scrollbar-width);
- 		scrollbar-color: var(--scrollbar-color);
  		overflow-y: scroll;
  		overflow-x: hidden;
  	}

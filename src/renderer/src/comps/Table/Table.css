@@ -31,17 +31,9 @@
  	}
  }
 
-@media (prefers-color-scheme: light) {
-	.tableElement{
-		scrollbar-color: var(--color-light-3) var(--color-light-2);
-	}
-}
 
-@media (prefers-color-scheme: dark) {
-	.tableElement{
-		scrollbar-color: var(--color-dark-3) var(--color-dark-2);
-	}
-}
+
+
 
 
  table,

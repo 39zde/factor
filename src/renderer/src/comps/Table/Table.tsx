@@ -898,6 +898,9 @@ export function Table({
 						/>
 						<div
 							className="tableElement"
+							style={{
+								scrollbarColor: appearances.colorTheme === "light" ? "var(--color-light-3) var(--color-light-2)" : appearances.colorTheme === "dark" ? "var(--color-dark-3) var(--color-dark-2)": "initial",
+							}}
 							ref={wrapperRef}
 							onMouseMove={(e) => {
 								if (tableState.isMouseDown) {

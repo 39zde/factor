@@ -20,8 +20,8 @@
 	--color-light-3: #d1c1c1;
 
 	--scrollbar-width: thin;
-	--scrollbar-light: var(--color-dark-3)var(--color-light-1);
-	--scrollbar-dark: var(--color-light-3)var(--color-dark-1);
+	--scrollbar-light: var(--color-dark-3) var(--color-light-1);
+	--scrollbar-dark: var(--color-light-3) var(--color-dark-1);
 	--scrollbar-color: light-dark(var(--scrollbar-light), var(--scrollbar-dark));
 	--scrollbar-gutter: 5px both-edges;
 
@@ -32,20 +32,6 @@
 	--box-shadow: 0 2px 12px -2px light-dark(var(--color-dark-3), var(--color-light-3));
 	--box-shadow-border: 1px solid light-dark(var(--color-light-2)80, var(--color-dark-3)80);
 }
-
-
-@media (prefers-color-scheme: light) {
-	div{
-		scrollbar-color: var(--color-light-3) var(--color-light-2);
-	}
-}
-
-@media (prefers-color-scheme: dark) {
-	div{
-		scrollbar-color: var(--color-dark-3) var(--color-dark-1);
-	}
-}
-
 
 *,
 *::before,

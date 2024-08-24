@@ -204,7 +204,6 @@
  	border-top: 1px solid light-dark(var(--color-dark-2), var(--color-light-2));
  	overflow-y: scroll;
  	scrollbar-width: var(--scrollbar-width);
- 	scrollbar-color: var(--scrollbar-color);
  	padding-left: 12px;
  	padding-top: 12px;
  }
