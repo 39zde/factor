@@ -110,7 +110,9 @@ function EmailTableCell({ data }: { data: EmailType[] }): React.JSX.Element {
 					}
 					return (
 						<>
-							<a href={`mailto:${text1}`}>{text1}</a>
+							<a tabIndex={-1} href={`mailto:${text1}`}>
+								{text1}
+							</a>
 						</>
 					);
 				})}
@@ -134,7 +136,9 @@ function PhoneTableCell({
 					}
 					return (
 						<>
-							<a href={`tel:${text1}`}>{text1}</a>
+							<a tabIndex={-1} href={`tel:${text1}`}>
+								{text1}
+							</a>
 						</>
 					);
 				})}
