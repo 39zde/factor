@@ -19,6 +19,13 @@
 	--color-light-2: #e9dddd;
 	--color-light-3: #d1c1c1;
 
+	--color-dark-1-t: #05090f80;
+	--color-dark-2-t: #3b3d4080;
+	--color-dark-3-t: #686a6e80;
+	--color-light-1-t: #f8f6f680;
+	--color-light-2-t: #e9dddd80;
+	--color-light-3-t: #d1c1c180;
+
 	--scrollbar-width: thin;
 	--scrollbar-light: var(--color-dark-3) var(--color-light-1);
 	--scrollbar-dark: var(--color-light-3) var(--color-dark-1);
