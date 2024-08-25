@@ -130,19 +130,19 @@ export function Upload(): React.JSX.Element {
 						if (tableImportModeInputRef.current !== null) {
 							switch (tableImportModeInputRef.current.value) {
 								case 'customers':
-									const newTables = database.tables;
-									if (newTables.includes('customer_db')) {
-										break;
-									}
-									newTables.push('customer_db');
-									dispatch({
-										type: 'set',
-										change: {
-											database: {
-												tables: newTables,
-											},
-										},
-									});
+									// const newTables = database;
+									// if (newTables.includes('customer_db')) {
+									// 	break;
+									// }
+									// newTables.push('customer_db');
+									// dispatch({
+									// 	type: 'set',
+									// 	change: {
+									// 		database: {
+									// 			tables: newTables,
+									// 		},
+									// 	},
+									// });
 							}
 						}
 
