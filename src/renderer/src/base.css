@@ -87,25 +87,18 @@ select {
 	border-radius: 21px;
 	border-style: solid;
 	border-width: 2px;
+	transition-duration: 50ms;
+	transition-property: all;
+	transition-timing-function: ease-in-out;
 }
 
 button {
 	background: none;
 	color: light-dark(var(--color-dark-1), var(--color-light-1));
 	border-color: var(--color-primary);
-	transition-duration: 50ms;
-	transition-property: all;
-	transition-timing-function: linear;
 	box-shadow: var(--box-shadow);
 }
 
-button:hover {
-	background: light-dark(var(--color-primary-light), var(--color-primary-dark));
-	border-color: light-dark(var(--color-primary-light), var(--color-primary-dark));
-	box-shadow: var(--box-shadow-hover);
-	transform: translateY(-1px);
-
-}
 
 @keyframes button-hover {
 	0% {
@@ -120,13 +113,24 @@ button:hover {
 
 input:hover,
 select:hover {
+	transform: translateY(-1px);
+	box-shadow: var(--box-shadow-hover);
 	border-color: var(--color-primary)
 }
+
+button:hover {
+	transform: translateY(-1px);
+	background: light-dark(var(--color-primary-light), var(--color-primary-dark));
+	border-color: light-dark(var(--color-primary-light), var(--color-primary-dark));
+	box-shadow: var(--box-shadow-hover);
+}
+
 
 input,
 select {
 	color: light-dark(var(--color-dark-1), var(--color-dark-1));
 	background: light-dark(var(--color-light-1), var(--color-light-2));
+	box-shadow: var(--box-shadow);
 	border-color: light-dark(var(--color-light-3), var(--color-light-2));
 }
 

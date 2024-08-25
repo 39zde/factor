@@ -318,7 +318,9 @@ export function Settings() {
 					</div>
 				</div>
 				<div className="saveSection">
-					<button onClick={saveSettings}>
+					<button onClick={saveSettings} style={{
+						textShadow: context.appearances.colorTheme === "dark" ? "var(--color-primary-dark) 0px 0px 20px" :"none"
+					}}>
 						<Save
 							size={solids.icon.size.regular}
 							strokeWidth={solids.icon.strokeWidth.regular}

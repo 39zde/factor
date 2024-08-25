@@ -215,9 +215,9 @@
  	font-size: larger;
  }
 
- .tableInfo {
+ .tableInfo, .sorter {
  	padding: 12px 0;
- 	width: 95%;
+ 	width: 100%;
  	align-self: center;
  	margin: 10px 0;
  	border-radius: 16px;
@@ -231,7 +231,7 @@
 
  }
 
- .tableInfo li {
+ .tableInfo li, .sorter li {
  	display: flex;
  	float: left;
  	border-right: 1px solid light-dark(var(--color-light-3), var(--color-dark-3));
@@ -284,18 +284,3 @@
  	width: 100%;
  }
 
- .sorter {
- 	display: flex;
- 	width: 90%;
- 	justify-content: center;
- 	align-items: center;
- 	gap: 32px;
- 	height: fit-content;
- 	flex-direction: row;
- 	align-self: center;
- 	border-color: light-dark(var(--color-light-3), var(--color-dark-3));
- 	border-width: 1px;
- 	border-style: solid;
- 	padding: 8px 0;
- 	border-radius: 100px;
- }
