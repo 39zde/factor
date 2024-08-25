@@ -1,4 +1,4 @@
- /* prettier-ignore */
+
  @import url('../../base.css');
 
  .fileSelector {
@@ -97,6 +97,7 @@
  	cursor: pointer;
  	padding: 0 0 4px 0;
  	width: 42px;
+	box-shadow: none;
  }
 
  .removeFile:hover {
@@ -163,7 +164,7 @@
  	padding: 12px;
  	width: 300px;
  	margin: 0 auto;
- 	box-shadow: 0 5px 13px 2px light-dark(var(--color-dark-3), var(--color-light-3));
+ 	box-shadow: var(--box-shadow);
  	border-radius: 12px;
  }
 
