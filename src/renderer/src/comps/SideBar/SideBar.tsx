@@ -14,7 +14,7 @@ import {
 	HelpCircle,
 } from 'lucide-react';
 
-import { useAppContext } from '@renderer/App';
+import { useAppContext, solids } from '@renderer/App';
 import { RouterButton } from './RouterButton';
 import { LowerButton } from './LowerButton';
 
@@ -52,13 +52,13 @@ export default function SideBar({
 						active={!routesHook.showHelp && !routesHook.showSettings}
 						icon={
 							<HomeIcon
-								size={24}
+								size={solids.icon.size.regular}
 								strokeWidth={
 									routesHook.route === 'Home' &&
 									!routesHook.showHelp &&
 									!routesHook.showSettings
-										? 2.5
-										: 2
+										? solids.icon.strokeWidth.large
+										: solids.icon.strokeWidth.regular
 								}
 								color={
 									routesHook.route === 'Home' &&
@@ -81,13 +81,13 @@ export default function SideBar({
 						active={!routesHook.showHelp && !routesHook.showSettings}
 						icon={
 							<UploadIcon
-								size={24}
+								size={solids.icon.size.regular}
 								strokeWidth={
 									routesHook.route === 'Upload' &&
 									!routesHook.showHelp &&
 									!routesHook.showSettings
-										? 2.5
-										: 2
+										? solids.icon.strokeWidth.large
+										: solids.icon.strokeWidth.regular
 								}
 								color={
 									routesHook.route === 'Upload' &&
@@ -109,13 +109,13 @@ export default function SideBar({
 						active={!routesHook.showHelp && !routesHook.showSettings}
 						icon={
 							<ArrowRightFromLineIcon
-								size={25}
+								size={solids.icon.size.regular}
 								strokeWidth={
 									routesHook.route === 'ExportPage' &&
 									!routesHook.showHelp &&
 									!routesHook.showSettings
-										? 2.5
-										: 2
+										? solids.icon.strokeWidth.large
+										: solids.icon.strokeWidth.regular
 								}
 								color={
 									routesHook.route === 'ExportPage' &&
@@ -142,13 +142,13 @@ export default function SideBar({
 								handler={routeHandler}
 								icon={
 									<CuboidIcon
-										size={24}
+										size={solids.icon.size.regular}
 										strokeWidth={
 											routesHook.route === 'Articles' &&
 											!routesHook.showHelp &&
 											!routesHook.showSettings
-												? 2.5
-												: 2
+												? solids.icon.strokeWidth.large
+												: solids.icon.strokeWidth.regular
 										}
 										color={
 											routesHook.route === 'Articles' &&
@@ -180,13 +180,13 @@ export default function SideBar({
 								handler={routeHandler}
 								icon={
 									<UserRoundIcon
-										size={24}
+										size={solids.icon.size.regular}
 										strokeWidth={
 											routesHook.route === 'Customers' &&
 											!routesHook.showHelp &&
 											!routesHook.showSettings
-												? 2.5
-												: 2
+												? solids.icon.strokeWidth.large
+												: solids.icon.strokeWidth.regular
 										}
 										color={
 											routesHook.route === 'Customers' &&
@@ -219,13 +219,13 @@ export default function SideBar({
 								handler={routeHandler}
 								icon={
 									<TruckIcon
-										size={24}
+										size={solids.icon.size.regular}
 										strokeWidth={
 											routesHook.route === 'Deliveries' &&
 											!routesHook.showHelp &&
 											!routesHook.showSettings
-												? 2.5
-												: 2
+												? solids.icon.strokeWidth.large
+												: solids.icon.strokeWidth.regular
 										}
 										color={
 											routesHook.route === 'Deliveries' &&
@@ -258,13 +258,13 @@ export default function SideBar({
 								handler={routeHandler}
 								icon={
 									<ReceiptTextIcon
-										size={24}
+										size={solids.icon.size.regular}
 										strokeWidth={
 											routesHook.route === 'Invoices' &&
 											!routesHook.showHelp &&
 											!routesHook.showSettings
-												? 2.5
-												: 2
+												? solids.icon.strokeWidth.large
+												: solids.icon.strokeWidth.regular
 										}
 										color={
 											routesHook.route === 'Invoices' &&
@@ -297,9 +297,11 @@ export default function SideBar({
 								handler={routeHandler}
 								icon={
 									<FileOutputIcon
-										size={24}
+										size={solids.icon.size.regular}
 										strokeWidth={
-											routesHook.route === 'Quotes' ? 2.5 : 2
+											routesHook.route === 'Quotes'
+												? solids.icon.strokeWidth.large
+												: solids.icon.strokeWidth.regular
 										}
 										color={
 											routesHook.route === 'Quotes' &&
@@ -332,9 +334,11 @@ export default function SideBar({
 								handler={routeHandler}
 								icon={
 									<RotateCcwIcon
-										size={24}
+										size={solids.icon.size.regular}
 										strokeWidth={
-											routesHook.route === 'Returnees' ? 2.5 : 2
+											routesHook.route === 'Returnees'
+												? solids.icon.strokeWidth.large
+												: solids.icon.strokeWidth.regular
 										}
 										color={
 											routesHook.route === 'Returnees' &&
@@ -366,8 +370,12 @@ export default function SideBar({
 						}}
 						icon={
 							<HelpCircle
-								size={24}
-								strokeWidth={routesHook.showHelp ? 2.5 : 2}
+								size={solids.icon.size.regular}
+								strokeWidth={
+									routesHook.showHelp
+										? solids.icon.strokeWidth.large
+										: solids.icon.strokeWidth.regular
+								}
 								color={
 									routesHook.showHelp
 										? 'var(--color-primary)'
@@ -385,8 +393,12 @@ export default function SideBar({
 						}}
 						icon={
 							<CogIcon
-								size={24}
-								strokeWidth={routesHook.showSettings ? 2.5 : 2}
+								size={solids.icon.size.regular}
+								strokeWidth={
+									routesHook.showSettings
+										? solids.icon.strokeWidth.large
+										: solids.icon.strokeWidth.regular
+								}
 								color={
 									routesHook.showSettings
 										? 'var(--color-primary)'

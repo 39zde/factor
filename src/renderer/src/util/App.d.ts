@@ -1,4 +1,8 @@
-import type { CustomerDBObjectStores, ArticleDBObjectStores, DocumentDBObjectStores } from './types/types';
+import type {
+	CustomerDBObjectStores,
+	ArticleDBObjectStores,
+	DocumentDBObjectStores,
+} from './types/types';
 export interface AppContextType extends AppSettingsType {
 	worker: {
 		/**
@@ -65,4 +69,22 @@ export type ColorThemeSetting = 'light' | 'dark' | 'light dark';
 export type AppAction = {
 	type: 'set' | 'setHW';
 	change: AppSettingsChange;
+};
+
+/** Some value to be used all over, to be consistent with styling,sizing... , easy controllable */
+export type AppSolidsType = {
+	icon: {
+		size: {
+			large: number;
+			regular: number;
+			small: number;
+			tiny: number;
+		};
+		strokeWidth: {
+			large: number;
+			regular: number;
+			small: number;
+			tiny: number;
+		};
+	};
 };

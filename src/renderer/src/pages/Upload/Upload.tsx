@@ -11,7 +11,7 @@ import type {
 	ArticleSortingMap,
 	UploadMode,
 } from '@util/types/types';
-import { useAppContext, useChangeContext } from '@renderer/App';
+import { useAppContext, useChangeContext, solids } from '@renderer/App';
 
 export function Upload(): React.JSX.Element {
 	const { general, worker, database } = useAppContext();
@@ -215,14 +215,14 @@ export function Upload(): React.JSX.Element {
 													? 'var(--color-primary)'
 													: 'light-dark(var(--color-dark-2),var(--color-light-2))'
 											}
-											size={24}
-											strokeWidth={2}
+											size={solids.icon.size.regular}
+											strokeWidth={solids.icon.strokeWidth.regular}
 										/>
 									</button>
 									<FileIcon
 										color="light-dark(var(--color-dark-1),var(--color-light-1))"
-										size={24}
-										strokeWidth={2}
+										size={solids.icon.size.regular}
+										strokeWidth={solids.icon.strokeWidth.regular}
 									/>
 									{fileName}
 								</div>
@@ -237,8 +237,8 @@ export function Upload(): React.JSX.Element {
 									onClick={actionHandler}>
 									<ImportIcon
 										color="light-dark(var(--color-dark-1),var(--color-light-1))"
-										size={24}
-										strokeWidth={2}
+										size={solids.icon.size.regular}
+										strokeWidth={solids.icon.strokeWidth.regular}
 									/>
 									{general.language === 'deutsch'
 										? 'Importieren'

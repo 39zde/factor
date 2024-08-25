@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef } from 'react';
 
 import { TableRows } from './TableRows';
 
-import { useAppContext } from '@renderer/App';
+import { useAppContext , solids} from '@renderer/App';
 import type { TableBodyDisplayProps } from '@renderer/util/types/types';
 import { useTableContext, useTableDispatch } from './Table';
 
@@ -137,8 +137,8 @@ export function TableBodyDisplay({
 
 	const iconProps = {
 		color: 'light-dark(var(--color-dark-1),var(--color-light-1))',
-		size: 20,
-		strokeWidth: 1.5,
+		size: solids.icon.size.regular,
+		strokeWidth: solids.icon.strokeWidth.regular,
 	};
 
 	const upHandler = () => {

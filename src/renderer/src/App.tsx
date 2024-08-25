@@ -15,6 +15,7 @@ import type {
 	AppSettingsType,
 	AppSettingsChange,
 	AppAction,
+	AppSolidsType,
 } from '@util/App';
 
 import './App.css';
@@ -38,6 +39,23 @@ const TableWorker = (() => {
 	);
 	return work;
 })();
+
+export const solids: AppSolidsType = {
+	icon: {
+		size: {
+			large: 28,
+			regular: 22,
+			small: 16,
+			tiny: 12,
+		},
+		strokeWidth: {
+			large: 2.5,
+			regular: 2,
+			small: 1.5,
+			tiny: 3,
+		},
+	},
+};
 
 const defaultContext: AppContextType = {
 	appearances: {

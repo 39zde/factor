@@ -1,7 +1,7 @@
 import { useCallback, useRef, useState } from 'react';
 import './Settings.css';
 import Versions from '@comps/Versions/Versions';
-import { useAppContext, useChangeContext } from '@renderer/App';
+import { useAppContext, useChangeContext, solids } from '@renderer/App';
 import {
 	ColorThemeSetting,
 	AppSettingsChange,
@@ -320,8 +320,8 @@ export function Settings() {
 				<div className="saveSection">
 					<button onClick={saveSettings}>
 						<Save
-							size={24}
-							strokeWidth={2}
+							size={solids.icon.size.regular}
+							strokeWidth={solids.icon.strokeWidth.regular}
 							color="light-dark(var(--color-dark-1),var(--color-light-1)"
 						/>{' '}
 						{context.general.language === 'deutsch'

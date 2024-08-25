@@ -1,5 +1,7 @@
 import React from 'react';
 import { Check } from 'lucide-react';
+
+import { solids } from '@renderer/App';
 import './CheckBox.css';
 
 export function CheckBox({ ticked }: { ticked?: boolean }): React.JSX.Element {
@@ -16,8 +18,8 @@ export function CheckBox({ ticked }: { ticked?: boolean }): React.JSX.Element {
 						<Check
 							aria-modal='true'
 							color="var(--color-light-1)"
-							size={12}
-							strokeWidth={3}
+							size={solids.icon.size.tiny}
+							strokeWidth={solids.icon.strokeWidth.tiny}
 						/>
 					</>
 				) : (

@@ -1,6 +1,7 @@
 import React, { MouseEvent, useEffect, useState } from 'react';
 import { ChevronRightIcon } from 'lucide-react';
 
+import { solids } from '@renderer/App';
 import { CheckBox } from '../CheckBox/CheckBox';
 import type { ContextMenuProps, MenuItem } from '@renderer/util/types/types';
 import './ContextMenu.css';
@@ -103,8 +104,8 @@ export function ContextMenu({
 													<ChevronRightIcon
 														aria-modal="true"
 														color="light-dark(var(--color-dark-1),var(--color-light-1))"
-														size={16}
-														strokeWidth={1.5}
+														size={solids.icon.size.small}
+														strokeWidth={solids.icon.strokeWidth.small}
 													/>
 												</>
 											) : (
