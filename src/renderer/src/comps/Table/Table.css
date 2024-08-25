@@ -59,15 +59,15 @@
  }
 
  table {
-	border-radius: 16px 16px 0 0 ;
-	border-style: solid;
-	border-width: 1px;
-	border-color: light-dark(var(--color-dark-3), var(--color-dark-3));
+ 	border-radius: 16px 16px 0 0;
+ 	border-style: solid;
+ 	border-width: 0px;
+ 	border-color: light-dark(var(--color-dark-3), var(--color-dark-3));
  }
 
  thead {
  	border-bottom: 3px solid light-dark(var(--color-dark-3), var(--color-dark-3));
- 	border-top: none;
+ 	border-top: 1px solid light-dark(var(--color-dark-3), var(--color-dark-3));
  	border-left: none;
  	border-right: none;
  	background: light-dark(var(--color-light-2), var(--color-dark-2));
@@ -77,27 +77,36 @@
  tfoot {
  	border-top: 3px solid light-dark(var(--color-dark-3), var(--color-dark-3));
  	background: light-dark(var(--color-light-2), var(--color-dark-2));
- 	border-bottom: none;
  	border-left: none;
  	border-right: none;
  }
 
+ tfoot>tr>th {
+ 	border-bottom: none;
+ }
+
+
  thead,
  tfoot {
- 	&>tr>th:first-child>* {
- 		display: none;
+
+ 	&>tr>th:first-child,
+ 	td:first-child {
+ 		&>* {
+ 			display: none;
+ 		}
  	}
  }
 
  tbody>tr>td:first-child {
-	 background: light-dark(var(--color-light-2), var(--color-dark-2));
-	 &>span {
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		text-align: center;
-		width: 100%;
-	}
+ 	background: light-dark(var(--color-light-2), var(--color-dark-2));
+
+ 	&>span {
+ 		display: flex;
+ 		justify-content: center;
+ 		align-items: center;
+ 		text-align: center;
+ 		width: 100%;
+ 	}
 
  }
 
@@ -178,6 +187,13 @@
  	z-index: 2;
  }
 
+ .rowNavigator:first-of-type {
+ 	border-radius: 16px 0 0 0;
+ 	border-top: 1px solid light-dark(var(--color-dark-3), var(--color-dark-3));
+ 	border-left: 1px solid light-dark(var(--color-dark-3), var(--color-dark-3));
+
+ }
+
  .rowNavigator:hover {
  	background: none;
  	box-shadow: none;
@@ -193,4 +209,11 @@
  		width: fit-content;
  		white-space: balance;
  	}
+ }
+
+
+ th>tr>th:first-child {
+ 	border-top-left-radius: 16px;
+ 	border-left: 1px solid light-dark(var(--color-dark-3), var(--color-dark-3));
+ 	border-top: 1px solid light-dark(var(--color-dark-3), var(--color-dark-3));
  }

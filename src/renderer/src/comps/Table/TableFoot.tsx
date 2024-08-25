@@ -20,11 +20,6 @@ export function TableFoot({ columns }: TableFootProps): React.JSX.Element {
 									return (
 										<>
 											<th
-												style={{
-													borderBottom: 'none',
-													borderLeft:
-														index === 0 ? 'none' : 'inherit',
-												}}
 												key={`tf-${index}`}>
 												<span className="guts">{item}</span>
 											</th>
