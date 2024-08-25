@@ -259,8 +259,8 @@ export function Settings() {
 							onInput={sideBarWidthInputHandler}
 							ref={sideBarWidthInputRef}
 							type="number"
-							min={170}
-							max={250}
+							min={200}
+							max={300}
 							step={1}
 							value={sideBarWidth}
 						/>

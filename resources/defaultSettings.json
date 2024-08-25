@@ -1,9 +1,9 @@
 {
    "appearances": {
       "colorTheme": "light dark",
-      "rowHeight": 36,
+      "rowHeight": 40,
       "columnWidth": 120,
-      "sideBarWidth": 180,
+      "sideBarWidth": 200,
 		"height": 1000,
 		"width": 1000,
 		"x": 100,
