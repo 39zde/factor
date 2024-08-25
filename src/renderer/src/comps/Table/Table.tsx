@@ -934,7 +934,7 @@ export function Table({
 								<TableHeadDisplay causeRerender={causeRerender} />
 								<TableBodyDisplay
 									causeRerender={causeRerender}
-									tableBodyRef={tableBodyRef}
+									ref={tableBodyRef}
 								/>
 								<TableFootDisplay
 									columns={tableState.columns}

@@ -1,17 +1,18 @@
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef, forwardRef } from 'react';
 
 import { TableRows } from './TableRows';
 
-import { useAppContext , solids} from '@renderer/App';
+import { useAppContext, solids } from '@renderer/App';
 import type { TableBodyDisplayProps } from '@renderer/util/types/types';
 import { useTableContext, useTableDispatch } from './Table';
 
 import { ChevronDown, ChevronUp } from 'lucide-react';
 
-export function TableBodyDisplay({
-	tableBodyRef,
-	causeRerender,
-}: TableBodyDisplayProps): React.JSX.Element {
+export const TableBodyDisplay = forwardRef<
+	HTMLTableSectionElement,
+	TableBodyDisplayProps
+>(function TableBodyDisplay(props, ref): React.JSX.Element {
+	const { causeRerender } = props;
 	const tableState = useTableContext();
 	const dispatch = useTableDispatch();
 	const { worker, database, general, appearances } = useAppContext();
@@ -173,7 +174,7 @@ export function TableBodyDisplay({
 			</button>
 			<tbody
 				className="tableBody"
-				ref={tableBodyRef}
+				ref={ref}
 				//@ts-ignore miss match of WheelEvent and SyntheticEvent<HTMLTableSectionElement,WheelEvent>
 				onWheel={scrollHandler}>
 				<TableRows />
@@ -191,4 +192,4 @@ export function TableBodyDisplay({
 			</button>
 		</>
 	);
-}
+});
