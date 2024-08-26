@@ -90,6 +90,7 @@ select {
 	transition-duration: 50ms;
 	transition-property: all;
 	transition-timing-function: ease-in-out;
+	user-select: none;
 }
 
 button {
