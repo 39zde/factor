@@ -154,7 +154,7 @@ function NotesTableCell({ data }: { data: string[] }): React.JSX.Element {
 				{data.map((item) => {
 					return (
 						<>
-							<p>{item}</p>
+							<p spellCheck={true}>{item}</p>
 						</>
 					);
 				})}
