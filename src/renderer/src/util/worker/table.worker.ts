@@ -4,6 +4,7 @@ import type {
 	TableWorkerRequestMessageActionType,
 	DerefRow,
 	DoneHandler,
+	StarterPackage,
 } from '../types/types';
 
 self.onmessage = function requestHandler(e: MessageEvent) {
@@ -14,6 +15,77 @@ self.onmessage = function requestHandler(e: MessageEvent) {
 	switch (eventData.type) {
 		case 'stream':
 			stream(eventData);
+			break;
+		case 'startingPackage':
+			if (eventData.scope === undefined) {
+				return postMessage({
+					type: 'error',
+					data: 'undefined action',
+				});
+			}
+			let starterPackage: StarterPackage = {
+				startingCount: undefined,
+				startingColumns: undefined,
+				starterRows: undefined,
+			};
+			const starterHandler = {
+				set(
+					target: StarterPackage,
+					prop: keyof StarterPackage,
+					value: number | string[] | DerefRow[]
+				) {
+					let undefinedCount = 0;
+					// @ts-expect-error
+					target[prop] = value;
+					for (const key of Object.keys(target)) {
+						if (target[key] === undefined) {
+							undefinedCount += 1;
+						}
+					}
+					if (undefinedCount === 0) {
+						postMessage({
+							type: 'startingPackage',
+							data: target,
+						});
+					} else {
+						undefinedCount = 0;
+					}
+					return true;
+				},
+			};
+			const proxy = new Proxy(starterPackage, starterHandler);
+			getCount(
+				eventData.dataBaseName,
+				eventData.dbVersion,
+				eventData.storeName,
+				(count: number | undefined) => {
+					if (count !== undefined) {
+						proxy.startingCount = count;
+					}
+				}
+			);
+			getColumns(
+				eventData.dataBaseName,
+				eventData.dbVersion,
+				eventData.storeName,
+				(cols: string[] | undefined) => {
+					if (cols !== undefined) {
+						proxy.startingColumns = cols;
+					}
+				}
+			);
+			getStartingRows(
+				eventData.dataBaseName,
+				eventData.dbVersion,
+				eventData.storeName,
+				eventData.scope,
+				(rows: DerefRow[] | undefined) => {
+					if (rows !== undefined) {
+						proxy.starterRows = rows;
+					}
+				}
+			);
+
 			break;
 		case 'columns':
 			getColumns(
@@ -36,7 +108,7 @@ self.onmessage = function requestHandler(e: MessageEvent) {
 					data: 'undefined action',
 				});
 			}
-			startingRows(
+			getStartingRows(
 				eventData.dataBaseName,
 				eventData.dbVersion,
 				eventData.storeName,
@@ -49,23 +121,35 @@ self.onmessage = function requestHandler(e: MessageEvent) {
 	}
 };
 
-function startingRows(
-	name: string,
-	version: number,
+function getStartingRows(
+	dataBaseName: string,
+	dbVersion: number,
 	storeName: string,
-	scope: number
+	scope: number,
+	callback?: (rows: DerefRow[] | undefined) => void | undefined
 ) {
-	const dbRequest = indexedDB.open(name, version);
+	const dbRequest = indexedDB.open(dataBaseName, dbVersion);
 
-	dbRequest.onblocked = () => {
-		console.log('blocked');
+	dbRequest.onblocked = (e: Event) => {
+		if (callback !== undefined) {
+			callback(undefined);
+		} else {
+			postMessage({
+				type: 'error',
+				data: e,
+			});
+		}
 	};
 
 	dbRequest.onerror = (e: Event) => {
-		postMessage({
-			type: 'error',
-			data: { msg: 'starting Rows db Request Error', error: e },
-		});
+		if (callback !== undefined) {
+			callback(undefined);
+		} else {
+			postMessage({
+				type: 'error',
+				data: e,
+			});
+		}
 	};
 
 	dbRequest.onupgradeneeded = () => {
@@ -92,7 +176,11 @@ function startingRows(
 					Reflect.set(target, 'data', data);
 					received += 1;
 					if (received === scope) {
-						postMessage({ type: 'startingRows', data: target.data });
+						if (callback !== undefined) {
+							callback(data);
+						} else {
+							postMessage({ type: 'startingRows', data: target.data });
+						}
 					}
 					return Reflect.set(target, prop, value);
 				} else {
@@ -109,8 +197,8 @@ function startingRows(
 		cursorRequest.onsuccess = () => {
 			const cursor: IDBCursorWithValue | null = cursorRequest.result;
 			if (cursor) {
-				fillReferences(db, cursor.value, undefined, doneHandler);
 				if (counter < scope) {
+					fillReferences(db, cursor.value, undefined, doneHandler);
 					counter += 1;
 					cursor.continue();
 				}
@@ -119,12 +207,24 @@ function startingRows(
 	};
 }
 
-function getColumns(name: string, version: number, storeName: string) {
-	const dbRequest = indexedDB.open(name, version);
+function getColumns(
+	dataBaseName: string,
+	dbVersion: number,
+	storeName: string,
+	callback?: (cols: string[] | undefined) => void
+) {
+	const dbRequest = indexedDB.open(dataBaseName, dbVersion);
 	dbRequest.onsuccess = () => {
 		const db = dbRequest.result;
 		if (!db.objectStoreNames.contains(storeName)) {
-			throw new Error('unknown Object Store');
+			if (callback !== undefined) {
+				callback(undefined);
+			} else {
+				postMessage({
+					type: 'error',
+					data: 'unknown Object Store',
+				});
+			}
 		}
 		const objectStore = db
 			.transaction(storeName, 'readonly')
@@ -135,30 +235,60 @@ function getColumns(name: string, version: number, storeName: string) {
 			if (cursor) {
 				// console.log("keys")
 				// console.log(Object.keys(cursor.value))
-				postMessage({ type: 'columns', data: Object.keys(cursor.value) });
+				if (callback !== undefined) {
+					callback(Object.keys(cursor.value));
+				} else {
+					postMessage({
+						type: 'columns',
+						data: Object.keys(cursor.value),
+					});
+				}
 				cursor = false;
 			}
 		};
-		cursorRequest.onerror = (e) =>
-			postMessage({
-				type: 'error',
-				data: e,
-			});
-	};
-	dbRequest.onerror = (e) => {
-		postMessage({
-			type: 'error',
-			data: e,
-		});
+
+		cursorRequest.onerror = (e) => {
+			if (callback !== undefined) {
+				callback(undefined);
+			} else {
+				postMessage({
+					type: 'error',
+					data: e,
+				});
+			}
+		};
+
+		dbRequest.onerror = (e) => {
+			if (callback !== undefined) {
+				callback(undefined);
+			} else {
+				postMessage({
+					type: 'error',
+					data: e,
+				});
+			}
+		};
 	};
 }
-
-function getCount(name: string, version: number, storeName: string) {
-	const dbRequest = indexedDB.open(name, version);
+function getCount(
+	dataBaseName: string,
+	dbVersion: number,
+	storeName: string,
+	callback?: (count: number | undefined) => void
+) {
+	const dbRequest = indexedDB.open(dataBaseName, dbVersion);
 	dbRequest.onsuccess = () => {
 		const db = dbRequest.result;
 		if (!db.objectStoreNames.contains(storeName)) {
-			throw new Error('unknown Object Store');
+			if (callback !== undefined) {
+				callback(undefined);
+			} else {
+				postMessage({
+					type: 'error',
+					data: 'unknown Object Store',
+				});
+			}
+			throw new Error('unknown Object Store: ' + storeName);
 		}
 		const countRequest = db
 			.transaction(storeName, 'readonly')
@@ -166,22 +296,34 @@ function getCount(name: string, version: number, storeName: string) {
 			.count();
 
 		countRequest.onsuccess = () => {
-			postMessage({ type: 'count', data: countRequest.result });
+			if (callback !== undefined) {
+				callback(countRequest.result);
+			} else {
+				postMessage({ type: 'count', data: countRequest.result });
+			}
 		};
 
 		countRequest.onerror = (e) => {
-			postMessage({
-				type: 'error',
-				data: e,
-			});
+			if (callback !== undefined) {
+				callback(undefined);
+			} else {
+				postMessage({
+					type: 'error',
+					data: e,
+				});
+			}
 		};
 	};
 
 	dbRequest.onerror = (e) => {
-		postMessage({
-			type: 'error',
-			data: e,
-		});
+		if (callback !== undefined) {
+			callback(undefined);
+		} else {
+			postMessage({
+				type: 'error',
+				data: e,
+			});
+		}
 	};
 }
 

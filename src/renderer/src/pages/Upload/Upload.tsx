@@ -11,17 +11,17 @@ import type {
 	ArticleSortingMap,
 	UploadMode,
 } from '@util/types/types';
-import { useAppContext, useChangeContext, solids } from '@renderer/App';
+import { useAppContext, solids } from '@renderer/App';
 
 export function Upload(): React.JSX.Element {
 	const { general, worker, database } = useAppContext();
-	const dispatch = useChangeContext();
 	const fileSelector = useRef<HTMLInputElement>(null);
 	const [showTable, setShowTable] = useState<boolean>(false);
 	const [showFile, setShowFile] = useState<boolean>(false);
 	const [fileName, setFileName] = useState<string>('');
 	const [isRed, setIsRed] = useState<boolean>(false);
 	const [cols, setCols] = useState<string[]>([]);
+	const [allCols, setAllCols] = useState<string[]>([]);
 	const [entries, setEntries] = useState<number>(0);
 	const [update, setUpdate] = useState<boolean>(false); // stop rendering while updating
 	const tableImportModeInputRef = useRef<HTMLSelectElement>(null);
@@ -82,13 +82,13 @@ export function Upload(): React.JSX.Element {
 		setCols: (newCols: string[]) => {
 			setCols(newCols);
 		},
+		setAllCols: (newVal: string[]) => {
+			setAllCols(newVal);
+		},
 	};
 
-	const entriesHook = {
-		entries: entries,
-		setEntries: (newVal: number) => {
-			setEntries(newVal);
-		},
+	const entriesHook = (count: number) => {
+		setEntries(count);
 	};
 
 	const updateHook = {
@@ -130,19 +130,19 @@ export function Upload(): React.JSX.Element {
 						if (tableImportModeInputRef.current !== null) {
 							switch (tableImportModeInputRef.current.value) {
 								case 'customers':
-									// const newTables = database;
-									// if (newTables.includes('customer_db')) {
-									// 	break;
-									// }
-									// newTables.push('customer_db');
-									// dispatch({
-									// 	type: 'set',
-									// 	change: {
-									// 		database: {
-									// 			tables: newTables,
-									// 		},
-									// 	},
-									// });
+								// const newTables = database;
+								// if (newTables.includes('customer_db')) {
+								// 	break;
+								// }
+								// newTables.push('customer_db');
+								// dispatch({
+								// 	type: 'set',
+								// 	change: {
+								// 		database: {
+								// 			tables: newTables,
+								// 		},
+								// 	},
+								// });
 							}
 						}
 
@@ -168,7 +168,7 @@ export function Upload(): React.JSX.Element {
 		worker.ImportWorker.onmessage = (e) => {
 			if (e.data.type === 'imported') {
 				colsHook.setCols(e.data.message[1]);
-				entriesHook.setEntries(e.data.message[0]);
+				entriesHook(e.data.message[0]);
 
 				// sessionStorage.removeItem('fileUpload')
 				// sessionStorage.removeItem('fileName')

@@ -46,6 +46,8 @@ export type {
 	TableWorkerResponseMessage,
 	TableWorkerResponseMessageType,
 	DoneHandler,
+	StarterPackage,
+	StarterPackageResponse,
 } from './worker/table.worker';
 
 export type { AddDataArgs, DateInput } from './worker/import.worker';

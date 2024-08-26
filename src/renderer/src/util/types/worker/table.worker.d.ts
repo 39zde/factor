@@ -20,11 +20,12 @@ export type TableWorkerRequestMessageType =
 	| 'stream'
 	| 'columns'
 	| 'count'
-	| 'startingRows';
+	| 'startingRows'
+	| 'startingPackage';
 
 export interface TableWorkerResponseMessage {
 	type: TableWorkerResponseMessageType;
-	data: TableRow | Array<TableRow | string> | number;
+	data: TableRow | Array<TableRow | string> | number | StarterPackage;
 	index?: number;
 	action?: TableWorkerRequestMessageActionType;
 }
@@ -37,4 +38,16 @@ export type TableWorkerResponseMessageType =
 export type DoneHandler = {
 	data: DerefRow[];
 	add: DerefRow;
+};
+
+export type StarterPackage = {
+	startingCount: number | undefined;
+	startingColumns: string[] | undefined;
+	starterRows: DerefRow[] | undefined;
+};
+
+export type StarterPackageResponse = {
+	startingCount: number;
+	startingColumns: string[];
+	starterRows: DerefRow[];
 };

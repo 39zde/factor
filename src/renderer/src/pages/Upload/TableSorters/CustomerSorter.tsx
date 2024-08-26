@@ -292,115 +292,115 @@ export function CustomerSorter({
 	const inputHandler = (name: string) => {
 		switch (name) {
 			case 'idRef':
-					setIdCol(idRef.current?.value ?? "")
+				setIdCol(idRef.current?.value ?? '');
 				break;
 			case 'altIDRef':
-				setAltIDCol(altIDRef.current?.value ?? "")
+				setAltIDCol(altIDRef.current?.value ?? '');
 				break;
 			case 'descriptionRef':
-				setDescriptionCol(descriptionRef.current?.value ?? "")
+				setDescriptionCol(descriptionRef.current?.value ?? '');
 				break;
 			case 'firstContactRef':
-				setFirstContactCol(firstContactRef.current?.value ?? "")
+				setFirstContactCol(firstContactRef.current?.value ?? '');
 				break;
 			case 'latestContactRef':
-				setLatestContactCol(latestContactRef.current?.value ?? "")
+				setLatestContactCol(latestContactRef.current?.value ?? '');
 				break;
 			case 'notesRef':
-				setNotesCol(notesRef.current?.value ?? "")
+				setNotesCol(notesRef.current?.value ?? '');
 				break;
 			case 'websiteRef':
-				setWebsiteCol(websiteRef.current?.value ?? "")
+				setWebsiteCol(websiteRef.current?.value ?? '');
 				break;
 			case 'titleRef':
-				setTitleCol(titleRef.current?.value ?? "")
+				setTitleCol(titleRef.current?.value ?? '');
 				break;
 			case 'firstNameRef':
-				setFirstNameCol(firstNameRef.current?.value ?? "")
+				setFirstNameCol(firstNameRef.current?.value ?? '');
 				break;
 			case 'personAliasRef':
-				setPersonAliasCol(personAliasRef.current?.value ?? "")
+				setPersonAliasCol(personAliasRef.current?.value ?? '');
 				break;
 			case 'lastNameRef':
-				setLastNameCol(lastNameRef.current?.value ?? "")
+				setLastNameCol(lastNameRef.current?.value ?? '');
 				break;
 			case 'personEmailRef':
-				setPersonEmailCol(personEmailRef.current?.value ?? "")
+				setPersonEmailCol(personEmailRef.current?.value ?? '');
 				break;
 			case 'personPhoneRef':
-				setPersonPhoneCol(personPhoneRef.current?.value ?? "")
+				setPersonPhoneCol(personPhoneRef.current?.value ?? '');
 				break;
 			case 'personNotesRef':
-				setPersonNotesCol(personNotesRef.current?.value ?? "")
+				setPersonNotesCol(personNotesRef.current?.value ?? '');
 				break;
 			case 'addressTypeRef':
-				setAddressTypeCol(addressTypeRef.current?.value ?? "")
+				setAddressTypeCol(addressTypeRef.current?.value ?? '');
 				break;
 			case 'streetRef':
-				setStreetCol(streetRef.current?.value ?? "")
+				setStreetCol(streetRef.current?.value ?? '');
 				break;
 			case 'zipRef':
-				setZipCol(zipRef.current?.value ?? "")
+				setZipCol(zipRef.current?.value ?? '');
 				break;
 			case 'cityRef':
-				setCityCol(cityRef.current?.value ?? "")
+				setCityCol(cityRef.current?.value ?? '');
 				break;
 			case 'countryRef':
-				setCountryCol(countryRef.current?.value ?? "")
+				setCountryCol(countryRef.current?.value ?? '');
 				break;
 			case 'addressNotesRef':
-				setAddressNotesCol(addressNotesRef.current?.value ?? "")
+				setAddressNotesCol(addressNotesRef.current?.value ?? '');
 				break;
 			case 'bankNameRef':
-				setBankNameCol(bankNameRef.current?.value ?? "")
+				setBankNameCol(bankNameRef.current?.value ?? '');
 				break;
 			case 'ibanRef':
-				setIbanCol(ibanRef.current?.value ?? "")
+				setIbanCol(ibanRef.current?.value ?? '');
 				break;
 			case 'bicRef':
-				setBicCol(bicRef.current?.value ?? "")
+				setBicCol(bicRef.current?.value ?? '');
 				break;
 			case 'bankCodeRef':
-				setBankCodeCol(bankCodeRef.current?.value ?? "")
+				setBankCodeCol(bankCodeRef.current?.value ?? '');
 				break;
 			case 'bankNotesRef':
-				setBankNotesCol(bankNotesRef.current?.value ?? "")
+				setBankNotesCol(bankNotesRef.current?.value ?? '');
 				break;
 			case 'companyNameRef':
-				setCompanyNameCol(companyNameRef.current?.value ?? "")
+				setCompanyNameCol(companyNameRef.current?.value ?? '');
 				break;
 			case 'companyAliasRef':
-				setCompanyAliasCol(companyAliasRef.current?.value ?? "")
+				setCompanyAliasCol(companyAliasRef.current?.value ?? '');
 				break;
 			case 'companyNotesRef':
-				setCompanyNotesCol(companyNotesRef.current?.value ?? "")
+				setCompanyNotesCol(companyNotesRef.current?.value ?? '');
 				break;
 			case 'taxIDRef':
-				setTaxIDCol(taxIDRef.current?.value ?? "")
+				setTaxIDCol(taxIDRef.current?.value ?? '');
 				break;
 			case 'taxNumberRef':
-				setTaxNumberCol(taxNumberRef.current?.value ?? "")
+				setTaxNumberCol(taxNumberRef.current?.value ?? '');
 				break;
 			case 'ustidRef':
-				setUstidCol(ustidRef.current?.value ?? "")
+				setUstidCol(ustidRef.current?.value ?? '');
 				break;
 			case 'emailRef':
-				setEmailCol(emailRef.current?.value ?? "")
+				setEmailCol(emailRef.current?.value ?? '');
 				break;
 			case 'emailTypeRef':
-				setEmailTypeCol(emailTypeRef.current?.value ?? "")
+				setEmailTypeCol(emailTypeRef.current?.value ?? '');
 				break;
 			case 'emailNotesRef':
-				setEmailNotesCol(emailNotesRef.current?.value ?? "")
+				setEmailNotesCol(emailNotesRef.current?.value ?? '');
 				break;
 			case 'phoneRef':
-				setPhoneCol(phoneRef.current?.value ?? "")
+				setPhoneCol(phoneRef.current?.value ?? '');
 				break;
 			case 'phoneTypeRef':
-				setPhoneTypeCol(phoneTypeRef.current?.value ?? "")
+				setPhoneTypeCol(phoneTypeRef.current?.value ?? '');
 				break;
 			case 'phoneNotesRef':
-				setPhoneNotesCol(phoneNotesRef.current?.value ?? "")
+				setPhoneNotesCol(phoneNotesRef.current?.value ?? '');
 				break;
 			default:
 				break;
@@ -480,7 +480,7 @@ export function CustomerSorter({
 	return (
 		<>
 			<div className="customerOptions">
-				<p>Customer</p>
+				<p>{general.language === 'deutsch' ? 'Kunde' : 'Customer'}</p>
 				<div className="dataRowWrapper">
 					{customerFields.map((item, index) => {
 						return (

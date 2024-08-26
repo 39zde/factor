@@ -22,7 +22,7 @@ export const TableBodyDisplay = forwardRef<
 	useEffect(() => {
 		start.current = 1;
 		lastOrdered.current = -1;
-	}, [tableState.tableName]);
+	}, [tableState.tableName, tableState.dbVersion, tableState.dataBaseName]);
 
 	const increase = useCallback(() => {
 		// console.log(lastOrdered.current)

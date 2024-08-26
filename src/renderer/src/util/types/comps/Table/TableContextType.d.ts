@@ -24,7 +24,6 @@ export interface TableContextType {
 	start: number;
 	accept: 'prev' | 'next';
 	lastReceived: number;
-	cachedRowHeight: number;
 	hasStarted: boolean;
 }
 

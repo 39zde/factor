@@ -19,15 +19,14 @@ export function TableFoot({ columns }: TableFootProps): React.JSX.Element {
 								if (item !== undefined) {
 									return (
 										<>
-											<th
-												key={`tf-${index}`}>
+											<th key={`tablefoot-${index}-${item}`}>
 												<span className="guts">{item}</span>
 											</th>
 										</>
 									);
 								} else {
 									return (
-										<th key={`tf-${index}-df`}>
+										<th key={`tablefoot-${index}-`}>
 											<span className="guts"></span>
 										</th>
 									);
