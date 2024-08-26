@@ -4,4 +4,4 @@ export type AddDataArgs = {
 	db: IDBDatabase;
 };
 
-export type DateInput = "YYYYMMDD" | "YYYY-MM-DD hh:mm:ss"
+export type DateInput = 'YYYYMMDD' | 'YYYY-MM-DD hh:mm:ss';

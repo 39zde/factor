@@ -2,7 +2,6 @@ import React, { useId, forwardRef } from 'react';
 
 import './ColumnSetter.css';
 
-
 export const ColumnSetter = forwardRef(function ColumnSetter({
 	props,
 	ref,

@@ -1,5 +1,3 @@
-
-
 // export interface QuoteType extends BaseType {
 // 	// unique id for the quote
 // 	quoteID: string;
@@ -32,4 +30,8 @@
 // 	notes?: string[];
 // }
 
-export type  DocumentDBObjectStores = 'deliveries' | 'invoices' | "quotes" | 'returnees'
+export type DocumentDBObjectStores =
+	| 'deliveries'
+	| 'invoices'
+	| 'quotes'
+	| 'returnees';

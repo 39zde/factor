@@ -8,7 +8,7 @@ export function CheckBox({ ticked }: { ticked?: boolean }): React.JSX.Element {
 	return (
 		<>
 			<div
-				aria-modal='true'
+				aria-modal="true"
 				className="checkBox"
 				style={{
 					background: ticked ? 'var(--color-primary)' : 'none',
@@ -16,7 +16,7 @@ export function CheckBox({ ticked }: { ticked?: boolean }): React.JSX.Element {
 				{ticked ? (
 					<>
 						<Check
-							aria-modal='true'
+							aria-modal="true"
 							color="var(--color-light-1)"
 							size={solids.icon.size.tiny}
 							strokeWidth={solids.icon.strokeWidth.tiny}

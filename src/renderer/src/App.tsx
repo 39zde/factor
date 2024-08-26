@@ -429,7 +429,7 @@ function App(): JSX.Element {
 						rel="stylesheet"
 						href={
 							new URL(
-								`./util/theme/scrollbarColor-${appState.appearances.colorTheme.split(" ").join("")}.css`,
+								`./util/theme/scrollbarColor-${appState.appearances.colorTheme.split(' ').join('')}.css`,
 								import.meta.url
 							).href
 						}

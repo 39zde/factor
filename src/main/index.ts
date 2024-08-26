@@ -1,6 +1,15 @@
 import { app, shell, BrowserWindow, ipcMain } from 'electron';
 import { join, resolve } from 'path';
-import { readdir, mkdir, copyFile, readFileSync, writeFileSync, copyFileSync, readdirSync, mkdirSync } from 'fs';
+import {
+	readdir,
+	mkdir,
+	copyFile,
+	readFileSync,
+	writeFileSync,
+	copyFileSync,
+	readdirSync,
+	mkdirSync,
+} from 'fs';
 import { env } from 'process';
 import { electronApp, optimizer, is } from '@electron-toolkit/utils';
 import { AppSettingsType } from '../renderer/src/util/App';
@@ -166,12 +175,15 @@ function initSettings() {
 	if (env['HOME'] !== undefined) {
 		homeDir = resolve(env['HOME']);
 	}
-	let homeDirContents = readdirSync(homeDir, "utf8")
-	if(!homeDirContents.includes(".factor")){
-		mkdirSync(homeDir + "/.factor")
+	let homeDirContents = readdirSync(homeDir, 'utf8');
+	if (!homeDirContents.includes('.factor')) {
+		mkdirSync(homeDir + '/.factor');
 	}
-	let factorContents = readdirSync(homeDir+"/.factor", "utf8")
-	if(!factorContents.includes("settings.json")){
-		copyFileSync(__dirname+ "../../../resources/defaultSettings.json",homeDir +"/.factor/settings.json")
+	let factorContents = readdirSync(homeDir + '/.factor', 'utf8');
+	if (!factorContents.includes('settings.json')) {
+		copyFileSync(
+			__dirname + '../../../resources/defaultSettings.json',
+			homeDir + '/.factor/settings.json'
+		);
 	}
 }

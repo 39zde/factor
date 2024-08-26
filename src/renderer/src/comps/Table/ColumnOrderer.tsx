@@ -21,7 +21,7 @@ export function ColumnOrderer(): React.JSX.Element {
 	return (
 		<>
 			<div
-				aria-modal='true'
+				aria-modal="true"
 				style={{
 					cursor: draggedElementIndex > 0 ? 'grabbing' : 'grab',
 				}}>
@@ -29,14 +29,17 @@ export function ColumnOrderer(): React.JSX.Element {
 					if (index !== 0) {
 						return (
 							<p
-								aria-modal='true'
+								aria-modal="true"
 								onMouseDown={() => {
 									setDragedElementIndex(index);
 								}}
 								style={{
-									background: draggedElementIndex === index ? "light-dark(var(--color-light-3),var(--color-dark-3))": "none",
-									userSelect: "none",
-									padding: "0 0 0 6px"
+									background:
+										draggedElementIndex === index
+											? 'light-dark(var(--color-light-3),var(--color-dark-3))'
+											: 'none',
+									userSelect: 'none',
+									padding: '0 0 0 6px',
 								}}
 								key={`column-orderer-${index}`}>
 								{item}

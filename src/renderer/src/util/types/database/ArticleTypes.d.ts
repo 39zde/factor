@@ -105,4 +105,4 @@
 // 	count: number;
 // }
 
-export type ArticleDBObjectStores = string
+export type ArticleDBObjectStores = string;
