@@ -505,6 +505,18 @@ export function Table({
 			component: <ColumnOrderer />,
 		},
 	];
+	console.log('table Rerenders');
+	const tableScrollBarColor = useMemo(()=>{
+		if(appearances.colorTheme === "dark"){
+			return 'var(--color-dark-3) var(--color-dark-2)'
+		}
+		if(appearances.colorTheme === "light"){
+			return 'var(--color-light-3) var(--color-light-2)'
+		}
+		if(appearances.colorTheme === "light dark"){
+			return "initial"
+		}
+	},[appearances.colorTheme])
 
 	return (
 		<>
@@ -523,12 +535,7 @@ export function Table({
 						<div
 							className="tableElement"
 							style={{
-								scrollbarColor:
-									appearances.colorTheme === 'light'
-										? 'var(--color-light-3) var(--color-light-2)'
-										: appearances.colorTheme === 'dark'
-											? 'var(--color-dark-3) var(--color-dark-2)'
-											: 'initial',
+								scrollbarColor:tableScrollBarColor
 							}}
 							ref={wrapperRef}
 							onMouseMove={(e) => {
