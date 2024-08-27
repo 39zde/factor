@@ -28,7 +28,6 @@ export type {
 } from './database/CustomerTypes';
 
 export type {
-	TableFootProps,
 	TableProps,
 	TableDispatchAction,
 	TableContextType,
