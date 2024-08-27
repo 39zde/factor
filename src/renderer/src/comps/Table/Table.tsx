@@ -534,6 +534,13 @@ export function Table({
 		});
 	},[tableState.activeBg])
 
+	const tableStyle = useMemo(()=>{
+		return {
+			cursor: tableState.cursor,
+			userSelect: tableState.userSelect,
+		}
+	},[tableState.cursor, tableState.userSelect])
+
 	return (
 		<>
 			<TableContext.Provider value={tableState}>
@@ -557,10 +564,7 @@ export function Table({
 							onMouseMove={mouseMoveHandler}
 							onMouseUp={mouseUpHandler}>
 							<table
-								style={{
-									cursor: tableState.cursor,
-									userSelect: tableState.userSelect,
-								}}>
+								style={tableStyle}>
 								<TableHeadDisplay causeRerender={causeRerender} />
 								<TableBodyDisplay
 									causeRerender={causeRerender}
