@@ -14,7 +14,8 @@ export function Help(): React.JSX.Element {
 			<div className="helpWrapper helper">
 				<div className="helpContentsWrapper">
 					<ul className="helpContentsList">
-						<li></li>
+						<li>
+						</li>
 					</ul>
 				</div>
 				<div className="helpContents">
@@ -52,12 +53,7 @@ function UnfoldHelp({ help }: { help: HelpTexts }) {
 										<div
 											className="helpCategoryItemWrapper"
 											key={`help-div2-${index}-${index2}`}>
-											{item.text.map((text, index3) => (
-												<p
-													key={`help-p-${index}-${index2}-${index3}`}>
-													{text}
-												</p>
-											))}
+											{item.item}
 										</div>
 									</>
 								);

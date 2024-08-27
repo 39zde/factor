@@ -5,15 +5,35 @@ export const HelpTextDE: HelpTexts = {
 		items: [
 			{
 				title: 'Tabellennavigation',
-				text: [
-					'Wege zum horizontalen navigieren in der Tabelle: ',
-					`▸ Shift + Scroll `,
-					'▸ Mittlere Maustaste gedrückt halten und in die gewünschte Richtung ziehen',
-					'▸ Scroll-Leiste benutzen',
-					' ', // alt + 255
-					'Wege zum vertikalen Navigieren: ',
-					'▸ Scroll-Rad benutzen',
-				],
+				item: (
+					<>
+						<div>
+							<h4>Wege zum horizontalen navigieren in der Tabelle:</h4>
+							<ol>
+								<li>
+									<span className="keyBoardShortcut">
+										<span className="keyboardKey">&#8679;</span>
+										<span> + </span>
+										<span>Scroll</span>
+									</span>
+								</li>
+								<li>
+									Mittlere Maustaste gedrückt halten und in die
+									gewünschte Richtung ziehen
+								</li>
+								<li>Scroll-Leiste benutzen</li>
+							</ol>
+							<h4>Wege zum vertikalen Navigieren: </h4>
+							<ol>
+								<li>Scroll-Rad</li>
+								<li>
+									Die Pfeile in der linken oberen und unteren Ecke der
+									Tabelle drücken
+								</li>
+							</ol>
+						</div>
+					</>
+				),
 			},
 		],
 	},
@@ -22,9 +42,18 @@ export const HelpTextDE: HelpTexts = {
 		items: [
 			{
 				title: 'Hochladen',
-				text: [
-					'Beim Hochladen von Dateien ist sowohl auf den Dateityp, als auch auf das Trennzeichen zu achten. Beim Dateityp muss es sich um eine CSV Datei handeln. Das Trennzeichen sollte ein Semicolon (;), da ein Komma auch oft in den Tabellenfeldern vorkommt. Je nach Art des zu importierenden Datensatzes können so Problemen vorgebeugt werden.',
-				],
+				item: (
+					<>
+						<p>
+							'Beim Hochladen von Dateien ist sowohl auf den Dateityp,
+							als auch auf das Trennzeichen zu achten. Beim Dateityp muss
+							es sich um eine CSV Datei handeln. Das Trennzeichen sollte
+							ein Semicolon (;), da ein Komma auch oft in den
+							Tabellenfeldern vorkommt. Je nach Art des zu importierenden
+							Datensatzes können so Problemen vorgebeugt werden.',
+						</p>
+					</>
+				),
 			},
 		],
 	},
@@ -36,15 +65,34 @@ export const HelpTextEN: HelpTexts = {
 		items: [
 			{
 				title: 'Table Navigation',
-				text: [
-					'Ways to navigate horizontally: ',
-					'Shift + Scroll ',
-					'Press and hold the mouse wheel and drag towards the wanted direction',
-					'Using the Scrollbar',
-					' ', // alt + 255
-					'Ways to navigate vertically: ',
-					'Use the mouse wheel',
-				],
+				item: (
+					<>
+						<div>
+							<h4>Ways to navigate horizontally: </h4>
+							<ol>
+								<li>
+									<span>
+										<span className="keyboardKey">&#8679;</span>+
+										Scroll
+									</span>
+								</li>
+								<li>
+									Press and hold the mouse wheel and drag towards the
+									wanted direction
+								</li>
+								<li>Using the Scrollbar</li>
+							</ol>
+							<h4>Ways to navigate vertically:: </h4>
+							<ol>
+								<li>Use the mouse wheel</li>
+								<li>
+									Use the buttons in the upper and lower left corner of
+									the table
+								</li>
+							</ol>
+						</div>
+					</>
+				),
 			},
 		],
 	},
@@ -53,9 +101,18 @@ export const HelpTextEN: HelpTexts = {
 		items: [
 			{
 				title: 'Upload',
-				text: [
-					'While uploading consider the type of file and the delimiting character.The supported file type is CSV. The delimiter should be a semicolon (;), because a comma appears often in the value of cells. This would distort the whole table. Depending on the to be imported dataset, this way problems can be mitigated in advance.',
-				],
+				item: (
+					<>
+						<p>
+							While uploading consider the type of file and the
+							delimiting character.The supported file type is CSV. The
+							delimiter should be a semicolon (;), because a comma
+							appears often in the value of cells. This would distort the
+							whole table. Depending on the to be imported dataset, this
+							way problems can be mitigated in advance.
+						</p>
+					</>
+				),
 			},
 		],
 	},

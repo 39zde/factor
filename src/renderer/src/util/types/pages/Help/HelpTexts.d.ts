@@ -1,3 +1,4 @@
+import React from 'react';
 export interface HelpTexts {
 	usage: {
 		title: string;
@@ -13,5 +14,5 @@ export interface HelpItem {
 	// what title this section should be given
 	title: string;
 	// the contents of this section
-	text: string[];
+	item: React.JSX.Element;
 }
