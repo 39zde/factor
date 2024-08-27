@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useRef, forwardRef } from 'react';
+import React, {
+	useCallback,
+	useEffect,
+	useRef,
+	forwardRef,
+	useMemo,
+} from 'react';
 
 import { TableRows } from './TableRows';
 
@@ -129,11 +135,13 @@ export const TableBodyDisplay = forwardRef<HTMLTableSectionElement>(
 			]
 		);
 
-		const iconProps = {
-			color: 'light-dark(var(--color-dark-1),var(--color-light-1))',
-			size: solids.icon.size.regular,
-			strokeWidth: solids.icon.strokeWidth.regular,
-		};
+		const iconProps = useMemo(() => {
+			return {
+				color: 'light-dark(var(--color-dark-1),var(--color-light-1))',
+				size: solids.icon.size.regular,
+				strokeWidth: solids.icon.strokeWidth.regular,
+			};
+		}, [solids]);
 
 		const upHandler = () => {
 			dispatch({
