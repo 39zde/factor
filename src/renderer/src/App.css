@@ -38,5 +38,6 @@ div.helper {
 
 	&>div {
 		max-width: 1040px;
+		align-self: center;
 	}
 }
