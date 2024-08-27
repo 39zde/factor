@@ -4,7 +4,7 @@ import { Check } from 'lucide-react';
 import { solids } from '@renderer/App';
 import './CheckBox.css';
 
-export function CheckBox({ ticked }: { ticked?: boolean }): React.JSX.Element {
+export function CheckBox({ ticked }: { ticked: boolean }): React.JSX.Element {
 	return (
 		<>
 			<div
