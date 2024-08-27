@@ -518,6 +518,15 @@ export function Table({
 		}
 	},[appearances.colorTheme])
 
+	const mouseMoveHandler = useCallback((e: MouseEvent)=>{
+		if(tableState.isMouseDown){
+			dispatch({
+				type: 'mouseMove',
+				newVal: e.pageX,
+			});
+		}
+	},[tableState.isMouseDown])
+
 	return (
 		<>
 			<TableContext.Provider value={tableState}>
@@ -538,14 +547,7 @@ export function Table({
 								scrollbarColor:tableScrollBarColor
 							}}
 							ref={wrapperRef}
-							onMouseMove={(e) => {
-								if (tableState.isMouseDown) {
-									dispatch({
-										type: 'mouseMove',
-										newVal: e.pageX,
-									});
-								}
-							}}
+							onMouseMove={mouseMoveHandler}
 							onMouseUp={() => {
 								dispatch({
 									type: 'mouseUp',
