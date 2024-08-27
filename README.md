@@ -43,7 +43,7 @@ yarn devtools
 Note: See "Yarn Package Manager" in `CONTRIBUTING.md` on how to use node's `corepack`
 
 # Links
-+ [^1]: (https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Basic_Terminology#key_characteristics)[https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Basic_Terminology#key_characteristics]
-+ [^2]: (https://developer.mozilla.org/en-US/docs/Web/API/IDBObjectStore)[https://developer.mozilla.org/en-US/docs/Web/API/IDBObjectStore]
-+ [^3]: (https://developer.mozilla.org/en-US/docs/Web/API/Worker/Worker)[https://developer.mozilla.org/en-US/docs/Web/API/Worker/Worker]
-+ [^4]: (https://github.com/dexie/Dexie.js)[https://developer.mozilla.org/en-US/docs/Web/API/Worker/Worker]
+ [^1]: https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Basic_Terminology#key_characteristics
+ [^2]: https://developer.mozilla.org/en-US/docs/Web/API/IDBObjectStore
+ [^3]: https://developer.mozilla.org/en-US/docs/Web/API/Worker/Worker
+ [^4]: https://developer.mozilla.org/en-US/docs/Web/API/Worker/Worker
