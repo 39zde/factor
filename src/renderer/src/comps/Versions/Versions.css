@@ -2,10 +2,7 @@
  @import url("../../base.css");
 
  .versions {
- 	position: absolute;
- 	bottom: 30px;
-	width: 80%;
- 	margin: 0 auto;
+ 	margin: 16px auto;
  	padding: 15px 0;
  	font-family: monospace;
  	display: inline-flex;
