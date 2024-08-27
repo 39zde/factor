@@ -92,7 +92,7 @@ export function Table({
 			name: 'rows',
 			newVal: [],
 		});
-		// also mutate the state directly to be certain
+		// also mutate the state directly, just to be sure
 		tableState.rows = [];
 		tableState.start = 0;
 		if (tableState.dataBaseName !== dataBaseName) {
@@ -506,6 +506,37 @@ export function Table({
 			}
 		}
 	};
+
+	// update the Menu Items, on language change
+	useEffect(() => {
+		setMenuItems([
+			{
+				component: (
+					<>
+						<p aria-modal={'true'} className="menuRow">
+							{general.language === 'deutsch' ? 'Spalten' : 'Columns'}
+							<ChevronRight
+								size={solids.icon.size.small}
+								strokeWidth={solids.icon.strokeWidth.small}
+								color="light-dark(var(--color-dark-1),var(--color-light-1))"
+							/>
+						</p>
+					</>
+				),
+				subMenu: tableState.allColumns
+					.map((item, index) => {
+						return {
+							component: (
+								<>
+									<ColumnCheckBox index={index} columnName={item} />
+								</>
+							),
+						};
+					})
+					.toSpliced(0, 1),
+			},
+		]);
+	}, [general.language, tableState.allColumns]);
 
 	return (
 		<>
