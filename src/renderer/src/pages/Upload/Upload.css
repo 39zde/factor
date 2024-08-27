@@ -203,6 +203,7 @@ li {
 	gap: 20px;
 	border-top: 1px solid light-dark(var(--color-dark-2), var(--color-light-2));
 	overflow-y: scroll;
+	overflow-x: hidden;
 	scrollbar-width: var(--scrollbar-width);
 	padding-left: 12px;
 	padding-top: 12px;
