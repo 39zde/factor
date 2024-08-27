@@ -68,7 +68,7 @@ export function Table({
 		tableReducer,
 		PlaceHolderTableContext
 	);
-
+	/** dispatch all tableState properties or invoke functions that do so */
 	const initTableState = useCallback(() => {
 		// signal that we haven't started
 		dispatch({
@@ -88,6 +88,7 @@ export function Table({
 			name: 'rows',
 			newVal: [],
 		});
+		// also mutate the state directly to be certain
 		tableState.rows = [];
 		tableState.start = 0;
 		setCauseRerender(!causeRerender);
@@ -180,36 +181,34 @@ export function Table({
 
 	// dynamically update rowHeight and scope, if the window resizes or the rowHeight changed in settings
 	useEffect(() => {
-		if (tableState.hasStarted) {
-			if (wrapperRef.current !== null) {
-				updateSizing(
-					dispatch,
-					{
-						dataBaseName: dataBaseName,
-						dbVersion: database.dbVersion,
-						hasStarted: true,
-						oldScope: tableState.scope,
-						start: tableState.start,
-						tableName: tableName,
-						tableRows: tableState.rows,
-					},
-					wrapperRef.current,
-					scrollBarHeight,
-					appearances.rowHeight,
-					() => {
-						setCauseRerender(!causeRerender);
-					},
-					worker.TableWorker
-				);
-			}
+		if (tableState.hasStarted && wrapperRef.current !== null) {
+			// if we already have started and we have the wrapper element to pull a height from
+			updateSizing(
+				dispatch,
+				{
+					dataBaseName: dataBaseName,
+					dbVersion: database.dbVersion,
+					hasStarted: true,
+					oldScope: tableState.scope,
+					start: tableState.start,
+					tableName: tableName,
+					tableRows: tableState.rows,
+				},
+				wrapperRef.current,
+				scrollBarHeight,
+				appearances.rowHeight,
+				() => {
+					setCauseRerender(!causeRerender);
+				},
+				worker.TableWorker
+			);
 		}
 		// don't put tableState.scope into the deps array, because the function updateSizing changes tableState.scope, therefore creating a cycle
 	}, [appearances.height, appearances.rowHeight, tableState.hasStarted]);
 
-	/**
-	 *  handle the messages coming from table.worker.ts
-	 *  dispatches: rows, lastReceived, start, columns, allColumns, resizeStyles, columnWidths, count, hasStarted
-	 *  **/
+	//  handle the messages coming from table.worker.ts
+	//  this also includes responses from messages made in files other than this one.
+	// dispatches: rows, lastReceived, start, columns, allColumns, resizeStyles, columnWidths, count, hasStarted
 	worker.TableWorker.onmessage = (e: MessageEvent) => {
 		const eventData = e.data as TableWorkerResponseMessage;
 		switch (eventData.type) {
@@ -219,7 +218,10 @@ export function Table({
 				}
 				switch (eventData.action) {
 					case 'add':
+						// adds data, when the scope changes
+						// copy current rows
 						const rows = tableState.rows;
+						// check if the soon to be added element is already in the rows
 						const filtered = rows.filter((value) => {
 							//@ts-expect-error value is unknown to ts, because it was obtained by onMessage
 							if (value.row === eventData.data.row) return true;
@@ -230,24 +232,27 @@ export function Table({
 							typeof eventData.data !== 'number' &&
 							!Array.isArray(eventData.data)
 						) {
+							/// add the row to the tableState
 							rows.push(eventData.data as DerefRow);
 							dispatch({
 								type: 'set',
 								name: 'rows',
 								newVal: rows,
 							});
+							// also change the last receive value
 							dispatch({
 								type: 'set',
 								name: 'lastReceived',
 								newVal: (eventData.data as DerefRow).row,
 							});
 						}
-						setCauseRerender(!causeRerender);
 						break;
 					case 'next':
 						// the responses from a scroll down action action
 						if (tableState.accept === 'next') {
 							const rows = tableState.rows;
+							// check if the soon to be added element is already in the rows
+
 							const filtered = rows.filter((value) => {
 								//@ts-expect-error value is unknown to ts, because it was obtained by onMessage
 								if (value.row === eventData.data.row) return true;
@@ -259,16 +264,13 @@ export function Table({
 								typeof eventData.data !== 'number' &&
 								!Array.isArray(eventData.data)
 							) {
-								dispatch({
-									type: 'set',
-									name: 'start',
-									newVal: eventData.index - tableState.scope + 1,
-								});
+								// set the last received  value
 								dispatch({
 									type: 'set',
 									name: 'lastReceived',
 									newVal: eventData.index,
 								});
+								// set the start value
 								dispatch({
 									type: 'set',
 									name: 'start',
@@ -276,8 +278,10 @@ export function Table({
 										(eventData.data as DerefRow).row -
 										tableState.scope,
 								});
+								// remove the first element and append the received row to the end
 								rows.splice(0, 1);
 								rows.push(eventData.data as DerefRow);
+								// finally set the new rows
 								dispatch({
 									type: 'set',
 									name: 'rows',
@@ -288,31 +292,40 @@ export function Table({
 						break;
 					case 'prev':
 						if (tableState.accept === 'prev') {
+							// copy the current rows
 							const rows = tableState.rows;
+							// check if the incoming item is already in rows
 							const filtered = rows.filter((value) => {
 								//@ts-expect-error value is unknown to ts, because it was obtained by onMessage
 								if (value.row === eventData.data.row) return true;
 								return false;
 							});
+
 							if (
 								filtered.length === 0 &&
 								eventData.index !== undefined &&
 								typeof eventData.data !== 'number' &&
 								!Array.isArray(eventData.data)
 							) {
+								// if we don't have the incoming item in rows and
+								// and the incoming item is valid
+								// update the staring point to be the one from the incoming item
 								dispatch({
 									type: 'set',
 									name: 'start',
 									newVal: eventData.index,
 								});
+								// make sure everyone knows that this is the latest item
 								dispatch({
 									type: 'set',
 									name: 'lastReceived',
 									newVal: eventData.index,
 								});
+								// remove the row at end
 								rows.pop();
+								// and insert the incoming item
 								rows.splice(0, 0, eventData.data as DerefRow);
-								// console.log("received ", eventData.index)
+								// finally update the rows
 								dispatch({
 									type: 'set',
 									name: 'rows',
@@ -324,11 +337,12 @@ export function Table({
 					default:
 						break;
 				}
+				// regardless of what message we got, trigger a rerender
 				setCauseRerender(!causeRerender);
 				break;
 			case 'startingPackage':
 				let data = eventData.data as StarterPackageResponse;
-				// count
+				// set how many entries there are in the table
 				dispatch({
 					type: 'set',
 					name: 'count',
@@ -339,35 +353,40 @@ export function Table({
 					entriesHook(data.startingCount);
 				}
 				// column related
+				// make sure rows is always on the first position
+				let cols =  data.startingColumns
+				.toSpliced(data.startingColumns.indexOf('row'), 1)
+				.toSpliced(0, 0, 'row')
 				dispatch({
 					type: 'set',
 					name: 'columns',
-					newVal: data.startingColumns
-						.toSpliced(data.startingColumns.indexOf('row'), 1)
-						.toSpliced(0, 0, 'row'),
+					newVal: cols,
 				});
 				dispatch({
 					type: 'set',
 					name: 'columns',
-					newVal: data.startingColumns
-						.toSpliced(data.startingColumns.indexOf('row'), 1)
-						.toSpliced(0, 0, 'row'),
+					newVal: cols,
 				});
+				// create refs used for getting the with of a columns.
+				// we need this for resizing the columns
 				dispatch({
 					type: 'set',
 					name: 'colsRef',
-					newVal: data.startingColumns.map(() =>
+					newVal: cols.map(() =>
 						createRef<HTMLTableCellElement>()
 					),
 				});
+				// also create the style for every resizeElement
 				dispatch({
 					type: 'set',
 					name: 'resizeStyles',
-					newVal: data.startingColumns.map(() => ({
+					newVal: cols.map(() => ({
 						background: 'none',
 						cursor: 'initial',
 					})),
 				});
+				// set the width of every column to be the default width set in the settings
+				// unless it's the fist column ( row column)
 				dispatch({
 					type: 'set',
 					name: 'columnWidths',
@@ -391,11 +410,13 @@ export function Table({
 					name: 'lastReceived',
 					newVal: data.starterRows[data.starterRows.length - 1].row,
 				});
+				// now every tableState has been set and we can tell everyone we have started
 				dispatch({
 					type: 'set',
 					name: 'hasStarted',
 					newVal: true,
 				});
+				// and then trigger a rerender
 				setCauseRerender(!causeRerender);
 				break;
 			case 'error':
