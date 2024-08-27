@@ -2,27 +2,20 @@
  @import url("@renderer/base.css");
 
  .versionsWrapper {
- 	position: absolute;
- 	bottom: 0;
- 	left: 0;
- 	right: 0;
- 	margin: 0 auto;
- 	width: 100%;
- 	display: flex;
- 	justify-content: center;
+
  }
 
  .settingsPage {
  	display: flex;
  	flex-direction: column;
  	align-items: center;
- 	justify-content: flex-start;
+ 	justify-content: space-between;
  }
 
  .settingOptions {
  	display: flex;
  	justify-content: flex-start;
- 	width: 80%;
+ 	width: 100%;
  	flex-direction: column;
  	align-items: center;
  	gap: 12px;
@@ -44,7 +37,7 @@
  }
 
  .saveSection {
- 	width: 80%;
+ 	width: 100%;
  	display: flex;
  	flex-direction: column;
  	align-items: stretch;
@@ -60,4 +53,13 @@
 
  .settingsSelect {
  	text-align: right;
+ }
+
+ .settingsList{
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-start;
+	align-items: stretch;
+	align-content: center;
  }

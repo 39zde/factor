@@ -180,161 +180,164 @@ export function Settings() {
 	return (
 		<>
 			<div className="settingsPage appRoute helper">
-				<div className="settingOptions">
-					<h2>
-						{context.general.language === 'english'
-							? 'Appearances'
-							: 'Aussehen'}
-					</h2>
-					<div className="settingsOption">
-						<p>
+				<div className='settingsList'>
+					<div className="settingOptions">
+						<h2>
 							{context.general.language === 'english'
-								? 'Color Theme'
-								: 'Farbschema'}
-						</p>
-						<select
-							className="settingsSelect"
-							ref={themeInputRef}
-							onInput={themeInputHandler}
-							defaultValue={colorTheme}>
-							<option value={'light dark'}>
+								? 'Appearances'
+								: 'Aussehen'}
+						</h2>
+						<div className="settingsOption">
+							<p>
+								{context.general.language === 'english'
+									? 'Color Theme'
+									: 'Farbschema'}
+							</p>
+							<select
+								className="settingsSelect"
+								ref={themeInputRef}
+								onInput={themeInputHandler}
+								defaultValue={colorTheme}>
+								<option value={'light dark'}>
+									{context.general.language === 'deutsch'
+										? 'Systemfarbschema '
+										: 'System theme '}
+								</option>
+								<option value={'dark'}>
+									{context.general.language === 'deutsch'
+										? 'dunkel '
+										: 'dark '}
+								</option>
+								<option value={'light'}>
+									{context.general.language === 'deutsch'
+										? 'hell '
+										: 'light '}
+								</option>
+							</select>
+						</div>
+						<div className="settingsOption">
+							<p>
 								{context.general.language === 'deutsch'
-									? 'Systemfarbschema '
-									: 'System theme '}
-							</option>
-							<option value={'dark'}>
+									? 'Tabellenzeilenhöhe '
+									: 'Table Row Height '}
+								(px)
+							</p>
+							<input
+								onInput={rowHeightInputHandler}
+								ref={rowHeightInputRef}
+								type="number"
+								min={20}
+								max={60}
+								step={1}
+								value={rowHeight}
+							/>
+						</div>
+						<div className="settingsOption">
+							<p>
 								{context.general.language === 'deutsch'
-									? 'dunkel '
-									: 'dark '}
-							</option>
-							<option value={'light'}>
+									? 'Standartspaltenbreite '
+									: 'Default column width '}
+								(px)
+							</p>
+							<input
+								onInput={columnWidthInputHandler}
+								ref={colWidthInputRef}
+								type="number"
+								min={50}
+								max={400}
+								step={1}
+								value={columnWidth}
+							/>
+						</div>
+						<div className="settingsOption">
+							<p>
+								{context.general.language === 'english'
+									? 'Side Bar Width '
+									: 'Seitenleistenbreite '}
+								(px)
+							</p>
+							<input
+								onInput={sideBarWidthInputHandler}
+								ref={sideBarWidthInputRef}
+								type="number"
+								min={200}
+								max={300}
+								step={1}
+								value={sideBarWidth}
+							/>
+						</div>
+						<h2>
+							{context.general.language === 'english'
+								? 'General'
+								: 'Allgemein'}
+						</h2>
+						<div className="settingsOption">
+							<p>
+								{context.general.language === 'english'
+									? 'Language'
+									: 'Sprache'}
+							</p>
+							<select
+								className="settingsSelect"
+								ref={langInputRef}
+								onInput={langInputHandler}
+								defaultValue={language}>
+								<option value={'english'}>english </option>
+								<option value={'deutsch'}>deutsch </option>
+							</select>
+						</div>
+						<div className="settingsOption">
+							<p>
+								{context.general.language === 'english'
+									? 'Decimal Separator'
+									: 'Dezimaltrennzeichen'}
+							</p>
+							<select
+								ref={decimalSeparatorInputRef}
+								onInput={decimalSeparatorInputHandler}
+								defaultValue={decimalSeparator}>
+								<option>.</option>
+								<option>,</option>
+							</select>
+						</div>
+						<div className="settingsOption">
+							<p>
 								{context.general.language === 'deutsch'
-									? 'hell '
-									: 'light '}
-							</option>
-						</select>
+									? 'Scroll-Geschwindigkeit '
+									: 'Scrolling speed '}
+								(px)
+							</p>
+							<input
+								onInput={scrollSpeedInputHandler}
+								ref={scrollSpeedRef}
+								type="number"
+								min={1}
+								max={150}
+								step={1}
+								value={scrollSpeed}
+							/>
+						</div>
 					</div>
-					<div className="settingsOption">
-						<p>
+
+					<div className="saveSection">
+						<button
+							onClick={saveSettings}
+							style={{
+								textShadow:
+									context.appearances.colorTheme === 'dark'
+										? 'var(--color-primary-dark) 0px 0px 20px'
+										: 'none',
+							}}>
+							<Save
+								size={solids.icon.size.regular}
+								strokeWidth={solids.icon.strokeWidth.regular}
+								color="light-dark(var(--color-dark-1),var(--color-light-1)"
+							/>{' '}
 							{context.general.language === 'deutsch'
-								? 'Tabellenzeilenhöhe '
-								: 'Table Row Height '}
-							(px)
-						</p>
-						<input
-							onInput={rowHeightInputHandler}
-							ref={rowHeightInputRef}
-							type="number"
-							min={20}
-							max={60}
-							step={1}
-							value={rowHeight}
-						/>
+								? 'Speichern'
+								: 'Save'}
+						</button>
 					</div>
-					<div className="settingsOption">
-						<p>
-							{context.general.language === 'deutsch'
-								? 'Standartspaltenbreite '
-								: 'Default column width '}
-							(px)
-						</p>
-						<input
-							onInput={columnWidthInputHandler}
-							ref={colWidthInputRef}
-							type="number"
-							min={50}
-							max={400}
-							step={1}
-							value={columnWidth}
-						/>
-					</div>
-					<div className="settingsOption">
-						<p>
-							{context.general.language === 'english'
-								? 'Side Bar Width '
-								: 'Seitenleistenbreite '}
-							(px)
-						</p>
-						<input
-							onInput={sideBarWidthInputHandler}
-							ref={sideBarWidthInputRef}
-							type="number"
-							min={200}
-							max={300}
-							step={1}
-							value={sideBarWidth}
-						/>
-					</div>
-					<h2>
-						{context.general.language === 'english'
-							? 'General'
-							: 'Allgemein'}
-					</h2>
-					<div className="settingsOption">
-						<p>
-							{context.general.language === 'english'
-								? 'Language'
-								: 'Sprache'}
-						</p>
-						<select
-							className="settingsSelect"
-							ref={langInputRef}
-							onInput={langInputHandler}
-							defaultValue={language}>
-							<option value={'english'}>english </option>
-							<option value={'deutsch'}>deutsch </option>
-						</select>
-					</div>
-					<div className="settingsOption">
-						<p>
-							{context.general.language === 'english'
-								? 'Decimal Separator'
-								: 'Dezimaltrennzeichen'}
-						</p>
-						<select
-							ref={decimalSeparatorInputRef}
-							onInput={decimalSeparatorInputHandler}
-							defaultValue={decimalSeparator}>
-							<option>.</option>
-							<option>,</option>
-						</select>
-					</div>
-					<div className="settingsOption">
-						<p>
-							{context.general.language === 'deutsch'
-								? 'Scroll-Geschwindigkeit '
-								: 'Scrolling speed '}
-							(px)
-						</p>
-						<input
-							onInput={scrollSpeedInputHandler}
-							ref={scrollSpeedRef}
-							type="number"
-							min={1}
-							max={150}
-							step={1}
-							value={scrollSpeed}
-						/>
-					</div>
-				</div>
-				<div className="saveSection">
-					<button
-						onClick={saveSettings}
-						style={{
-							textShadow:
-								context.appearances.colorTheme === 'dark'
-									? 'var(--color-primary-dark) 0px 0px 20px'
-									: 'none',
-						}}>
-						<Save
-							size={solids.icon.size.regular}
-							strokeWidth={solids.icon.strokeWidth.regular}
-							color="light-dark(var(--color-dark-1),var(--color-light-1)"
-						/>{' '}
-						{context.general.language === 'deutsch'
-							? 'Speichern'
-							: 'Save'}
-					</button>
 				</div>
 				<div className="versionsWrapper">
 					<Versions />
