@@ -24,7 +24,6 @@ export function updateScope(
 		dataBaseName: string;
 		start: number;
 	},
-	triggerRerender: () => void,
 	worker: Worker
 ) {
 	dispatch({
@@ -71,7 +70,6 @@ export function updateScope(
 				});
 			}
 
-			triggerRerender();
 		} else if (tableValues.newScope > tableValues.oldScope) {
 			// the new scope is larger than the previous one
 			// we need add rows

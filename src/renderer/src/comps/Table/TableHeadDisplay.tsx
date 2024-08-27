@@ -3,11 +3,7 @@ import React from 'react';
 import { TableHead } from './TableHead';
 import { useTableContext } from './Table';
 
-export function TableHeadDisplay({
-	causeRerender,
-}: {
-	causeRerender: boolean;
-}): React.JSX.Element {
+export function TableHeadDisplay(): React.JSX.Element {
 	const tableState = useTableContext();
 	switch (tableState.update) {
 		case true:
@@ -16,7 +12,7 @@ export function TableHeadDisplay({
 		case undefined:
 			if (tableState.columns !== undefined) {
 				if (tableState.columns.length !== 0) {
-					return <TableHead causeRerender={causeRerender} />;
+					return <TableHead />;
 				}
 			}
 			return <></>;

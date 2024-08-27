@@ -26,7 +26,6 @@ export function updateSizing(
 	body: HTMLDivElement,
 	scrollBarHeight: number,
 	rowHeight: number,
-	triggerRerender: () => void,
 	worker: Worker
 ) {
 	let cleanedScope = 0;
@@ -63,7 +62,6 @@ export function updateSizing(
 			tableName: tableValues.tableName,
 			tableRows: tableValues.tableRows,
 		},
-		triggerRerender,
 		worker
 	);
 }

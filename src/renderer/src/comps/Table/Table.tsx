@@ -60,7 +60,6 @@ export function Table({
 	const { database, appearances, worker, general } = useAppContext();
 	const tableBodyRef = useRef<HTMLTableSectionElement>(null);
 	const wrapperRef = useRef<HTMLDivElement>(null);
-	const [causeRerender, setCauseRerender] = useState<boolean>(false);
 	const [menuX, setMenuX] = useState<number>(0);
 	const [menuY, setMenuY] = useState<number>(0);
 	const [menuActive, setMenuActive] = useState<boolean>(false);
@@ -91,7 +90,6 @@ export function Table({
 		// also mutate the state directly to be certain
 		tableState.rows = [];
 		tableState.start = 0;
-		setCauseRerender(!causeRerender);
 		if (tableState.dataBaseName !== dataBaseName) {
 			// set new dataBaseName
 			dispatch({
@@ -197,9 +195,6 @@ export function Table({
 				wrapperRef.current,
 				scrollBarHeight,
 				appearances.rowHeight,
-				() => {
-					setCauseRerender(!causeRerender);
-				},
 				worker.TableWorker
 			);
 		}
@@ -558,22 +553,18 @@ export function Table({
 						<div
 							className="tableElement"
 							style={{
-								scrollbarColor:tableScrollBarColor
+								scrollbarColor: tableScrollBarColor
 							}}
 							ref={wrapperRef}
 							onMouseMove={mouseMoveHandler}
 							onMouseUp={mouseUpHandler}>
 							<table
 								style={tableStyle}>
-								<TableHeadDisplay causeRerender={causeRerender} />
+								<TableHeadDisplay  />
 								<TableBodyDisplay
-									causeRerender={causeRerender}
 									ref={tableBodyRef}
 								/>
-								<TableFootDisplay
-									columns={tableState.columns}
-									update={tableState.update}
-								/>
+								<TableFootDisplay />
 							</table>
 						</div>
 					</div>
@@ -633,7 +624,6 @@ tableWorkerResponse: starterPackage
 |		|-tableState.lastReceived
 |		|-tableState.hasStarted
 |
-triggerRerender
 |
 |
 |
@@ -671,6 +661,4 @@ tableWorkerRequest: stream (action: add)
 tableWorkerResponse: stream(action: add)
 | 	 |-tableState.rows
 |	 |-tableState.lastReceived
-|
-triggerRerender
  */

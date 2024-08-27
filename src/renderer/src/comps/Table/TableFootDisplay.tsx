@@ -1,19 +1,16 @@
 import React from 'react';
 
 import { TableFoot } from './TableFoot';
+import { useTableContext } from './Table';
 
-import type { TableFootDisplayProps } from '@renderer/util/types/types';
-
-export function TableFootDisplay({
-	columns,
-	update,
-}: TableFootDisplayProps): React.JSX.Element {
-	switch (update) {
+export function TableFootDisplay(): React.JSX.Element {
+	const tableState = useTableContext();
+	switch (tableState.update) {
 		case undefined:
 		case false:
-			if (columns !== undefined) {
-				if (columns.length !== 0) {
-					return <TableFoot key={'TableFoot'} columns={columns} />;
+			if (tableState.columns !== undefined) {
+				if (tableState.columns.length !== 0) {
+					return <TableFoot />;
 				}
 			}
 			return <></>;
