@@ -9,13 +9,12 @@ import React, {
 	useState,
 	MouseEvent,
 	useCallback,
+	useMemo,
 } from 'react';
 import { useAppContext } from '@renderer/App';
 import { TableHeadDisplay } from './TableHeadDisplay';
 import { TableBodyDisplay } from './TableBodyDisplay';
 import { TableFootDisplay } from './TableFootDisplay';
-import { ColumnOrderer } from './ColumnOrderer';
-import { ContextMenu } from '../ContextMenu/ContextMenu';
 import './Table.css';
 
 import {
@@ -28,7 +27,6 @@ import type {
 	TableContextType,
 	TableDispatchAction,
 	TableWorkerResponseMessage,
-	MenuItem,
 	DerefRow,
 	StarterPackageResponse,
 } from '@renderer/util/types/types';
@@ -60,9 +58,6 @@ export function Table({
 	const { database, appearances, worker, general } = useAppContext();
 	const tableBodyRef = useRef<HTMLTableSectionElement>(null);
 	const wrapperRef = useRef<HTMLDivElement>(null);
-	const [menuX, setMenuX] = useState<number>(0);
-	const [menuY, setMenuY] = useState<number>(0);
-	const [menuActive, setMenuActive] = useState<boolean>(false);
 	const [tableState, dispatch] = useReducer(
 		tableReducer,
 		PlaceHolderTableContext
@@ -138,9 +133,6 @@ export function Table({
 				wrapperRef.current,
 				scrollBarHeight,
 				appearances.rowHeight,
-				() => {
-					setCauseRerender(!causeRerender);
-				},
 				worker.TableWorker
 			);
 		}
@@ -332,8 +324,6 @@ export function Table({
 					default:
 						break;
 				}
-				// regardless of what message we got, trigger a rerender
-				setCauseRerender(!causeRerender);
 				break;
 			case 'startingPackage':
 				let data = eventData.data as StarterPackageResponse;
@@ -409,8 +399,6 @@ export function Table({
 					name: 'hasStarted',
 					newVal: true,
 				});
-				// and then trigger a rerender
-				setCauseRerender(!causeRerender);
 				break;
 			case 'error':
 				console.log(eventData);
@@ -423,147 +411,59 @@ export function Table({
 		}
 	};
 
-	const clickHandler = (e: MouseEvent) => {
-		if (e.button === 2) {
-			setMenuActive(true);
-			setMenuX(e.pageX);
-			setMenuY(e.pageY);
+	const tableScrollBarColor = useMemo(() => {
+		if (appearances.colorTheme === 'dark') {
+			return 'var(--color-dark-3) var(--color-dark-2)';
 		}
-		if (menuActive) {
-			if (
-				//@ts-expect-error ts does not know about this dom element
-				e.target.ariaModal !== 'true'
-			) {
-				setMenuActive(false);
+		if (appearances.colorTheme === 'light') {
+			return 'var(--color-light-3) var(--color-light-2)';
+		}
+
+		return 'initial';
+	}, [appearances.colorTheme]);
+
+	const mouseMoveHandler = useCallback(
+		(e: MouseEvent) => {
+			if (tableState.isMouseDown) {
+				dispatch({
+					type: 'mouseMove',
+					newVal: e.pageX,
+				});
 			}
-		}
-	};
-
-	const columnChecker = (index: number, item: string) => {
-		if (tableState.columns.includes(item)) {
-			dispatch({
-				type: 'set',
-				name: 'columns',
-				newVal: tableState.columns.toSpliced(
-					tableState.columns.indexOf(item),
-					1
-				),
-			});
-		} else {
-			let insertIndex = index;
-			for (const col of tableState.allColumns) {
-				if (col === item) {
-					break;
-				}
-				// if there is a column before our item, which is not visible, subtract 1 from the insertion index
-				if (!tableState.columns.includes(col)) {
-					insertIndex -= 1;
-				}
-			}
-			dispatch({
-				type: 'set',
-				name: 'columns',
-				newVal: tableState.columns.toSpliced(
-					insertIndex,
-					0,
-					tableState.allColumns[index]
-				),
-			});
-		}
-		setCauseRerender(!causeRerender);
-	};
-
-	const menuItems: Array<MenuItem> = [
-		{
-			name: general.language === 'deutsch' ? 'Spalten' : 'Columns',
-			menuItems: tableState.allColumns.map(
-				(item, index): MenuItem | undefined => {
-					if (index !== 0) {
-						return {
-							name: item,
-							checkBox: tableState.columns.includes(item) ?? true,
-							action: () => {
-								columnChecker(index, item);
-							},
-						};
-					} else {
-						return undefined;
-					}
-				}
-			),
 		},
-		{
-			name:
-				general.language === 'deutsch'
-					? 'Spalten Reihenfolge'
-					: 'Column Order',
-			component: <ColumnOrderer />,
-		},
-	];
-	console.log('table Rerenders');
-	const tableScrollBarColor = useMemo(()=>{
-		if(appearances.colorTheme === "dark"){
-			return 'var(--color-dark-3) var(--color-dark-2)'
-		}
-		if(appearances.colorTheme === "light"){
-			return 'var(--color-light-3) var(--color-light-2)'
-		}
-		if(appearances.colorTheme === "light dark"){
-			return "initial"
-		}
-	},[appearances.colorTheme])
+		[tableState.isMouseDown]
+	);
 
-	const mouseMoveHandler = useCallback((e: MouseEvent)=>{
-		if(tableState.isMouseDown){
-			dispatch({
-				type: 'mouseMove',
-				newVal: e.pageX,
-			});
-		}
-	},[tableState.isMouseDown])
-
-	const mouseUpHandler = useCallback(()=>{
+	const mouseUpHandler = useCallback(() => {
 		dispatch({
 			type: 'mouseUp',
 			newVal: tableState.activeBg,
 		});
-	},[tableState.activeBg])
+	}, [tableState.activeBg]);
 
-	const tableStyle = useMemo(()=>{
+	const tableStyle = useMemo(() => {
 		return {
 			cursor: tableState.cursor,
 			userSelect: tableState.userSelect,
-		}
-	},[tableState.cursor, tableState.userSelect])
+		};
+	}, [tableState.cursor, tableState.userSelect]);
 
 	return (
 		<>
 			<TableContext.Provider value={tableState}>
 				<TableDispatchContext.Provider value={dispatch}>
-					<div
-						tabIndex={-1}
-						className="tableWrapper"
-						onMouseDown={clickHandler}>
-						<ContextMenu
-							active={menuActive}
-							x={menuX}
-							y={menuY}
-							menuItems={menuItems}
-						/>
+					<div tabIndex={-1} className="tableWrapper">
 						<div
 							className="tableElement"
 							style={{
-								scrollbarColor: tableScrollBarColor
+								scrollbarColor: tableScrollBarColor,
 							}}
 							ref={wrapperRef}
 							onMouseMove={mouseMoveHandler}
 							onMouseUp={mouseUpHandler}>
-							<table
-								style={tableStyle}>
-								<TableHeadDisplay  />
-								<TableBodyDisplay
-									ref={tableBodyRef}
-								/>
+							<table style={tableStyle}>
+								<TableHeadDisplay />
+								<TableBodyDisplay ref={tableBodyRef} />
 								<TableFootDisplay />
 							</table>
 						</div>
