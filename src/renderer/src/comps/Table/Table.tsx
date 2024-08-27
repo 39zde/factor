@@ -527,6 +527,13 @@ export function Table({
 		}
 	},[tableState.isMouseDown])
 
+	const mouseUpHandler = useCallback(()=>{
+		dispatch({
+			type: 'mouseUp',
+			newVal: tableState.activeBg,
+		});
+	},[tableState.activeBg])
+
 	return (
 		<>
 			<TableContext.Provider value={tableState}>
@@ -548,12 +555,7 @@ export function Table({
 							}}
 							ref={wrapperRef}
 							onMouseMove={mouseMoveHandler}
-							onMouseUp={() => {
-								dispatch({
-									type: 'mouseUp',
-									newVal: tableState.activeBg,
-								});
-							}}>
+							onMouseUp={mouseUpHandler}>
 							<table
 								style={{
 									cursor: tableState.cursor,
