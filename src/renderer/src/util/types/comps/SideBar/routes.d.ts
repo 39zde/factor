@@ -9,4 +9,5 @@ export type RouteType =
 	| 'Invoices'
 	| 'Quotes'
 	| 'ExportPage'
-	| 'Help';
+	| 'Help'
+	| 'Templates';

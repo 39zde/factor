@@ -9,6 +9,7 @@ import { Returnees } from './Returnees/Returnees';
 import { Deliveries } from './Deliveries/Deliveries';
 import { ExportPage } from './ExportPage/ExportPage';
 import { Help } from './Help/Help';
+import { Templates } from './Templates/Templates';
 export const Pages = {
 	Home,
 	Upload,
@@ -21,4 +22,5 @@ export const Pages = {
 	Deliveries,
 	ExportPage,
 	Help,
+	Templates,
 };
