@@ -83,7 +83,7 @@ export function ContextMenu({
 												) {
 													setNestedActive(!nestedActive);
 													setNestedY(
-														// @ts-ignore
+														// @ts-expect-error ts does not know about this dom element
 														e.target.getBoundingClientRect().y
 													);
 													setNestedX(x + 200);
@@ -243,7 +243,7 @@ export function NestedContextMenu({
 												) {
 													setNestedActive(!nestedActive);
 													setNestedY(
-														// @ts-ignore
+														// @ts-expect-error ts does not know about this dom element
 														e.target.getBoundingClientRect().y
 													);
 													setNestedX(x + 200);

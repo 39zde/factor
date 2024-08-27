@@ -90,7 +90,9 @@ function AddressTableCell({
 					return (
 						<>
 							<p>{textRow1}</p>
-							<p>{textRow2}</p>
+							<p>
+								{textRow2}({textRow3})
+							</p>
 						</>
 					);
 				})}

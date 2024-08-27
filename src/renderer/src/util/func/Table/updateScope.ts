@@ -1,8 +1,5 @@
 import type { Dispatch } from 'react';
-import type {
-	TableContextType,
-	TableDispatchAction,
-} from '../../types/comps/Table/Table';
+import type { TableDispatchAction } from '../../types/comps/Table/Table';
 import { DerefRow } from '../../types/database/DataBaseData';
 
 /**
@@ -69,7 +66,6 @@ export function updateScope(
 					newVal: rows[rows.length - 1].row,
 				});
 			}
-
 		} else if (tableValues.newScope > tableValues.oldScope) {
 			// the new scope is larger than the previous one
 			// we need add rows

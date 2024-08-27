@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { useTableContext, useTableDispatch } from './Table';
+import { useTableContext } from './Table';
 
 export function ColumnOrderer(): React.JSX.Element {
 	const { columns } = useTableContext();
-	const [draggedElementIndex, setDragedElementIndex] = useState<number>(-1);
+	const [draggedElementIndex, setDraggedElementIndex] = useState<number>(-1);
 
 	function mouseUpHandler() {
-		setDragedElementIndex(-1);
+		setDraggedElementIndex(-1);
 	}
 
 	useEffect(() => {
@@ -31,7 +31,7 @@ export function ColumnOrderer(): React.JSX.Element {
 							<p
 								aria-modal="true"
 								onMouseDown={() => {
-									setDragedElementIndex(index);
+									setDraggedElementIndex(index);
 								}}
 								style={{
 									background:

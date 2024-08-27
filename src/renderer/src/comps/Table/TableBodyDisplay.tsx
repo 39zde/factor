@@ -175,7 +175,7 @@ export const TableBodyDisplay = forwardRef<HTMLTableSectionElement>(
 				<tbody
 					className="tableBody"
 					ref={ref}
-					//@ts-ignore miss match of WheelEvent and SyntheticEvent<HTMLTableSectionElement,WheelEvent>
+					//@ts-expect-error miss match of WheelEvent and SyntheticEvent<HTMLTableSectionElement,WheelEvent>
 					onWheel={scrollHandler}>
 					<TableRows />
 				</tbody>

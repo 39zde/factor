@@ -6,7 +6,6 @@ import React, {
 	useReducer,
 	Dispatch,
 	useEffect,
-	useState,
 	MouseEvent,
 	useCallback,
 	useMemo,
@@ -34,7 +33,7 @@ import type {
 const TableContext = createContext<TableContextType>(PlaceHolderTableContext);
 const TableDispatchContext =
 	//!TODO find the correct type for this to not need ts-ignore
-	// @ts-ignore unintuitive typing with useReducer in combination with useContext
+	// @ts-expect-error unintuitive typing with useReducer in combination with useContext
 	createContext<Dispatch<TableDispatchAction>>(tableReducer);
 
 export function useTableContext() {
@@ -55,7 +54,7 @@ export function Table({
 }: TableProps): React.JSX.Element {
 	const rowColumnWidth = 30;
 	const scrollBarHeight = 5;
-	const { database, appearances, worker, general } = useAppContext();
+	const { database, appearances, worker } = useAppContext();
 	const tableBodyRef = useRef<HTMLTableSectionElement>(null);
 	const wrapperRef = useRef<HTMLDivElement>(null);
 	const [tableState, dispatch] = useReducer(
@@ -326,7 +325,7 @@ export function Table({
 				}
 				break;
 			case 'startingPackage':
-				let data = eventData.data as StarterPackageResponse;
+				const data = eventData.data as StarterPackageResponse;
 				// set how many entries there are in the table
 				dispatch({
 					type: 'set',
@@ -339,7 +338,7 @@ export function Table({
 				}
 				// column related
 				// make sure rows is always on the first position
-				let cols = data.startingColumns
+				const cols = data.startingColumns
 					.toSpliced(data.startingColumns.indexOf('row'), 1)
 					.toSpliced(0, 0, 'row');
 				dispatch({

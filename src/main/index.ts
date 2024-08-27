@@ -1,9 +1,6 @@
 import { app, shell, BrowserWindow, ipcMain } from 'electron';
 import { join, resolve } from 'path';
 import {
-	readdir,
-	mkdir,
-	copyFile,
 	readFileSync,
 	writeFileSync,
 	copyFileSync,
@@ -175,11 +172,11 @@ function initSettings() {
 	if (env['HOME'] !== undefined) {
 		homeDir = resolve(env['HOME']);
 	}
-	let homeDirContents = readdirSync(homeDir, 'utf8');
+	const homeDirContents = readdirSync(homeDir, 'utf8');
 	if (!homeDirContents.includes('.factor')) {
 		mkdirSync(homeDir + '/.factor');
 	}
-	let factorContents = readdirSync(homeDir + '/.factor', 'utf8');
+	const factorContents = readdirSync(homeDir + '/.factor', 'utf8');
 	if (!factorContents.includes('settings.json')) {
 		copyFileSync(
 			__dirname + '../../../resources/defaultSettings.json',

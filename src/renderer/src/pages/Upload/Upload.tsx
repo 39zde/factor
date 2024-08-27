@@ -122,11 +122,12 @@ export function Upload(): React.JSX.Element {
 						}
 						break;
 					case 'success':
-						// @ts-ignore
-						importButtonRef.current.innerText =
-							general.language === 'deutsch'
-								? 'Tabelle erstellen/erneuern'
-								: 'Create/Update Table';
+						if (importButtonRef.current !== null) {
+							importButtonRef.current.innerText =
+								general.language === 'deutsch'
+									? 'Tabelle erstellen/erneuern'
+									: 'Create/Update Table';
+						}
 						if (tableImportModeInputRef.current !== null) {
 							switch (tableImportModeInputRef.current.value) {
 								case 'customers':

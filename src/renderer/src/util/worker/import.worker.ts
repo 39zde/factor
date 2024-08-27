@@ -207,7 +207,7 @@ const BankTemplate: BankType = {
 function parseDate(input: string, type: DateInput): Date {
 	switch (type) {
 		case 'YYYYMMDD':
-			let arrayed = Array.from(input);
+			const arrayed = Array.from(input);
 			const year = arrayed.splice(0, 4);
 			const month = arrayed.splice(0, 2);
 			return new Date(
@@ -291,10 +291,10 @@ function alignData(
 		const objectStore = transaction.objectStore('data_upload');
 		let count: number;
 		return (objectStore.count().onsuccess = (e) => {
-			//@ts-ignore
+			//@ts-expect-error the event of a IDB request always has a target prop
 			count = e.target.result;
 			return (objectStore.openCursor(null, 'next').onsuccess = (ev) => {
-				//@ts-ignore
+				//@ts-expect-error the event of a IDB request always has a target prop
 				const cursor: IDBCursorWithValue | null = ev.target.result;
 				if (cursor !== null) {
 					if (cursor.value[col] == undefined) {
@@ -358,7 +358,6 @@ function rankColsByCondition(
 ) {
 	const dbRequest = indexedDB.open(dbName, dbVersion);
 	dbRequest.onsuccess = () => {
-		//@ts-ignore
 		const db: IDBDatabase = dbRequest.result;
 		const t = db.transaction('data_upload');
 		const objStore = t.objectStore('data_upload');
@@ -376,24 +375,19 @@ function rankColsByCondition(
 				}
 
 				objStore.openCursor(null, 'next').onsuccess = (e) => {
-					//@ts-ignore
+					//@ts-expect-error the event of a IDB request always has a target prop
 					const cursor: IDBCursorWithValue | null = e.target.result;
 					if (cursor) {
 						for (const key of keys) {
 							update();
 							const value = cursor.value[key];
-							//@ts-ignore
-							const test = compareItemToCondition(
-								condition,
-								value,
-								parseInt(cursor.key.toString())
-							);
+							const test = compareItemToCondition(condition, value);
 							if (test) {
 								counter[key] = counter[key] + 1;
 							}
 						}
 
-						//@ts-ignore
+						//@ts-expect-error since the cursor is not null it therefore has to have a key prop
 						if (cursor.key < count) {
 							cursor.continue();
 						} else {
@@ -401,10 +395,11 @@ function rankColsByCondition(
 							ranking.sort((a, b) => b[1] - a[1]);
 							postMessage({ type: 'ranking', message: ranking });
 						}
-
-						//   cursor.continue()
 					} else {
-						// return postMessage({ type: 'error', message: 'cursor is null' })
+						return postMessage({
+							type: 'error',
+							message: 'cursor is null',
+						});
 					}
 				};
 			};
@@ -414,19 +409,29 @@ function rankColsByCondition(
 
 function compareItemToCondition(
 	condition: string | null | number | undefined,
-	value: any,
-	_index: number
+	value: string | number
 ): boolean {
 	switch (typeof condition) {
+		case undefined:
+			if (value === undefined && value !== null) {
+				return true;
+			}
+			return false;
+		case null:
+			if (value !== undefined && value === null) {
+				return true;
+			}
+			return false;
 		case 'number':
 			if (typeof value === 'number' || typeof value === 'bigint') {
 				if (value === condition) {
 					return true;
 				}
 			} else {
-				//@ts-ignore
-				if (value === condition.toString()) {
-					return true;
+				if (condition) {
+					if (value === condition.toString()) {
+						return true;
+					}
 				}
 			}
 			return false;
@@ -448,16 +453,6 @@ function compareItemToCondition(
 				}
 				return false;
 			}
-
-		case undefined:
-			if (value === undefined && value !== null) {
-				return true;
-			}
-			return false;
-		case null:
-			if (value !== undefined && value === null) {
-				return true;
-			}
 			return false;
 		default:
 			return false;
@@ -473,8 +468,8 @@ function deleteCol(col: string) {
 		const countRequest = objStore.count();
 		countRequest.onsuccess = () => {
 			const count = countRequest.result;
-			let cursorRequest = objStore.openCursor(null, 'next');
-			cursorRequest.onsuccess = (e) => {
+			const cursorRequest = objStore.openCursor(null, 'next');
+			cursorRequest.onsuccess = () => {
 				const cursor: IDBCursorWithValue | null = cursorRequest.result;
 				if (cursor) {
 					const newValue = cursor.value;

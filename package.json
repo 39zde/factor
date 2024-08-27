@@ -10,7 +10,7 @@
     "scripts": {
         "format": "prettier --write . && git commit --all -m formatted (package.json script)",
         "format:no-commit": "prettier --write .",
-        "lint": "eslint . -c ./eslint.config.mjs  --fix",
+        "lint": "eslint ./src -c ./eslint.config.mjs  --fix",
         "typecheck:node": "tsc --noEmit -p tsconfig.node.json --composite false",
         "typecheck:web": "tsc --noEmit -p tsconfig.web.json --composite false",
         "typecheck": "yarn run typecheck:node && yarn run typecheck:web",
@@ -27,7 +27,7 @@
     "dependencies": {
         "@react-pdf/renderer": "^3.4.4",
         "globals": "^15.9.0",
-        "lucide-react": "^0.429.0",
+        "lucide-react": "^0.436.0",
         "react": "^18.3.1",
         "react-dom": "^18.3.1"
     },

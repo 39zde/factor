@@ -17,7 +17,7 @@ export interface TableContextType {
 	activeCol: number | undefined;
 	columnWidths: number[];
 	resizeElemHeight: number;
-	colsRef: React.RefObject<HTMLTableCellElement>[] | any;
+	colsRef: React.RefObject<HTMLTableCellElement>[] | null;
 	resizeStyles: ResizeStyle[];
 	rows: TableRow[];
 	dbVersion: number;

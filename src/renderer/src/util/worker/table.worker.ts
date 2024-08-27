@@ -23,7 +23,7 @@ self.onmessage = function requestHandler(e: MessageEvent) {
 					data: 'undefined action',
 				});
 			}
-			let starterPackage: StarterPackage = {
+			const starterPackage: StarterPackage = {
 				startingCount: undefined,
 				startingColumns: undefined,
 				starterRows: undefined,
@@ -35,7 +35,7 @@ self.onmessage = function requestHandler(e: MessageEvent) {
 					value: number | string[] | DerefRow[]
 				) {
 					let undefinedCount = 0;
-					// @ts-expect-error
+					// @ts-expect-error the values will match the prop
 					target[prop] = value;
 					for (const key of Object.keys(target)) {
 						if (target[key] === undefined) {

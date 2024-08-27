@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect, useId, forwardRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 
 import { ColumnSetter } from './ColumnSetter';
 import { useAppContext } from '@renderer/App';

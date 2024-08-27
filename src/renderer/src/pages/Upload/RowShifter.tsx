@@ -35,7 +35,7 @@ export function RowShifter({ cols }: { cols: string[] }): React.JSX.Element {
 
 	const directionHandler = () => {
 		if (directionRef.current?.value !== undefined) {
-			//@ts-ignore  ..current.value is of type UploadMode, because of the hardcoded <options values={...}> in side the select element. TS does not know that
+			//@ts-expect-error  ..current.value is of type UploadMode, because of the hardcoded <options values={...}> in side the select element. TS does not know that
 			setDirectionInput(directionRef.current.value);
 		}
 	};

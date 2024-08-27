@@ -1,10 +1,7 @@
 import { updateScope } from './updateScope';
 
 import type { Dispatch } from 'react';
-import type {
-	TableContextType,
-	TableDispatchAction,
-} from '../../types/comps/Table/Table';
+import type { TableDispatchAction } from '../../types/comps/Table/Table';
 import { DerefRow } from '../../types/database/DataBaseData';
 
 /**

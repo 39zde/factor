@@ -321,7 +321,7 @@ function App(): JSX.Element {
 
 			dataBasesPromise
 				.then((dbs) => {
-					let requests: Promise<{
+					const requests: Promise<{
 						dbName: string;
 						db: IDBDatabase | string;
 					}>[] = [];
@@ -333,7 +333,7 @@ function App(): JSX.Element {
 							) {
 								requests.push(
 									new Promise((resolve, reject) => {
-										let request = indexedDB.open(
+										const request = indexedDB.open(
 											item.name as string,
 											item.version
 										);
@@ -392,12 +392,6 @@ function App(): JSX.Element {
 	};
 
 	useMemo(() => {
-		navigator.permissions
-			.query({ name: 'persistent-storage' })
-			.then((_res) => {
-				// console.log('persistent Storage: ', res);
-			});
-
 		navigator.storage.persist();
 	}, []);
 
