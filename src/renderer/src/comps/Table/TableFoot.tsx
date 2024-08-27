@@ -15,21 +15,23 @@ export function TableFoot(): React.JSX.Element {
 						borderLeft: 'none',
 						borderRight: 'none',
 					}}>
-					{tableState.columns.map((item, index) => {
-						if (item !== undefined) {
-							return (
-								<>
-									<th key={`tablefoot-${index}-${item}`}>
-										<span className="guts">{item}</span>
+					{tableState.allColumns.map((item, index) => {
+						if (tableState.columns.includes(item)) {
+							if (item !== undefined) {
+								return (
+									<>
+										<th key={`tablefoot-${index}-${item}`}>
+											<span className="guts">{item}</span>
+										</th>
+									</>
+								);
+							} else {
+								return (
+									<th key={`tablefoot-${index}-`}>
+										<span className="guts"></span>
 									</th>
-								</>
-							);
-						} else {
-							return (
-								<th key={`tablefoot-${index}-`}>
-									<span className="guts"></span>
-								</th>
-							);
+								);
+							}
 						}
 					})}
 				</tr>

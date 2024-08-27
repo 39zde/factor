@@ -20,47 +20,49 @@ export function TableHead(): React.JSX.Element {
 						borderLeft: 'none',
 						borderRight: 'none',
 					}}>
-					{tableState.columns.map((item, index) => {
-						return (
-							<>
-								<th
-									style={{
-										borderTop: 'none',
-										// borderLeft: index === 0 ? 'none' : 'inherit',
-										minWidth: tableState.columnWidths[index],
-										maxWidth: tableState.columnWidths[index],
-										width: tableState.columnWidths[index],
-									}}
-									ref={tableState.colsRef[index]}
-									key={`thead-tr-th${index}`}>
-									<span className="guts">{item}</span>
-									<ResizeElement
-										index={index}
-										onMouseEnter={() =>
-											dispatch({
-												type: 'mouseEnter',
-												newVal: index,
-											})
-										}
-										onMouseLeave={() => {
-											if (!tableState.isMouseDown) {
+					{tableState.allColumns.map((item, index) => {
+						if (tableState.columns.includes(item)) {
+							return (
+								<>
+									<th
+										style={{
+											borderTop: 'none',
+											minWidth: tableState.columnWidths[index],
+											maxWidth: tableState.columnWidths[index],
+											width: tableState.columnWidths[index],
+										}}
+										// @ts-expect-error we accept the ref might be null
+										ref={tableState.colsRef[index]}
+										key={`thead-tr-th${index}`}>
+										<span className="guts">{item}</span>
+										<ResizeElement
+											index={index}
+											onMouseEnter={() =>
 												dispatch({
-													type: 'mouseLeave',
+													type: 'mouseEnter',
+													newVal: index,
+												})
+											}
+											onMouseLeave={() => {
+												if (!tableState.isMouseDown) {
+													dispatch({
+														type: 'mouseLeave',
+														newVal: index,
+													});
+												}
+											}}
+											key={`rz-${index}`}
+											onMouseDown={() => {
+												dispatch({
+													type: 'mouseDown',
 													newVal: index,
 												});
-											}
-										}}
-										key={`rz-${index}`}
-										onMouseDown={() => {
-											dispatch({
-												type: 'mouseDown',
-												newVal: index,
-											});
-										}}
-									/>
-								</th>
-							</>
-						);
+											}}
+										/>
+									</th>
+								</>
+							);
+						}
 					})}
 				</tr>
 			</thead>

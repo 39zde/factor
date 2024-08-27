@@ -9,11 +9,16 @@ import React, {
 	MouseEvent,
 	useCallback,
 	useMemo,
+	useState,
 } from 'react';
-import { useAppContext } from '@renderer/App';
+import { ChevronRight } from 'lucide-react';
+
+import { solids, useAppContext } from '@renderer/App';
 import { TableHeadDisplay } from './TableHeadDisplay';
 import { TableBodyDisplay } from './TableBodyDisplay';
 import { TableFootDisplay } from './TableFootDisplay';
+import { ColumnCheckBox } from './ColumnCheckBox';
+import { ContextMenu } from '../ContextMenu/ContextMenu';
 import './Table.css';
 
 import {
@@ -28,6 +33,7 @@ import type {
 	TableWorkerResponseMessage,
 	DerefRow,
 	StarterPackageResponse,
+	MenuItem,
 } from '@renderer/util/types/types';
 
 const TableContext = createContext<TableContextType>(PlaceHolderTableContext);
@@ -54,9 +60,14 @@ export function Table({
 }: TableProps): React.JSX.Element {
 	const rowColumnWidth = 30;
 	const scrollBarHeight = 5;
-	const { database, appearances, worker } = useAppContext();
+	const { database, appearances, worker, general } = useAppContext();
 	const tableBodyRef = useRef<HTMLTableSectionElement>(null);
 	const wrapperRef = useRef<HTMLDivElement>(null);
+	const [menuActive, setMenuActive] = useState<boolean>(false);
+	const [x, setX] = useState<number>(0);
+	const [y, setY] = useState<number>(0);
+	const menuRef = useRef<HTMLDivElement>(null);
+	const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
 	const [tableState, dispatch] = useReducer(
 		tableReducer,
 		PlaceHolderTableContext
@@ -341,9 +352,42 @@ export function Table({
 				const cols = data.startingColumns
 					.toSpliced(data.startingColumns.indexOf('row'), 1)
 					.toSpliced(0, 0, 'row');
+				// set the menu items
+				setMenuItems([
+					{
+						component: (
+							<>
+								<p aria-modal={'true'} className="menuRow">
+									{general.language === 'deutsch'
+										? 'Spalten'
+										: 'Columns'}
+									<ChevronRight
+										size={solids.icon.size.small}
+										strokeWidth={solids.icon.strokeWidth.small}
+										color="light-dark(var(--color-dark-1),var(--color-light-1))"
+									/>
+								</p>
+							</>
+						),
+						subMenu: cols
+							.map((item, index) => {
+								return {
+									component: (
+										<>
+											<ColumnCheckBox
+												index={index}
+												columnName={item}
+											/>
+										</>
+									),
+								};
+							})
+							.toSpliced(0, 1),
+					},
+				]);
 				dispatch({
 					type: 'set',
-					name: 'columns',
+					name: 'allColumns',
 					newVal: cols,
 				});
 				dispatch({
@@ -447,6 +491,22 @@ export function Table({
 		};
 	}, [tableState.cursor, tableState.userSelect]);
 
+	const mouseDownHandler = (e: MouseEvent) => {
+		if (e.button === 2) {
+			setMenuActive(true);
+			setX(e.pageX);
+			setY(e.pageY);
+		}
+		if (menuActive) {
+			if (
+				//@ts-expect-error ts does not know about this dom element
+				e.target.ariaModal !== 'true'
+			) {
+				setMenuActive(false);
+			}
+		}
+	};
+
 	return (
 		<>
 			<TableContext.Provider value={tableState}>
@@ -458,6 +518,7 @@ export function Table({
 								scrollbarColor: tableScrollBarColor,
 							}}
 							ref={wrapperRef}
+							onMouseDown={mouseDownHandler}
 							onMouseMove={mouseMoveHandler}
 							onMouseUp={mouseUpHandler}>
 							<table style={tableStyle}>
@@ -467,6 +528,14 @@ export function Table({
 							</table>
 						</div>
 					</div>
+					<ContextMenu
+						active={menuActive}
+						items={menuItems}
+						tree={[null]}
+						x={x}
+						y={y}
+						ref={menuRef}
+					/>
 				</TableDispatchContext.Provider>
 			</TableContext.Provider>
 		</>
