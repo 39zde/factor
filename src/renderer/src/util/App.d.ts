@@ -89,5 +89,6 @@ export type AppSolidsType = {
 	};
 	contextMenu: {
 		width: number;
+		normalItemHeight: number;
 	};
 };

@@ -3,19 +3,19 @@ export interface ContextMenuProps {
 	active: boolean;
 	x: number;
 	y: number;
-	menuItems: Array<MenuItem | undefined> | undefined;
-	component?: React.JSX.Element | undefined;
+	items: MenuItem[] | undefined;
+	/** the level of nested-ness, important for indexing */
+	tree: ("left" | "right" | null)[];
 }
 
 export type MenuItem = {
-	name: string;
-	menuItems?: Array<MenuItem | undefined>;
+	/** the action executed on click, only if component */
 	action?: () => void;
-	/**
-	 * undefined means, there is no checkbox
-	 * true or false means the is a check box and also shows the state of which
+	/** the component, that will be wrapped in a li
+	 *  - has always a width of 200px
+	 *  - has a min-height of
 	 */
-	checkBox?: boolean | undefined;
-	/** if defined overrides menuItems */
-	component?: React.JSX.Element;
+	component: React.JSX.Element
+	/** sub menu */
+	subMenu?: MenuItem[]
 };
