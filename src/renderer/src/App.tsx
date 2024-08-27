@@ -55,6 +55,9 @@ export const solids: AppSolidsType = {
 			tiny: 3,
 		},
 	},
+	contextMenu: {
+		width: 200,
+	},
 };
 
 const defaultContext: AppContextType = {

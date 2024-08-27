@@ -87,4 +87,7 @@ export type AppSolidsType = {
 			tiny: number;
 		};
 	};
+	contextMenu: {
+		width: number;
+	};
 };
