@@ -41,6 +41,7 @@
 
 	>li:hover {
 		background: light-dark(var(--color-light-3), var(--color-dark-3));
+		border-color: light-dark(var(--color-light-3), var(--color-dark-3));
 		border-radius: 16px;
 	}
 }

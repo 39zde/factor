@@ -64,7 +64,6 @@ export const ContextMenu = forwardRef<HTMLDivElement, ContextMenuProps>(
 					// add 2
 					sum += 2;
 				}
-				console.log('sum: ', sum);
 				// the sum shows us what area we need to avoid 'overflowing'
 				switch (sum) {
 					case 1:
