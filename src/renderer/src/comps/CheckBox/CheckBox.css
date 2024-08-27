@@ -1,7 +1,6 @@
+@import url('../../base.css');
 
- @import url('../../base.css');
-
- .checkBox{
+.checkBox {
 	height: 16px;
 	width: 16px;
 	border-radius: 4px;
@@ -9,4 +8,4 @@
 	display: flex;
 	justify-content: center;
 	align-items: center;
- }
+}

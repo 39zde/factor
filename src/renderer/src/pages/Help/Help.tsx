@@ -14,8 +14,7 @@ export function Help(): React.JSX.Element {
 			<div className="helpWrapper helper">
 				<div className="helpContentsWrapper">
 					<ul className="helpContentsList">
-						<li>
-						</li>
+						<li></li>
 					</ul>
 				</div>
 				<div className="helpContents">

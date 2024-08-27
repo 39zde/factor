@@ -1,5 +1,5 @@
-import React from "react";
+import React from 'react';
 
-export function Templates(): React.JSX.Element{
-	return(<></>)
+export function Templates(): React.JSX.Element {
+	return <></>;
 }

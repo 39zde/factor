@@ -19,7 +19,7 @@
  	height: 100%;
  	align-self: center;
  	width: 100%;
-	padding-right: 16px;
+ 	padding-right: 16px;
  	overflow-x: scroll;
  	overflow-y: hidden;
  	scrollbar-width: var(--scrollbar-width);

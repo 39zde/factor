@@ -180,7 +180,7 @@ export function Settings() {
 	return (
 		<>
 			<div className="settingsPage appRoute helper">
-				<div className='settingsList'>
+				<div className="settingsList">
 					<div className="settingOptions">
 						<h2>
 							{context.general.language === 'english'

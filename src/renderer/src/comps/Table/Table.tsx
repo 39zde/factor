@@ -354,9 +354,9 @@ export function Table({
 				}
 				// column related
 				// make sure rows is always on the first position
-				let cols =  data.startingColumns
-				.toSpliced(data.startingColumns.indexOf('row'), 1)
-				.toSpliced(0, 0, 'row')
+				let cols = data.startingColumns
+					.toSpliced(data.startingColumns.indexOf('row'), 1)
+					.toSpliced(0, 0, 'row');
 				dispatch({
 					type: 'set',
 					name: 'columns',
@@ -372,9 +372,7 @@ export function Table({
 				dispatch({
 					type: 'set',
 					name: 'colsRef',
-					newVal: cols.map(() =>
-						createRef<HTMLTableCellElement>()
-					),
+					newVal: cols.map(() => createRef<HTMLTableCellElement>()),
 				});
 				// also create the style for every resizeElement
 				dispatch({

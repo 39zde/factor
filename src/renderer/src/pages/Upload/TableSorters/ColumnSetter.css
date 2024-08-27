@@ -1,5 +1,4 @@
-
- @import url('../../../base.css');
+@import url('../../../base.css');
 
 .dataRow {
 	display: inline-flex;
@@ -10,7 +9,7 @@
 	width: 100%;
 }
 
-.dataRowWrapper{
+.dataRowWrapper {
 	display: flex;
 	justify-content: flex-start;
 	align-items: stretch;
