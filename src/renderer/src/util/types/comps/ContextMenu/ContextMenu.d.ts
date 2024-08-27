@@ -5,7 +5,7 @@ export interface ContextMenuProps {
 	y: number;
 	items: MenuItem[] | undefined;
 	/** the level of nested-ness, important for indexing */
-	tree: ("left" | "right" | null)[];
+	tree: ('left' | 'right' | null)[];
 }
 
 export type MenuItem = {
@@ -15,7 +15,7 @@ export type MenuItem = {
 	 *  - has always a width of 200px
 	 *  - has a min-height of
 	 */
-	component: React.JSX.Element
+	component: React.JSX.Element;
 	/** sub menu */
-	subMenu?: MenuItem[]
+	subMenu?: MenuItem[];
 };
