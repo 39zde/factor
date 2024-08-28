@@ -412,19 +412,24 @@ export function Table({
 						cursor: 'initial',
 					})),
 				});
-				// check if there are already saved columnsWidths in localStorage
-				let savedColumnsWidths = localStorage.getItem(
-					`${tableName}-columnWidths`
-				);
-				if (savedColumnsWidths !== null) {
-					// if so use those
-					dispatch({
-						type: 'set',
-						name: 'columnWidths',
-						newVal: savedColumnsWidths
-							.split(',')
-							.map((item) => parseFloat(item)),
-					});
+				// only search for saved columns if we are not in the factor_db database.
+				// the factor_db database hold changing and unstructured/uploaded data
+				// therefore we want the column widths to be the default every time
+				if (dataBaseName !== 'factor_db') {
+					// check if there are already saved columnsWidths in localStorage
+					let savedColumnsWidths = localStorage.getItem(
+						`${tableName}-columnWidths`
+					);
+					if (savedColumnsWidths !== null) {
+						// if so use those
+						dispatch({
+							type: 'set',
+							name: 'columnWidths',
+							newVal: savedColumnsWidths
+								.split(',')
+								.map((item) => parseFloat(item)),
+						});
+					}
 				} else {
 					// set the width of every column to be the default width set in the settings
 					// unless it's the fist column (row column)
