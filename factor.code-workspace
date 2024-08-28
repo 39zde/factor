@@ -31,6 +31,8 @@
 			"yarn.lock": true,
 			".yarnrc.yml": true,
 			"LICENSE": true,
+			"node_modules": true,
+			".yarn": true,
 		  }
     },
 
