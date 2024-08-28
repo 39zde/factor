@@ -2,7 +2,7 @@
 ## Short Term
 - [ ] add nested cols
 - [ ] allow to order cols
-- [ ] remember col sizes
+- [x] remember col sizes
 - [ ] localize column names
 - [x] Add synthetic test data
 

@@ -412,15 +412,30 @@ export function Table({
 						cursor: 'initial',
 					})),
 				});
-				// set the width of every column to be the default width set in the settings
-				// unless it's the fist column ( row column)
-				dispatch({
-					type: 'set',
-					name: 'columnWidths',
-					newVal: data.startingColumns.map((_value, index) =>
-						index === 0 ? rowColumnWidth : appearances.columnWidth
-					),
-				});
+				// check if there are already saved columnsWidths in localStorage
+				let savedColumnsWidths = localStorage.getItem(
+					`${tableName}-columnWidths`
+				);
+				if (savedColumnsWidths !== null) {
+					// if so use those
+					dispatch({
+						type: 'set',
+						name: 'columnWidths',
+						newVal: savedColumnsWidths
+							.split(',')
+							.map((item) => parseFloat(item)),
+					});
+				} else {
+					// set the width of every column to be the default width set in the settings
+					// unless it's the fist column (row column)
+					dispatch({
+						type: 'set',
+						name: 'columnWidths',
+						newVal: data.startingColumns.map((_value, index) =>
+							index === 0 ? rowColumnWidth : appearances.columnWidth
+						),
+					});
+				}
 				if (colsHook !== undefined) {
 					// make make columns outside of Table comp
 					colsHook.setAllCols(data.startingColumns);
