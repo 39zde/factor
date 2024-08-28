@@ -148,7 +148,7 @@ export function Table({
 		}
 	}, [tableName, dataBaseName, uniqueKey, database.dbVersion]);
 
-	// start populating the context once the table Body
+	// start populating the context once the table Body is there
 	useEffect(() => {
 		if (
 			tableBodyRef.current !== undefined &&
@@ -169,6 +169,7 @@ export function Table({
 		}
 	}, [updateHook]);
 
+	// if we register a change from out side the table component execute it
 	useCallback(() => {
 		if (colsHook !== undefined) {
 			dispatch({
@@ -454,6 +455,7 @@ export function Table({
 		}
 	};
 
+	// memorize the table scrollBar color
 	const tableScrollBarColor = useMemo(() => {
 		if (appearances.colorTheme === 'dark') {
 			return 'var(--color-dark-3) var(--color-dark-2)';
@@ -465,6 +467,9 @@ export function Table({
 		return 'initial';
 	}, [appearances.colorTheme]);
 
+	// we only need that function, when the mouse is down
+	// so we cache the function and only update if once the isMouseDown value changes
+	/** if tableState.isMouseDown turns out to be true dispatch mouseMove with newVal=e.pageX */
 	const mouseMoveHandler = useCallback(
 		(e: MouseEvent) => {
 			if (tableState.isMouseDown) {
@@ -477,6 +482,15 @@ export function Table({
 		[tableState.isMouseDown]
 	);
 
+	/**
+	 *  If we detect the mouse 'lifting' dispatch 'mouseUp'
+	 *  resets the resize styles in addition to
+	 *	 activeCol: undefined
+	 *	 activeBg: undefined
+	 *	 cursor: 'initial'
+	 *	 userSelect: 'initial'
+	 *	 isMouseDown: false
+	 *  */
 	const mouseUpHandler = useCallback(() => {
 		dispatch({
 			type: 'mouseUp',
@@ -484,6 +498,10 @@ export function Table({
 		});
 	}, [tableState.activeBg]);
 
+	/**
+	 *  composes the style prop of the <table> an memorizes
+	 *  disables userSelect and sets the cursor to 'col-resize', while resizing a column
+	 * */
 	const tableStyle = useMemo(() => {
 		return {
 			cursor: tableState.cursor,
@@ -491,17 +509,23 @@ export function Table({
 		};
 	}, [tableState.cursor, tableState.userSelect]);
 
+	/**
+	 * handles the contextMenu
+	 */
 	const mouseDownHandler = (e: MouseEvent) => {
 		if (e.button === 2) {
+			// if we detect a right-click
 			setMenuActive(true);
 			setX(e.pageX);
 			setY(e.pageY);
 		}
 		if (menuActive) {
+			// if the menu is already active
 			if (
 				//@ts-expect-error ts does not know about this dom element
 				e.target.ariaModal !== 'true'
 			) {
+				// if the click target does not have the aria-modal prop set to true
 				setMenuActive(false);
 			}
 		}

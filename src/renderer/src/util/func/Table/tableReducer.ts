@@ -57,10 +57,12 @@ export function tableReducer(
 		}
 		case 'mouseMove': {
 			const currentWidth =
+				//@ts-expect-error we accept  that colsReg might me null
 				tableState.colsRef[
 					tableState.activeCol ?? 0
 				].current?.getBoundingClientRect().width;
 			const currentX =
+				//@ts-expect-error we accept  that colsReg might me null
 				tableState.colsRef[
 					tableState.activeCol ?? 0
 				].current?.getBoundingClientRect().left;
