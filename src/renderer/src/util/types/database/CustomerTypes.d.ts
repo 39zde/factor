@@ -153,35 +153,66 @@ export type ContactType =
 	| '';
 
 export interface CustomerSortingMap {
-	row: string;
-	id: string;
-	title?: string;
-	firstName?: string;
-	lastName?: string;
-	email?: string;
-	phone?: string;
-	web?: string;
-	companyName?: string;
-	alias?: string;
-	street?: string;
-	zip?: string;
-	city?: string;
-	country?: string;
-	firstContact?: string;
-	latestContact?: string;
-	customerNotes?: string;
-	addressNotes?: string;
-	bankNotes?: string;
-	emailNotes?: string;
-	personNotes?: string;
-	phoneNotes?: string;
-	personNotes?: string;
-	companyNotes?: string;
-	iban?: string;
-	bic?: string;
-	bankName?: string;
-	bankCode?: string;
-	description?: string;
+	row: 'row';
+	customers: {
+		id: string;
+		altIDs?: string;
+		description?: string;
+		firstContact?: string;
+		latestContact?: string;
+		notes?: string;
+		website?: string;
+		emails?: {
+			type?: string;
+			email?: string;
+			notes?: string;
+		};
+		phones?: {
+			type?: string;
+			phone?: string;
+			notes?: string;
+		};
+	};
+	persons?: {
+		title?: string;
+		firstName?: string;
+		personAlias?: string;
+		lastName?: string;
+		emails?: {
+			type?: string;
+			email?: string;
+			notes?: string;
+		};
+		phones?: {
+			type?: string;
+			email?: string;
+			notes?: string;
+		};
+		notes?: string;
+	};
+	addresses?: {
+		type?: string;
+		street?: string;
+		zip?: string;
+		city?: string;
+		country?: string;
+		notes?: string;
+	};
+	banks?: {
+		name?: string;
+		iban?: string;
+		bic?: string;
+		code?: string;
+		notes?: string;
+	};
+	company?: {
+		name?: string;
+		alias?: string;
+		notes?: string;
+		taxID?: string;
+		taxNumber?: string;
+		ustID?: string;
+	};
 }
 
 export type CustomerSortingMapProps = keyof CustomerSortingMap;

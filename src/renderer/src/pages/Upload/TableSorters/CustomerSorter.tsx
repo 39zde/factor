@@ -70,6 +70,65 @@ export function CustomerSorter({
 		'websiteRef',
 	];
 
+	//  customers emails
+	const [customersEmailCol, setCustomersEmailCol] = useState<string>('');
+	const [customersEmailTypeCol, setCustomersEmailTypeCol] =
+		useState<string>('');
+	const [customersEmailNotesCol, setCustomersEmailNotesCol] =
+		useState<string>('');
+
+	const customersEmailRef = useRef<HTMLSelectElement>(null);
+	const customersEmailTypeRef = useRef<HTMLSelectElement>(null);
+	const customersEmailNotesRef = useRef<HTMLSelectElement>(null);
+	const customersEmailFieldsRefs = useRef<
+		React.RefObject<HTMLSelectElement>[]
+	>([customersEmailRef, customersEmailTypeRef, customersEmailNotesRef]);
+	const customersEmailFields = [
+		general.language === 'deutsch' ? 'Kunden-Email' : 'Customer email',
+		general.language === 'deutsch'
+			? 'Art der Kunden-Email '
+			: 'Type of customer email',
+		general.language === 'deutsch'
+			? 'Notizen zur Kunden-Email'
+			: 'Notes about customer email',
+	];
+	const customersEmailKeys = [
+		'customersEmailRef',
+		'customersEmailTypeRef',
+		'customersEmailNotesRef',
+	];
+
+	//  customer phones
+	const [customerPhoneCol, setCustomerPhoneCol] = useState<string>('');
+	const [customerPhoneTypeCol, setCustomerPhoneTypeCol] = useState<string>('');
+	const [customerPhoneNotesCol, setCustomerPhoneNotesCol] =
+		useState<string>('');
+
+	const customerPhoneRef = useRef<HTMLSelectElement>(null);
+	const customerPhoneTypeRef = useRef<HTMLSelectElement>(null);
+	const customerPhoneNotesRef = useRef<HTMLSelectElement>(null);
+	const customerPhoneFieldsRef = useRef<React.RefObject<HTMLSelectElement>[]>([
+		customerPhoneRef,
+		customerPhoneTypeRef,
+		customerPhoneNotesRef,
+	]);
+	const customerPhoneFields = [
+		general.language === 'deutsch'
+			? 'Kunden-Telefonnummer'
+			: 'Customer phone number',
+		general.language === 'deutsch'
+			? 'Art der Kunden-Telefonnummer'
+			: 'Type of customer phone number',
+		general.language === 'deutsch'
+			? 'Notizen zur Kunden-Telefonnummer'
+			: 'Notes about the customer phone number',
+	];
+	const customerPhoneKeys = [
+		'customerPhoneRef',
+		'customerPhoneTypeRef',
+		'customerPhoneNotesRef',
+	];
+
 	//persons
 	const [titleCol, setTitleCol] = useState<string>('');
 	const [firstNameCol, setFirstNameCol] = useState<string>('');
@@ -105,7 +164,7 @@ export function CustomerSorter({
 			: 'Personal email-address(es)',
 		general.language === 'deutsch'
 			? 'Persönliche Telefonnummer(n)'
-			: 'Personal email-address(es)',
+			: 'Personal phone number(s)',
 		general.language === 'deutsch'
 			? 'Notizen zur Person'
 			: 'Notes about this Person',
@@ -239,56 +298,6 @@ export function CustomerSorter({
 		'ustidRef',
 	];
 
-	// emails
-	const [emailCol, setEmailCol] = useState<string>('');
-	const [emailTypeCol, setEmailTypeCol] = useState<string>('');
-	const [emailNotesCol, setEmailNotesCol] = useState<string>('');
-
-	const emailRef = useRef<HTMLSelectElement>(null);
-	const emailTypeRef = useRef<HTMLSelectElement>(null);
-	const emailNotesRef = useRef<HTMLSelectElement>(null);
-	const emailFieldsRefs = useRef<React.RefObject<HTMLSelectElement>[]>([
-		emailRef,
-		emailTypeRef,
-		emailNotesRef,
-	]);
-	const emailFields = [
-		general.language === 'deutsch' ? 'Kunden-Email' : 'Customer email',
-		general.language === 'deutsch'
-			? 'Art der Kunden-Email '
-			: 'Type of customer email',
-		general.language === 'deutsch'
-			? 'Notizen zur Kunden-Email'
-			: 'Notes about customer email',
-	];
-	const emailKeys = ['emailRef', 'emailTypeRef', 'emailNotesRef'];
-
-	// phones
-	const [phoneCol, setPhoneCol] = useState<string>('');
-	const [phoneTypeCol, setPhoneTypeCol] = useState<string>('');
-	const [phoneNotesCol, setPhoneNotesCol] = useState<string>('');
-
-	const phoneRef = useRef<HTMLSelectElement>(null);
-	const phoneTypeRef = useRef<HTMLSelectElement>(null);
-	const phoneNotesRef = useRef<HTMLSelectElement>(null);
-	const phoneFieldsRef = useRef<React.RefObject<HTMLSelectElement>[]>([
-		phoneRef,
-		phoneTypeRef,
-		phoneNotesRef,
-	]);
-	const phoneFields = [
-		general.language === 'deutsch'
-			? 'Kunden-Telefonnummer'
-			: 'Customer phone number',
-		general.language === 'deutsch'
-			? 'Art der Kunden-Telefonnummer'
-			: 'Type of customer phone number',
-		general.language === 'deutsch'
-			? 'Notizen zur Kunden-Telefonnummer'
-			: 'Notes about the customer phone number',
-	];
-	const phoneKeys = ['phoneRef', 'phoneTypeRef', 'phoneNotesRef'];
-
 	const inputHandler = (name: string) => {
 		switch (name) {
 			case 'idRef':
@@ -384,23 +393,29 @@ export function CustomerSorter({
 			case 'ustidRef':
 				setUstidCol(ustidRef.current?.value ?? '');
 				break;
-			case 'emailRef':
-				setEmailCol(emailRef.current?.value ?? '');
+			case 'customersEmailRef':
+				setCustomersEmailCol(customersEmailRef.current?.value ?? '');
 				break;
-			case 'emailTypeRef':
-				setEmailTypeCol(emailTypeRef.current?.value ?? '');
+			case 'customersEmailTypeRef':
+				setCustomersEmailTypeCol(
+					customersEmailTypeRef.current?.value ?? ''
+				);
 				break;
-			case 'emailNotesRef':
-				setEmailNotesCol(emailNotesRef.current?.value ?? '');
+			case 'customersEmailNotesRef':
+				setCustomersEmailNotesCol(
+					customersEmailNotesRef.current?.value ?? ''
+				);
 				break;
-			case 'phoneRef':
-				setPhoneCol(phoneRef.current?.value ?? '');
+			case 'customerPhoneRef':
+				setCustomerPhoneCol(customerPhoneRef.current?.value ?? '');
 				break;
-			case 'phoneTypeRef':
-				setPhoneTypeCol(phoneTypeRef.current?.value ?? '');
+			case 'customerPhoneTypeRef':
+				setCustomerPhoneTypeCol(customerPhoneTypeRef.current?.value ?? '');
 				break;
-			case 'phoneNotesRef':
-				setPhoneNotesCol(phoneNotesRef.current?.value ?? '');
+			case 'customerPhoneNotesRef':
+				setCustomerPhoneNotesCol(
+					customerPhoneNotesRef.current?.value ?? ''
+				);
 				break;
 			default:
 				break;
@@ -410,31 +425,48 @@ export function CustomerSorter({
 	useEffect(() => {
 		const map: CustomerSortingMap = {
 			row: 'row',
-			id: idCol,
-			alias: companyAliasCol,
-			city: cityCol,
-			companyName: companyNameCol,
-			country: countryCol,
-			email: emailCol,
-			firstName: firstNameCol,
-			lastName: lastNameCol,
-			customerNotes: notesCol,
-			phone: phoneCol,
-			street: streetCol,
-			title: titleCol,
-			web: websiteCol,
-			zip: zipCol,
-			firstContact: firstContactCol,
-			latestContact: latestContactCol,
-			addressNotes: addressNotesCol,
-			personNotes: personNotesCol,
-			companyNotes: companyNotesCol,
-			bic: bicCol,
-			iban: ibanCol,
-			bankCode: bankCodeCol,
-			bankName: bankNameCol,
-			bankNotes: bankNotesCol,
-			description: descriptionCol,
+			customers: {
+				id: idCol,
+				altIDs: altIDCol,
+				description: descriptionCol,
+				emails: {
+					email: customersEmailCol,
+					notes: customersEmailNotesCol,
+					type: customersEmailTypeCol,
+				},
+				firstContact: firstContactCol,
+				latestContact: latestContactCol,
+				notes: customersEmailNotesCol,
+				phones: {
+					notes: customerPhoneNotesCol,
+					phone: customerPhoneCol,
+					type: customerPhoneTypeCol,
+				},
+				website: websiteCol,
+			},
+			addresses: {
+				type: addressTypeCol,
+				street: streetCol,
+				zip: zipCol,
+				city: cityCol,
+				country: countryCol,
+				notes: addressNotesCol,
+			},
+			banks: {
+				bic: bicCol,
+				code: bankCodeCol,
+				iban: ibanCol,
+				name: bankNameCol,
+				notes: bankNotesCol,
+			},
+			company: {
+				alias: companyAliasCol,
+				name: companyNameCol,
+				notes: companyNotesCol,
+				taxID: taxIDCol,
+				taxNumber: taxNumberCol,
+				ustID: ustidCol,
+			},
 		};
 
 		hook.setMap(map);
@@ -470,16 +502,17 @@ export function CustomerSorter({
 		taxIDCol,
 		taxNumberCol,
 		ustidCol,
-		emailCol,
-		emailTypeCol,
-		emailNotesCol,
-		phoneCol,
-		phoneTypeCol,
-		phoneNotesCol,
+		customersEmailCol,
+		customersEmailTypeCol,
+		customersEmailNotesCol,
+		customerPhoneCol,
+		customerPhoneTypeCol,
+		customerPhoneNotesCol,
 	]);
 	return (
 		<>
 			<div className="customerOptions">
+				<h2>{general.language === 'deutsch' ? 'Kunde' : 'Customer'}</h2>
 				<p>{general.language === 'deutsch' ? 'Kunde' : 'Customer'}</p>
 				<div className="dataRowWrapper">
 					{customerFields.map((item, index) => {
@@ -503,6 +536,61 @@ export function CustomerSorter({
 						);
 					})}
 				</div>
+				<p>
+					{general.language === 'deutsch'
+						? 'Kunden Email'
+						: 'Customer email'}
+				</p>
+				<div className="dataRowWrapper">
+					{customersEmailFields.map((item, index) => {
+						return (
+							<>
+								<div
+									className="dataRow"
+									key={`customer-data-row-${index}:${item}`}>
+									<ColumnSetter
+										ref={customersEmailFieldsRefs[index]}
+										props={{
+											columns: columns,
+											name: item,
+											onInput: () => {
+												inputHandler(customersEmailKeys[index]);
+											},
+										}}
+									/>
+								</div>
+							</>
+						);
+					})}
+				</div>
+				<p>
+					{general.language === 'deutsch'
+						? 'Kunden Telefon'
+						: 'Customer Phone'}
+				</p>
+				<div className="dataRowWrapper">
+					{customerPhoneFields.map((item, index) => {
+						return (
+							<>
+								<div
+									className="dataRow"
+									key={`customer-data-row-${index}:${item}`}>
+									<ColumnSetter
+										ref={customerPhoneFieldsRef[index]}
+										props={{
+											columns: columns,
+											name: item,
+											onInput: () => {
+												inputHandler(customerPhoneKeys[index]);
+											},
+										}}
+									/>
+								</div>
+							</>
+						);
+					})}
+				</div>
+				<h2>{general.language === 'deutsch' ? 'Person' : 'Person'}</h2>
 				<p>
 					{general.language === 'deutsch'
 						? 'Zur Person'
@@ -530,6 +618,9 @@ export function CustomerSorter({
 						);
 					})}
 				</div>
+				<h2>
+					{general.language === 'deutsch' ? 'Postanschrift' : 'Address'}
+				</h2>
 				<p>{general.language === 'deutsch' ? 'Adresse' : 'Address'}</p>
 				<div className="dataRowWrapper">
 					{addressFields.map((item, index) => {
@@ -553,6 +644,7 @@ export function CustomerSorter({
 						);
 					})}
 				</div>
+				<h2>{general.language === 'deutsch' ? 'Bank' : 'Bank'}</h2>
 				<p>{general.language === 'deutsch' ? 'Bank' : 'Bank'}</p>
 				<div className="dataRowWrapper">
 					{bankFields.map((item, index) => {
@@ -576,6 +668,9 @@ export function CustomerSorter({
 						);
 					})}
 				</div>
+				<h2>
+					{general.language === 'deutsch' ? 'Unternehmen' : 'Company'}
+				</h2>
 				<p>{general.language === 'deutsch' ? 'Firma' : 'Company'}</p>
 				<div className="dataRowWrapper">
 					{companyFields.map((item, index) => {
@@ -591,52 +686,6 @@ export function CustomerSorter({
 											name: item,
 											onInput: () => {
 												inputHandler(companyKeys[index]);
-											},
-										}}
-									/>
-								</div>
-							</>
-						);
-					})}
-				</div>
-				<p>{general.language === 'deutsch' ? 'Email' : 'Email'}</p>
-				<div className="dataRowWrapper">
-					{emailFields.map((item, index) => {
-						return (
-							<>
-								<div
-									className="dataRow"
-									key={`customer-data-row-${index}:${item}`}>
-									<ColumnSetter
-										ref={emailFieldsRefs[index]}
-										props={{
-											columns: columns,
-											name: item,
-											onInput: () => {
-												inputHandler(emailKeys[index]);
-											},
-										}}
-									/>
-								</div>
-							</>
-						);
-					})}
-				</div>
-				<p>{general.language === 'deutsch' ? 'Telefon' : 'Phone'}</p>
-				<div className="dataRowWrapper">
-					{phoneFields.map((item, index) => {
-						return (
-							<>
-								<div
-									className="dataRow"
-									key={`customer-data-row-${index}:${item}`}>
-									<ColumnSetter
-										ref={phoneFieldsRef[index]}
-										props={{
-											columns: columns,
-											name: item,
-											onInput: () => {
-												inputHandler(phoneKeys[index]);
 											},
 										}}
 									/>
