@@ -144,6 +144,9 @@ function readSettings(): AppSettingsType | null {
 	if (env['HOME'] !== undefined) {
 		homeDir = resolve(env['HOME']);
 	}
+	if (env['HOMEPATH'] !== undefined) {
+		homeDir = resolve(env['HOMEPATH']);
+	}
 	const settingsFile = readFileSync(homeDir + '/.factor/settings.json', {
 		encoding: 'utf8',
 		flag: 'r',
@@ -160,6 +163,9 @@ function writeSettings(settings: AppSettingsType) {
 	if (env['HOME'] !== undefined) {
 		homeDir = resolve(env['HOME']);
 	}
+	if (env['HOMEPATH'] !== undefined) {
+		homeDir = resolve(env['HOMEPATH']);
+	}
 	writeFileSync(
 		homeDir + '/.factor/settings.json',
 		JSON.stringify(settings),
@@ -171,6 +177,9 @@ function initSettings() {
 	let homeDir = resolve('$HOME');
 	if (env['HOME'] !== undefined) {
 		homeDir = resolve(env['HOME']);
+	}
+	if (env['HOMEPATH'] !== undefined) {
+		homeDir = resolve(env['HOMEPATH']);
 	}
 	const homeDirContents = readdirSync(homeDir, 'utf8');
 	if (!homeDirContents.includes('.factor')) {
