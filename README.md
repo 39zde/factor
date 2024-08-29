@@ -35,15 +35,27 @@ For now the uploading of data can only be done in csv with semi-colon (;) separa
 
 ## Development
 
+Prerequisites:
+- nmv[^5] or other Node.js[^6] version management tool
+- Node.js[^6] v20.16.0
+- git
+
 ```bash
+nvm install v20.16.0
+nvm use v20.16.0
+corepack enable
+git clone https://github.com/39zde/factor.git
+cd factor
 yarn install
 yarn dev
 yarn devtools
 ```
-Note: See "Yarn Package Manager" in `CONTRIBUTING.md` on how to use node's `corepack`
+see [`CONTRIBUTING.md`](./CONTRIBUTING.md) for more information
 
 # Links
  [^1]: https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Basic_Terminology#key_characteristics
  [^2]: https://developer.mozilla.org/en-US/docs/Web/API/IDBObjectStore
  [^3]: https://developer.mozilla.org/en-US/docs/Web/API/Worker/Worker
  [^4]: https://developer.mozilla.org/en-US/docs/Web/API/Worker/Worker
+ [^5]: https://github.com/nvm-sh/nvm
+ [^6]: https://nodejs.org/
