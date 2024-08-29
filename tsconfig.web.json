@@ -18,6 +18,7 @@
 	 "target": "ES2022",
 	 "strict": true,
 	 "noFallthroughCasesInSwitch": false,
+	 "noImplicitReturns": false,
     "paths": {
       "@renderer/*": [
         "src/renderer/src/*",
