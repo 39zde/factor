@@ -22,7 +22,7 @@ I have not run any benchmarks yet, but scrolling in a Table with:
  - in dev mode
  - on old hardware
 
-works without problems. WebWorkers[^3] do most of the heavy lifting. Certainly more performant, than using `useLiveQuery` from Dexie.js[^4]. That being said there is much more performance to be gained at various places. Looking at what already is accomplished, this approach looks very promising.
+works without problems. WebWorkers[^3] do most of the heavy lifting. Certainly more performant, than using `useLiveQuery` from Dexie.js[^4]. That being said there is much more performance to be gained at various places. Looking at what already is accomplished, this approach looks very promising. With this in mind, if the only goal was performance, React would not be the best choice. To my understanding the purpose of React is to make the development easy and comprehensible, not to archive the best possible performance.
 
 For now the uploading of data can only be done in csv with semi-colon (;) separated fields with customers as the only upload option. There are still a bunch of things to do (see `roadmap.md`), before adding new tables.
 

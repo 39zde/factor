@@ -85,6 +85,9 @@ Ratings:
 
  Also have a look at [`./src/renderer/src/util/types/database`](./src/renderer/src/util/types/database/)
 
+Index Names have the following structure:
+`${oStore}-${keyPath}`
+
 
 ## Sample Data
 
