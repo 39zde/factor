@@ -999,6 +999,136 @@ function createCustomerObjectStores(e: IDBVersionChangeEvent): void {
 	}
 }
 
+function createArticleObjectStores(e: IDBVersionChangeEvent): void {
+	const target: IDBOpenDBRequest = e.target as IDBOpenDBRequest;
+	const db = target.result;
+	const stores = db.objectStoreNames;
+
+	if (!stores.contains('articles')) {
+		const articles = db.createObjectStore('articles', {
+			keyPath: 'row',
+		});
+		articles.createIndex('articles-id', 'id', {
+			unique: true,
+		});
+		articles.createIndex('articles-name', 'name', {
+			unique: false,
+		});
+		articles.createIndex('articles-count', 'count', {
+			unique: false,
+		});
+		articles.createIndex('articles-unit', 'unit', {
+			unique: false,
+		});
+		articles.createIndex('articles-lastSeen', 'lastSeen', {
+			unique: false,
+		});
+		articles.createIndex('articles-securityDeposit', 'securityDeposit', {
+			unique: false,
+		});
+	}
+
+	if (!stores.contains('acquisitions')) {
+		const acquisitions = db.createObjectStore('acquisitions', {
+			keyPath: 'row',
+		});
+		acquisitions.createIndex('acquisitions-date', 'date', {
+			unique: false,
+		});
+		acquisitions.createIndex('acquisitions-totalCost', 'totalCost', {
+			unique: false,
+		});
+		acquisitions.createIndex(
+			'acquisitions-purchaseInvoiceID',
+			'purchaseInvoiceID',
+			{
+				unique: false,
+			}
+		);
+	}
+}
+
+function createDocumentObjectStores(e: IDBVersionChangeEvent): void {
+	const target: IDBOpenDBRequest = e.target as IDBOpenDBRequest;
+	const db = target.result;
+	const stores = db.objectStoreNames;
+
+	if (!stores.contains('quotes')) {
+		const quotes = db.createObjectStore('quotes', {
+			keyPath: 'row',
+		});
+
+	   quotes.createIndex("quotes-id","id",{
+			unique: true
+		})
+
+		quotes.createIndex("quotes-date","date",{
+			unique: true
+		})
+
+		quotes.createIndex("quotes-customerID","customerID",{
+			unique: true
+		})
+
+	}
+
+	if(!stores.contains("invoices")){
+		const invoices = db.createObjectStore("invoices",{
+			keyPath: "row"
+		})
+
+		invoices.createIndex("invoices-id","id",{
+			unique: true
+		})
+
+		invoices.createIndex("invoices-date","date",{
+			unique: false
+		})
+
+		invoices.createIndex("invoices-customerID","customerID",{
+			unique: false
+		})
+	}
+
+
+	if(!stores.contains("deliveries")){
+		const deliveries = db.createObjectStore("deliveries",{
+			keyPath: "row"
+		})
+
+		deliveries.createIndex("deliveries-id","id",{
+			unique: true
+		})
+
+		deliveries.createIndex("deliveries-date","date",{
+			unique: false
+		})
+
+		deliveries.createIndex("deliveries-customerID","customerID",{
+			unique: false
+		})
+	}
+
+	if(!stores.contains("returnees")){
+		const returnees = db.createObjectStore("returnees",{
+			keyPath: "row"
+		})
+
+		returnees.createIndex("returnees-id","id",{
+			unique: true
+		})
+
+		returnees.createIndex("returnees-date","date",{
+			unique: false
+		})
+
+		returnees.createIndex("returnees-customerID","customerID",{
+			unique: false
+		})
+	}
+
+}
+
 function trimWhiteSpace(input: string): string {
 	let out = input;
 	out = out.replaceAll(rx.WhiteSpaceRx, '');
