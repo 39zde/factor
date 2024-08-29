@@ -100,6 +100,8 @@ export interface AddressType {
 	country: string;
 	/** (optional) additional notes */
 	notes?: string[];
+	/** hash of the fields street, city and zip. joined with "" */
+	hash: string;
 }
 
 /** customer_db>banks oStore item */

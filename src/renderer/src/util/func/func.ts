@@ -1,4 +1,4 @@
-export { createHash } from './createHash';
+export { createHash, getAddressHash, getHash } from './createHash';
 export { rx } from './regex';
 export { tableReducer } from './Table/tableReducer';
 export { updateScope } from './Table/updateScope';

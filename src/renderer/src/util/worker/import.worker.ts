@@ -14,7 +14,7 @@ import type {
 	AddDataArgs,
 	DateInput,
 } from '../types/types';
-import { rx } from '../func/regex';
+import { rx, getAddressHash } from '../func/func';
 
 self.onmessage = (e: MessageEvent): void => {
 	if (e.data.dataBaseName === undefined) {
