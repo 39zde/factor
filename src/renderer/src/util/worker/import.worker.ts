@@ -9,12 +9,16 @@ import type {
 	BankType,
 	CompanyType,
 	Customer,
-	TableRow,
 	CustomerReferences,
 	AddDataArgs,
 	DateInput,
+	UploadRow,
+	DerefPersonType,
+	CustomerBaseData,
+	ArticleSortingMap,
+	DocumentSortingMap,
 } from '../types/types';
-import { rx, getAddressHash } from '../func/func';
+import { getAddressHash } from '../func/func';
 
 self.onmessage = (e: MessageEvent): void => {
 	if (e.data.dataBaseName === undefined) {
@@ -120,24 +124,19 @@ self.onmessage = (e: MessageEvent): void => {
 			deleteCol(colToBeDeleted);
 			break;
 		case 'sort':
-			const columnsMap: CustomerSortingMap = e.data.message;
-			const mode:
-				| 'articles'
-				| 'customers'
-				| 'quotes'
-				| 'invoices'
-				| 'deliveries' = e.data.content;
+			const mode: 'articles' | 'customers' | 'documents' = e.data.content;
 			switch (mode) {
 				case 'articles':
+					const articlesMap: ArticleSortingMap = e.data.message;
+					doArticles(articlesMap, e.data.dataBaseName, e.data.dbVersion);
 					break;
 				case 'customers':
+					const columnsMap: CustomerSortingMap = e.data.message;
 					doCustomers(columnsMap, e.data.dataBaseName, e.data.dbVersion);
 					break;
-				case 'quotes':
-					break;
-				case 'invoices':
-					break;
-				case 'deliveries':
+				case 'documents':
+					const documentsMap: DocumentSortingMap = e.data.message;
+					doDocuments(documentsMap, e.data.dataBaseName, e.data.dbVersion);
 					break;
 				default:
 					postMessage({
@@ -154,55 +153,99 @@ self.onmessage = (e: MessageEvent): void => {
 	}
 };
 
-const PersonTemplate: PersonType = {
-	firstName: '',
-	lastName: '',
-	row: 0,
-	phone: null,
-	title: '',
-	alias: undefined,
-	notes: undefined,
-};
+// const customerTemplate: Customer = {
+// 	id: '',
+// 	row: 0,
+// 	addresses: undefined,
+// 	altIDs: undefined,
+// 	persons: undefined,
+// 	banks: undefined,
+// 	company: undefined,
+// 	emails: undefined,
+// 	phones: undefined,
+// 	description: undefined,
+// 	firstContact: undefined,
+// 	latestContact: undefined,
+// 	created: new Date(),
+// 	website: undefined,
+// };
 
-const EmailTemplate: EmailType = {
-	email: '',
-	row: 0,
-	notes: [],
-	type: undefined,
-};
-
-const PhoneTemplate: PhoneNumberType = {
-	row: 0,
-	phone: '',
-	notes: undefined,
-	type: undefined,
-};
-
-const AddressTemplate: AddressType = {
-	city: '',
-	country: '',
-	row: 0,
-	street: '',
-	zip: '',
-	notes: undefined,
-	type: undefined,
-};
-
-const CompanyTemplate: CompanyType = {
-	alias: undefined,
-	row: 0,
-	name: '',
-	notes: undefined,
-};
-
-const BankTemplate: BankType = {
-	row: 0,
-	name: '',
-	bankCode: undefined,
-	bic: undefined,
-	iban: '',
-	notes: undefined,
-};
+const templates = new Map([
+	[
+		'customer',
+		{
+			id: '',
+			row: 0,
+			addresses: undefined,
+			altIDs: undefined,
+			persons: undefined,
+			banks: undefined,
+			company: undefined,
+			emails: undefined,
+			phones: undefined,
+			description: undefined,
+			firstContact: undefined,
+			latestContact: undefined,
+			created: new Date(),
+			website: undefined,
+		},
+	],
+	[
+		'persons',
+		{
+			firstName: '',
+			lastName: '',
+			row: 0,
+			emails: [],
+			phones: [],
+			title: '',
+			alias: undefined,
+			notes: undefined,
+		},
+	],
+	[
+		'phones',
+		{
+			row: 0,
+			phone: '',
+			notes: undefined,
+			type: undefined,
+		},
+	],
+	[
+		'addresses',
+		{
+			city: '',
+			country: '',
+			row: 0,
+			street: '',
+			zip: '',
+			notes: undefined,
+			type: undefined,
+			hash: undefined,
+		},
+	],
+	[
+		'company',
+		{
+			alias: undefined,
+			row: 0,
+			name: '',
+			notes: undefined,
+		},
+	],
+	[
+		'banks',
+		{
+			row: 0,
+			name: '',
+			bankCode: undefined,
+			bic: undefined,
+			iban: '',
+			notes: undefined,
+		},
+	],
+]);
 
 function parseDate(input: string, type: DateInput): Date {
 	switch (type) {
@@ -515,13 +558,19 @@ function doCustomers(
 					if (cursor) {
 						const value = cursor.value;
 						parseCustomer(map, value, customerDB);
-
 						update();
 						cursor.continue();
 					} else {
 						return;
 					}
 				};
+			};
+
+			dataUploadCountRequest.onerror = () => {
+				postMessage({
+					type: 'error',
+					message: 'doCustomers: failed to count',
+				});
 			};
 
 			dbTransaction.oncomplete = () => {
@@ -532,88 +581,90 @@ function doCustomers(
 			};
 		};
 	};
+
+	request.onupgradeneeded = createCustomerObjectStores;
 }
 
 function parseCustomer(
 	map: CustomerSortingMap,
-	row: TableRow,
+	row: UploadRow,
 	customerDB: IDBDatabase
 ): void {
-	const customer: Customer = {
-		id: trimWhiteSpace(row[map.id] as string),
-		row: row.row,
-		addresses: undefined,
-		altIDs: undefined,
-		persons: undefined,
-		banks: undefined,
-		company: undefined,
-		emails: undefined,
-		phones: undefined,
-		description: undefined,
-		firstContact: undefined,
-		latestContact: undefined,
-		created: new Date(),
-	};
+	const customer: Customer = structuredClone(
+		templates.get('customer')
+	) as Customer;
+	customer.id = trimWhiteSpace(row[map.customers.id] as string);
+	customer.row = row.row;
+	customer.created = new Date();
 
+	/**
+	 *
+	 * @param buffer the preexisting Arraybuffer, if there is note one will be created
+	 * @param value the number to add to the array buffer
+	 */
+	function updateArrayBuffer(
+		buffer: ArrayBuffer | undefined,
+		value: number
+	): ArrayBuffer {
+		if (buffer instanceof ArrayBuffer) {
+			let buf = buffer;
+
+			for (let i = new DataView(buf).byteLength / 2 - 1; i > 0; i--) {
+				if (new DataView(buf).getUint16(i) === value) {
+					return buf;
+				}
+			}
+
+			// @ts-expect-error no ts implementation (or at least I wasn't able find the correct way)
+			if (buf.resizable === true) {
+				if (buf.byteLength === 128) {
+					// Array buffer is maxed out
+					return buf;
+				}
+
+				// @ts-expect-error no ts implementation (or at least I wasn't able find the correct way)
+				buf.resize(buf.byteLength + 2);
+				const view = new DataView(buf);
+				const index = (view.byteLength as number) / 2 - 1;
+				view.setUint16(index, value);
+				return buf;
+			} else {
+				return buf;
+			}
+		} else {
+			// @ts-expect-error no ts implementation (or at least I wasn't able find the correct way)
+			const buf = new ArrayBuffer(2, { maxByteLength: 128 });
+			new DataView(buf).setUint16(0, value);
+			return buf;
+		}
+	}
+
+	/**
+	 *	updates the references (array buffer) on the customer with the customerID id
+	 * @param id customerID
+	 * @param key "company" | "persons" | "addresses" | "banks"
+	 * @param value number
+	 */
 	function updateCustomer(id: string, key: CustomerReferences, value: number) {
 		const transaction = customerDB.transaction('customers', 'readwrite');
 		const oStore = transaction.objectStore('customers');
 		const index = oStore.index('customers-id');
 		const request = index.get(id);
+		// get the customer
 		request.onsuccess = () => {
 			const entry: Customer = request.result;
 			if (entry) {
+				// the customer exists
 				if (Object.keys(entry).includes(key)) {
 					// the property does exist
-					if (entry[key] instanceof ArrayBuffer) {
-						// is there already something
-						const buf: ArrayBuffer = entry[key];
-
-						//check if the ArrayBuffer already contains our item
-						for (
-							let i = new DataView(buf).byteLength / 2 - 1;
-							i > 0;
-							i--
-						) {
-							if (new DataView(buf).getUint16(i) === value) {
-								return;
-							}
-						}
-
-						// @ts-expect-error no ts implementation (or at least I wasn't able find the correct way)
-						if (buf.resizable === true) {
-							if (buf.byteLength === 128) {
-								return postMessage({
-									type: 'error',
-									message: 'array buffer space is maxed out',
-								});
-							}
-							// @ts-expect-error no ts implementation (or at least I wasn't able find the correct way)
-							buf.resize(buf.byteLength + 2);
-							const view = new DataView(buf);
-							const index = (view.byteLength as number) / 2 - 1;
-							view.setUint16(index, value);
-							entry[key] = buf;
-						}
-					} else {
-						// there is no Array buffer
-						// so we create one
-						// @ts-expect-error no ts implementation (or at least I wasn't able find the correct way)
-						const buf = new ArrayBuffer(2, { maxByteLength: 128 });
-						new DataView(buf).setUint16(0, value);
-						entry[key] = buf;
-					}
+					entry[key] = updateArrayBuffer(entry[key], value);
 				} else {
 					// the property does not exist
 					// so we create it
 					// the max count of references this buffer holds = max size / size of one item = 128/2 = 64
 					// so one array contains a max 64 references
-					// a reference just an integer , which shows the position of an item in another object store
-
-					//
-					// @ts-expect-error this is valid, see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer/ArrayBuffer#parameters
-					const buf = new ArrayBuffer(2, { maxByteLength: 128 });
-					new DataView(buf).setUint16(0, value);
+					// a reference is just an integer , which shows the position of an item in another object store
+					const buf = updateArrayBuffer(undefined, value);
 					Object.defineProperty(entry, key, {
 						configurable: true,
 						enumerable: true,
@@ -628,35 +679,301 @@ function parseCustomer(
 		};
 	}
 
-	function addParsedData(
-		data:
-			| PersonType[]
-			| EmailType[]
-			| PhoneNumberType[]
-			| AddressType[]
-			| CompanyType[]
-			| BankType[],
-		type: CustomerReferences
-	): void {
-		if (data.length !== 0) {
-			const transaction = customerDB.transaction(type, 'readwrite');
-			const oStore = transaction.objectStore(type);
-			const CountRequest = oStore.count();
-			CountRequest.onsuccess = () => {
-				const count = CountRequest.result;
-				for (const [index, value] of data.entries()) {
-					const id = count + index + 1;
-					value.row = id;
-					oStore.add(value);
-					updateCustomer(row[map.id] as string, type, id);
+	async function insertEmail(data: EmailType): Promise<number> {
+		return new Promise((resolve, reject) => {
+			const transaction = customerDB.transaction('emails');
+			const oStore = transaction.objectStore('emails');
+			const index = oStore.index('email');
+			const indexRequest = index.get(data.email);
+			indexRequest.onsuccess = () => {
+				const result = indexRequest.result;
+				if (result === undefined) {
+					// the email does not exist in the oStore
+					// so we can add it
+					const countRequest = oStore.count();
+					countRequest.onsuccess = () => {
+						const count = countRequest.result;
+						data.row = count + 1;
+						oStore.add(data);
+						transaction.commit();
+						resolve(count + 1);
+					};
+					countRequest.onerror = () => {
+						reject('insertEmail: countRequest failed');
+					};
+				} else {
+					resolve((result as EmailType).row);
 				}
-				transaction.commit();
 			};
+			indexRequest.onerror = () => {
+				reject('insertEmail: indexRequestFailed');
+			};
+		});
+	}
+
+	async function insertPhone(data: PhoneNumberType): Promise<number> {
+		return new Promise((resolve, reject) => {
+			const transaction = customerDB.transaction('phones');
+			const oStore = transaction.objectStore('phones');
+			const index = oStore.index('phone');
+			const indexRequest = index.get(data.phone);
+			indexRequest.onsuccess = () => {
+				const result = indexRequest.result;
+				if (result === undefined) {
+					// the email does not exist in the oStore
+					// so we can add it
+					const countRequest = oStore.count();
+					countRequest.onsuccess = () => {
+						const count = countRequest.result;
+						data.row = count + 1;
+						oStore.add(data);
+						transaction.commit();
+						resolve(count + 1);
+					};
+					countRequest.onerror = () => {
+						reject('insertPhone: countRequest failed');
+					};
+				} else {
+					resolve((result as PhoneNumberType).row);
+				}
+			};
+			indexRequest.onerror = () => {
+				reject('insertPhone: indexRequestFailed');
+			};
+		});
+	}
+
+	function addParsedData(
+		data: DerefPersonType[] | AddressType[] | CompanyType[] | BankType[],
+		type: keyof CustomerBaseData
+	): void {
+		// create a new transaction
+		// open the oStore
+		const transaction = customerDB.transaction(type, 'readwrite');
+		const oStore = transaction.objectStore(type);
+		for (const value of data) {
+			switch (type) {
+				case 'persons':
+					let personsRow = value as DerefPersonType;
+					let personsToAdd: DerefPersonType[] = [];
+					if (personsRow.firstName !== undefined) {
+						if (personsRow.firstName.includes('&')) {
+							let person1 = structuredClone(personsRow);
+							let person2 = structuredClone(personsRow);
+							let personNames = personsRow.firstName
+								.split('&')
+								.map((item) => trimWhiteSpace(item));
+							person1.firstName = personNames[0];
+							person2.firstName = personNames[1];
+							personsToAdd.push(person1);
+							personsToAdd.push(person2);
+						} else {
+							personsToAdd.push(personsRow);
+						}
+					} else {
+						personsToAdd.push(personsRow);
+					}
+					let reffedPersons: PersonType[] = [];
+					for (const [index, person] of personsToAdd.entries()) {
+						const refPerson = person as PersonType;
+						refPerson.emails = undefined;
+						refPerson.phones = undefined;
+						reffedPersons[index] = refPerson;
+
+						if (person.emails !== undefined) {
+							let promises: Promise<number>[] = [];
+							for (const email of person.emails) {
+								promises.push(insertEmail(email));
+							}
+							Promise.all(promises).then((emailRowNumbers: number[]) => {
+								emailRowNumbers.forEach((value) => {
+									reffedPersons[index].emails = updateArrayBuffer(
+										reffedPersons[index].emails,
+										value
+									);
+								});
+							});
+						}
+
+						if (person.phones !== undefined) {
+							let promises: Promise<number>[] = [];
+							for (const phone of person.phones) {
+								promises.push(insertPhone(phone));
+							}
+							Promise.all(promises).then((phoneRowNumbers: number[]) => {
+								phoneRowNumbers.forEach((value) => {
+									reffedPersons[index].phones = updateArrayBuffer(
+										reffedPersons[index].phones,
+										value
+									);
+								});
+							});
+						}
+					}
+
+					let personsCountRequest = oStore.count();
+					personsCountRequest.onsuccess = () => {
+						const count = personsCountRequest.result;
+						for (const [index, person] of reffedPersons.entries()) {
+							person.row = count + index + 1;
+							oStore.add(person);
+							updateCustomer(row[map.customers.id], type, person.row);
+						}
+					};
+					break;
+				case 'addresses':
+					let addressRow = value as AddressType;
+					getAddressHash(
+						addressRow.street ?? '',
+						addressRow.zip ?? '',
+						addressRow.city ?? ''
+					).then((hash) => {
+						//check if the address already exists
+						let oStoreIndex = oStore.index('addresses-hash');
+						let addressRequest = oStoreIndex.get(hash);
+						addressRequest.onsuccess = () => {
+							if (addressRequest.result !== undefined) {
+								// address already exits
+								// the only thing to do is overwrite other values, if we can
+								if (
+									addressRow.country !== undefined ||
+									addressRow.notes !== undefined ||
+									addressRow.type !== undefined
+								) {
+									let result = addressRequest.result as AddressType;
+									if (addressRow.country !== undefined) {
+										result.country = addressRow.country;
+									}
+									if (addressRow.notes !== undefined) {
+										if (result.notes !== undefined) {
+											result.notes = [
+												...result.notes,
+												...addressRow.notes,
+											];
+										} else {
+											result.notes = addressRow.notes;
+										}
+									}
+									if (addressRow.type !== undefined) {
+										result.type = addressRow.type;
+									}
+									oStore.put(result);
+								}
+							} else {
+								// the address does not already exist
+								const CountRequest = oStore.count();
+								CountRequest.onsuccess = () => {
+									const count = CountRequest.result;
+									addressRow.row = count + 1;
+									addressRow.hash = hash;
+									oStore.add(addressRow);
+								};
+							}
+						};
+					});
+					break;
+				case 'banks':
+					let banksRow = value as BankType;
+					if (banksRow.iban !== undefined) {
+						let oStoreIndex = oStore.index('banks-iban');
+						let indexRequest = oStoreIndex.get(banksRow.iban);
+						indexRequest.onsuccess = () => {
+							if (indexRequest.result) {
+								// the iban exists
+								let result = indexRequest.result as BankType;
+								updateCustomer(row[map.customers.id], type, result.row);
+								for (let [k, v] of Object.entries(result)) {
+									let key = k as keyof BankType;
+									if (key !== 'row') {
+										if (banksRow[key] === undefined) {
+											banksRow[key] = v;
+										} else {
+											if (key === 'notes') {
+												banksRow[key] = [
+													...v,
+													...(banksRow[key] as string[]),
+												];
+											}
+										}
+									}
+								}
+								oStore.put(banksRow);
+							} else {
+								// the iban does not exist
+								let countRequest = oStore.count();
+								countRequest.onsuccess = () => {
+									let count = countRequest.result;
+									banksRow.row = count + 1;
+									oStore.add(banksRow);
+
+									updateCustomer(
+										row[map.customers.id],
+										type,
+										count + 1
+									);
+								};
+							}
+						};
+					} else {
+						// there is no iban
+						// so we just add a new entry
+						let countRequest = oStore.count();
+						countRequest.onsuccess = () => {
+							let count = countRequest.result;
+							banksRow.row = count + 1;
+							oStore.add(banksRow);
+
+							updateCustomer(row[map.customers.id], type, count + 1);
+						};
+					}
+
+					break;
+				case 'company':
+					let companyRow = value as CompanyType;
+					let index = oStore.index('company-name');
+					let indexRequest = index.get(companyRow.name);
+					indexRequest.onsuccess = () => {
+						if (indexRequest.result) {
+							// the company already exists
+							let result = indexRequest.result as CompanyType;
+							updateCustomer(row[map.customers.id], type, result.row);
+							for (let [k, v] of Object.entries(result)) {
+								let key = k as keyof CompanyType;
+								if (key !== 'row') {
+									if (companyRow[key] === undefined) {
+										companyRow[key] = v;
+									} else {
+										if (key === 'notes') {
+											companyRow[key] = [
+												...v,
+												...(companyRow[key] as string[]),
+											];
+										}
+									}
+								}
+							}
+							oStore.put(companyRow);
+						} else {
+							// the company does not exist
+							// so we add it
+							let countRequest = oStore.count();
+							countRequest.onsuccess = () => {
+								let count = countRequest.result;
+								companyRow.row = count + 1;
+								oStore.add(companyRow);
+								updateCustomer(row[map.customers.id], type, count + 1);
+							};
+						}
+					};
+					break;
+				default:
+					console.error('addParsedData: ' + type + ' not found');
+			}
 		}
 	}
 
-	if (map.customerNotes !== undefined) {
-		const note = trimWhiteSpace(row[map.customerNotes] as string);
+	if (map.customers.notes !== undefined) {
+		const note = trimWhiteSpace(row[map.customers.notes] as string);
 		const notes = note.split(',').map((item) => trimWhiteSpace(item));
 		if (customer.notes === undefined) {
 			customer.notes = [];
@@ -668,248 +985,188 @@ function parseCustomer(
 		}
 	}
 
-	if (map.description !== undefined) {
-		customer.description = trimWhiteSpace(row[map.description] as string);
+	if (map.customers.description !== undefined) {
+		customer.description = trimWhiteSpace(
+			row[map.customers.description] as string
+		);
 	}
 
-	if (map.firstContact !== undefined) {
+	if (map.customers.firstContact !== undefined) {
 		customer.firstContact = parseDate(
-			row[map.firstContact] as string,
+			row[map.customers.firstContact] as string,
 			'YYYY-MM-DD hh:mm:ss'
 		);
 	}
 
-	if (map.latestContact !== undefined) {
+	if (map.customers.latestContact !== undefined) {
 		customer.firstContact = parseDate(
-			row[map.latestContact] as string,
+			row[map.customers.latestContact] as string,
 			'YYYY-MM-DD hh:mm:ss'
 		);
+	}
+
+	if (map.customers.altIDs !== undefined) {
+		const altIDs = trimWhiteSpace(row[map.customers.altIDs] as string);
+		const ids = altIDs.split(',').map((item) => trimWhiteSpace(item));
+		if (customer.altIDs === undefined) {
+			customer.altIDs = [];
+		}
+		for (const id of ids) {
+			if (id.trim() !== '') {
+				customer.altIDs.push(id);
+			}
+		}
+	}
+
+	if (map.customers.website !== undefined) {
+		let website = trimWhiteSpace(row[map.customers.website]);
+		if (website.includes('http')) {
+			if (website.includes('http://')) {
+				website.replace('http://', 'https://');
+			}
+		} else {
+			website = 'https://' + website;
+		}
+		customer.website = website;
 	}
 
 	const transaction = customerDB.transaction('customers', 'readwrite');
-	const oStore = transaction.objectStore('customers');
-	oStore.put(customer);
-
-	const persons: PersonType[] = [];
-	const emails: EmailType[] = [];
-	const phones: PhoneNumberType[] = [];
-	const addresses: AddressType[] = [];
-	const companies: CompanyType[] = [];
-	const banks: BankType[] = [];
-
-	// parse Persons
-	if (map.firstName !== undefined || map.lastName !== undefined) {
-		// now we know there is something which fits the scheme of a person
-		if (map.firstName !== undefined) {
-			// if there is a first Name
-			const firstName = trimWhiteSpace(row[map.firstName] as string);
-			if (firstName.includes('&')) {
-				// its actually to persons (related or married)
-				const names = firstName
-					.split('&')
-					.map((item) => trimWhiteSpace(item));
-				const person1 = structuredClone(PersonTemplate);
-				const person2 = structuredClone(PersonTemplate);
-				person1.firstName = names[0];
-				person2.firstName = names[1];
-				persons.push(person1);
-				persons.push(person2);
-			} else {
-				// only one person
-				const person = structuredClone(PersonTemplate);
-				person.firstName = firstName;
-				persons.push(person);
-			}
-		}
-
-		if (map.lastName !== undefined) {
-			// if there is a last name
-			if (persons.length !== 0) {
-				// are the any persons already
-				for (const p of persons) {
-					p.lastName = trimWhiteSpace(row[map.lastName] as string);
-				}
-			} else {
-				// create a person
-				const person = structuredClone(PersonTemplate);
-				person.lastName = trimWhiteSpace(row[map.lastName] as string);
-				person.firstName = '';
-				persons.push(person);
-			}
-		}
-
-		if (map.title !== undefined) {
-			if (persons.length !== 0) {
-				for (const p of persons) {
-					p.title = trimWhiteSpace(row[map.title] as string);
-				}
-			}
-		}
-	}
-
-	if (map.companyName === undefined && map.alias !== undefined) {
-		// if the is no company name assume the alias field applies to the person
-		for (const p of persons) {
-			if (p.alias === undefined) {
-				p.alias = [];
-			}
-			p.alias.push(trimWhiteSpace(row[map.alias] as string));
-		}
-	}
-
-	if (persons.length !== 0 && map.personNotes !== undefined) {
-		// if there are persons and we can assign notes then do so
-		for (const p of persons) {
-			if (p.notes === undefined) {
-				p.notes = [];
-			}
-			const note = trimWhiteSpace(row[map.personNotes] as string);
-			const notes = note.split(',').map((item) => trimWhiteSpace(item));
-			for (const n of notes) {
-				if (n.trim() !== '') {
-					p.notes.push(n);
-				}
-			}
-		}
-	}
-
-	addParsedData(persons, 'persons');
-
-	// parse address
-	const addressParams = ['city', 'street', 'zip', 'country'];
-	if (
-		map.city !== undefined ||
-		map.street !== undefined ||
-		map.zip !== undefined ||
-		map.country !== undefined
-	) {
-		const address = structuredClone(AddressTemplate);
-		for (const param of addressParams) {
-			if (map[param] !== undefined) {
-				address[param] = trimWhiteSpace(row[map[param]] as string);
-			}
-		}
-		addresses.push(address);
-	}
-
-	addParsedData(addresses, 'addresses');
-
-	// parse email
-	if (map.email !== undefined) {
-		const mail = trimWhiteSpace(row[map.email] as string);
-		if (mail.trim() !== '') {
-			const mails = mail.split(',').map((item) => trimWhiteSpace(item));
-			for (const m of mails) {
-				const email = structuredClone(EmailTemplate);
-				const matched = rx.EmailRx.exec(m);
-				if (matched?.[0] !== null && matched?.[0] !== undefined) {
-					email.email = matched[0];
-					if (email.notes === undefined) {
-						email.notes = [];
-					}
-					const note = trimWhiteSpace(m.replace(matched[0], ''));
-					if (note !== '') {
-						email.notes.push(note);
+	const oStoreCustomers = transaction.objectStore('customers');
+	const customersIndex = oStoreCustomers.index('customers-id');
+	const customersIndexRequest = customersIndex.get(customer.id);
+	customersIndexRequest.onsuccess = () => {
+		if (customersIndexRequest.result) {
+			//customer with this id already exists
+			let preexistingCustomer = customersIndexRequest.result as Customer;
+			for (let [k, v] of Object.entries(preexistingCustomer)) {
+				const key = k as keyof Customer;
+				if (key !== 'row' && !(v instanceof ArrayBuffer)) {
+					if (customer[key] !== undefined) {
+						if (key === 'notes') {
+							if (v !== undefined) {
+								let value = v as string[];
+								preexistingCustomer[key] = [...value, ...customer[key]];
+							} else {
+								preexistingCustomer[key] = customer[key];
+							}
+						} else {
+							// overwrite data
+							// @ts-expect-error the types will match, because the key is the same
+							preexistingCustomer[key] = customer[key];
+						}
 					}
 				}
-				emails.push(email);
 			}
+			oStoreCustomers.put(preexistingCustomer);
+		} else {
+			// customer does not exist
+			// oStore.put(customer);
+			let customersCountRequest = oStoreCustomers.count();
+			customersCountRequest.onsuccess = () => {
+				let customersCount = customersCountRequest.result;
+				customer.row = customersCount + 1;
+				oStoreCustomers.add(customer);
+			};
 		}
-	}
+	};
 
-	if (emails.length !== 0 && map.emailNotes !== undefined) {
-		for (const m of emails) {
-			if (!Array.isArray(m.notes)) {
-				m.notes = [];
-			}
-			const note = trimWhiteSpace(row[map.emailNotes] as string);
-			const notes = note.split(',').map((item) => trimWhiteSpace(item));
-			for (const n of notes) {
-				if (n.trim() !== '') {
-					m.notes.push(n);
+	let oStoreItems: CustomerBaseData = {
+		persons: [],
+		addresses: [],
+		company: [],
+		banks: [],
+	};
+
+	// fill oStoreItems with templates
+	// the templates as filled with values from row[...]
+	for (const [k, v] of Object.entries(map)) {
+		// walk the map
+		let key = k as keyof CustomerSortingMap;
+		if (key !== 'row' && key !== 'customers') {
+			// if the prop is not "row"
+			// and also not email
+			// and also not phone
+			// because those are nested
+			// get the value of the prop
+			let value: CustomerSortingMap[typeof key] = v;
+			if (Object.keys(value).length !== 0) {
+				// if there are actually any props in value
+				// clone the correct template
+				let template = structuredClone(templates.get(key));
+				for (const [nk, nv] of Object.entries(value)) {
+					// walk the value
+					if (nv !== undefined) {
+						if (typeof nv == 'string' && nv.length !== 0) {
+							let nestedValue = nv; // this is the columnsName in row
+							let nestedKey = nk;
+							// if the value is not undefined
+							if (typeof nestedValue !== 'object') {
+								// we do not have another layer
+								let column: string = map[key][nestedKey] as string;
+								//@ts-expect-error ts does not what the template actually is
+								template[nestedKey] = trimWhiteSpace(row[column]);
+							} else {
+								// this means nestedKey is ether "phones" or "emails"
+								// this also means that key is either "customers" or "persons"
+								let nestedKeyLetterList: string[] =
+									Array.from(nestedKey);
+								nestedKeyLetterList.pop();
+								let nestedNestedKey: 'email' | 'phone' =
+									nestedKeyLetterList.join('') as 'email' | 'phone';
+								let nestedMainValue = trimWhiteSpace(
+									row[map[key][nestedKey][nestedNestedKey]]
+								)
+									.split(',')
+									.map((item) => trimWhiteSpace(item));
+								//@ts-expect-error ts does not what the template actually is
+								template[key][nestedKey] = nestedMainValue.map(
+									(val: string) => {
+										let out: {
+											notes?: string[];
+											type?: string;
+										} = {
+											notes: undefined,
+											type: undefined,
+										};
+										if (map[key][nestedKey]['notes'] !== undefined) {
+											if (
+												row[map[key][nestedKey]['notes']].includes(
+													','
+												)
+											) {
+												out.notes = row[
+													map[key][nestedKey]['notes']
+												]
+													.split(',')
+													.map((item) => trimWhiteSpace(item));
+											} else {
+												out.notes = [
+													row[map[key][nestedKey]['notes']],
+												];
+											}
+										}
+
+										if (map[key][nestedKey]['type'] !== undefined) {
+											out.type = row[map[key][nestedKey]['type']];
+										}
+										out[nestedNestedKey] = val.toLowerCase();
+										return out;
+									}
+								);
+							}
+						}
+					}
 				}
+				(oStoreItems[key] as Array<typeof template>).push(template);
 			}
 		}
 	}
 
-	addParsedData(emails, 'emails');
-
-	// parse phone number
-	if (map.phone !== undefined) {
-		const phone = structuredClone(PhoneTemplate);
-		const number = trimWhiteSpace(row[map.phone] as string);
-		phone.phone = number.replaceAll('[^0-9+]', '');
-		phones.push(phone);
-	}
-
-	if (phones.length !== 0 && map.phoneNotes !== undefined) {
-		const note = trimWhiteSpace(row[map.phoneNotes] as string);
-		const notes = note.split(',').map((item) => trimWhiteSpace(item));
-
-		for (const p of phones) {
-			if (!Array.isArray(p.notes)) {
-				p.notes = [];
-			}
-			for (const n of notes) {
-				if (n.trim() !== '') {
-					p.notes.push(n);
-				}
-			}
+	for (const [key, value] of Object.entries(oStoreItems)) {
+		if (value.length !== 0) {
+			addParsedData(value, key as keyof CustomerBaseData);
 		}
 	}
-
-	addParsedData(phones, 'phones');
-
-	// parse company
-	if (map.companyName !== undefined) {
-		const company = structuredClone(CompanyTemplate);
-		company.name = trimWhiteSpace(row[map.companyName] as string);
-		companies.push(company);
-	}
-
-	if (companies.length !== 0 && map.companyNotes !== undefined) {
-		const note = trimWhiteSpace(row[map.companyNotes] as string);
-		const notes = note.split(',').map((item) => trimWhiteSpace(item));
-		for (const c of companies) {
-			if (c.notes === undefined) {
-				c.notes = [];
-			}
-			for (const n of notes) {
-				if (n.trim() !== '') {
-					c.notes.push(n);
-				}
-			}
-		}
-	}
-
-	addParsedData(companies, 'company');
-
-	// parse bank
-	if (map.bankName !== undefined) {
-		const bank = structuredClone(BankTemplate);
-		bank.name = trimWhiteSpace(row[map.bankName] as string);
-		if (map.bankCode !== undefined)
-			bank.bankCode = trimWhiteSpace(row[map.bankCode] as string);
-		if (map.iban !== undefined)
-			bank.iban = trimWhiteSpace(row[map.iban] as string);
-		if (map.bic !== undefined)
-			bank.bic = trimWhiteSpace(row[map.bic] as string);
-		if (map.bankNotes !== undefined) {
-			const note = trimWhiteSpace(row[map.bankNotes] as string);
-			const notes = note.split(',').map((item) => trimWhiteSpace(item));
-			if (bank.notes === undefined) {
-				bank.notes = [];
-			}
-			for (const n of notes) {
-				if (n.trim() !== '') {
-					bank.notes.push(n);
-				}
-			}
-		}
-		banks.push(bank);
-	}
-
-	addParsedData(banks, 'banks');
 }
 
 function createCustomerObjectStores(e: IDBVersionChangeEvent): void {
@@ -977,6 +1234,9 @@ function createCustomerObjectStores(e: IDBVersionChangeEvent): void {
 		address.createIndex('addresses-country', 'country', {
 			unique: false,
 		});
+		address.createIndex('addresses-hash', 'hash', {
+			unique: true,
+		});
 	}
 
 	if (!stores.contains('banks')) {
@@ -993,10 +1253,20 @@ function createCustomerObjectStores(e: IDBVersionChangeEvent): void {
 	}
 
 	if (!stores.contains('company')) {
-		db.createObjectStore('company', {
+		const company = db.createObjectStore('company', {
 			keyPath: 'row',
 		});
+
+		company.createIndex('company-name', 'name', {
+			unique: false,
+		});
 	}
+}
+
+function doArticles(map: ArticleSortingMap, dbName: string, dbVersion: number) {
+	const dbRequest = indexedDB.open(dbName, dbVersion);
+	console.log(map);
+	dbRequest.onupgradeneeded = createArticleObjectStores;
 }
 
 function createArticleObjectStores(e: IDBVersionChangeEvent): void {
@@ -1048,6 +1318,16 @@ function createArticleObjectStores(e: IDBVersionChangeEvent): void {
 	}
 }
 
+function doDocuments(
+	map: DocumentSortingMap,
+	dbName: string,
+	dbVersion: number
+) {
+	const dbRequest = indexedDB.open(dbName, dbVersion);
+	console.log(map);
+	dbRequest.onupgradeneeded = createDocumentObjectStores;
+}
+
 function createDocumentObjectStores(e: IDBVersionChangeEvent): void {
 	const target: IDBOpenDBRequest = e.target as IDBOpenDBRequest;
 	const db = target.result;
@@ -1058,79 +1338,81 @@ function createDocumentObjectStores(e: IDBVersionChangeEvent): void {
 			keyPath: 'row',
 		});
 
-	   quotes.createIndex("quotes-id","id",{
-			unique: true
-		})
+		quotes.createIndex('quotes-id', 'id', {
+			unique: true,
+		});
 
-		quotes.createIndex("quotes-date","date",{
-			unique: true
-		})
+		quotes.createIndex('quotes-date', 'date', {
+			unique: true,
+		});
 
-		quotes.createIndex("quotes-customerID","customerID",{
-			unique: true
-		})
-
+		quotes.createIndex('quotes-customerID', 'customerID', {
+			unique: true,
+		});
 	}
 
-	if(!stores.contains("invoices")){
-		const invoices = db.createObjectStore("invoices",{
-			keyPath: "row"
-		})
+	if (!stores.contains('invoices')) {
+		const invoices = db.createObjectStore('invoices', {
+			keyPath: 'row',
+		});
 
-		invoices.createIndex("invoices-id","id",{
-			unique: true
-		})
+		invoices.createIndex('invoices-id', 'id', {
+			unique: true,
+		});
 
-		invoices.createIndex("invoices-date","date",{
-			unique: false
-		})
+		invoices.createIndex('invoices-date', 'date', {
+			unique: false,
+		});
 
-		invoices.createIndex("invoices-customerID","customerID",{
-			unique: false
-		})
+		invoices.createIndex('invoices-customerID', 'customerID', {
+			unique: false,
+		});
 	}
 
+	if (!stores.contains('deliveries')) {
+		const deliveries = db.createObjectStore('deliveries', {
+			keyPath: 'row',
+		});
 
-	if(!stores.contains("deliveries")){
-		const deliveries = db.createObjectStore("deliveries",{
-			keyPath: "row"
-		})
+		deliveries.createIndex('deliveries-id', 'id', {
+			unique: true,
+		});
 
-		deliveries.createIndex("deliveries-id","id",{
-			unique: true
-		})
+		deliveries.createIndex('deliveries-date', 'date', {
+			unique: false,
+		});
 
-		deliveries.createIndex("deliveries-date","date",{
-			unique: false
-		})
-
-		deliveries.createIndex("deliveries-customerID","customerID",{
-			unique: false
-		})
+		deliveries.createIndex('deliveries-customerID', 'customerID', {
+			unique: false,
+		});
 	}
 
-	if(!stores.contains("returnees")){
-		const returnees = db.createObjectStore("returnees",{
-			keyPath: "row"
-		})
+	if (!stores.contains('returnees')) {
+		const returnees = db.createObjectStore('returnees', {
+			keyPath: 'row',
+		});
 
-		returnees.createIndex("returnees-id","id",{
-			unique: true
-		})
+		returnees.createIndex('returnees-id', 'id', {
+			unique: true,
+		});
 
-		returnees.createIndex("returnees-date","date",{
-			unique: false
-		})
+		returnees.createIndex('returnees-date', 'date', {
+			unique: false,
+		});
 
-		returnees.createIndex("returnees-customerID","customerID",{
-			unique: false
-		})
+		returnees.createIndex('returnees-customerID', 'customerID', {
+			unique: false,
+		});
 	}
-
 }
 
 function trimWhiteSpace(input: string): string {
 	let out = input;
-	out = out.replaceAll(rx.WhiteSpaceRx, '');
+	if (out !== undefined) {
+		out = out.replaceAll(/(((?<=\s)\s+)|(^\s+)|(\s+$))/gm, '');
+	} else {
+		out = '';
+	}
+
 	return out;
 }

@@ -21,7 +21,7 @@ export function Upload(): React.JSX.Element {
 	const [fileName, setFileName] = useState<string>('');
 	const [isRed, setIsRed] = useState<boolean>(false);
 	const [cols, setCols] = useState<string[]>([]);
-	const [allCols, setAllCols] = useState<string[]>([]);
+	const [, setAllCols] = useState<string[]>([]);
 	const [entries, setEntries] = useState<number>(0);
 	const [update, setUpdate] = useState<boolean>(false); // stop rendering while updating
 	const tableImportModeInputRef = useRef<HTMLSelectElement>(null);
@@ -106,54 +106,71 @@ export function Upload(): React.JSX.Element {
 	};
 
 	const importHandler = () => {
-		worker.ImportWorker.postMessage({
-			type: 'sort',
-			message: map,
-			content: tableImportMode,
-			dbVersion: database.dbVersion,
-			dataBaseName: 'factor_db',
-		});
-		worker.ImportWorker.onmessage = (e) => {
-			if (e.data !== undefined) {
-				switch (e.data.type) {
-					case 'progress':
-						if (importButtonRef.current !== null) {
-							importButtonRef.current.innerText = e.data.message;
-						}
-						break;
-					case 'success':
-						if (importButtonRef.current !== null) {
-							importButtonRef.current.innerText =
-								general.language === 'deutsch'
-									? 'Tabelle erstellen/erneuern'
-									: 'Create/Update Table';
-						}
-						if (tableImportModeInputRef.current !== null) {
-							switch (tableImportModeInputRef.current.value) {
-								case 'customers':
-								// const newTables = database;
-								// if (newTables.includes('customer_db')) {
-								// 	break;
-								// }
-								// newTables.push('customer_db');
-								// dispatch({
-								// 	type: 'set',
-								// 	change: {
-								// 		database: {
-								// 			tables: newTables,
-								// 		},
-								// 	},
-								// });
-							}
-						}
+		if(tableImportMode === "customers"){
+			if(map["customers"]["id"] === undefined){
+				window.alert("Customers ID is a requirement")
 
-						break;
-					case 'error':
-					default:
-						window.alert('Import Error: \n' + e.data?.message);
-				}
+			}else{
+				worker.ImportWorker.postMessage({
+					type: 'sort',
+					message: map,
+					content: tableImportMode,
+					dbVersion: database.dbVersion,
+					dataBaseName: 'factor_db',
+				});
 			}
-		};
+		}else{
+
+			worker.ImportWorker.postMessage({
+				type: 'sort',
+				message: map,
+				content: tableImportMode,
+				dbVersion: database.dbVersion,
+				dataBaseName: 'factor_db',
+			});
+		}
+	};
+
+	worker.ImportWorker.onmessage = (e) => {
+		if (e.data !== undefined) {
+			switch (e.data.type) {
+				case 'progress':
+					if (importButtonRef.current !== null) {
+						importButtonRef.current.innerText = e.data.message;
+					}
+					break;
+				case 'success':
+					if (importButtonRef.current !== null) {
+						importButtonRef.current.innerText =
+							general.language === 'deutsch'
+								? 'Tabelle erstellen/erneuern'
+								: 'Create/Update Table';
+					}
+					if (tableImportModeInputRef.current !== null) {
+						switch (tableImportModeInputRef.current.value) {
+							case 'customers':
+							// const newTables = database;
+							// if (newTables.includes('customer_db')) {
+							// 	break;
+							// }
+							// newTables.push('customer_db');
+							// dispatch({
+							// 	type: 'set',
+							// 	change: {
+							// 		database: {
+							// 			tables: newTables,
+							// 		},
+							// 	},
+							// });
+						}
+					}
+
+					break;
+				case 'error':
+				default:
+					window.alert('Import Error: \n' + e.data?.message);
+			}
+		}
 	};
 
 	const actionHandler = (): void => {
@@ -253,7 +270,7 @@ export function Upload(): React.JSX.Element {
 									{general.language === 'deutsch'
 										? 'Einträge'
 										: 'Entries'}
-									: {(entries - 1).toString() ?? '-'}
+									: {entries.toString() ?? '-'}
 								</li>
 								<li key={'tableInfo2'}>
 									{general.language === 'deutsch'

@@ -25,6 +25,8 @@ export type {
 	TaxInfos,
 	CustomerSortingMap,
 	CustomerSortingMapProps,
+	DerefPersonType,
+	CustomerBaseData,
 } from './database/CustomerTypes';
 
 export type {
@@ -56,6 +58,7 @@ export type {
 	CustomerKeys,
 	CustomerReferences,
 	BaseRow,
+	UploadRow,
 } from './database/DataBaseData';
 
 export type {
@@ -63,6 +66,12 @@ export type {
 	MenuItem,
 } from './comps/ContextMenu/ContextMenu';
 
-export type { ArticleDBObjectStores } from './database/ArticleTypes';
+export type {
+	ArticleDBObjectStores,
+	ArticleSortingMap,
+} from './database/ArticleTypes';
 
-export type { DocumentDBObjectStores } from './database/DocumentTypes';
+export type {
+	DocumentDBObjectStores,
+	DocumentSortingMap,
+} from './database/DocumentTypes';

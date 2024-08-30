@@ -287,8 +287,8 @@ function getCount(
 					type: 'error',
 					data: 'unknown Object Store',
 				});
+				throw new Error('unknown Object Store: ' + storeName);
 			}
-			throw new Error('unknown Object Store: ' + storeName);
 		}
 		const countRequest = db
 			.transaction(storeName, 'readonly')

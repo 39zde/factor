@@ -18,31 +18,15 @@ export function CustomerSorter({
 	};
 }): React.JSX.Element {
 	const { general } = useAppContext();
-
-	const [idCol, setIdCol] = useState<string>('');
-	const [altIDCol, setAltIDCol] = useState<string>('');
-	const [firstContactCol, setFirstContactCol] = useState<string>('');
-	const [latestContactCol, setLatestContactCol] = useState<string>('');
-	const [descriptionCol, setDescriptionCol] = useState<string>('');
-	const [notesCol, setNotesCol] = useState<string>('');
-	const [websiteCol, setWebsiteCol] = useState<string>('');
-
-	const idRef = useRef<HTMLSelectElement>(null);
-	const altIDRef = useRef<HTMLSelectElement>(null);
-	const firstContactRef = useRef<HTMLSelectElement>(null);
-	const latestContactRef = useRef<HTMLSelectElement>(null);
-	const descriptionRef = useRef<HTMLSelectElement>(null);
-	const notesRef = useRef<HTMLSelectElement>(null);
-	const websiteRef = useRef<HTMLSelectElement>(null);
-	const customerFieldsRefs = useRef<React.RefObject<HTMLSelectElement>[]>([
-		idRef,
-		altIDRef,
-		descriptionRef,
-		firstContactRef,
-		latestContactRef,
-		notesRef,
-		websiteRef,
-	]);
+	const [sortingMap, setSortingMap] = useState<CustomerSortingMap>({
+		addresses: {},
+		banks: {},
+		company: {},
+		customers: { id: '' },
+		persons: {},
+		row: 'row',
+	});
+	const customerFieldsRefs = useRef<React.RefObject<HTMLSelectElement>[]>([]);
 	const customerFields = [
 		general.language === 'deutsch' ? 'Kunden ID' : 'Customers ID',
 		general.language === 'deutsch'
@@ -60,29 +44,19 @@ export function CustomerSorter({
 			: 'Notes about the Customer',
 		general.language === 'deutsch' ? 'Website' : 'Website',
 	];
-	const customerKeys = [
-		'idRef',
-		'altIDRef',
-		'descriptionRef',
-		'firstContactRef',
-		'latestContactRef',
-		'notesRef',
-		'websiteRef',
+	const customerFieldKeys = [
+		'id',
+		'altIDs',
+		'description',
+		'firstContact',
+		'latestContact',
+		'notes',
+		'website',
 	];
-
 	//  customers emails
-	const [customersEmailCol, setCustomersEmailCol] = useState<string>('');
-	const [customersEmailTypeCol, setCustomersEmailTypeCol] =
-		useState<string>('');
-	const [customersEmailNotesCol, setCustomersEmailNotesCol] =
-		useState<string>('');
-
-	const customersEmailRef = useRef<HTMLSelectElement>(null);
-	const customersEmailTypeRef = useRef<HTMLSelectElement>(null);
-	const customersEmailNotesRef = useRef<HTMLSelectElement>(null);
 	const customersEmailFieldsRefs = useRef<
 		React.RefObject<HTMLSelectElement>[]
-	>([customersEmailRef, customersEmailTypeRef, customersEmailNotesRef]);
+	>([]);
 	const customersEmailFields = [
 		general.language === 'deutsch' ? 'Kunden-Email' : 'Customer email',
 		general.language === 'deutsch'
@@ -92,26 +66,13 @@ export function CustomerSorter({
 			? 'Notizen zur Kunden-Email'
 			: 'Notes about customer email',
 	];
-	const customersEmailKeys = [
-		'customersEmailRef',
-		'customersEmailTypeRef',
-		'customersEmailNotesRef',
-	];
+
+	const emailFieldKeys = ['email', 'type', 'notes'];
 
 	//  customer phones
-	const [customerPhoneCol, setCustomerPhoneCol] = useState<string>('');
-	const [customerPhoneTypeCol, setCustomerPhoneTypeCol] = useState<string>('');
-	const [customerPhoneNotesCol, setCustomerPhoneNotesCol] =
-		useState<string>('');
-
-	const customerPhoneRef = useRef<HTMLSelectElement>(null);
-	const customerPhoneTypeRef = useRef<HTMLSelectElement>(null);
-	const customerPhoneNotesRef = useRef<HTMLSelectElement>(null);
-	const customerPhoneFieldsRef = useRef<React.RefObject<HTMLSelectElement>[]>([
-		customerPhoneRef,
-		customerPhoneTypeRef,
-		customerPhoneNotesRef,
-	]);
+	const customerPhoneFieldsRef = useRef<React.RefObject<HTMLSelectElement>[]>(
+		[]
+	);
 	const customerPhoneFields = [
 		general.language === 'deutsch'
 			? 'Kunden-Telefonnummer'
@@ -123,84 +84,54 @@ export function CustomerSorter({
 			? 'Notizen zur Kunden-Telefonnummer'
 			: 'Notes about the customer phone number',
 	];
-	const customerPhoneKeys = [
-		'customerPhoneRef',
-		'customerPhoneTypeRef',
-		'customerPhoneNotesRef',
-	];
+	const phoneFieldKeys = ['phone', 'type', 'notes'];
 
 	//persons
-	const [titleCol, setTitleCol] = useState<string>('');
-	const [firstNameCol, setFirstNameCol] = useState<string>('');
-	const [lastNameCol, setLastNameCol] = useState<string>('');
-	const [personAliasCol, setPersonAliasCol] = useState<string>('');
-	const [personEmailCol, setPersonEmailCol] = useState<string>('');
-	const [personPhoneCol, setPersonPhoneCol] = useState<string>('');
-	const [personNotesCol, setPersonNotesCol] = useState<string>('');
-
-	const titleRef = useRef<HTMLSelectElement>(null);
-	const firstNameRef = useRef<HTMLSelectElement>(null);
-	const lastNameRef = useRef<HTMLSelectElement>(null);
-	const personAliasRef = useRef<HTMLSelectElement>(null);
-	const personEmailRef = useRef<HTMLSelectElement>(null);
-	const personPhoneRef = useRef<HTMLSelectElement>(null);
-	const personNotesRef = useRef<HTMLSelectElement>(null);
-	const personFieldsRefs = useRef<React.RefObject<HTMLSelectElement>[]>([
-		titleRef,
-		firstNameRef,
-		personAliasRef,
-		lastNameRef,
-		personEmailRef,
-		personPhoneRef,
-		personNotesRef,
-	]);
+	const personFieldsRefs = useRef<React.RefObject<HTMLSelectElement>[]>([]);
 	const personFields = [
 		general.language === 'deutsch' ? 'Anrede' : 'Title',
 		general.language === 'deutsch' ? 'Vorname' : 'First name',
-		general.language === 'deutsch' ? 'Alias' : 'Alias',
 		general.language === 'deutsch' ? 'Nachname' : 'Last name',
-		general.language === 'deutsch'
-			? 'Persönliche Email-Adresse(n)'
-			: 'Personal email-address(es)',
-		general.language === 'deutsch'
-			? 'Persönliche Telefonnummer(n)'
-			: 'Personal phone number(s)',
+		general.language === 'deutsch' ? 'Alias' : 'Alias',
 		general.language === 'deutsch'
 			? 'Notizen zur Person'
 			: 'Notes about this Person',
 	];
-	const personKeys = [
-		'titleRef',
-		'firstNameRef',
-		'personAliasRef',
-		'lastNameRef',
-		'personEmailRef',
-		'personPhoneRef',
-		'personNotesRef',
+	const personFieldKeys = ['title', 'firstName', 'lastName', 'alias', 'notes'];
+	//  customers emails
+
+	const personsEmailFieldsRefs = useRef<React.RefObject<HTMLSelectElement>[]>(
+		[]
+	);
+	const personsEmailFields = [
+		general.language === 'deutsch' ? 'Person Email' : 'Person email',
+		general.language === 'deutsch'
+			? 'Art der Person-Email '
+			: 'Type of person email',
+		general.language === 'deutsch'
+			? 'Notizen zur Person-Email'
+			: 'Notes about person email',
+	];
+
+	//  person phones
+
+	const personPhoneFieldsRef = useRef<React.RefObject<HTMLSelectElement>[]>(
+		[]
+	);
+	const personPhoneFields = [
+		general.language === 'deutsch'
+			? 'Person-Telefonnummer'
+			: 'Person phone number',
+		general.language === 'deutsch'
+			? 'Art der Person-Telefonnummer'
+			: 'Type of person phone number',
+		general.language === 'deutsch'
+			? 'Notizen zur Kunden-Telefonnummer'
+			: 'Notes about the customer phone number',
 	];
 
 	// addresses
-	const [addressTypeCol, setAddressTypeCol] = useState<string>('');
-	const [streetCol, setStreetCol] = useState<string>('');
-	const [cityCol, setCityCol] = useState<string>('');
-	const [countryCol, setCountryCol] = useState<string>('');
-	const [addressNotesCol, setAddressNotesCol] = useState<string>('');
-	const [zipCol, setZipCol] = useState<string>('');
-
-	const addressTypeRef = useRef<HTMLSelectElement>(null);
-	const streetRef = useRef<HTMLSelectElement>(null);
-	const zipRef = useRef<HTMLSelectElement>(null);
-	const cityRef = useRef<HTMLSelectElement>(null);
-	const countryRef = useRef<HTMLSelectElement>(null);
-	const addressNotesRef = useRef<HTMLSelectElement>(null);
-	const addressesFieldsRef = useRef<React.RefObject<HTMLSelectElement>[]>([
-		addressTypeRef,
-		streetRef,
-		zipRef,
-		cityRef,
-		countryRef,
-		addressNotesRef,
-	]);
+	const addressesFieldsRef = useRef<React.RefObject<HTMLSelectElement>[]>([]);
 	const addressFields = [
 		general.language === 'deutsch' ? 'Art der Adresse' : 'Type of Address',
 		general.language === 'deutsch' ? 'Straße' : 'Street',
@@ -211,34 +142,16 @@ export function CustomerSorter({
 			? 'Notizen zur Adresse'
 			: 'Notes about address',
 	];
-	const addressKeys = [
-		'addressTypeRef',
-		'streetRef',
-		'zipRef',
-		'cityRef',
-		'countryRef',
-		'addressNotesRef',
+	const addressesFieldKeys = [
+		'type',
+		'street',
+		'zip',
+		'city',
+		'country',
+		'notes',
 	];
-
 	// banks
-	const [ibanCol, setIbanCol] = useState<string>('');
-	const [bankNameCol, setBankNameCol] = useState<string>('');
-	const [bicCol, setBicCol] = useState<string>('');
-	const [bankCodeCol, setBankCodeCol] = useState<string>('');
-	const [bankNotesCol, setBankNotesCol] = useState<string>('');
-
-	const ibanRef = useRef<HTMLSelectElement>(null);
-	const bankNameRef = useRef<HTMLSelectElement>(null);
-	const bicRef = useRef<HTMLSelectElement>(null);
-	const bankCodeRef = useRef<HTMLSelectElement>(null);
-	const bankNotesRef = useRef<HTMLSelectElement>(null);
-	const banksFieldsRef = useRef<React.RefObject<HTMLSelectElement>[]>([
-		bankNameRef,
-		ibanRef,
-		bicRef,
-		bankCodeRef,
-		bankNotesRef,
-	]);
+	const banksFieldsRef = useRef<React.RefObject<HTMLSelectElement>[]>([]);
 	const bankFields = [
 		general.language === 'deutsch' ? 'Name der Bank' : 'Name of Bank',
 		general.language === 'deutsch' ? 'IBAN' : 'IBAN',
@@ -248,37 +161,10 @@ export function CustomerSorter({
 			? 'Notizen zur Bank'
 			: 'Notes about the Bank',
 	];
-	const banksKeys = [
-		'bankNameRef',
-		'ibanRef',
-		'bicRef',
-		'bankCodeRef',
-		'bankNotesRef',
-	];
+	const bankFieldKeys = ['name', 'iban', 'bic', 'code', 'notes'];
 
 	// company
-	const [companyNameCol, setCompanyNameCol] = useState<string>('');
-	const [companyAliasCol, setCompanyAliasCol] = useState<string>('');
-	const [companyNotesCol, setCompanyNotesCol] = useState<string>('');
-	const [taxIDCol, setTaxIDCol] = useState<string>('');
-	const [taxNumberCol, setTaxNumberCol] = useState<string>('');
-	const [ustidCol, setUstidCol] = useState<string>('');
-
-	const companyNameRef = useRef<HTMLSelectElement>(null);
-	const companyAliasRef = useRef<HTMLSelectElement>(null);
-	const companyNotesRef = useRef<HTMLSelectElement>(null);
-	// company>tax
-	const taxIDRef = useRef<HTMLSelectElement>(null);
-	const taxNumberRef = useRef<HTMLSelectElement>(null);
-	const ustidRef = useRef<HTMLSelectElement>(null);
-	const companyFieldsRefs = useRef<React.RefObject<HTMLSelectElement>[]>([
-		companyNameRef,
-		companyAliasRef,
-		companyNotesRef,
-		taxIDRef,
-		taxNumberRef,
-		ustidRef,
-	]);
+	const companyFieldsRefs = useRef<React.RefObject<HTMLSelectElement>[]>([]);
 	const companyFields = [
 		general.language === 'deutsch' ? 'Firmenname' : 'Company name',
 		general.language === 'deutsch' ? 'Firmenalias' : 'Alias of the company',
@@ -289,411 +175,220 @@ export function CustomerSorter({
 		general.language === 'deutsch' ? 'Steuernummer' : 'Tax number',
 		general.language === 'deutsch' ? 'UstID' : 'UstID',
 	];
-	const companyKeys = [
-		'companyNameRef',
-		'companyAliasRef',
-		'companyNotesRef',
-		'taxIDRef',
-		'taxNumberRef',
-		'ustidRef',
+	const companyFieldKeys = [
+		'name',
+		'alias',
+		'notes',
+		'taxID',
+		'taxNumber',
+		'ustID',
+	];
+	const groups = [
+		{
+			head: general.language === 'deutsch' ? 'Kunde' : 'Customer',
+			mapKey: 'customers',
+			underlings: [
+				{
+					name: general.language === 'deutsch' ? 'Kunde' : 'Customer',
+					fields: customerFields,
+					refGroup: customerFieldsRefs,
+					fieldKeys: customerFieldKeys,
+				},
+				{
+					name:
+						general.language === 'deutsch'
+							? 'Kunden Email'
+							: 'Customer email',
+					mapKey: 'emails',
+					fields: customersEmailFields,
+					refGroup: customersEmailFieldsRefs,
+					fieldKeys: emailFieldKeys,
+				},
+				{
+					name:
+						general.language === 'deutsch'
+							? 'Kunden Telefon'
+							: 'Customer Phone',
+					mapKey: 'phones',
+					fields: customerPhoneFields,
+					refGroup: customerPhoneFieldsRef,
+					fieldKeys: phoneFieldKeys,
+				},
+			],
+		},
+		{
+			head: general.language === 'deutsch' ? 'Person' : 'Person',
+			mapKey: 'persons',
+			underlings: [
+				{
+					name:
+						general.language === 'deutsch'
+							? 'Zur Person'
+							: 'About the Person',
+					fields: personFields,
+					refGroup: personFieldsRefs,
+					fieldKeys: personFieldKeys,
+				},
+				{
+					name:
+						general.language === 'deutsch'
+							? 'Person Email'
+							: 'Person email',
+					mapKey: 'emails',
+					fields: personsEmailFields,
+					refGroup: personsEmailFieldsRefs,
+					fieldKeys: emailFieldKeys,
+				},
+				{
+					name:
+						general.language === 'deutsch'
+							? 'Person Telefon'
+							: 'Person phone',
+					mapKey: 'phones',
+					fields: personPhoneFields,
+					refGroup: personPhoneFieldsRef,
+					fieldKeys: phoneFieldKeys,
+				},
+			],
+		},
+		{
+			head: general.language === 'deutsch' ? 'Unternehmen' : 'Company',
+			mapKey: 'company',
+			underlings: [
+				{
+					name: general.language === 'deutsch' ? 'Firma' : 'Company',
+					fields: companyFields,
+					refGroup: companyFieldsRefs,
+					fieldKeys: companyFieldKeys,
+				},
+			],
+		},
+		{
+			head: general.language === 'deutsch' ? 'Postanschrift' : 'Address',
+			mapKey: 'addresses',
+			underlings: [
+				{
+					name: general.language === 'deutsch' ? 'Adresse' : 'Address',
+					fields: addressFields,
+					refGroup: addressesFieldsRef,
+					fieldKeys: addressesFieldKeys,
+				},
+			],
+		},
+		{
+			head: general.language === 'deutsch' ? 'Bank' : 'Bank',
+			mapKey: 'banks',
+			underlings: [
+				{
+					name: general.language === 'deutsch' ? 'Bank' : 'Bank',
+					fields: bankFields,
+					refGroup: banksFieldsRef,
+					fieldKeys: bankFieldKeys,
+				},
+			],
+		},
 	];
 
-	const inputHandler = (name: string) => {
-		switch (name) {
-			case 'idRef':
-				setIdCol(idRef.current?.value ?? '');
-				break;
-			case 'altIDRef':
-				setAltIDCol(altIDRef.current?.value ?? '');
-				break;
-			case 'descriptionRef':
-				setDescriptionCol(descriptionRef.current?.value ?? '');
-				break;
-			case 'firstContactRef':
-				setFirstContactCol(firstContactRef.current?.value ?? '');
-				break;
-			case 'latestContactRef':
-				setLatestContactCol(latestContactRef.current?.value ?? '');
-				break;
-			case 'notesRef':
-				setNotesCol(notesRef.current?.value ?? '');
-				break;
-			case 'websiteRef':
-				setWebsiteCol(websiteRef.current?.value ?? '');
-				break;
-			case 'titleRef':
-				setTitleCol(titleRef.current?.value ?? '');
-				break;
-			case 'firstNameRef':
-				setFirstNameCol(firstNameRef.current?.value ?? '');
-				break;
-			case 'personAliasRef':
-				setPersonAliasCol(personAliasRef.current?.value ?? '');
-				break;
-			case 'lastNameRef':
-				setLastNameCol(lastNameRef.current?.value ?? '');
-				break;
-			case 'personEmailRef':
-				setPersonEmailCol(personEmailRef.current?.value ?? '');
-				break;
-			case 'personPhoneRef':
-				setPersonPhoneCol(personPhoneRef.current?.value ?? '');
-				break;
-			case 'personNotesRef':
-				setPersonNotesCol(personNotesRef.current?.value ?? '');
-				break;
-			case 'addressTypeRef':
-				setAddressTypeCol(addressTypeRef.current?.value ?? '');
-				break;
-			case 'streetRef':
-				setStreetCol(streetRef.current?.value ?? '');
-				break;
-			case 'zipRef':
-				setZipCol(zipRef.current?.value ?? '');
-				break;
-			case 'cityRef':
-				setCityCol(cityRef.current?.value ?? '');
-				break;
-			case 'countryRef':
-				setCountryCol(countryRef.current?.value ?? '');
-				break;
-			case 'addressNotesRef':
-				setAddressNotesCol(addressNotesRef.current?.value ?? '');
-				break;
-			case 'bankNameRef':
-				setBankNameCol(bankNameRef.current?.value ?? '');
-				break;
-			case 'ibanRef':
-				setIbanCol(ibanRef.current?.value ?? '');
-				break;
-			case 'bicRef':
-				setBicCol(bicRef.current?.value ?? '');
-				break;
-			case 'bankCodeRef':
-				setBankCodeCol(bankCodeRef.current?.value ?? '');
-				break;
-			case 'bankNotesRef':
-				setBankNotesCol(bankNotesRef.current?.value ?? '');
-				break;
-			case 'companyNameRef':
-				setCompanyNameCol(companyNameRef.current?.value ?? '');
-				break;
-			case 'companyAliasRef':
-				setCompanyAliasCol(companyAliasRef.current?.value ?? '');
-				break;
-			case 'companyNotesRef':
-				setCompanyNotesCol(companyNotesRef.current?.value ?? '');
-				break;
-			case 'taxIDRef':
-				setTaxIDCol(taxIDRef.current?.value ?? '');
-				break;
-			case 'taxNumberRef':
-				setTaxNumberCol(taxNumberRef.current?.value ?? '');
-				break;
-			case 'ustidRef':
-				setUstidCol(ustidRef.current?.value ?? '');
-				break;
-			case 'customersEmailRef':
-				setCustomersEmailCol(customersEmailRef.current?.value ?? '');
-				break;
-			case 'customersEmailTypeRef':
-				setCustomersEmailTypeCol(
-					customersEmailTypeRef.current?.value ?? ''
+	useEffect(() => {
+		console.log(sortingMap);
+		hook.setMap(sortingMap);
+	}, [sortingMap]);
+
+	const inputHandler = (group, subject, index: number) => {
+		let currentMap = sortingMap;
+		if (subject.mapKey !== undefined) {
+			if (currentMap[group.mapKey][subject.mapKey] === undefined) {
+				Object.defineProperty(
+					currentMap[group.mapKey],
+					subject.mapKey,
+					{
+						configurable: true,
+						enumerable: true,
+						writable: true,
+						value: {},
+					}
 				);
-				break;
-			case 'customersEmailNotesRef':
-				setCustomersEmailNotesCol(
-					customersEmailNotesRef.current?.value ?? ''
-				);
-				break;
-			case 'customerPhoneRef':
-				setCustomerPhoneCol(customerPhoneRef.current?.value ?? '');
-				break;
-			case 'customerPhoneTypeRef':
-				setCustomerPhoneTypeCol(customerPhoneTypeRef.current?.value ?? '');
-				break;
-			case 'customerPhoneNotesRef':
-				setCustomerPhoneNotesCol(
-					customerPhoneNotesRef.current?.value ?? ''
-				);
-				break;
-			default:
-				break;
+			}
+			Object.defineProperty(
+				currentMap[group.mapKey][subject.mapKey],
+				subject.fieldKeys[index],
+				{
+					configurable: true,
+					enumerable: true,
+					writable: true,
+					value:
+						subject.refGroup.current[index].current?.value ?? undefined,
+				}
+			);
+		} else {
+			Object.defineProperty(
+				currentMap[group.mapKey],
+				subject.fieldKeys[index],
+				{
+					enumerable: true,
+					configurable: true,
+					writable: true,
+					value:
+						subject.refGroup.current[index].current?.value ?? undefined,
+				}
+			);
 		}
+		setSortingMap(currentMap);
 	};
 
-	useEffect(() => {
-		const map: CustomerSortingMap = {
-			row: 'row',
-			customers: {
-				id: idCol,
-				altIDs: altIDCol,
-				description: descriptionCol,
-				emails: {
-					email: customersEmailCol,
-					notes: customersEmailNotesCol,
-					type: customersEmailTypeCol,
-				},
-				firstContact: firstContactCol,
-				latestContact: latestContactCol,
-				notes: customersEmailNotesCol,
-				phones: {
-					notes: customerPhoneNotesCol,
-					phone: customerPhoneCol,
-					type: customerPhoneTypeCol,
-				},
-				website: websiteCol,
-			},
-			addresses: {
-				type: addressTypeCol,
-				street: streetCol,
-				zip: zipCol,
-				city: cityCol,
-				country: countryCol,
-				notes: addressNotesCol,
-			},
-			banks: {
-				bic: bicCol,
-				code: bankCodeCol,
-				iban: ibanCol,
-				name: bankNameCol,
-				notes: bankNotesCol,
-			},
-			company: {
-				alias: companyAliasCol,
-				name: companyNameCol,
-				notes: companyNotesCol,
-				taxID: taxIDCol,
-				taxNumber: taxNumberCol,
-				ustID: ustidCol,
-			},
-		};
-
-		hook.setMap(map);
-	}, [
-		idCol,
-		altIDCol,
-		descriptionCol,
-		firstContactCol,
-		latestContactCol,
-		notesCol,
-		websiteCol,
-		titleCol,
-		firstNameCol,
-		personAliasCol,
-		lastNameCol,
-		personEmailCol,
-		personPhoneCol,
-		personNotesCol,
-		addressTypeCol,
-		streetCol,
-		zipCol,
-		cityCol,
-		countryCol,
-		addressNotesCol,
-		bankNameCol,
-		ibanCol,
-		bicCol,
-		bankCodeCol,
-		bankNotesCol,
-		companyNameCol,
-		companyAliasCol,
-		companyNotesCol,
-		taxIDCol,
-		taxNumberCol,
-		ustidCol,
-		customersEmailCol,
-		customersEmailTypeCol,
-		customersEmailNotesCol,
-		customerPhoneCol,
-		customerPhoneTypeCol,
-		customerPhoneNotesCol,
-	]);
 	return (
 		<>
 			<div className="customerOptions">
-				<h2>{general.language === 'deutsch' ? 'Kunde' : 'Customer'}</h2>
-				<p>{general.language === 'deutsch' ? 'Kunde' : 'Customer'}</p>
-				<div className="dataRowWrapper">
-					{customerFields.map((item, index) => {
-						return (
-							<>
-								<div
-									className="dataRow"
-									key={`customer-data-row-${index}:${item}`}>
-									<ColumnSetter
-										ref={customerFieldsRefs[index]}
-										props={{
-											columns: columns,
-											name: item,
-											onInput: () => {
-												inputHandler(customerKeys[index]);
-											},
-										}}
-									/>
-								</div>
-							</>
-						);
-					})}
-				</div>
-				<p>
-					{general.language === 'deutsch'
-						? 'Kunden Email'
-						: 'Customer email'}
-				</p>
-				<div className="dataRowWrapper">
-					{customersEmailFields.map((item, index) => {
-						return (
-							<>
-								<div
-									className="dataRow"
-									key={`customer-data-row-${index}:${item}`}>
-									<ColumnSetter
-										ref={customersEmailFieldsRefs[index]}
-										props={{
-											columns: columns,
-											name: item,
-											onInput: () => {
-												inputHandler(customersEmailKeys[index]);
-											},
-										}}
-									/>
-								</div>
-							</>
-						);
-					})}
-				</div>
-				<p>
-					{general.language === 'deutsch'
-						? 'Kunden Telefon'
-						: 'Customer Phone'}
-				</p>
-				<div className="dataRowWrapper">
-					{customerPhoneFields.map((item, index) => {
-						return (
-							<>
-								<div
-									className="dataRow"
-									key={`customer-data-row-${index}:${item}`}>
-									<ColumnSetter
-										ref={customerPhoneFieldsRef[index]}
-										props={{
-											columns: columns,
-											name: item,
-											onInput: () => {
-												inputHandler(customerPhoneKeys[index]);
-											},
-										}}
-									/>
-								</div>
-							</>
-						);
-					})}
-				</div>
-				<h2>{general.language === 'deutsch' ? 'Person' : 'Person'}</h2>
-				<p>
-					{general.language === 'deutsch'
-						? 'Zur Person'
-						: 'About the Person'}
-				</p>
-				<div className="dataRowWrapper">
-					{personFields.map((item, index) => {
-						return (
-							<>
-								<div
-									className="dataRow"
-									key={`customer-data-row-${index}:${item}`}>
-									<ColumnSetter
-										ref={personFieldsRefs[index]}
-										props={{
-											columns: columns,
-											name: item,
-											onInput: () => {
-												inputHandler(personKeys[index]);
-											},
-										}}
-									/>
-								</div>
-							</>
-						);
-					})}
-				</div>
-				<h2>
-					{general.language === 'deutsch' ? 'Postanschrift' : 'Address'}
-				</h2>
-				<p>{general.language === 'deutsch' ? 'Adresse' : 'Address'}</p>
-				<div className="dataRowWrapper">
-					{addressFields.map((item, index) => {
-						return (
-							<>
-								<div
-									className="dataRow"
-									key={`customer-data-row-${index}:${item}`}>
-									<ColumnSetter
-										ref={addressesFieldsRef[index]}
-										props={{
-											columns: columns,
-											name: item,
-											onInput: () => {
-												inputHandler(addressKeys[index]);
-											},
-										}}
-									/>
-								</div>
-							</>
-						);
-					})}
-				</div>
-				<h2>{general.language === 'deutsch' ? 'Bank' : 'Bank'}</h2>
-				<p>{general.language === 'deutsch' ? 'Bank' : 'Bank'}</p>
-				<div className="dataRowWrapper">
-					{bankFields.map((item, index) => {
-						return (
-							<>
-								<div
-									className="dataRow"
-									key={`customer-data-row-${index}:${item}`}>
-									<ColumnSetter
-										ref={banksFieldsRef[index]}
-										props={{
-											columns: columns,
-											name: item,
-											onInput: () => {
-												inputHandler(banksKeys[index]);
-											},
-										}}
-									/>
-								</div>
-							</>
-						);
-					})}
-				</div>
-				<h2>
-					{general.language === 'deutsch' ? 'Unternehmen' : 'Company'}
-				</h2>
-				<p>{general.language === 'deutsch' ? 'Firma' : 'Company'}</p>
-				<div className="dataRowWrapper">
-					{companyFields.map((item, index) => {
-						return (
-							<>
-								<div
-									className="dataRow"
-									key={`customer-data-row-${index}:${item}`}>
-									<ColumnSetter
-										ref={companyFieldsRefs[index]}
-										props={{
-											columns: columns,
-											name: item,
-											onInput: () => {
-												inputHandler(companyKeys[index]);
-											},
-										}}
-									/>
-								</div>
-							</>
-						);
-					})}
-				</div>
+				{groups.map((group) => {
+					return (
+						<>
+							<h2 key={group.head + 'h2'}>{group.head}</h2>
+							{group.underlings.map((subject) => {
+								return (
+									<>
+										<p key={group.head + subject.name + 'p'}>
+											{subject.name}
+										</p>
+										<div
+											className="dataRowWrapper"
+											key={group.head + subject.name + 'div'}>
+											{subject.fields.map((field, index) => {
+												const fieldRef =
+													useRef<HTMLSelectElement>(null);
+												subject.refGroup.current[index] = fieldRef;
+												return (
+													<>
+														<div
+															className="dataRowWrapper"
+															key={
+																group.head +
+																subject.name +
+																field +
+																'div'
+															}>
+															<ColumnSetter
+																columns={columns}
+																name={field}
+																onInput={() => {
+																	inputHandler(
+																		group,
+																		subject,
+																		index
+																	);
+																}}
+																ref={fieldRef}
+															/>
+														</div>
+													</>
+												);
+											})}
+										</div>
+									</>
+								);
+							})}
+						</>
+					);
+				})}
 			</div>
 		</>
 	);

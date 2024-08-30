@@ -261,23 +261,25 @@ li {
 .customerOptions {
 	display: grid;
 	grid-template-areas:
-		"a a a"
 		/* customer */
-		"b c c"
-		"d e e"
-		"f g g"
-		"h h h"
+		"ha ha ha"
+		"a aa aa"
+		"b bb bb"
+		"c cc cc"
 		/* person */
-		"i j j"
-		"k k k"
+		"hb hb hb"
+		"d dd dd"
+		"e ee ee"
+		"f ff ff"
 		/* address */
-		"l m m"
-		"n n n"
+		"hc hc hc"
+		"g gg gg"
 		/* bank */
-		"o p p"
-		"q q q"
+		"hd hd hd"
+		"h hh hh"
 		/* company */
-		"r s s"
+		"he he he"
+		"i ii ii"
 
 
 
@@ -307,79 +309,97 @@ li {
 	}
 
 	&>h2:nth-of-type(1) {
-		grid-area: a;
+		grid-area: ha;
 	}
 
 	&>h2:nth-of-type(2) {
-		grid-area: h;
+		grid-area: hb;
 	}
 
 	&>h2:nth-of-type(3) {
-		grid-area: k;
+		grid-area: hc;
 	}
 
 	&>h2:nth-of-type(4) {
-		grid-area: n;
+		grid-area: hd;
 	}
 
 	&>h2:nth-of-type(5) {
-		grid-area: q;
+		grid-area: he;
 	}
 
+	/***************************/
 	&>p:nth-of-type(1) {
-		grid-area: b;
+		grid-area: a;
 	}
 
 	&>p:nth-of-type(2) {
-		grid-area: d;
+		grid-area: b;
 	}
 
 	&>p:nth-of-type(3) {
-		grid-area: f;
-	}
-
-	&>p:nth-of-type(4) {
-		grid-area: i;
-	}
-
-	&>p:nth-of-type(5) {
-		grid-area: l;
-	}
-
-	&>p:nth-of-type(6) {
-		grid-area: o;
-	}
-
-	&>p:nth-of-type(7) {
-		grid-area: r;
-	}
-
-	&>.dataRowWrapper:nth-of-type(1) {
 		grid-area: c;
 	}
 
-	&>.dataRowWrapper:nth-of-type(2) {
+	&>p:nth-of-type(4) {
+		grid-area: d;
+	}
+
+	&>p:nth-of-type(5) {
 		grid-area: e;
 	}
 
-	&>.dataRowWrapper:nth-of-type(3) {
+	&>p:nth-of-type(6) {
+		grid-area: f;
+	}
+
+	&>p:nth-of-type(7) {
 		grid-area: g;
 	}
 
+	&>p:nth-of-type(8) {
+		grid-area: h;
+	}
+
+	&>p:nth-of-type(9) {
+		grid-area: i;
+	}
+
+	/***************************/
+	&>.dataRowWrapper:nth-of-type(1) {
+		grid-area: aa;
+	}
+
+	&>.dataRowWrapper:nth-of-type(2) {
+		grid-area: bb;
+	}
+
+	&>.dataRowWrapper:nth-of-type(3) {
+		grid-area: cc;
+	}
+
 	&>.dataRowWrapper:nth-of-type(4) {
-		grid-area: j;
+		grid-area: dd;
 	}
 
 	&>.dataRowWrapper:nth-of-type(5) {
-		grid-area: m;
+		grid-area: ee;
 	}
 
 	&>.dataRowWrapper:nth-of-type(6) {
-		grid-area: p;
+		grid-area: ff;
 	}
 
 	&>.dataRowWrapper:nth-of-type(7) {
-		grid-area: s;
+		grid-area: gg;
+	}
+
+	&>.dataRowWrapper:nth-of-type(8) {
+		grid-area: hh;
+	}
+
+	&>.dataRowWrapper:nth-of-type(9) {
+		grid-area: ii;
 	}
 }
 

@@ -1,10 +1,6 @@
 import type { TablePages } from '../pages';
 import type { CustomerSortingMap } from '../../database/CustomerTypes';
 
-export interface ArticleSortingMap {
-	articleID: string;
-}
-
 export interface ImportModuleProps {
 	mode: TablePages;
 	columns: string[];

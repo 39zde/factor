@@ -26,6 +26,8 @@ export interface Customer {
 	created: Date;
 	/** Anything to remember about the customer */
 	notes?: string[];
+	/** Website */
+	website?: string;
 }
 
 /** Dereferenced Version of Customer. This is what will be posted to main tread */
@@ -46,24 +48,50 @@ export interface CustomerRow {
 	notes?: string[];
 }
 
+export type CustomerBaseData = {
+	persons: DerefPersonType[];
+	addresses: AddressType[];
+	company: CompanyType[];
+	banks: BankType[];
+}
+
 /** customer_db>persons oStore item */
 export interface PersonType {
 	row: number;
 	/** title */
-	title: TitleType;
+	title?: TitleType;
 	/** first Name (including middle Names) */
-	firstName: string;
+	firstName?: string;
 	/** any last Names */
-	lastName: string;
+	lastName?: string;
 	/** (optional) */
 	alias?: string[];
 	/** Reference numbers  to associated email addresses */
-	email?: number[];
+	emails?: ArrayBuffer;
 	/**  Reference numbers associated phone information */
-	phone?: number[] | null | undefined;
+	phones?: ArrayBuffer;
 	/** (optional) notes on that person */
 	notes?: string[];
 }
+
+export interface DerefPersonType {
+	row: number;
+	/** title */
+	title?: TitleType;
+	/** first Name (including middle Names) */
+	firstName?: string;
+	/** any last Names */
+	lastName?: string;
+	/** (optional) */
+	alias?: string[];
+	/** Reference numbers  to associated email addresses */
+	emails?: EmailType[];
+	/**  Reference numbers associated phone information */
+	phones?: PhoneNumberType[];
+	/** (optional) notes on that person */
+	notes?: string[];
+}
+
 
 /** customer_db>emails oStore item */
 export interface EmailType {
@@ -97,7 +125,7 @@ export interface AddressType {
 	/** postal code */
 	zip: string;
 	/** country or country code */
-	country: string;
+	country?: string;
 	/** (optional) additional notes */
 	notes?: string[];
 	/** hash of the fields street, city and zip. joined with "" */
@@ -154,68 +182,83 @@ export type ContactType =
 	| 'delivery'
 	| '';
 
+
 export interface CustomerSortingMap {
 	row: 'row';
-	customers: {
-		id: string;
-		altIDs?: string;
-		description?: string;
-		firstContact?: string;
-		latestContact?: string;
-		notes?: string;
-		website?: string;
-		emails?: {
-			type?: string;
-			email?: string;
-			notes?: string;
-		};
-		phones?: {
-			type?: string;
-			phone?: string;
-			notes?: string;
-		};
-	};
-	persons?: {
-		title?: string;
-		firstName?: string;
-		personAlias?: string;
-		lastName?: string;
-		emails?: {
-			type?: string;
-			email?: string;
-			notes?: string;
-		};
-		phones?: {
-			type?: string;
-			email?: string;
-			notes?: string;
-		};
-		notes?: string;
-	};
-	addresses?: {
+	customers: CustomersMap;
+	persons: PersonsMap;
+	addresses: AddressesMap;
+	banks: BanksMap;
+	company:CompanyMap;
+}
+
+
+export type CustomerMapTypes = CustomersMap | PersonsMap | AddressesMap | BanksMap | CompanyMap
+
+export type CustomersMap =  {
+	id: string;
+	altIDs?: string;
+	description?: string;
+	firstContact?: string;
+	latestContact?: string;
+	notes?: string;
+	website?: string;
+	emails?: {
 		type?: string;
-		street?: string;
-		zip?: string;
-		city?: string;
-		country?: string;
+		email?: string;
 		notes?: string;
 	};
-	banks?: {
-		name?: string;
-		iban?: string;
-		bic?: string;
-		code?: string;
+	phones?: {
+		type?: string;
+		phone?: string;
 		notes?: string;
-	};
-	company?: {
-		name?: string;
-		alias?: string;
-		notes?: string;
-		taxID?: string;
-		taxNumber?: string;
-		ustID?: string;
 	};
 }
+
+export type PersonsMap  = {
+	title?: string;
+	firstName?: string;
+	personAlias?: string;
+	lastName?: string;
+	emails?: {
+		type?: string;
+		email?: string;
+		notes?: string;
+	};
+	phones?: {
+		type?: string;
+		phone?: string;
+		notes?: string;
+	};
+	notes?: string;
+}
+
+export type AddressesMap = {
+	type?: string;
+	street?: string;
+	zip?: string;
+	city?: string;
+	country?: string;
+	notes?: string;
+};
+
+export type BanksMap =  {
+	name?: string;
+	iban?: string;
+	bic?: string;
+	code?: string;
+	notes?: string;
+};
+
+export type CompanyMap =  {
+	name?: string;
+	alias?: string;
+	notes?: string;
+	taxID?: string;
+	taxNumber?: string;
+	ustID?: string;
+};
+
 
 export type CustomerSortingMapProps = keyof CustomerSortingMap;
 

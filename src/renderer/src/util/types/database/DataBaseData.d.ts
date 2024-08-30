@@ -2,6 +2,11 @@ export interface TableRow extends BaseRow {
 	row: number;
 }
 
+export interface UploadRow {
+	row: number;
+	[key: string]: string
+}
+
 export type BaseRow = {
 	[key: string]: number | Date | string | string[] | ArrayBuffer;
 };
@@ -26,6 +31,4 @@ export type CustomerReferences =
 	| 'company'
 	| 'persons'
 	| 'addresses'
-	| 'banks'
-	| 'emails'
-	| 'phones';
+	| 'banks';
