@@ -7,7 +7,8 @@ import {
 	readdirSync,
 	mkdirSync,
 } from 'fs';
-import { env } from 'process';
+import { userInfo } from 'os';
+import { env, platform } from 'process';
 import { electronApp, optimizer, is } from '@electron-toolkit/utils';
 import { AppSettingsType } from '../renderer/src/util/App';
 
@@ -140,13 +141,7 @@ app.setName('Factor');
 // code. You can also put them in separate files and require them here.
 
 function readSettings(): AppSettingsType | null {
-	let homeDir = resolve('$HOME');
-	if (env['HOME'] !== undefined) {
-		homeDir = resolve(env['HOME']);
-	}
-	if (env['HOMEPATH'] !== undefined) {
-		homeDir = resolve(env['HOMEPATH']);
-	}
+	let homeDir = getHomeDir();
 	const settingsFile = readFileSync(homeDir + '/.factor/settings.json', {
 		encoding: 'utf8',
 		flag: 'r',
@@ -159,13 +154,7 @@ function readSettings(): AppSettingsType | null {
 }
 
 function writeSettings(settings: AppSettingsType) {
-	let homeDir = resolve('$HOME');
-	if (env['HOME'] !== undefined) {
-		homeDir = resolve(env['HOME']);
-	}
-	if (env['HOMEPATH'] !== undefined) {
-		homeDir = resolve(env['HOMEPATH']);
-	}
+	let homeDir = getHomeDir();
 	writeFileSync(
 		homeDir + '/.factor/settings.json',
 		JSON.stringify(settings),
@@ -174,13 +163,8 @@ function writeSettings(settings: AppSettingsType) {
 }
 
 function initSettings() {
-	let homeDir = resolve('$HOME');
-	if (env['HOME'] !== undefined) {
-		homeDir = resolve(env['HOME']);
-	}
-	if (env['HOMEPATH'] !== undefined) {
-		homeDir = resolve(env['HOMEPATH']);
-	}
+	let homeDir = getHomeDir();
+
 	const homeDirContents = readdirSync(homeDir, 'utf8');
 	if (!homeDirContents.includes('.factor')) {
 		mkdirSync(homeDir + '/.factor');
@@ -192,4 +176,23 @@ function initSettings() {
 			homeDir + '/.factor/settings.json'
 		);
 	}
+}
+
+function getHomeDir(): string {
+	let homeDir = userInfo().homedir;
+	if (homeDir === undefined) {
+		if (env['HOME'] !== undefined) {
+			homeDir = resolve(env['HOME']);
+		} else if (env['HOMEPATH'] !== undefined) {
+			homeDir = resolve(env['HOMEPATH']);
+		} else {
+			if (platform === 'win32') {
+				homeDir = 'C:/Users/' + userInfo().username;
+			} else if (platform === 'linux') {
+				homeDir = '/home/' + userInfo().username;
+			}
+		}
+	}
+
+	return resolve(homeDir);
 }
