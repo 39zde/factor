@@ -333,7 +333,8 @@ function App(): JSX.Element {
 						if (item.name !== undefined && item.version !== undefined) {
 							if (
 								item.name === 'customer_db' ||
-								item.name === 'article_db'
+								item.name === 'article_db' ||
+								item.name === 'document_db'
 							) {
 								requests.push(
 									new Promise((resolve, reject) => {
@@ -362,9 +363,13 @@ function App(): JSX.Element {
 				.then((result) => {
 					for (const item of result) {
 						if (typeof item.db !== 'string') {
-							out.database.databases[item.dbName] = Array.from(
-								item.db.objectStoreNames
-							);
+							if(item.db.objectStoreNames.length !== 0){
+								out.database.databases[item.dbName] = Array.from(
+									item.db.objectStoreNames
+								);
+							}else{
+								out.database.databases[item.dbName] = null
+							}
 						} else {
 							out.database.databases[item.dbName] = null;
 						}
