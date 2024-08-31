@@ -1,15 +1,21 @@
 import React from 'react';
 import { useTableContext } from './Table';
-
+import { useAppContext } from '@renderer/App';
 /** mostly  a copy of table head without the ability to  resize */
 export function TableFoot(): React.JSX.Element {
 	const tableState = useTableContext();
-
+	const { appearances } = useAppContext();
 	return (
 		<>
-			<tfoot>
+			<tfoot
+				style={{
+					height: appearances.rowHeight,
+					maxHeight: appearances.rowHeight,
+					minHeight: appearances.rowHeight,
+				}}>
 				<tr
 					style={{
+						maxHeight: appearances.rowHeight,
 						height: '100%',
 						borderBottom: 'none',
 						borderLeft: 'none',
@@ -17,21 +23,28 @@ export function TableFoot(): React.JSX.Element {
 					}}>
 					{tableState.allColumns.map((item, index) => {
 						if (tableState.columns.includes(item)) {
-							if (item !== undefined) {
-								return (
-									<>
-										<th key={`tablefoot-${index}-${item}`}>
-											<span className="guts">{item}</span>
-										</th>
-									</>
-								);
-							} else {
-								return (
-									<th key={`tablefoot-${index}-`}>
-										<span className="guts"></span>
+							return (
+								<>
+									<th
+									style={{
+										maxHeight: appearances.rowHeight,
+									}}
+										key={`tfoot-${index}-${item}`}
+										ref={
+											index === 0
+												? tableState.footerRowFirstElementRef
+												: undefined
+										}>
+										<span className="guts">
+											{item !== undefined && index !== 0 ? (
+												<>{item}</>
+											) : (
+												<></>
+											)}
+										</span>
 									</th>
-								);
-							}
+								</>
+							);
 						}
 					})}
 				</tr>

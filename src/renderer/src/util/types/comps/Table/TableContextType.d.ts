@@ -25,6 +25,7 @@ export interface TableContextType {
 	accept: 'prev' | 'next';
 	lastReceived: number;
 	hasStarted: boolean;
+	footerRowFirstElementRef: React.RefObject<HTMLTableCellElement> |null;
 }
 
 export interface ResizeStyle {

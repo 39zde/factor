@@ -10,7 +10,6 @@
  }
 
  .tableWrapper:focus {
- 	border: none;
  	outline: none;
  	overflow: hidden;
  }
@@ -30,76 +29,123 @@
  	}
  }
 
+
  table,
  thead,
  th,
  tr,
  td {
  	table-layout: auto;
- 	border-collapse: collapse;
- 	border-color: light-dark(var(--color-dark-3-t), var(--color-dark-3));
- 	border-width: 1px;
- 	border-style: solid;
  	font-family: Consolas, 'Cascadia Code', 'Courier New', Courier, monospace;
  	font-size: small;
  	margin: 0;
  	overflow: hidden;
  	padding: 0;
  	box-sizing: border-box;
+ 	border-collapse: collapse;
+
 
  	&>* {
  		box-sizing: content-box;
  	}
  }
 
- table {
- 	border-radius: 16px 16px 0 0;
- 	border-style: solid;
- 	border-width: 0px;
- }
-
- thead {
- 	border-bottom-style: solid;
- 	border-bottom-width: 3px;
- 	background: light-dark(var(--color-light-2), var(--color-dark-2));
- 	box-sizing: content-box;
- }
-
- tfoot {
- 	border-top-width: 2px;
- 	border-top-style: solid;
- 	background: light-dark(var(--color-light-2), var(--color-dark-2));
- }
-
- tfoot>tr>th {
- 	border-bottom: none;
- }
 
  thead,
- tfoot {
+ tfoot,
+ table {
+ 	background: none;
+ 	box-sizing: content-box;
+ 	border: none;
+ }
 
- 	&>tr>th:first-child,
- 	td:first-child {
- 		&>* {
- 			display: none;
+ thead>tr {
+ 	border-color: light-dark(var(--color-dark-3-t), var(--color-dark-3));
+ 	border-width: 0 0 3px 0;
+ 	border-style: solid;
+ 	background: none;
+
+ 	&>th {
+ 		background: light-dark(var(--color-light-2), var(--color-dark-2));
+ 		padding: 1px 5px;
+ 		resize: horizontal;
+ 		overflow: visible;
+ 		position: relative;
+ 		text-align: left;
+
+ 		&:not(:first-of-type) {
+ 			border-color: light-dark(var(--color-dark-3-t), var(--color-dark-3));
+ 			border-style: solid;
+ 			border-width: 1px 1px 0 1px;
+ 		}
+
+ 		&:nth-of-type(2) {
+ 			border-left: 0;
+ 		}
+
+ 		&:first-of-type {
+ 			padding: 0;
+ 			border-radius: 16px 0 0 0;
  		}
  	}
  }
 
- tbody>tr>td:first-child {
- 	background: light-dark(var(--color-light-2), var(--color-dark-2));
+ tfoot>tr {
+ 	border-color: light-dark(var(--color-dark-3-t), var(--color-dark-3));
+ 	border-width: 3px 0 0 0;
+ 	border-style: solid;
 
- 	&>span {
- 		display: flex;
- 		justify-content: center;
- 		align-items: center;
- 		text-align: center;
- 		width: 100%;
+ 	&>th {
+ 		background: light-dark(var(--color-light-2), var(--color-dark-2));
+ 		padding: 1px 5px;
+ 		resize: horizontal;
+ 		overflow: visible;
+ 		position: relative;
+ 		text-align: left;
+ 		border-width: 0 1px 0 1px;
+ 		border-color: light-dark(var(--color-dark-3-t), var(--color-dark-3));
+ 		border-style: solid;
+
+
+ 		&:first-of-type {
+ 			padding: 0;
+ 		}
  	}
+ }
+
+
+
+ tbody>tr {
+
+
+ 	&>td {
+ 		border-width: 1px;
+ 		border-color: light-dark(var(--color-dark-3-t), var(--color-dark-3));
+ 		border-style: solid;
+
+ 		&:first-child {
+ 			background: light-dark(var(--color-light-2), var(--color-dark-2));
+
+ 			&>span {
+ 				display: flex;
+ 				justify-content: center;
+ 				align-items: center;
+ 				text-align: center;
+ 				width: 100%;
+ 			}
+
+ 		}
+ 	}
+	&:first-of-type{
+		&:first-child{
+			border-top: 0;
+		}
+	}
 
  }
 
- td {
+ td,
+ th {
  	text-overflow: clip;
  	line-break: strict;
  	white-space: break-spaces;
@@ -110,21 +156,6 @@
  	margin: 0;
  }
 
- th {
- 	padding: 1px 5px;
- 	resize: horizontal;
- 	overflow: visible;
- 	position: relative;
- 	text-align: left;
- }
-
- th>tr {
- 	overflow: visible;
-
- 	&>td {
- 		overflow: visible;
- 	}
- }
 
  .guts {
  	display: flex;
@@ -136,17 +167,9 @@
  	line-break: inherit;
  	white-space: inherit;
  	max-height: inherit;
- 	border: none;
  	margin: 0;
  	padding: 0;
  	box-sizing: content-box;
- }
-
- th>div {
- 	display: flex;
- 	justify-content: space-between;
- 	align-items: center;
- 	gap: 5px;
  }
 
  .resizeElement {
@@ -155,38 +178,41 @@
  	position: absolute;
  	width: 5px;
  	z-index: 2;
-	transition: all 100ms ease-in-out;
+ 	transition: all 100ms ease-in-out;
  }
 
- .tableBody {
- 	position: relative;
- 	overflow: visible;
- }
+
 
  .rowNavigator {
- 	position: absolute;
+ 	position: relative;
  	background: none;
  	border: none;
- 	border-radius: 0;
  	padding: 0;
  	margin: 0;
- 	left: 0;
  	display: flex;
  	justify-content: center;
  	align-items: center;
  	z-index: 2;
  	box-shadow: none;
+ 	height: 100%;
+ 	width: 100%;
  }
 
- .rowNavigator:first-of-type {
- 	border-radius: 16px 0 0 0;
- 	border-top: 1px solid light-dark(var(--color-dark-3-t), var(--color-dark-3));
- 	border-left: 1px solid light-dark(var(--color-dark-3-t), var(--color-dark-3));
- }
-
+ .rowNavigatorTop:hover,
  .rowNavigator:hover {
  	background: none;
  	box-shadow: none;
+ 	border: none;
+ 	transform: none;
+
+ }
+
+ .rowNavigatorTop {
+ 	border-radius: 16px 0 0 0;
+ 	outline-color: light-dark(var(--color-dark-3-t), var(--color-dark-3));
+ 	outline-style: solid;
+ 	outline-width: 1px;
+
  }
 
  .nestedCell {

@@ -403,6 +403,13 @@ export function Table({
 					name: 'colsRef',
 					newVal: cols.map(() => createRef<HTMLTableCellElement>()),
 				});
+				// create the ref for the first element of in tfoot>tr
+				// we need this for creating a portal from the table body
+				dispatch({
+					type: 'set',
+					name: "footerRowFirstElementRef",
+					newVal: createRef<HTMLTableCellElement>()
+				})
 				// also create the style for every resizeElement
 				dispatch({
 					type: 'set',
@@ -557,14 +564,14 @@ export function Table({
 			{
 				component: (
 					<>
-						<p aria-modal={'true'} className="menuRow">
-							{general.language === 'deutsch' ? 'Spalten' : 'Columns'}
+						<div aria-modal={'true'} className="menuRow">
+							<p>{general.language === 'deutsch' ? 'Spalten' : 'Columns'}</p>
 							<ChevronRight
 								size={solids.icon.size.small}
 								strokeWidth={solids.icon.strokeWidth.small}
 								color="light-dark(var(--color-dark-1),var(--color-light-1))"
 							/>
-						</p>
+						</div>
 					</>
 				),
 				subMenu: tableState.allColumns
@@ -572,7 +579,7 @@ export function Table({
 						return {
 							component: (
 								<>
-									<ColumnCheckBox index={index} columnName={item} />
+									<ColumnCheckBox key={`context-checkbox${index}`} index={index} columnName={item} />
 								</>
 							),
 						};

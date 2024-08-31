@@ -10,15 +10,17 @@ export function TableHead(): React.JSX.Element {
 
 	return (
 		<>
-			<thead>
+			<thead
+				style={{
+					height: appearances.rowHeight,
+					maxHeight: appearances.rowHeight,
+					minHeight: appearances.rowHeight,
+				}}>
 				<tr
 					style={{
 						height: appearances.rowHeight,
 						maxHeight: appearances.rowHeight,
 						minHeight: appearances.rowHeight,
-						borderTop: 'none',
-						borderLeft: 'none',
-						borderRight: 'none',
 					}}>
 					{tableState.allColumns.map((item, index) => {
 						if (tableState.columns.includes(item)) {
@@ -26,7 +28,9 @@ export function TableHead(): React.JSX.Element {
 								<>
 									<th
 										style={{
-											borderTop: 'none',
+											height: appearances.rowHeight,
+											maxHeight: appearances.rowHeight,
+											minHeight: appearances.rowHeight,
 											minWidth: tableState.columnWidths[index],
 											maxWidth: tableState.columnWidths[index],
 											width: tableState.columnWidths[index],
@@ -34,31 +38,39 @@ export function TableHead(): React.JSX.Element {
 										// @ts-expect-error we accept the ref might be null
 										ref={tableState.colsRef[index]}
 										key={`thead-tr-th${index}`}>
-										<span className="guts">{item}</span>
-										<ResizeElement
-											index={index}
-											onMouseEnter={() =>
-												dispatch({
-													type: 'mouseEnter',
-													newVal: index,
-												})
-											}
-											onMouseLeave={() => {
-												if (!tableState.isMouseDown) {
-													dispatch({
-														type: 'mouseLeave',
-														newVal: index,
-													});
-												}
-											}}
-											key={`rz-${index}`}
-											onMouseDown={() => {
-												dispatch({
-													type: 'mouseDown',
-													newVal: index,
-												});
-											}}
-										/>
+										<span className="guts">
+											{index !== 0 ? item : ''}
+										</span>
+										{index !== 0 ? (
+											<>
+												<ResizeElement
+													index={index}
+													onMouseEnter={() =>
+														dispatch({
+															type: 'mouseEnter',
+															newVal: index,
+														})
+													}
+													onMouseLeave={() => {
+														if (!tableState.isMouseDown) {
+															dispatch({
+																type: 'mouseLeave',
+																newVal: index,
+															});
+														}
+													}}
+													key={`rz-${index}`}
+													onMouseDown={() => {
+														dispatch({
+															type: 'mouseDown',
+															newVal: index,
+														});
+													}}
+												/>
+											</>
+										) : (
+											<></>
+										)}
 									</th>
 								</>
 							);
