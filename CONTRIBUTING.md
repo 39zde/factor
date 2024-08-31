@@ -92,3 +92,8 @@ Index Names have the following structure:
 ## Sample Data
 
  The Sample Data was generated with [fakery.dev](https://fakery.dev/). All Sample data is stored in [`./resources/data`](./resources/data)
+
+
+## Build
+
+To build follow the [official guide](https://www.electronjs.org/docs/latest/development/build-instructions-gn)

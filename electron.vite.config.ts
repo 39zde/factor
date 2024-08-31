@@ -14,6 +14,7 @@ export default defineConfig({
 		worker: {
 			format: 'es',
 		},
+		appType: "spa",
 		resolve: {
 			extensions: ['.tsx', '.ts', '.d.ts'],
 			alias: {
@@ -22,6 +23,6 @@ export default defineConfig({
 				'@comps': resolve('src/renderer/src/comps'),
 			},
 		},
-		plugins: [react(), mkcert()],
+		plugins: [react(), mkcert(), externalizeDepsPlugin()],
 	},
 });
