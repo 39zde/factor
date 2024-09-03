@@ -75,6 +75,9 @@ export type ArticleDBObjectStores = "articles" | "acquisitions";
 
 export type ArticleSortingMap = {
 	row: number;
-	
+	articles:{
+	},
+	discounts:{
 
+	}
 }

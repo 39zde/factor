@@ -13,20 +13,12 @@ export async function getHash(data: string): Promise<string> {
 	return await createHash(view.buffer);
 }
 
-export async function getAddressHash(
-	street: string,
-	zip: string,
-	city: string
-) {
+export async function getAddressHash(street: string | undefined, zip: string | undefined, city: string | undefined) {
 	// get clean Strings
-	let cStreet = street.replaceAll(/[\s]/gm, '');
-	let cZip = zip.replaceAll(/[\s]/gm, '');
-	let cCity = city.replaceAll(/[\s]/gm, '');
+	let cStreet = street === undefined ? '' : street.replaceAll(/[\s]/gm, '');
+	let cZip = zip === undefined ? '' : zip.replaceAll(/[\s]/gm, '');
+	let cCity = city === undefined ? '' : city.replaceAll(/[\s]/gm, '');
 
-	let bundle = [
-		cStreet.toLowerCase(),
-		cZip.toLowerCase(),
-		cCity.toLowerCase(),
-	];
+	let bundle = [cStreet.toLowerCase(), cZip.toLowerCase(), cCity.toLowerCase()];
 	return await getHash(bundle.join(''));
 }

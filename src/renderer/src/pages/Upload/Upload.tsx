@@ -10,6 +10,7 @@ import type {
 	CustomerSortingMap,
 	ArticleSortingMap,
 	UploadMode,
+	DocumentSortingMap,
 } from '@util/types/types';
 import { useAppContext, solids } from '@renderer/App';
 
@@ -27,7 +28,7 @@ export function Upload(): React.JSX.Element {
 	const tableImportModeInputRef = useRef<HTMLSelectElement>(null);
 	const tableWrapperRef = useRef<HTMLDivElement>(null);
 	const importButtonRef = useRef<HTMLButtonElement>(null);
-	const [map, setMap] = useState<CustomerSortingMap | ArticleSortingMap>({
+	const [map, setMap] = useState<CustomerSortingMap | ArticleSortingMap | DocumentSortingMap>({
 		row: 'row',
 		id: '',
 	});
@@ -106,15 +107,15 @@ export function Upload(): React.JSX.Element {
 	};
 
 	const importHandler = () => {
-		if(tableImportMode === "customers"){
+		if(tableImportMode === "customer_db"){
 			if(map["customers"]["id"] === undefined){
 				window.alert("Customers ID is a requirement")
 
 			}else{
 				worker.ImportWorker.postMessage({
 					type: 'sort',
-					message: map,
-					content: tableImportMode,
+					data: map,
+					targetDBName: tableImportMode,
 					dbVersion: database.dbVersion,
 					dataBaseName: 'factor_db',
 				});
@@ -123,8 +124,8 @@ export function Upload(): React.JSX.Element {
 
 			worker.ImportWorker.postMessage({
 				type: 'sort',
-				message: map,
-				content: tableImportMode,
+				data: map,
+				targetDBName: tableImportMode,
 				dbVersion: database.dbVersion,
 				dataBaseName: 'factor_db',
 			});
@@ -136,7 +137,7 @@ export function Upload(): React.JSX.Element {
 			switch (e.data.type) {
 				case 'progress':
 					if (importButtonRef.current !== null) {
-						importButtonRef.current.innerText = e.data.message;
+						importButtonRef.current.innerText = e.data.data;
 					}
 					break;
 				case 'success':
@@ -168,7 +169,7 @@ export function Upload(): React.JSX.Element {
 					break;
 				case 'error':
 				default:
-					window.alert('Import Error: \n' + e.data?.message);
+					window.alert('Import Error: \n' + e.data?.data);
 			}
 		}
 	};
@@ -178,15 +179,15 @@ export function Upload(): React.JSX.Element {
 		if (file !== undefined) {
 			worker.ImportWorker.postMessage({
 				type: 'import',
-				message: file,
+				data: file,
 				dbVersion: database.dbVersion,
 				dataBaseName: 'factor_db',
 			});
 		}
 		worker.ImportWorker.onmessage = (e) => {
 			if (e.data.type === 'imported') {
-				colsHook.setCols(e.data.message[1]);
-				entriesHook(e.data.message[0]);
+				colsHook.setCols(e.data.data[1]);
+				entriesHook(e.data.data[0]);
 
 				// sessionStorage.removeItem('fileUpload')
 				// sessionStorage.removeItem('fileName')
@@ -328,36 +329,22 @@ export function Upload(): React.JSX.Element {
 										ref={tableImportModeInputRef}
 										defaultValue={undefined}>
 										<option value={undefined}>-</option>
-										<option value="articles">
+										<option value="article_db">
 											{general.language == 'deutsch'
 												? 'Artikel'
 												: 'articles'}
 										</option>
-										<option value="customers">
+										<option value="customer_db">
 											{general.language == 'deutsch'
 												? 'Kunden'
 												: 'customers'}
 										</option>
-										<option value="quotes">
+										<option value="document_db">
 											{general.language == 'deutsch'
-												? 'Angebote'
-												: 'quotes'}
+												? 'Dokumente'
+												: 'Documents'}
 										</option>
-										<option value="invoices">
-											{general.language == 'deutsch'
-												? 'Rechnungen'
-												: 'invoices'}
-										</option>
-										<option value="deliveries">
-											{general.language == 'deutsch'
-												? 'Lieferscheine'
-												: 'deliveries'}
-										</option>
-										<option value="returnees">
-											{general.language == 'deutsch'
-												? 'Rückgaben'
-												: 'returned items'}
-										</option>
+
 									</select>
 								</li>
 								<li>

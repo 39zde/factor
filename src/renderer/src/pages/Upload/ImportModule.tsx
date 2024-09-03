@@ -9,17 +9,11 @@ export function ImportModule({
 	hook,
 }: ImportModuleProps): React.JSX.Element {
 	switch (mode) {
-		case 'customers':
+		case 'customer_db':
 			return <CustomerSorter columns={columns} hook={hook} />;
-		case 'articles':
+		case 'article_db':
 			return <></>;
-		case 'deliveries':
-			return <></>;
-		case 'invoices':
-			return <></>;
-		case 'quotes':
-			return <></>;
-		case 'returnees':
+		case 'document_db':
 			return <></>;
 		default:
 			return <></>;

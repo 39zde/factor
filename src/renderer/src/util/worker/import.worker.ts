@@ -1,7 +1,7 @@
+'use strict';
 // the use of import modules inside of workers
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import#browser_compatibility
 import type {
-	CustomerSortingMap,
 	PersonType,
 	EmailType,
 	PhoneNumberType,
@@ -9,13 +9,13 @@ import type {
 	BankType,
 	CompanyType,
 	Customer,
-	CustomerReferences,
 	AddDataArgs,
 	DateInput,
 	UploadRow,
 	DerefPersonType,
 	CustomerBaseData,
 	ArticleSortingMap,
+	CustomerSortingMap,
 	DocumentSortingMap,
 } from '../types/types';
 import { getAddressHash } from '../func/func';
@@ -26,75 +26,19 @@ self.onmessage = (e: MessageEvent): void => {
 	}
 	switch (e.data.type) {
 		case 'import':
-			const data = e.data.message;
-
-			if (typeof e.data.message !== 'string') {
+			if (typeof e.data.data !== 'string') {
 				return postMessage({
 					type: 'error',
-					message: 'invalid input: data is not of type string',
+					data: 'invalid input: data is not of type string',
 				});
 			}
-
-			let rows: string[] = data.split('\n');
-			const line: string = rows[0];
-			if (line.endsWith('\r')) {
-				rows = data.split('\r\n');
-			}
-			if (rows[rows.length - 1].length === 0) {
-				rows.pop();
-			}
-			const keys = getKeys(rows[0]);
-
-			const request = indexedDB.open(e.data.dataBaseName, e.data.dbVersion);
-
-			request.onsuccess = () => {
-				const db = request.result;
-				deleteData(db);
-				addData({ keys, rows, db });
-				const copy = [...keys];
-				copy.splice(0, 0, 'row');
-				return postMessage({
-					type: 'imported',
-					message: [rows.length, copy],
-				});
-			};
-			request.onerror = () => {
-				return postMessage({
-					type: 'error',
-					message: 'failed to open database',
-				});
-			};
-
-			request.onupgradeneeded = () => {
-				const db = request.result;
-				db.createObjectStore('data_upload', { keyPath: 'row' });
-			};
-
+			importData(e.data.dataBaseName, e.data.dbVersion, e.data.data);
 			break;
 		case 'align':
-			/**
-			 * {
-			 *  col: string; // column name
-			 *  value: string; // the value of the outlier
-			 *  offset: number; // the shift amount
-			 *  direction: "Left" | "Right"; // the direction to shift to
-			 * }
-			 */
-			const alignVariables = e.data.message;
-			let offset = alignVariables.offset;
-			if (alignVariables.direction === 'Left') {
-				offset = offset - 2 * offset;
-			}
-			alignData(
-				alignVariables.col,
-				alignVariables.value,
-				offset,
-				e.data.dataBaseName,
-				e.data.dbVersion
-			);
+			alignData(e.data.dataBaseName, e.data.dbVersion, e.data.data);
 			break;
 		case 'rankColsByCondition':
-			let condition = e.data.message.condition;
+			let condition = e.data.data.condition;
 			switch (condition) {
 				case 'empty text':
 					condition = '';
@@ -109,10 +53,10 @@ self.onmessage = (e: MessageEvent): void => {
 					condition = 0;
 					break;
 				case 'custom text':
-					condition = e.data.message.custom.string;
+					condition = e.data.data.custom.string;
 					break;
 				case 'custom number':
-					condition = e.data.message.custom.number;
+					condition = e.data.data.custom.number;
 					break;
 				default:
 					condition = '';
@@ -120,55 +64,18 @@ self.onmessage = (e: MessageEvent): void => {
 			rankColsByCondition(condition, e.data.dataBaseName, e.data.dbVersion);
 			break;
 		case 'deleteCol':
-			const colToBeDeleted: string = e.data.message;
-			deleteCol(colToBeDeleted);
+			deleteCol(e.data.data);
 			break;
 		case 'sort':
-			const mode: 'articles' | 'customers' | 'documents' = e.data.content;
-			switch (mode) {
-				case 'articles':
-					const articlesMap: ArticleSortingMap = e.data.message;
-					doArticles(articlesMap, e.data.dataBaseName, e.data.dbVersion);
-					break;
-				case 'customers':
-					const columnsMap: CustomerSortingMap = e.data.message;
-					doCustomers(columnsMap, e.data.dataBaseName, e.data.dbVersion);
-					break;
-				case 'documents':
-					const documentsMap: DocumentSortingMap = e.data.message;
-					doDocuments(documentsMap, e.data.dataBaseName, e.data.dbVersion);
-					break;
-				default:
-					postMessage({
-						type: 'error',
-						message: `unknown sorting mode ${mode}`,
-					});
-			}
+			sortData(e.data.dataBaseName, e.data.dbVersion, e.data.targetDBName, e.data.data);
 			break;
 		default:
 			return postMessage({
 				type: 'error',
-				message: `${e.data.type} is an invalid message type`,
+				data: `${e.data.type} is an invalid data type`,
 			});
 	}
 };
-
-// const customerTemplate: Customer = {
-// 	id: '',
-// 	row: 0,
-// 	addresses: undefined,
-// 	altIDs: undefined,
-// 	persons: undefined,
-// 	banks: undefined,
-// 	company: undefined,
-// 	emails: undefined,
-// 	phones: undefined,
-// 	description: undefined,
-// 	firstContact: undefined,
-// 	latestContact: undefined,
-// 	created: new Date(),
-// 	website: undefined,
-// };
 
 const templates = new Map([
 	[
@@ -253,11 +160,7 @@ function parseDate(input: string, type: DateInput): Date {
 			const arrayed = Array.from(input);
 			const year = arrayed.splice(0, 4);
 			const month = arrayed.splice(0, 2);
-			return new Date(
-				parseInt(year.join('')),
-				parseInt(month.join('')) - 1,
-				parseInt(arrayed.join(''))
-			);
+			return new Date(parseInt(year.join('')), parseInt(month.join('')) - 1, parseInt(arrayed.join('')));
 		case 'YYYY-MM-DD hh:mm:ss':
 			return new Date(input);
 		default:
@@ -273,7 +176,7 @@ const updateManager = (total: number) => {
 	function postUpdate(msg: string): void {
 		postMessage({
 			type: 'progress',
-			message: msg,
+			data: msg,
 		});
 	}
 
@@ -293,58 +196,129 @@ const updateManager = (total: number) => {
 	return update;
 };
 
-function getKeys(row: string) {
-	const keys = row.split(';');
-	return keys;
-}
-
-function addData({ keys, rows, db }: AddDataArgs) {
-	const transaction = db.transaction(['data_upload'], 'readwrite');
-	const objectStore = transaction.objectStore('data_upload');
-	let i = 1;
-	while (i < rows.length) {
-		const columns = rows[i].split(';');
-		const out = {};
-		out['row'] = i;
-		for (let j = 0; j < keys.length; j++) {
-			out[keys[j]] = columns[j];
-		}
-		objectStore.add(out);
-		i++;
+function importData(dataBaseName: string, dbVersion: number, data: string) {
+	function getKeys(row: string) {
+		const keys = row.split(';');
+		return keys;
 	}
-}
+	let rows: string[] = data.split('\n');
+	const line: string = rows[0];
+	if (line.endsWith('\r')) {
+		rows = data.split('\r\n');
+	}
+	if (rows[rows.length - 1].length === 0) {
+		rows.pop();
+	}
+	const keys = getKeys(rows[0]);
+	const request = indexedDB.open(dataBaseName, dbVersion);
 
-function deleteData(db: IDBDatabase) {
-	const transaction = db.transaction(['data_upload'], 'readwrite');
-	const objectStore = transaction.objectStore('data_upload');
-	objectStore.clear();
+	request.onsuccess = () => {
+		function deleteData(db: IDBDatabase) {
+			const transaction = db.transaction(['data_upload'], 'readwrite');
+			const objectStore = transaction.objectStore('data_upload');
+			objectStore.clear();
+		}
+		function addData({ keys, rows, db }: AddDataArgs) {
+			const transaction = db.transaction(['data_upload'], 'readwrite');
+			const objectStore = transaction.objectStore('data_upload');
+			let i = 1;
+			while (i < rows.length) {
+				const columns = rows[i].split(';');
+				const out = {};
+				out['row'] = i;
+				for (let j = 0; j < keys.length; j++) {
+					out[keys[j]] = columns[j];
+				}
+				objectStore.add(out);
+				i++;
+			}
+		}
+		const db = request.result;
+		deleteData(db);
+		addData({ keys, rows, db });
+		const copy = [...keys];
+		copy.splice(0, 0, 'row');
+		return postMessage({
+			type: 'imported',
+			data: [rows.length, copy],
+		});
+	};
+	request.onerror = () => {
+		return postMessage({
+			type: 'error',
+			data: 'failed to open database',
+		});
+	};
+
+	request.onupgradeneeded = () => {
+		const db = request.result;
+		db.createObjectStore('data_upload', { keyPath: 'row' });
+	};
 }
 
 function alignData(
-	col: string,
-	searchValue: string,
-	shiftAmount: number,
-	dbName: string,
-	dbVersion: number
+	dataBaseName: string,
+	dbVersion: number,
+	alignVariables: {
+		col: string; // column name
+		value: string; // the value of the outlier
+		offset: number; // the shift amount
+		direction: 'Left' | 'Right'; // the direction to shift to
+	}
 ) {
-	const request = indexedDB.open(dbName, dbVersion);
-	return (request.onsuccess = () => {
+	function performShift(to: number, item: object) {
+		const out = item;
+		const copy = structuredClone(item);
+		const keys = Object.keys(item);
+		if (to > 0) {
+			for (let i = 1; i < keys.length; i++) {
+				if (i <= Math.abs(to)) {
+					let filler: string | number = '';
+					if (typeof copy[keys[i]] === 'number') {
+						filler = 0;
+					}
+					out[keys[i]] = filler;
+				} else {
+					out[keys[i]] = out[keys[i - Math.abs(to)]];
+				}
+			}
+		} else if (to < 0) {
+			for (let i = 1; i < keys.length; i++) {
+				if (i < keys.length - Math.abs(to)) {
+					out[keys[i]] = out[keys[i + Math.abs(to)]];
+				} else {
+					out[keys[i]] = '';
+				}
+			}
+		} else {
+			return null;
+		}
+		return out;
+	}
+
+	let shiftAmount = alignVariables.offset;
+	if (alignVariables.direction === 'Left') {
+		shiftAmount = shiftAmount - 2 * shiftAmount;
+	}
+
+	const request = indexedDB.open(dataBaseName, dbVersion);
+	request.onsuccess = () => {
 		const db = request.result;
 		const transaction = db.transaction(['data_upload'], 'readwrite');
 		const objectStore = transaction.objectStore('data_upload');
 		let count: number;
-		return (objectStore.count().onsuccess = (e) => {
-			//@ts-expect-error the event of a IDB request always has a target prop
-			count = e.target.result;
+		const countRequest = objectStore.count();
+		countRequest.onsuccess = () => {
+			count = countRequest.result;
 			return (objectStore.openCursor(null, 'next').onsuccess = (ev) => {
 				//@ts-expect-error the event of a IDB request always has a target prop
 				const cursor: IDBCursorWithValue | null = ev.target.result;
 				if (cursor !== null) {
-					if (cursor.value[col] == undefined) {
+					if (cursor.value[alignVariables.col] == undefined) {
 						cursor.continue();
 					}
 
-					if (cursor.value[col] === searchValue) {
+					if (cursor.value[alignVariables.col] === alignVariables.value) {
 						performShift(shiftAmount, cursor.value);
 					}
 
@@ -353,53 +327,68 @@ function alignData(
 					} else {
 						return postMessage({
 							type: 'success',
-							message: 'aligned values',
+							data: 'aligned values',
 						});
 					}
 				} else {
-					// return postMessage({ type: 'error', message: 'invalid cursor' })
+					// return postMessage({ type: 'error', data: 'invalid cursor' })
 				}
 			});
-		});
-	});
+		};
+	};
 }
 
-function performShift(to: number, item: object) {
-	const out = item;
-	const copy = structuredClone(item);
-	const keys = Object.keys(item);
-	if (to > 0) {
-		for (let i = 1; i < keys.length; i++) {
-			if (i <= Math.abs(to)) {
-				let filler: string | number = '';
-				if (typeof copy[keys[i]] === 'number') {
-					filler = 0;
+function rankColsByCondition(dataBaseName: string, dbVersion: number, condition: string | null | number | undefined) {
+	function compareItemToCondition(condition: string | null | number | undefined, value: string | number): boolean {
+		switch (typeof condition) {
+			case undefined:
+				if (value === undefined && value !== null) {
+					return true;
 				}
-				out[keys[i]] = filler;
-			} else {
-				out[keys[i]] = out[keys[i - Math.abs(to)]];
-			}
+				return false;
+			case null:
+				if (value !== undefined && value === null) {
+					return true;
+				}
+				return false;
+			case 'number':
+				if (typeof value === 'number' || typeof value === 'bigint') {
+					if (value === condition) {
+						return true;
+					}
+				} else {
+					if (condition) {
+						if (value === condition.toString()) {
+							return true;
+						}
+					}
+				}
+				return false;
+			case 'string':
+				if (typeof condition === 'string') {
+					if (condition.length === 0) {
+						if (typeof value === 'string') {
+							if (value.trim().length === 0) {
+								return true;
+							}
+						} else {
+							if (typeof value === 'undefined' || typeof value === null) {
+							}
+						}
+					} else {
+						if (value === condition) {
+							return true;
+						}
+					}
+					return false;
+				}
+				return false;
+			default:
+				return false;
 		}
-	} else if (to < 0) {
-		for (let i = 1; i < keys.length; i++) {
-			if (i < keys.length - Math.abs(to)) {
-				out[keys[i]] = out[keys[i + Math.abs(to)]];
-			} else {
-				out[keys[i]] = '';
-			}
-		}
-	} else {
-		return null;
 	}
-	return out;
-}
 
-function rankColsByCondition(
-	condition: string | null | number | undefined,
-	dbName: string,
-	dbVersion: number
-) {
-	const dbRequest = indexedDB.open(dbName, dbVersion);
+	const dbRequest = indexedDB.open(dataBaseName, dbVersion);
 	dbRequest.onsuccess = () => {
 		const db: IDBDatabase = dbRequest.result;
 		const t = db.transaction('data_upload');
@@ -436,12 +425,12 @@ function rankColsByCondition(
 						} else {
 							const ranking = Object.entries(counter);
 							ranking.sort((a, b) => b[1] - a[1]);
-							postMessage({ type: 'ranking', message: ranking });
+							postMessage({ type: 'ranking', data: ranking });
 						}
 					} else {
 						return postMessage({
 							type: 'error',
-							message: 'cursor is null',
+							data: 'cursor is null',
 						});
 					}
 				};
@@ -450,63 +439,13 @@ function rankColsByCondition(
 	};
 }
 
-function compareItemToCondition(
-	condition: string | null | number | undefined,
-	value: string | number
-): boolean {
-	switch (typeof condition) {
-		case undefined:
-			if (value === undefined && value !== null) {
-				return true;
-			}
-			return false;
-		case null:
-			if (value !== undefined && value === null) {
-				return true;
-			}
-			return false;
-		case 'number':
-			if (typeof value === 'number' || typeof value === 'bigint') {
-				if (value === condition) {
-					return true;
-				}
-			} else {
-				if (condition) {
-					if (value === condition.toString()) {
-						return true;
-					}
-				}
-			}
-			return false;
-		case 'string':
-			if (typeof condition === 'string') {
-				if (condition.length === 0) {
-					if (typeof value === 'string') {
-						if (value.trim().length === 0) {
-							return true;
-						}
-					} else {
-						if (typeof value === 'undefined' || typeof value === null) {
-						}
-					}
-				} else {
-					if (value === condition) {
-						return true;
-					}
-				}
-				return false;
-			}
-			return false;
-		default:
-			return false;
-	}
-}
-
 function deleteCol(col: string) {
 	const dbRequest = indexedDB.open('factor_db');
 	dbRequest.onsuccess = () => {
 		const db = dbRequest.result;
-		const transaction = db.transaction('data_upload', 'readwrite');
+		const transaction = db.transaction('data_upload', 'readwrite', {
+			durability: 'strict',
+		});
 		const objStore = transaction.objectStore('data_upload');
 		const countRequest = objStore.count();
 		countRequest.onsuccess = () => {
@@ -524,7 +463,7 @@ function deleteCol(col: string) {
 					} else {
 						postMessage({
 							type: 'colDeletion',
-							message: `deleted col: ${col}`,
+							data: `deleted col: ${col}`,
 						});
 					}
 				}
@@ -533,79 +472,1203 @@ function deleteCol(col: string) {
 	};
 }
 
-function doCustomers(
-	map: CustomerSortingMap,
-	dbName: string,
-	dbVersion: number
+function sortData(
+	dataBaseName: string,
+	dbVersion: number,
+	targetDBName: 'article_db' | 'customer_db' | 'document_db',
+	sortingMap: CustomerSortingMap | ArticleSortingMap | DocumentSortingMap
 ) {
-	const request = indexedDB.open(dbName, dbVersion);
+	const request = indexedDB.open(dataBaseName, dbVersion);
 	request.onsuccess = () => {
-		const customerDBrequest = indexedDB.open('customer_db', dbVersion);
-		customerDBrequest.onupgradeneeded = createCustomerObjectStores;
-		customerDBrequest.onsuccess = () => {
-			const db = request.result;
-			const customerDB = customerDBrequest.result;
-			const dbTransaction = db.transaction(['data_upload'], 'readonly');
-			const dataUpload = dbTransaction.objectStore('data_upload');
-			const dataUploadCountRequest = dataUpload.count();
+		const sourceDB = request.result;
+		const dbTransaction = sourceDB.transaction('data_upload', 'readonly');
+		const dataUpload = dbTransaction.objectStore('data_upload');
+		const dataUploadCountRequest = dataUpload.count();
 
-			dataUploadCountRequest.onsuccess = () => {
-				const dataCount = dataUploadCountRequest.result;
-				const update = updateManager(dataCount);
-				const cursorRequest = dataUpload.openCursor(null, 'next');
-				cursorRequest.onsuccess = () => {
-					const cursor: IDBCursorWithValue | null = cursorRequest.result;
-					if (cursor) {
-						const value = cursor.value;
-						parseCustomer(map, value, customerDB);
-						update();
-						cursor.continue();
-					} else {
-						return;
+		dataUploadCountRequest.onsuccess = () => {
+			const dataCount = dataUploadCountRequest.result;
+			const update = updateManager(dataCount);
+			const cursorRequest = dataUpload.openCursor(null, 'next');
+
+			function parseCustomerData(dataBaseName: string, dbVersion: number, map: CustomerSortingMap, row: UploadRow) {
+				const customerDBrequest = indexedDB.open(dataBaseName, dbVersion);
+
+				customerDBrequest.onupgradeneeded = function upgradeCustomerDB(e: IDBVersionChangeEvent): void {
+					const target: IDBOpenDBRequest = e.target as IDBOpenDBRequest;
+					const db = target.result;
+					const stores = db.objectStoreNames;
+
+					if (!stores.contains('customers')) {
+						const customer = db.createObjectStore('customers', {
+							keyPath: 'row',
+						});
+						customer.createIndex('customers-id', 'id', {
+							unique: true,
+						});
+					}
+
+					if (!stores.contains('persons')) {
+						const persons = db.createObjectStore('persons', {
+							keyPath: 'row',
+						});
+
+						persons.createIndex('persons-lastName', 'lastName', {
+							unique: false,
+						});
+
+						persons.createIndex('persons-firstName', 'firstName', {
+							unique: false,
+						});
+					}
+
+					if (!stores.contains('emails')) {
+						const email = db.createObjectStore('emails', {
+							keyPath: 'row',
+						});
+
+						email.createIndex('emails-email', 'email', {
+							unique: true,
+						});
+					}
+
+					if (!stores.contains('phones')) {
+						const phone = db.createObjectStore('phones', {
+							keyPath: 'row',
+						});
+
+						phone.createIndex('phones-phone', 'phone', {
+							unique: true,
+						});
+					}
+
+					if (!stores.contains('addresses')) {
+						const address = db.createObjectStore('addresses', {
+							keyPath: 'row',
+						});
+
+						address.createIndex('addresses-street', 'street', {
+							unique: false,
+						});
+						address.createIndex('addresses-city', 'city', {
+							unique: false,
+						});
+						address.createIndex('addresses-zip', 'zip', {
+							unique: false,
+						});
+						address.createIndex('addresses-country', 'country', {
+							unique: false,
+						});
+						address.createIndex('addresses-hash', 'hash', {
+							unique: true,
+						});
+					}
+
+					if (!stores.contains('banks')) {
+						const bank = db.createObjectStore('banks', {
+							keyPath: 'row',
+						});
+
+						bank.createIndex('banks-name', 'name', {
+							multiEntry: true,
+						});
+						bank.createIndex('banks-iban', 'iban', {
+							unique: true,
+						});
+					}
+
+					if (!stores.contains('company')) {
+						const company = db.createObjectStore('company', {
+							keyPath: 'row',
+						});
+
+						company.createIndex('company-name', 'name', {
+							unique: false,
+						});
+
+						company.createIndex('company-taxID', 'taxID', {
+							unique: false,
+						});
+						company.createIndex('company-taxNumber', 'taxNumber', {
+							unique: false,
+						});
+						company.createIndex('company-ustID', 'ustID', {
+							unique: false,
+						});
 					}
 				};
-			};
 
-			dataUploadCountRequest.onerror = () => {
-				postMessage({
-					type: 'error',
-					message: 'doCustomers: failed to count',
-				});
-			};
+				customerDBrequest.onsuccess = () => {
+					// variable definitions
+					const customerDB = customerDBrequest.result;
+					const oStores = customerDB.objectStoreNames;
+					let customer = structuredClone(templates.get('customer')) as Customer;
+					let customerCounter = {
+						count: 0,
+						total: 0,
+					};
+					const customerTrackerHandler = {
+						set(target, prop, value) {
+							target[prop] = value;
+							if (prop === 'count') {
+								if (target['count'] == target['total']) {
+									insertCustomer(customer, (rowNumber: number | null) => {
+										if (rowNumber !== null) {
+											console.log('done with customer in row : ' + rowNumber);
+										}
+									});
+								}
+							}
+							return true;
+						},
+					};
+					let customerTracker = new Proxy<typeof customerCounter>(customerCounter, customerTrackerHandler);
+					// function definitions
+					// these need to be done in the customerDB request scope to 'function' properly
+					function insertEmail(data: EmailType, callback: (result: number | null) => void): void {
+						if (oStores.contains('emails')) {
+							const emailTransaction = customerDB.transaction('emails', 'readwrite', { durability: 'strict' });
+							const oStoreEmail = emailTransaction.objectStore('emails');
+							if (oStoreEmail.indexNames.contains('emails-email')) {
+								const emailIndex = oStoreEmail.index('emails-email');
+								const emailIndexRequest = emailIndex.get(data.email);
+								emailIndexRequest.onsuccess = () => {
+									if (emailIndexRequest.result !== undefined) {
+										// the email already exists
+										let preexistingEmailRow = emailIndexRequest.result as EmailType;
+										if (data.notes !== undefined) {
+											if (preexistingEmailRow.notes !== undefined) {
+												preexistingEmailRow.notes = [...preexistingEmailRow.notes, ...data.notes];
+											} else {
+												preexistingEmailRow.notes = data.notes;
+											}
+										}
+										if (data.type !== undefined) {
+											preexistingEmailRow.type = data.type;
+										}
+										let putRequest = oStoreEmail.put(preexistingEmailRow);
+										putRequest.onsuccess = () => {
+											callback(putRequest.result as number);
+											emailTransaction.commit();
+										};
+										putRequest.onerror = () => {
+											callback(null);
+											emailTransaction.commit();
+										};
+									} else {
+										// the email does not exist already
+										const emailCountRequest = oStoreEmail.count();
+										emailCountRequest.onsuccess = () => {
+											const emailCount = emailCountRequest.result;
+											data.row = emailCount + 1;
+											let addRequest = oStoreEmail.add(data);
+											addRequest.onsuccess = () => {
+												callback(addRequest.result as number);
+												emailTransaction.commit();
+											};
+											addRequest.onerror = () => {
+												callback(null);
+												emailTransaction.commit();
+											};
+										};
+										emailCountRequest.onerror = () => {
+											callback(null);
+											emailTransaction.commit();
+										};
+									}
+								};
+								emailIndexRequest.onerror = () => {
+									callback(null);
+									emailTransaction.commit();
+								};
+							} else {
+								callback(null);
+								emailTransaction.commit();
+							}
+						} else {
+							callback(null);
+						}
+					}
 
-			dbTransaction.oncomplete = () => {
-				postMessage({
-					type: 'success',
-					message: 'customers',
-				});
+					function insertPhone(data: PhoneNumberType, callback: (result: number | null) => void): void {
+						if (oStores.contains('phones')) {
+							const phoneTransaction = customerDB.transaction('phones', 'readwrite', { durability: 'strict' });
+							const oStorePhone = phoneTransaction.objectStore('phones');
+							if (oStorePhone.indexNames.contains('phones-phone')) {
+								const phoneIndex = oStorePhone.index('phones-phone');
+								const phoneIndexRequest = phoneIndex.get(data.phone);
+								phoneIndexRequest.onsuccess = () => {
+									if (phoneIndexRequest.result !== undefined) {
+										// the phone already exists
+										let preexistingPhoneRow = phoneIndexRequest.result as PhoneNumberType;
+										if (data.notes !== undefined) {
+											if (preexistingPhoneRow.notes !== undefined) {
+												preexistingPhoneRow.notes = [...preexistingPhoneRow.notes, ...data.notes];
+											} else {
+												preexistingPhoneRow.notes = data.notes;
+											}
+										}
+										if (data.type !== undefined) {
+											preexistingPhoneRow.type = data.type;
+										}
+										let putRequest = oStorePhone.put(preexistingPhoneRow);
+										putRequest.onsuccess = () => {
+											callback(putRequest.result as number);
+											phoneTransaction.commit();
+										};
+										putRequest.onerror = () => {
+											callback(null);
+											phoneTransaction.commit();
+										};
+									} else {
+										// the phone does not exist already
+										const phoneCountRequest = oStorePhone.count();
+										phoneCountRequest.onsuccess = () => {
+											const phoneCount = phoneCountRequest.result;
+											data.row = phoneCount + 1;
+											let addRequest = oStorePhone.add(data);
+											addRequest.onsuccess = () => {
+												callback(addRequest.result as number);
+												phoneTransaction.commit();
+											};
+											addRequest.onerror = () => {
+												callback(null);
+												phoneTransaction.commit();
+											};
+										};
+										phoneCountRequest.onerror = () => {
+											callback(null);
+											phoneTransaction.commit();
+										};
+									}
+								};
+								phoneIndexRequest.onerror = () => {
+									callback(null);
+									phoneTransaction.commit();
+								};
+							} else {
+								callback(null);
+								phoneTransaction.commit();
+							}
+						} else {
+							callback(null);
+						}
+					}
+
+					function insertAddress(data: AddressType, callback: (result: number | null) => void): void {
+						//add address to indexedDB
+						if (oStores.contains('addresses')) {
+							const addressesTransaction = customerDB.transaction('addresses', 'readwrite', { durability: 'strict' });
+							const oStoreAddresses = addressesTransaction.objectStore('addresses');
+							if (oStoreAddresses.indexNames.contains('addresses-hash')) {
+								const addressIndex = oStoreAddresses.index('addresses-hash');
+								const addressIndexRequest = addressIndex.get(data.hash);
+
+								addressIndexRequest.onsuccess = () => {
+									if (addressIndexRequest.result !== undefined) {
+										// address exist already
+										let addressRow = addressIndexRequest.result as AddressType;
+										if (data.notes !== undefined) {
+											if (addressRow.notes !== undefined) {
+												addressRow.notes = [...addressRow.notes, ...data.notes];
+											} else {
+												addressRow.notes = data.notes;
+											}
+										}
+										if (data.country !== undefined) {
+											addressRow.country = data.country;
+										}
+										if (data.type !== undefined) {
+											addressRow.type = data.type;
+										}
+										let putRequest = oStoreAddresses.put(addressRow);
+										putRequest.onsuccess = () => {
+											callback(putRequest.result as number);
+											addressesTransaction.commit();
+										};
+										putRequest.onerror = () => {
+											callback(null);
+											addressesTransaction.commit();
+										};
+									} else {
+										// address does not exist already
+										const addressesCountRequest = oStoreAddresses.count();
+										addressesCountRequest.onsuccess = () => {
+											let addressCount = addressesCountRequest.result;
+											data.row = addressCount + 1;
+											let addRequest = oStoreAddresses.add(data);
+
+											addRequest.onsuccess = () => {
+												callback(addRequest.result as number);
+												addressesTransaction.commit();
+											};
+
+											addRequest.onerror = () => {
+												callback(null);
+												addressesTransaction.commit();
+											};
+										};
+										addressesCountRequest.onerror = () => {
+											callback(null);
+											addressesTransaction.commit();
+										};
+									}
+								};
+
+								addressIndexRequest.onerror = () => {
+									callback(null);
+									addressesTransaction.commit();
+								};
+							} else {
+								callback(null);
+								addressesTransaction.commit();
+							}
+						} else {
+							callback(null);
+						}
+					}
+
+					function insertBank(data: BankType, callback: (result: number | null) => void): void {
+						//add bank to indexedDB
+						if (oStores.contains('banks')) {
+							const bankTransaction = customerDB.transaction('banks', 'readwrite', { durability: 'strict' });
+							const oStoreBank = bankTransaction.objectStore('banks');
+							if (oStoreBank.indexNames.contains('banks-iban') && data.iban !== undefined) {
+								const bankIndex = oStoreBank.index('banks-iban');
+								const bankIndexRequest = bankIndex.get(data.iban);
+								bankIndexRequest.onsuccess = () => {
+									if (bankIndexRequest.result !== undefined) {
+										// the iban already exists
+										let preexistingBankRow = bankIndexRequest.result as BankType;
+										if (data.notes !== undefined) {
+											if (preexistingBankRow.notes !== undefined) {
+												preexistingBankRow.notes = [...preexistingBankRow.notes, ...data.notes];
+											} else {
+												preexistingBankRow.notes = data.notes;
+											}
+										}
+										if (data.bankCode !== undefined) {
+											preexistingBankRow.bankCode = data.bankCode;
+										}
+										if (data.bic !== undefined) {
+											preexistingBankRow.bic = data.bic;
+										}
+										if (data.name !== undefined) {
+											preexistingBankRow.name = data.name;
+										}
+
+										let putRequest = oStoreBank.put(preexistingBankRow);
+										putRequest.onsuccess = () => {
+											callback(putRequest.result as number);
+											bankTransaction.commit();
+										};
+										putRequest.onerror = () => {
+											callback(null);
+											bankTransaction.commit();
+										};
+									} else {
+										// the iban does not exist already
+										const bankCountRequest = oStoreBank.count();
+										bankCountRequest.onsuccess = () => {
+											const bankCount = bankCountRequest.result;
+											data.row = bankCount + 1;
+											let addRequest = oStoreBank.add(data);
+											addRequest.onsuccess = () => {
+												callback(addRequest.result as number);
+												bankTransaction.commit();
+											};
+											addRequest.onerror = () => {
+												callback(null);
+												bankTransaction.commit();
+											};
+										};
+										bankCountRequest.onerror = () => {
+											callback(null);
+											bankTransaction.commit();
+										};
+									}
+								};
+								bankIndexRequest.onerror = () => {
+									callback(null);
+									bankTransaction.commit();
+								};
+							} else {
+								callback(null);
+								bankTransaction.commit();
+							}
+						} else {
+							callback(null);
+						}
+					}
+
+					function insertCompany(data: CompanyType, callback: (result: number | null) => void): void {
+						// add company to indexedDB0
+						if (oStores.contains('company')) {
+							const companyTransaction = customerDB.transaction('company', 'readwrite', { durability: 'strict' });
+							const oStoreCompany = companyTransaction.objectStore('company');
+							if (oStoreCompany.indexNames.contains('company-name')) {
+								const companyIndex = oStoreCompany.index('company-name');
+								const companyIndexRequest = companyIndex.get(data.name);
+								companyIndexRequest.onsuccess = () => {
+									if (companyIndexRequest.result !== undefined) {
+										// the iban already exists
+										let preexistingCompanyRow = companyIndexRequest.result as CompanyType;
+										if (data.notes !== undefined) {
+											if (preexistingCompanyRow.notes !== undefined) {
+												preexistingCompanyRow.notes = [...preexistingCompanyRow.notes, ...data.notes];
+											} else {
+												preexistingCompanyRow.notes = data.notes;
+											}
+										}
+										if (data.alias !== undefined) {
+											if (preexistingCompanyRow.alias !== undefined) {
+												preexistingCompanyRow.alias = [...preexistingCompanyRow.alias, ...data.alias];
+											} else {
+												preexistingCompanyRow.alias = data.alias;
+											}
+										}
+
+										if (data.taxID !== undefined) {
+											preexistingCompanyRow.taxID = data.taxID;
+										}
+
+										if (data.taxNumber !== undefined) {
+											preexistingCompanyRow.taxNumber = data.taxNumber;
+										}
+
+										let putRequest = oStoreCompany.put(preexistingCompanyRow);
+										putRequest.onsuccess = () => {
+											callback(putRequest.result as number);
+											companyTransaction.commit();
+										};
+										putRequest.onerror = () => {
+											callback(null);
+											companyTransaction.commit();
+										};
+									} else {
+										// the iban does not exist already
+										const companyCountRequest = oStoreCompany.count();
+										companyCountRequest.onsuccess = () => {
+											const companyCount = companyCountRequest.result;
+											data.row = companyCount + 1;
+											let addRequest = oStoreCompany.add(data);
+											addRequest.onsuccess = () => {
+												callback(addRequest.result as number);
+												companyTransaction.commit();
+											};
+											addRequest.onerror = () => {
+												callback(null);
+												companyTransaction.commit();
+											};
+										};
+										companyCountRequest.onerror = () => {
+											callback(null);
+											companyTransaction.commit();
+										};
+									}
+								};
+								companyIndexRequest.onerror = () => {
+									callback(null);
+									companyTransaction.commit();
+								};
+							} else {
+								callback(null);
+								companyTransaction.commit();
+							}
+						} else {
+							callback(null);
+						}
+					}
+
+					function insertPerson(data: PersonType, callback: (status: boolean, rowNumber?: number) => void): void {
+						if (oStores.contains('persons')) {
+							const personsTransaction = customerDB.transaction('persons', 'readwrite', { durability: 'strict' });
+							const oStorePersons = personsTransaction.objectStore('persons');
+							const personsCountRequest = oStorePersons.count();
+							personsCountRequest.onsuccess = () => {
+								const personsCount = personsCountRequest.result;
+								data.row = personsCount + 1;
+								let addRequest = oStorePersons.add(data);
+								addRequest.onsuccess = () => {
+									personsTransaction.commit();
+									callback(true, addRequest.result as number);
+								};
+
+								addRequest.onerror = () => {
+									personsTransaction.commit();
+									callback(false);
+								};
+							};
+							personsCountRequest.onerror = () => {
+								personsTransaction.commit();
+								callback(false);
+							};
+						} else {
+							callback(false);
+						}
+					}
+
+					function insertCustomer(data: Customer, callback: (rowNumber: number | null) => void): void {
+						if (oStores.contains('customers')) {
+							const customerTransaction = customerDB.transaction('customers', 'readwrite', { durability: 'strict' });
+							const oStoreCustomers = customerTransaction.objectStore('customers');
+							if (oStoreCustomers.indexNames.contains('customers-id')) {
+								const customerIndex = oStoreCustomers.index('customers-id');
+								const customersIndexRequest = customerIndex.get(data.id);
+								customersIndexRequest.onsuccess = () => {
+									if (customersIndexRequest.result !== undefined) {
+										// the customer already exists
+										// so we update the data
+										const preexistingCustomer = customersIndexRequest.result as Customer;
+										if (data.addresses !== undefined) {
+											preexistingCustomer.addresses = updateArrayBuffer(preexistingCustomer.addresses, data.addresses);
+										}
+										if (data.banks !== undefined) {
+											preexistingCustomer.banks = updateArrayBuffer(preexistingCustomer.banks, data.banks);
+										}
+										if (data.company !== undefined) {
+											preexistingCustomer.company = updateArrayBuffer(preexistingCustomer.company, data.company);
+										}
+										if (data.description !== undefined) {
+											preexistingCustomer.description = data.description;
+										}
+										if (data.notes !== undefined) {
+											if (preexistingCustomer.notes !== undefined) {
+												preexistingCustomer.notes = [...preexistingCustomer.notes, ...data.notes];
+											} else {
+												preexistingCustomer.notes = data.notes;
+											}
+										}
+										if (data.altIDs !== undefined) {
+											if (preexistingCustomer.altIDs !== undefined) {
+												preexistingCustomer.altIDs = [...preexistingCustomer.altIDs, ...data.altIDs];
+											} else {
+												preexistingCustomer.altIDs = data.altIDs;
+											}
+										}
+										if (data.emails !== undefined) {
+											preexistingCustomer.emails = updateArrayBuffer(preexistingCustomer.emails, data.emails);
+										}
+										if (data.persons !== undefined) {
+											preexistingCustomer.persons = updateArrayBuffer(preexistingCustomer.persons, data.persons);
+										}
+										if (data.phones !== undefined) {
+											preexistingCustomer.phones = updateArrayBuffer(preexistingCustomer.phones, data.phones);
+										}
+										if (data.firstContact !== undefined) {
+											preexistingCustomer.firstContact = data.firstContact;
+										}
+										if (data.latestContact !== undefined) {
+											preexistingCustomer.latestContact = data.latestContact;
+										}
+										if (data.website !== undefined) {
+											preexistingCustomer.website = data.website;
+										}
+										let putRequest = oStoreCustomers.put(preexistingCustomer);
+										putRequest.onsuccess = () => {
+											callback(putRequest.result as number);
+											customerTransaction.commit();
+										};
+										putRequest.onerror = () => {
+											callback(null);
+											customerTransaction.commit();
+										};
+									} else {
+										// the customer does not already exist
+										// we can add
+										let customersCountRequest = oStoreCustomers.count();
+										customersCountRequest.onsuccess = () => {
+											let customerCount = customersCountRequest.result;
+											data.row = customerCount + 1;
+											let addRequest = oStoreCustomers.add(data);
+											addRequest.onsuccess = () => {
+												callback(addRequest.result as number);
+												customerTransaction.commit();
+											};
+											addRequest.onerror = () => {
+												callback(null);
+												customerTransaction.commit();
+											};
+										};
+									}
+								};
+								customersIndexRequest.onerror = () => {
+									callback(null);
+									customerTransaction.commit();
+								};
+							}
+						} else {
+							callback(null);
+						}
+					}
+
+					function parsePersons(data: DerefPersonType[], callback: (result: PersonType[] | null) => void): void {
+						let reffedPersons: PersonType[] = [];
+						let emailHolder = new WeakMap();
+						let phoneHolder = new WeakMap();
+						let counter = {
+							count: 0,
+							total: 0,
+						};
+
+						let counterHandler = {
+							set(target, prop, value) {
+								target[prop] = value;
+								if (prop === 'count') {
+									if (target['count'] === target['total']) {
+										callback(reffedPersons);
+										counter.count = 0;
+										counter.count = 0;
+										phoneHolder = new WeakMap();
+										emailHolder = new WeakMap();
+									}
+								}
+								return true;
+							},
+						};
+						const tracker = new Proxy<typeof counter>(counter, counterHandler);
+
+						for (let i = 0; i < data.length; i++) {
+							emailHolder.set(data[i], data[i].emails);
+							phoneHolder.set(data[i], data[i].phones);
+							const refPerson = data[i] as PersonType;
+							refPerson.emails = undefined;
+							refPerson.phones = undefined;
+							reffedPersons[i] = refPerson;
+
+							if (emailHolder.get(data[i]) !== undefined) {
+								for (let j = 0; j < emailHolder.get(data[i]).length; j++) {
+									tracker.total += 1;
+									insertEmail(emailHolder.get(data[i])[j], (result: number | null) => {
+										if (result !== null) {
+											reffedPersons[i].emails = updateArrayBuffer(reffedPersons[i].emails, result);
+										}
+										tracker.count += 1;
+									});
+								}
+							}
+
+							if (phoneHolder.get(data[i]) !== undefined) {
+								for (let j = 0; j < phoneHolder.get(data[i]).length; j++) {
+									tracker.total += 1;
+									insertPhone(phoneHolder.get(data[i])[j], (result: number | null) => {
+										if (result !== null) {
+											reffedPersons[i].phones = updateArrayBuffer(reffedPersons[i].phones, result);
+										}
+										tracker.count += 1;
+									});
+								}
+							}
+						}
+					}
+
+					function parseAddress(data: AddressType[], callback: (rowNumbers: number[]) => void): void {
+						let weakMap = new WeakMap();
+						let addressReferences: number[] = [];
+						weakMap.set(data, addressReferences);
+						const counter = {
+							count: 0,
+							total: 0,
+						};
+						const trackerHandler = {
+							set(target, prop, value) {
+								target[prop] = value;
+								if (prop === 'count') {
+									if (target['count'] === target['total']) {
+										callback(weakMap.get(data));
+									}
+								}
+								return true;
+							},
+						};
+						const tracker = new Proxy<typeof counter>(counter, trackerHandler);
+						for (let i = 0; i < data.length; i++) {
+							getAddressHash(data[i].street, data[i].zip, data[i].city).then((hash: string) => {
+								data[i].hash = hash;
+								tracker.total += 1;
+								insertAddress(data[i], (result: number | null) => {
+									if (result !== null) {
+										weakMap.get(data).push(result);
+									}
+									tracker.count += 1;
+								});
+							});
+						}
+					}
+
+					function parseBanks(data: BankType[], callback: (rowNumbers: number[]) => void): void {
+						let weakMap = new WeakMap();
+						let companyReferences: number[] = [];
+						weakMap.set(data, companyReferences);
+						const counter = {
+							count: 0,
+							total: 0,
+						};
+						const trackerHandler = {
+							set(target, prop, value) {
+								target[prop] = value;
+								if (prop === 'count') {
+									if (target['count'] === target['total']) {
+										callback(weakMap.get(data));
+									}
+								}
+								return true;
+							},
+						};
+						const tracker = new Proxy<typeof counter>(counter, trackerHandler);
+						for (let i = 0; i < data.length; i++) {
+							tracker.total += 1;
+							insertBank(data[i], (result: number | null) => {
+								if (result !== null) {
+									weakMap.get(data).push(result);
+								}
+								tracker.count += 1;
+							});
+						}
+					}
+
+					function parseCompany(data: CompanyType[], callback: (rowNumbers: number[]) => void): void {
+						let weakMap = new WeakMap();
+						let companyReferences: number[] = [];
+						weakMap.set(data, companyReferences);
+						const counter = {
+							count: 0,
+							total: 0,
+						};
+						const trackerHandler = {
+							set(target, prop, value) {
+								target[prop] = value;
+								if (prop === 'count') {
+									if (target['count'] === target['total']) {
+										callback(weakMap.get(data));
+									}
+								}
+								return true;
+							},
+						};
+						const tracker = new Proxy<typeof counter>(counter, trackerHandler);
+						for (let i = 0; i < data.length; i++) {
+							tracker.total += 1;
+							insertCompany(data[i], (result: number | null) => {
+								if (result !== null) {
+									weakMap.get(data).push(result);
+								}
+								tracker.count += 1;
+							});
+						}
+					}
+
+
+					//the actual sorting logic
+
+					customer.id = trimWhiteSpace(row[map.customers.id] as string);
+					customer.row = row.row;
+					customer.created = new Date();
+
+					if (map.customers.notes !== undefined) {
+						const note = trimWhiteSpace(row[map.customers.notes] as string);
+						const notes = note.split(',').map((item) => trimWhiteSpace(item));
+						if (customer.notes === undefined) {
+							customer.notes = [];
+						}
+						for (const n of notes) {
+							if (n.trim() !== '') {
+								customer.notes.push(n);
+							}
+						}
+					}
+
+					if (map.customers.description !== undefined) {
+						customer.description = trimWhiteSpace(row[map.customers.description] as string);
+					}
+
+					if (map.customers.firstContact !== undefined) {
+						customer.firstContact = parseDate(row[map.customers.firstContact] as string, 'YYYY-MM-DD hh:mm:ss');
+					}
+
+					if (map.customers.latestContact !== undefined) {
+						customer.latestContact = parseDate(row[map.customers.latestContact] as string, 'YYYY-MM-DD hh:mm:ss');
+					}
+
+					if (map.customers.altIDs !== undefined) {
+						const altIDs = trimWhiteSpace(row[map.customers.altIDs] as string);
+						const ids = altIDs.split(',').map((item) => trimWhiteSpace(item));
+						if (customer.altIDs === undefined) {
+							customer.altIDs = [];
+						}
+						for (const id of ids) {
+							if (id.trim() !== '') {
+								customer.altIDs.push(id);
+							}
+						}
+					}
+
+					if (map.customers.website !== undefined) {
+						let website = trimWhiteSpace(row[map.customers.website]);
+						website.replace('http://', 'https://');
+						customer.website = website;
+					}
+
+					let quedPersons: DerefPersonType[] = [];
+					let quedAddresses: AddressType[] = [];
+					let quedBanks: BankType[] = [];
+					let quedCompany: CompanyType[] = [];
+
+					// fill oStoreItems with templates
+					// the templates as filled with values from row[...]
+					for (const [k, v] of Object.entries(map)) {
+						// walk the map
+						let key = k as keyof CustomerSortingMap;
+						if (key !== 'row' && key !== 'customers') {
+							// if the prop is not "row"
+							// and also not email
+							// and also not phone
+							// because those are nested
+							// get the value of the prop
+							let value: CustomerSortingMap[typeof key] = v;
+							let mainKey: 'persons' | 'banks' | 'addresses' | 'company' = key;
+							if (Object.keys(value).length !== 0) {
+								// if there are actually any props in value
+								// clone the correct template
+								let template = structuredClone(templates.get(mainKey));
+								for (const [nk, nv] of Object.entries(value)) {
+									// walk the value
+									let nestedValue = nv; // this is the columnsName in row
+									let nestedKey = nk;
+									if (typeof nestedValue === 'string') {
+										// if the value is not undefined
+										if (nestedKey !== 'emails' && nestedKey !== 'phones') {
+											// we do not have another layer
+											Object.defineProperty(template, nestedKey, {
+												value: trimWhiteSpace(row[nestedValue]),
+												enumerable: true,
+												configurable: true,
+												writable: true,
+											});
+										}
+									} else {
+										// this means nestedKey is either "phones" or "emails"
+										// this also means that key is either "customers" or "persons"
+										let nestedKeyLetterList: string[] = Array.from(nestedKey);
+										nestedKeyLetterList.pop();
+										let nestedNestedKey: 'email' | 'phone' = nestedKeyLetterList.join('') as 'email' | 'phone';
+										let nestedMainValue = trimWhiteSpace(row[nestedValue[nestedNestedKey]])
+											.split(',')
+											.map((item) => trimWhiteSpace(item));
+										let personEmails = nestedMainValue.map((val: string) => {
+											let out: {
+												notes?: string[];
+												type?: string;
+											} = {
+												notes: undefined,
+												type: undefined,
+											};
+											if (nestedValue['notes'] !== undefined) {
+												if (row[nestedValue['notes']].includes(',')) {
+													out.notes = row[nestedValue['notes']].split(',').map((item) => trimWhiteSpace(item));
+												}
+											}
+
+											if (nestedValue['type'] !== undefined) {
+												out.type = row[nestedValue['type']];
+											}
+											out[nestedNestedKey] = val.toLowerCase();
+											return out;
+										});
+										Object.defineProperty(template, nestedKey, {
+											value: personEmails,
+											enumerable: true,
+											configurable: true,
+											writable: true,
+										});
+									}
+								}
+								switch (mainKey) {
+									case 'addresses':
+										// @ts-ignore
+										quedAddresses.push(template as AddressType);
+										break;
+									case 'banks':
+										quedBanks.push(template as BankType);
+										break;
+									case 'company':
+										quedCompany.push(template as CompanyType);
+										break;
+									case 'persons':
+										// console.log("add to que")
+										// console.log(template?.emails)
+										quedPersons.push(template as DerefPersonType);
+								}
+							}
+						}
+					}
+
+					parsePersons(quedPersons, (result) => {
+						if (result !== null) {
+							customerTracker.total += result.length;
+							for (let i = 0; i < result.length; i++) {
+								insertPerson(result[i], (status: boolean, rowNumber: number | undefined) => {
+									if (status && rowNumber !== undefined) {
+										customer.persons = updateArrayBuffer(customer.persons, rowNumber);
+										customerTracker.count += 1;
+									}
+								});
+							}
+						}
+					});
+
+					parseAddress(quedAddresses, (rowNumbers: number[]) => {
+						if (rowNumbers.length !== 0) {
+							customerTracker.total += rowNumbers.length;
+							for (let i = 0; i < rowNumbers.length; i++) {
+								customer.addresses = updateArrayBuffer(customer.addresses, rowNumbers[i]);
+								customerTracker.count += 1
+
+							}
+						}
+					});
+
+					parseBanks(quedBanks, (rowNumbers: number[]) => {
+						if (rowNumbers.length !== 0) {
+							customerTracker.total += rowNumbers.length;
+
+							for (let i = 0; i < rowNumbers.length; i++) {
+								customer.banks = updateArrayBuffer(customer.addresses, rowNumbers[i]);
+								customerTracker.count += 1
+							}
+						}
+					});
+
+					parseCompany(quedCompany, (rowNumbers: number[]) => {
+						if (rowNumbers.length !== 0) {
+							customerTracker.total += rowNumbers.length;
+							for (let i = 0; i < rowNumbers.length; i++) {
+								customer.company = updateArrayBuffer(customer.addresses, rowNumbers[i]);
+								customerTracker.count += 1
+							}
+						}
+					})
+
+					if(quedAddresses.length === 0 && quedBanks.length === 0 && quedCompany.length === 0 && quedPersons.length === 0){
+						insertCustomer(customer, (rowNumber: number | null) => {
+							if (rowNumber !== null) {
+								console.log('done with customer in row : ' + rowNumber);
+							}
+						});
+					}
+
+				};
+
+				customerDBrequest.onblocked = () => {
+					throw new Error('opening customerDB was block');
+				};
+
+				cursorRequest.onerror = () => {
+					throw new Error('opening customerDB failed');
+				};
+			}
+
+			function parseArticleData(dataBaseName: string, dataBaseVersion: number, map: ArticleSortingMap, row: UploadRow) {
+				//function definitions
+				function upgradeArticleDB(e: IDBVersionChangeEvent): void {
+					const target: IDBOpenDBRequest = e.target as IDBOpenDBRequest;
+					const db = target.result;
+					const stores = db.objectStoreNames;
+
+					if (!stores.contains('articles')) {
+						const articles = db.createObjectStore('articles', {
+							keyPath: 'row',
+						});
+						articles.createIndex('articles-id', 'id', {
+							unique: true,
+						});
+						articles.createIndex('articles-name', 'name', {
+							unique: false,
+						});
+						articles.createIndex('articles-count', 'count', {
+							unique: false,
+						});
+						articles.createIndex('articles-unit', 'unit', {
+							unique: false,
+						});
+						articles.createIndex('articles-lastSeen', 'lastSeen', {
+							unique: false,
+						});
+						articles.createIndex('articles-securityDeposit', 'securityDeposit', {
+							unique: false,
+						});
+					}
+
+					if (!stores.contains('acquisitions')) {
+						const acquisitions = db.createObjectStore('acquisitions', {
+							keyPath: 'row',
+						});
+						acquisitions.createIndex('acquisitions-date', 'date', {
+							unique: false,
+						});
+						acquisitions.createIndex('acquisitions-totalCost', 'totalCost', {
+							unique: false,
+						});
+						acquisitions.createIndex('acquisitions-purchaseInvoiceID', 'purchaseInvoiceID', {
+							unique: false,
+						});
+					}
+				}
+			}
+
+			function parseDocumentData(dataBaseName: string, dataBaseVersion: number, map: DocumentSortingMap, row: UploadRow) {
+				//function definitions
+				function upgradeDocumentDB(e: IDBVersionChangeEvent): void {
+					const target: IDBOpenDBRequest = e.target as IDBOpenDBRequest;
+					const db = target.result;
+					const stores = db.objectStoreNames;
+
+					if (!stores.contains('quotes')) {
+						const quotes = db.createObjectStore('quotes', {
+							keyPath: 'row',
+						});
+
+						quotes.createIndex('quotes-id', 'id', {
+							unique: true,
+						});
+
+						quotes.createIndex('quotes-date', 'date', {
+							unique: true,
+						});
+
+						quotes.createIndex('quotes-customerID', 'customerID', {
+							unique: true,
+						});
+					}
+
+					if (!stores.contains('invoices')) {
+						const invoices = db.createObjectStore('invoices', {
+							keyPath: 'row',
+						});
+
+						invoices.createIndex('invoices-id', 'id', {
+							unique: true,
+						});
+
+						invoices.createIndex('invoices-date', 'date', {
+							unique: false,
+						});
+
+						invoices.createIndex('invoices-customerID', 'customerID', {
+							unique: false,
+						});
+					}
+
+					if (!stores.contains('deliveries')) {
+						const deliveries = db.createObjectStore('deliveries', {
+							keyPath: 'row',
+						});
+
+						deliveries.createIndex('deliveries-id', 'id', {
+							unique: true,
+						});
+
+						deliveries.createIndex('deliveries-date', 'date', {
+							unique: false,
+						});
+
+						deliveries.createIndex('deliveries-customerID', 'customerID', {
+							unique: false,
+						});
+					}
+
+					if (!stores.contains('returnees')) {
+						const returnees = db.createObjectStore('returnees', {
+							keyPath: 'row',
+						});
+
+						returnees.createIndex('returnees-id', 'id', {
+							unique: true,
+						});
+
+						returnees.createIndex('returnees-date', 'date', {
+							unique: false,
+						});
+
+						returnees.createIndex('returnees-customerID', 'customerID', {
+							unique: false,
+						});
+					}
+				}
+			}
+
+			cursorRequest.onsuccess = () => {
+				const cursor: IDBCursorWithValue | null = cursorRequest.result;
+				if (cursor) {
+					switch (targetDBName) {
+						case 'article_db':
+							parseArticleData('article_db', dbVersion, sortingMap as ArticleSortingMap, cursor.value);
+							break;
+						case 'customer_db':
+							parseCustomerData('customer_db', dbVersion, sortingMap as CustomerSortingMap, cursor.value);
+							break;
+						case 'document_db':
+							parseDocumentData('document_db', dbVersion, sortingMap as DocumentSortingMap, cursor.value);
+							break;
+						default:
+							break;
+					}
+					update();
+					cursor.continue();
+				} else {
+					return;
+				}
 			};
 		};
-	};
 
-	request.onupgradeneeded = createCustomerObjectStores;
+		dataUploadCountRequest.onerror = () => {
+			postMessage({
+				type: 'error',
+				data: 'doCustomers: failed to count',
+			});
+		};
+
+		dbTransaction.oncomplete = () => {
+			postMessage({
+				type: 'success',
+				data: 'customers',
+			});
+		};
+	};
 }
 
-function parseCustomer(
-	map: CustomerSortingMap,
-	row: UploadRow,
-	customerDB: IDBDatabase
-): void {
-	const customer: Customer = structuredClone(
-		templates.get('customer')
-	) as Customer;
-	customer.id = trimWhiteSpace(row[map.customers.id] as string);
-	customer.row = row.row;
-	customer.created = new Date();
-
-	/**
-	 *
-	 * @param buffer the preexisting Arraybuffer, if there is note one will be created
-	 * @param value the number to add to the array buffer
-	 */
-	function updateArrayBuffer(
-		buffer: ArrayBuffer | undefined,
-		value: number
-	): ArrayBuffer {
+/**
+ *
+ * @param buffer the preexisting Arraybuffer, if there is note one will be created
+ * @param value the number to add to the array buffer
+ */
+function updateArrayBuffer(buffer: ArrayBuffer | undefined, value: number | ArrayBuffer): ArrayBuffer {
+	if (value instanceof ArrayBuffer) {
+		if (buffer instanceof ArrayBuffer) {
+			let base = new DataView(buffer);
+			let incoming = new DataView(value);
+			let start = base.byteLength / 2 - 1;
+			for (let i = 0; i < incoming.byteLength / 2 - 1; i++) {
+				let skip = false;
+				for (let j = start; j > 0; j--) {
+					if (base.getUint16(j) === base.getUint16(i)) {
+						skip = true;
+					}
+				}
+				if (!skip) {
+					// @ts-expect-error no ts implementation (or at least I wasn't able find the correct way)
+					if (base.buffer.resizable === true) {
+						// @ts-expect-error no ts implementation (or at least I wasn't able find the correct way)
+						base.buffer.resize(buf.byteLength + 2);
+						let insertIndex = base.byteLength / 2 - 1;
+						base.setUint16(insertIndex, incoming.getUint16(i));
+					}
+				}
+			}
+			return base.buffer;
+		} else {
+			return value;
+		}
+	} else {
 		if (buffer instanceof ArrayBuffer) {
 			let buf = buffer;
 
@@ -626,7 +1689,9 @@ function parseCustomer(
 				buf.resize(buf.byteLength + 2);
 				const view = new DataView(buf);
 				const index = (view.byteLength as number) / 2 - 1;
+
 				view.setUint16(index, value);
+
 				return buf;
 			} else {
 				return buf;
@@ -638,772 +1703,6 @@ function parseCustomer(
 			return buf;
 		}
 	}
-
-	/**
-	 *	updates the references (array buffer) on the customer with the customerID id
-	 * @param id customerID
-	 * @param key "company" | "persons" | "addresses" | "banks"
-	 * @param value number
-	 */
-	function updateCustomer(id: string, key: CustomerReferences, value: number) {
-		const transaction = customerDB.transaction('customers', 'readwrite');
-		const oStore = transaction.objectStore('customers');
-		const index = oStore.index('customers-id');
-		const request = index.get(id);
-		// get the customer
-		request.onsuccess = () => {
-			const entry: Customer = request.result;
-			if (entry) {
-				// the customer exists
-				if (Object.keys(entry).includes(key)) {
-					// the property does exist
-					entry[key] = updateArrayBuffer(entry[key], value);
-				} else {
-					// the property does not exist
-					// so we create it
-					// the max count of references this buffer holds = max size / size of one item = 128/2 = 64
-					// so one array contains a max 64 references
-					// a reference is just an integer , which shows the position of an item in another object store
-					const buf = updateArrayBuffer(undefined, value);
-					Object.defineProperty(entry, key, {
-						configurable: true,
-						enumerable: true,
-						writable: true,
-						value: buf,
-					});
-				}
-
-				oStore.put(entry);
-				transaction.commit();
-			}
-		};
-	}
-
-	async function insertEmail(data: EmailType): Promise<number> {
-		return new Promise((resolve, reject) => {
-			const transaction = customerDB.transaction('emails');
-			const oStore = transaction.objectStore('emails');
-			const index = oStore.index('email');
-			const indexRequest = index.get(data.email);
-			indexRequest.onsuccess = () => {
-				const result = indexRequest.result;
-				if (result === undefined) {
-					// the email does not exist in the oStore
-					// so we can add it
-					const countRequest = oStore.count();
-					countRequest.onsuccess = () => {
-						const count = countRequest.result;
-						data.row = count + 1;
-						oStore.add(data);
-						transaction.commit();
-						resolve(count + 1);
-					};
-					countRequest.onerror = () => {
-						reject('insertEmail: countRequest failed');
-					};
-				} else {
-					resolve((result as EmailType).row);
-				}
-			};
-			indexRequest.onerror = () => {
-				reject('insertEmail: indexRequestFailed');
-			};
-		});
-	}
-
-	async function insertPhone(data: PhoneNumberType): Promise<number> {
-		return new Promise((resolve, reject) => {
-			const transaction = customerDB.transaction('phones');
-			const oStore = transaction.objectStore('phones');
-			const index = oStore.index('phone');
-			const indexRequest = index.get(data.phone);
-			indexRequest.onsuccess = () => {
-				const result = indexRequest.result;
-				if (result === undefined) {
-					// the email does not exist in the oStore
-					// so we can add it
-					const countRequest = oStore.count();
-					countRequest.onsuccess = () => {
-						const count = countRequest.result;
-						data.row = count + 1;
-						oStore.add(data);
-						transaction.commit();
-						resolve(count + 1);
-					};
-					countRequest.onerror = () => {
-						reject('insertPhone: countRequest failed');
-					};
-				} else {
-					resolve((result as PhoneNumberType).row);
-				}
-			};
-			indexRequest.onerror = () => {
-				reject('insertPhone: indexRequestFailed');
-			};
-		});
-	}
-
-	function addParsedData(
-		data: DerefPersonType[] | AddressType[] | CompanyType[] | BankType[],
-		type: keyof CustomerBaseData
-	): void {
-		// create a new transaction
-		// open the oStore
-		const transaction = customerDB.transaction(type, 'readwrite');
-		const oStore = transaction.objectStore(type);
-		for (const value of data) {
-			switch (type) {
-				case 'persons':
-					let personsRow = value as DerefPersonType;
-					let personsToAdd: DerefPersonType[] = [];
-					if (personsRow.firstName !== undefined) {
-						if (personsRow.firstName.includes('&')) {
-							let person1 = structuredClone(personsRow);
-							let person2 = structuredClone(personsRow);
-							let personNames = personsRow.firstName
-								.split('&')
-								.map((item) => trimWhiteSpace(item));
-							person1.firstName = personNames[0];
-							person2.firstName = personNames[1];
-							personsToAdd.push(person1);
-							personsToAdd.push(person2);
-						} else {
-							personsToAdd.push(personsRow);
-						}
-					} else {
-						personsToAdd.push(personsRow);
-					}
-					let reffedPersons: PersonType[] = [];
-					for (const [index, person] of personsToAdd.entries()) {
-						const refPerson = person as PersonType;
-						refPerson.emails = undefined;
-						refPerson.phones = undefined;
-						reffedPersons[index] = refPerson;
-
-						if (person.emails !== undefined) {
-							let promises: Promise<number>[] = [];
-							for (const email of person.emails) {
-								promises.push(insertEmail(email));
-							}
-							Promise.all(promises).then((emailRowNumbers: number[]) => {
-								emailRowNumbers.forEach((value) => {
-									reffedPersons[index].emails = updateArrayBuffer(
-										reffedPersons[index].emails,
-										value
-									);
-								});
-							});
-						}
-
-						if (person.phones !== undefined) {
-							let promises: Promise<number>[] = [];
-							for (const phone of person.phones) {
-								promises.push(insertPhone(phone));
-							}
-							Promise.all(promises).then((phoneRowNumbers: number[]) => {
-								phoneRowNumbers.forEach((value) => {
-									reffedPersons[index].phones = updateArrayBuffer(
-										reffedPersons[index].phones,
-										value
-									);
-								});
-							});
-						}
-					}
-
-					let personsCountRequest = oStore.count();
-					personsCountRequest.onsuccess = () => {
-						const count = personsCountRequest.result;
-						for (const [index, person] of reffedPersons.entries()) {
-							person.row = count + index + 1;
-							oStore.add(person);
-							updateCustomer(row[map.customers.id], type, person.row);
-						}
-					};
-					break;
-				case 'addresses':
-					let addressRow = value as AddressType;
-					getAddressHash(
-						addressRow.street ?? '',
-						addressRow.zip ?? '',
-						addressRow.city ?? ''
-					).then((hash) => {
-						//check if the address already exists
-						let oStoreIndex = oStore.index('addresses-hash');
-						let addressRequest = oStoreIndex.get(hash);
-						addressRequest.onsuccess = () => {
-							if (addressRequest.result !== undefined) {
-								// address already exits
-								// the only thing to do is overwrite other values, if we can
-								if (
-									addressRow.country !== undefined ||
-									addressRow.notes !== undefined ||
-									addressRow.type !== undefined
-								) {
-									let result = addressRequest.result as AddressType;
-									if (addressRow.country !== undefined) {
-										result.country = addressRow.country;
-									}
-									if (addressRow.notes !== undefined) {
-										if (result.notes !== undefined) {
-											result.notes = [
-												...result.notes,
-												...addressRow.notes,
-											];
-										} else {
-											result.notes = addressRow.notes;
-										}
-									}
-									if (addressRow.type !== undefined) {
-										result.type = addressRow.type;
-									}
-									oStore.put(result);
-								}
-							} else {
-								// the address does not already exist
-								const CountRequest = oStore.count();
-								CountRequest.onsuccess = () => {
-									const count = CountRequest.result;
-									addressRow.row = count + 1;
-									addressRow.hash = hash;
-									oStore.add(addressRow);
-								};
-							}
-						};
-					});
-					break;
-				case 'banks':
-					let banksRow = value as BankType;
-					if (banksRow.iban !== undefined) {
-						let oStoreIndex = oStore.index('banks-iban');
-						let indexRequest = oStoreIndex.get(banksRow.iban);
-						indexRequest.onsuccess = () => {
-							if (indexRequest.result) {
-								// the iban exists
-								let result = indexRequest.result as BankType;
-								updateCustomer(row[map.customers.id], type, result.row);
-								for (let [k, v] of Object.entries(result)) {
-									let key = k as keyof BankType;
-									if (key !== 'row') {
-										if (banksRow[key] === undefined) {
-											banksRow[key] = v;
-										} else {
-											if (key === 'notes') {
-												banksRow[key] = [
-													...v,
-													...(banksRow[key] as string[]),
-												];
-											}
-										}
-									}
-								}
-								oStore.put(banksRow);
-							} else {
-								// the iban does not exist
-								let countRequest = oStore.count();
-								countRequest.onsuccess = () => {
-									let count = countRequest.result;
-									banksRow.row = count + 1;
-									oStore.add(banksRow);
-
-									updateCustomer(
-										row[map.customers.id],
-										type,
-										count + 1
-									);
-								};
-							}
-						};
-					} else {
-						// there is no iban
-						// so we just add a new entry
-						let countRequest = oStore.count();
-						countRequest.onsuccess = () => {
-							let count = countRequest.result;
-							banksRow.row = count + 1;
-							oStore.add(banksRow);
-
-							updateCustomer(row[map.customers.id], type, count + 1);
-						};
-					}
-
-					break;
-				case 'company':
-					let companyRow = value as CompanyType;
-					let index = oStore.index('company-name');
-					let indexRequest = index.get(companyRow.name);
-					indexRequest.onsuccess = () => {
-						if (indexRequest.result) {
-							// the company already exists
-							let result = indexRequest.result as CompanyType;
-							updateCustomer(row[map.customers.id], type, result.row);
-							for (let [k, v] of Object.entries(result)) {
-								let key = k as keyof CompanyType;
-								if (key !== 'row') {
-									if (companyRow[key] === undefined) {
-										companyRow[key] = v;
-									} else {
-										if (key === 'notes') {
-											companyRow[key] = [
-												...v,
-												...(companyRow[key] as string[]),
-											];
-										}
-									}
-								}
-							}
-							oStore.put(companyRow);
-						} else {
-							// the company does not exist
-							// so we add it
-							let countRequest = oStore.count();
-							countRequest.onsuccess = () => {
-								let count = countRequest.result;
-								companyRow.row = count + 1;
-								oStore.add(companyRow);
-								updateCustomer(row[map.customers.id], type, count + 1);
-							};
-						}
-					};
-					break;
-				default:
-					console.error('addParsedData: ' + type + ' not found');
-			}
-		}
-	}
-
-	if (map.customers.notes !== undefined) {
-		const note = trimWhiteSpace(row[map.customers.notes] as string);
-		const notes = note.split(',').map((item) => trimWhiteSpace(item));
-		if (customer.notes === undefined) {
-			customer.notes = [];
-		}
-		for (const n of notes) {
-			if (n.trim() !== '') {
-				customer.notes.push(n);
-			}
-		}
-	}
-
-	if (map.customers.description !== undefined) {
-		customer.description = trimWhiteSpace(
-			row[map.customers.description] as string
-		);
-	}
-
-	if (map.customers.firstContact !== undefined) {
-		customer.firstContact = parseDate(
-			row[map.customers.firstContact] as string,
-			'YYYY-MM-DD hh:mm:ss'
-		);
-	}
-
-	if (map.customers.latestContact !== undefined) {
-		customer.firstContact = parseDate(
-			row[map.customers.latestContact] as string,
-			'YYYY-MM-DD hh:mm:ss'
-		);
-	}
-
-	if (map.customers.altIDs !== undefined) {
-		const altIDs = trimWhiteSpace(row[map.customers.altIDs] as string);
-		const ids = altIDs.split(',').map((item) => trimWhiteSpace(item));
-		if (customer.altIDs === undefined) {
-			customer.altIDs = [];
-		}
-		for (const id of ids) {
-			if (id.trim() !== '') {
-				customer.altIDs.push(id);
-			}
-		}
-	}
-
-	if (map.customers.website !== undefined) {
-		let website = trimWhiteSpace(row[map.customers.website]);
-		if (website.includes('http')) {
-			if (website.includes('http://')) {
-				website.replace('http://', 'https://');
-			}
-		} else {
-			website = 'https://' + website;
-		}
-		customer.website = website;
-	}
-
-	const transaction = customerDB.transaction('customers', 'readwrite');
-	const oStoreCustomers = transaction.objectStore('customers');
-	const customersIndex = oStoreCustomers.index('customers-id');
-	const customersIndexRequest = customersIndex.get(customer.id);
-	customersIndexRequest.onsuccess = () => {
-		if (customersIndexRequest.result) {
-			//customer with this id already exists
-			let preexistingCustomer = customersIndexRequest.result as Customer;
-			for (let [k, v] of Object.entries(preexistingCustomer)) {
-				const key = k as keyof Customer;
-				if (key !== 'row' && !(v instanceof ArrayBuffer)) {
-					if (customer[key] !== undefined) {
-						if (key === 'notes') {
-							if (v !== undefined) {
-								let value = v as string[];
-								preexistingCustomer[key] = [...value, ...customer[key]];
-							} else {
-								preexistingCustomer[key] = customer[key];
-							}
-						} else {
-							// overwrite data
-							// @ts-expect-error the types will match, because the key is the same
-							preexistingCustomer[key] = customer[key];
-						}
-					}
-				}
-			}
-			oStoreCustomers.put(preexistingCustomer);
-		} else {
-			// customer does not exist
-			// oStore.put(customer);
-			let customersCountRequest = oStoreCustomers.count();
-			customersCountRequest.onsuccess = () => {
-				let customersCount = customersCountRequest.result;
-				customer.row = customersCount + 1;
-				oStoreCustomers.add(customer);
-			};
-		}
-	};
-
-	let oStoreItems: CustomerBaseData = {
-		persons: [],
-		addresses: [],
-		company: [],
-		banks: [],
-	};
-
-	// fill oStoreItems with templates
-	// the templates as filled with values from row[...]
-	for (const [k, v] of Object.entries(map)) {
-		// walk the map
-		let key = k as keyof CustomerSortingMap;
-		if (key !== 'row' && key !== 'customers') {
-			// if the prop is not "row"
-			// and also not email
-			// and also not phone
-			// because those are nested
-			// get the value of the prop
-			let value: CustomerSortingMap[typeof key] = v;
-			if (Object.keys(value).length !== 0) {
-				// if there are actually any props in value
-				// clone the correct template
-				let template = structuredClone(templates.get(key));
-				for (const [nk, nv] of Object.entries(value)) {
-					// walk the value
-					if (nv !== undefined) {
-						if (typeof nv == 'string' && nv.length !== 0) {
-							let nestedValue = nv; // this is the columnsName in row
-							let nestedKey = nk;
-							// if the value is not undefined
-							if (typeof nestedValue !== 'object') {
-								// we do not have another layer
-								let column: string = map[key][nestedKey] as string;
-								//@ts-expect-error ts does not what the template actually is
-								template[nestedKey] = trimWhiteSpace(row[column]);
-							} else {
-								// this means nestedKey is ether "phones" or "emails"
-								// this also means that key is either "customers" or "persons"
-								let nestedKeyLetterList: string[] =
-									Array.from(nestedKey);
-								nestedKeyLetterList.pop();
-								let nestedNestedKey: 'email' | 'phone' =
-									nestedKeyLetterList.join('') as 'email' | 'phone';
-								let nestedMainValue = trimWhiteSpace(
-									row[map[key][nestedKey][nestedNestedKey]]
-								)
-									.split(',')
-									.map((item) => trimWhiteSpace(item));
-								//@ts-expect-error ts does not what the template actually is
-								template[key][nestedKey] = nestedMainValue.map(
-									(val: string) => {
-										let out: {
-											notes?: string[];
-											type?: string;
-										} = {
-											notes: undefined,
-											type: undefined,
-										};
-										if (map[key][nestedKey]['notes'] !== undefined) {
-											if (
-												row[map[key][nestedKey]['notes']].includes(
-													','
-												)
-											) {
-												out.notes = row[
-													map[key][nestedKey]['notes']
-												]
-													.split(',')
-													.map((item) => trimWhiteSpace(item));
-											} else {
-												out.notes = [
-													row[map[key][nestedKey]['notes']],
-												];
-											}
-										}
-
-										if (map[key][nestedKey]['type'] !== undefined) {
-											out.type = row[map[key][nestedKey]['type']];
-										}
-										out[nestedNestedKey] = val.toLowerCase();
-										return out;
-									}
-								);
-							}
-						}
-					}
-				}
-				(oStoreItems[key] as Array<typeof template>).push(template);
-			}
-		}
-	}
-
-	for (const [key, value] of Object.entries(oStoreItems)) {
-		if (value.length !== 0) {
-			addParsedData(value, key as keyof CustomerBaseData);
-		}
-	}
-}
-
-function createCustomerObjectStores(e: IDBVersionChangeEvent): void {
-	const target: IDBOpenDBRequest = e.target as IDBOpenDBRequest;
-	const db = target.result;
-	const stores = db.objectStoreNames;
-
-	if (!stores.contains('customers')) {
-		const customer = db.createObjectStore('customers', {
-			keyPath: 'row',
-		});
-		customer.createIndex('customers-id', 'id', {
-			unique: true,
-		});
-	}
-
-	if (!stores.contains('persons')) {
-		const persons = db.createObjectStore('persons', {
-			keyPath: 'row',
-		});
-
-		persons.createIndex('persons-lastName', 'lastName', {
-			unique: false,
-		});
-
-		persons.createIndex('persons-firstName', 'firstName', {
-			unique: false,
-		});
-	}
-
-	if (!stores.contains('emails')) {
-		const email = db.createObjectStore('emails', {
-			keyPath: 'row',
-		});
-
-		email.createIndex('emails-email', 'email', {
-			unique: true,
-		});
-	}
-
-	if (!stores.contains('phones')) {
-		const phone = db.createObjectStore('phones', {
-			keyPath: 'row',
-		});
-
-		phone.createIndex('phones-phone', 'phone', {
-			unique: true,
-		});
-	}
-
-	if (!stores.contains('addresses')) {
-		const address = db.createObjectStore('addresses', {
-			keyPath: 'row',
-		});
-
-		address.createIndex('addresses-street', 'street', {
-			unique: false,
-		});
-		address.createIndex('addresses-city', 'city', {
-			unique: false,
-		});
-		address.createIndex('addresses-zip', 'zip', {
-			unique: false,
-		});
-		address.createIndex('addresses-country', 'country', {
-			unique: false,
-		});
-		address.createIndex('addresses-hash', 'hash', {
-			unique: true,
-		});
-	}
-
-	if (!stores.contains('banks')) {
-		const bank = db.createObjectStore('banks', {
-			keyPath: 'row',
-		});
-
-		bank.createIndex('banks-name', 'name', {
-			multiEntry: true,
-		});
-		bank.createIndex('banks-iban', 'iban', {
-			unique: true,
-		});
-	}
-
-	if (!stores.contains('company')) {
-		const company = db.createObjectStore('company', {
-			keyPath: 'row',
-		});
-
-		company.createIndex('company-name', 'name', {
-			unique: false,
-		});
-	}
-}
-
-function doArticles(map: ArticleSortingMap, dbName: string, dbVersion: number) {
-	const dbRequest = indexedDB.open(dbName, dbVersion);
-	console.log(map);
-	dbRequest.onupgradeneeded = createArticleObjectStores;
-}
-
-function createArticleObjectStores(e: IDBVersionChangeEvent): void {
-	const target: IDBOpenDBRequest = e.target as IDBOpenDBRequest;
-	const db = target.result;
-	const stores = db.objectStoreNames;
-
-	if (!stores.contains('articles')) {
-		const articles = db.createObjectStore('articles', {
-			keyPath: 'row',
-		});
-		articles.createIndex('articles-id', 'id', {
-			unique: true,
-		});
-		articles.createIndex('articles-name', 'name', {
-			unique: false,
-		});
-		articles.createIndex('articles-count', 'count', {
-			unique: false,
-		});
-		articles.createIndex('articles-unit', 'unit', {
-			unique: false,
-		});
-		articles.createIndex('articles-lastSeen', 'lastSeen', {
-			unique: false,
-		});
-		articles.createIndex('articles-securityDeposit', 'securityDeposit', {
-			unique: false,
-		});
-	}
-
-	if (!stores.contains('acquisitions')) {
-		const acquisitions = db.createObjectStore('acquisitions', {
-			keyPath: 'row',
-		});
-		acquisitions.createIndex('acquisitions-date', 'date', {
-			unique: false,
-		});
-		acquisitions.createIndex('acquisitions-totalCost', 'totalCost', {
-			unique: false,
-		});
-		acquisitions.createIndex(
-			'acquisitions-purchaseInvoiceID',
-			'purchaseInvoiceID',
-			{
-				unique: false,
-			}
-		);
-	}
-}
-
-function doDocuments(
-	map: DocumentSortingMap,
-	dbName: string,
-	dbVersion: number
-) {
-	const dbRequest = indexedDB.open(dbName, dbVersion);
-	console.log(map);
-	dbRequest.onupgradeneeded = createDocumentObjectStores;
-}
-
-function createDocumentObjectStores(e: IDBVersionChangeEvent): void {
-	const target: IDBOpenDBRequest = e.target as IDBOpenDBRequest;
-	const db = target.result;
-	const stores = db.objectStoreNames;
-
-	if (!stores.contains('quotes')) {
-		const quotes = db.createObjectStore('quotes', {
-			keyPath: 'row',
-		});
-
-		quotes.createIndex('quotes-id', 'id', {
-			unique: true,
-		});
-
-		quotes.createIndex('quotes-date', 'date', {
-			unique: true,
-		});
-
-		quotes.createIndex('quotes-customerID', 'customerID', {
-			unique: true,
-		});
-	}
-
-	if (!stores.contains('invoices')) {
-		const invoices = db.createObjectStore('invoices', {
-			keyPath: 'row',
-		});
-
-		invoices.createIndex('invoices-id', 'id', {
-			unique: true,
-		});
-
-		invoices.createIndex('invoices-date', 'date', {
-			unique: false,
-		});
-
-		invoices.createIndex('invoices-customerID', 'customerID', {
-			unique: false,
-		});
-	}
-
-	if (!stores.contains('deliveries')) {
-		const deliveries = db.createObjectStore('deliveries', {
-			keyPath: 'row',
-		});
-
-		deliveries.createIndex('deliveries-id', 'id', {
-			unique: true,
-		});
-
-		deliveries.createIndex('deliveries-date', 'date', {
-			unique: false,
-		});
-
-		deliveries.createIndex('deliveries-customerID', 'customerID', {
-			unique: false,
-		});
-	}
-
-	if (!stores.contains('returnees')) {
-		const returnees = db.createObjectStore('returnees', {
-			keyPath: 'row',
-		});
-
-		returnees.createIndex('returnees-id', 'id', {
-			unique: true,
-		});
-
-		returnees.createIndex('returnees-date', 'date', {
-			unique: false,
-		});
-
-		returnees.createIndex('returnees-customerID', 'customerID', {
-			unique: false,
-		});
-	}
 }
 
 function trimWhiteSpace(input: string): string {
@@ -1413,6 +1712,5 @@ function trimWhiteSpace(input: string): string {
 	} else {
 		out = '';
 	}
-
 	return out;
 }

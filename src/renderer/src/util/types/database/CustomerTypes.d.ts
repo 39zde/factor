@@ -119,11 +119,11 @@ export interface AddressType {
 	/** what kind of address */
 	type?: ContactType;
 	/**  street name */
-	street: string;
+	street?: string;
 	/** (optional) the city name */
-	city: string;
+	city?: string;
 	/** postal code */
-	zip: string;
+	zip?: string;
 	/** country or country code */
 	country?: string;
 	/** (optional) additional notes */
@@ -148,13 +148,9 @@ export interface CompanyType {
 	name: string;
 	alias?: string[];
 	notes?: string[];
-	tax?: TaxInfos;
-}
-
-export interface TaxInfos {
-	USTID: string;
-	SteuerNummer: string;
-	SteuerID: string;
+	taxID?: string;
+	taxNumber?: string;
+	ustID?: string;
 }
 
 export type ContactType =
