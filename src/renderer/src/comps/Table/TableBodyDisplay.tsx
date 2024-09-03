@@ -6,7 +6,7 @@ import React, {
 	useMemo,
 } from 'react';
 import { createPortal } from 'react-dom';
-import { TableRows } from './TableRows';
+import { TableRows } from './TableBody';
 
 import { useAppContext, solids } from '@renderer/App';
 import { useTableContext, useTableDispatch } from './Table';

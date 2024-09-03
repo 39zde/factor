@@ -15,4 +15,5 @@ export interface TableProps {
 	/** what unique key to use */
 	uniqueKey: string;
 	key?: string;
+	update?: boolean;
 }

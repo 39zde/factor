@@ -21,11 +21,7 @@ import { ColumnCheckBox } from './ColumnCheckBox';
 import { ContextMenu } from '../ContextMenu/ContextMenu';
 import './Table.css';
 
-import {
-	tableReducer,
-	updateSizing,
-	PlaceHolderTableContext,
-} from '@renderer/util/func/func';
+import { tableReducer, updateSizing, PlaceHolderTableContext } from '@renderer/util/func/func';
 import type {
 	TableProps,
 	TableContextType,
@@ -50,14 +46,7 @@ export function useTableDispatch() {
 	return useContext(TableDispatchContext);
 }
 
-export function Table({
-	dataBaseName,
-	tableName,
-	colsHook,
-	entriesHook,
-	updateHook,
-	uniqueKey,
-}: TableProps): React.JSX.Element {
+export function Table({ dataBaseName, tableName, colsHook, entriesHook, updateHook, uniqueKey, update }: TableProps): React.JSX.Element {
 	const rowColumnWidth = 30;
 	const scrollBarHeight = 5;
 	const { database, appearances, worker, general } = useAppContext();
@@ -68,10 +57,7 @@ export function Table({
 	const [y, setY] = useState<number>(0);
 	const menuRef = useRef<HTMLDivElement>(null);
 	const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
-	const [tableState, dispatch] = useReducer(
-		tableReducer,
-		PlaceHolderTableContext
-	);
+	const [tableState, dispatch] = useReducer(tableReducer, PlaceHolderTableContext);
 	/** dispatch all tableState properties or invoke functions that do so */
 	const initTableState = useCallback(() => {
 		// signal that we haven't started
@@ -103,13 +89,13 @@ export function Table({
 				newVal: dataBaseName,
 			});
 		}
+		dispatch({
+			type: 'set',
+			name: 'tableName',
+			newVal: tableName,
+		});
 		if (tableState.tableName !== tableName) {
 			// set new tableName
-			dispatch({
-				type: 'set',
-				name: 'tableName',
-				newVal: tableName,
-			});
 		}
 		if (tableState.uniqueKey !== uniqueKey) {
 			// set new uniqueKey
@@ -134,7 +120,7 @@ export function Table({
 				{
 					dataBaseName: dataBaseName,
 					dbVersion: database.dbVersion,
-					hasStarted: tableState.hasStarted,
+					hasStarted: false,
 					oldScope: tableState.scope,
 					start: tableState.start,
 					tableName: tableName,
@@ -150,24 +136,27 @@ export function Table({
 
 	// start populating the context once the table Body is there
 	useEffect(() => {
-		if (
-			tableBodyRef.current !== undefined &&
-			tableState.hasStarted === false
-		) {
+		if (tableBodyRef.current !== undefined && tableState.hasStarted === false) {
 			initTableState();
 		}
 	}, [tableBodyRef.current, tableState.hasStarted]);
 
 	// listen for any updates
 	useEffect(() => {
-		if (updateHook !== undefined) {
-			dispatch({
-				type: 'set',
-				name: 'update',
-				newVal: updateHook?.update,
-			});
+		console.log('update:', update);
+		if (update !== undefined) {
+			if (tableState.update !== update) {
+				dispatch({
+					type: 'set',
+					name: 'update',
+					newVal: update,
+				});
+				if (update) {
+					initTableState();
+				}
+			}
 		}
-	}, [updateHook]);
+	}, [update]);
 
 	// if we register a change from out side the table component execute it
 	useCallback(() => {
@@ -225,11 +214,7 @@ export function Table({
 							if (value.row === eventData.data.row) return true;
 							return false;
 						});
-						if (
-							filtered.length === 0 &&
-							typeof eventData.data !== 'number' &&
-							!Array.isArray(eventData.data)
-						) {
+						if (filtered.length === 0 && typeof eventData.data !== 'number' && !Array.isArray(eventData.data)) {
 							/// add the row to the tableState
 							rows.push(eventData.data as DerefRow);
 							dispatch({
@@ -272,9 +257,7 @@ export function Table({
 								dispatch({
 									type: 'set',
 									name: 'start',
-									newVal:
-										(eventData.data as DerefRow).row -
-										tableState.scope,
+									newVal: (eventData.data as DerefRow).row - tableState.scope,
 								});
 								// remove the first element and append the received row to the end
 								rows.splice(0, 1);
@@ -350,18 +333,14 @@ export function Table({
 				}
 				// column related
 				// make sure rows is always on the first position
-				const cols = data.startingColumns
-					.toSpliced(data.startingColumns.indexOf('row'), 1)
-					.toSpliced(0, 0, 'row');
+				const cols = data.startingColumns.toSpliced(data.startingColumns.indexOf('row'), 1).toSpliced(0, 0, 'row');
 				// set the menu items
 				setMenuItems([
 					{
 						component: (
 							<>
 								<p aria-modal={'true'} className="menuRow">
-									{general.language === 'deutsch'
-										? 'Spalten'
-										: 'Columns'}
+									{general.language === 'deutsch' ? 'Spalten' : 'Columns'}
 									<ChevronRight
 										size={solids.icon.size.small}
 										strokeWidth={solids.icon.strokeWidth.small}
@@ -375,10 +354,7 @@ export function Table({
 								return {
 									component: (
 										<>
-											<ColumnCheckBox
-												index={index}
-												columnName={item}
-											/>
+											<ColumnCheckBox index={index} columnName={item} />
 										</>
 									),
 								};
@@ -407,9 +383,9 @@ export function Table({
 				// we need this for creating a portal from the table body
 				dispatch({
 					type: 'set',
-					name: "footerRowFirstElementRef",
-					newVal: createRef<HTMLTableCellElement>()
-				})
+					name: 'footerRowFirstElementRef',
+					newVal: createRef<HTMLTableCellElement>(),
+				});
 				// also create the style for every resizeElement
 				dispatch({
 					type: 'set',
@@ -424,17 +400,13 @@ export function Table({
 				// therefore we want the column widths to be the default every time
 				if (dataBaseName !== 'factor_db') {
 					// check if there are already saved columnsWidths in localStorage
-					let savedColumnsWidths = localStorage.getItem(
-						`${tableName}-columnWidths`
-					);
+					let savedColumnsWidths = localStorage.getItem(`${tableName}-columnWidths`);
 					if (savedColumnsWidths !== null) {
 						// if so use those
 						dispatch({
 							type: 'set',
 							name: 'columnWidths',
-							newVal: savedColumnsWidths
-								.split(',')
-								.map((item) => parseFloat(item)),
+							newVal: savedColumnsWidths.split(',').map((item) => parseFloat(item)),
 						});
 					}
 				} else {
@@ -443,9 +415,7 @@ export function Table({
 					dispatch({
 						type: 'set',
 						name: 'columnWidths',
-						newVal: data.startingColumns.map((_value, index) =>
-							index === 0 ? rowColumnWidth : appearances.columnWidth
-						),
+						newVal: data.startingColumns.map((_value, index) => (index === 0 ? rowColumnWidth : appearances.columnWidth)),
 					});
 				}
 				if (colsHook !== undefined) {
@@ -470,6 +440,15 @@ export function Table({
 					name: 'hasStarted',
 					newVal: true,
 				});
+				dispatch({
+					type: 'set',
+					name: 'update',
+					newVal: false,
+				});
+				if (updateHook !== undefined) {
+					updateHook.setUpdate(false);
+				}
+				console.log(tableState);
 				break;
 			case 'error':
 				console.log(eventData);
@@ -610,14 +589,7 @@ export function Table({
 							</table>
 						</div>
 					</div>
-					<ContextMenu
-						active={menuActive}
-						items={menuItems}
-						tree={[null]}
-						x={x}
-						y={y}
-						ref={menuRef}
-					/>
+					<ContextMenu active={menuActive} items={menuItems} tree={[null]} x={x} y={y} ref={menuRef} />
 				</TableDispatchContext.Provider>
 			</TableContext.Provider>
 		</>
