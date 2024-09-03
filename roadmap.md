@@ -15,3 +15,6 @@
 - [ ] add returnees table
 - [ ] add export/backup support
 - [ ] add document creation
+
+## Long Long Term
+- [ ] use CanvasAPI for performance
