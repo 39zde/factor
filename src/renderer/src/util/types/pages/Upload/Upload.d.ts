@@ -1,10 +1,12 @@
-import type { TablePages } from '../pages';
 import type { CustomerSortingMap } from '../../database/CustomerTypes';
 import type { DocumentSortingMap } from '../../database/DocumentTypes';
 import type { ArticleSortingMap } from '../../database/ArticleTypes';
 
-export interface ImportModuleProps {
+export interface ImportModuleProps extends SorterProps {
 	mode: UploadMode;
+}
+
+export interface SorterProps {
 	columns: string[];
 	hook: {
 		map: CustomerSortingMap | ArticleSortingMap | DocumentSortingMap;

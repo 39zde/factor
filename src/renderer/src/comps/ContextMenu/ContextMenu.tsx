@@ -26,7 +26,7 @@ export const ContextMenu = forwardRef<HTMLDivElement, ContextMenuProps>(function
 		setOwnY(y);
 		setNestedActive(false);
 		// determine the distance between the right edge of the contextMenu and the right edge of the window
-		let rightDistance = appearances.width - x - solids.contextMenu.width;
+		const rightDistance = appearances.width - x - solids.contextMenu.width;
 		// determine the distance between the bottom edge of the contextMenu and the bottom edge of the window
 		let bottomDistance = appearances.height - y;
 		if (menuRef.current !== null) {
@@ -186,7 +186,7 @@ export const ContextMenu2 = forwardRef<HTMLDivElement, ContextMenuProps>(functio
 	useEffect(() => {
 		setNestedActive(false);
 		// determine the distance between the right edge of the contextMenu and the right edge of the window
-		let rightDistance = appearances.width - x - solids.contextMenu.width;
+		const rightDistance = appearances.width - x - solids.contextMenu.width;
 		// determine the distance between the bottom edge of the contextMenu and the bottom edge of the window
 		let bottomDistance = appearances.height - y;
 		if (menuRef.current !== null) {

@@ -400,7 +400,7 @@ export function Table({ dataBaseName, tableName, colsHook, entriesHook, updateHo
 				// therefore we want the column widths to be the default every time
 				if (dataBaseName !== 'factor_db') {
 					// check if there are already saved columnsWidths in localStorage
-					let savedColumnsWidths = localStorage.getItem(`${tableName}-columnWidths`);
+					const savedColumnsWidths = localStorage.getItem(`${tableName}-columnWidths`);
 					if (savedColumnsWidths !== null) {
 						// if so use those
 						dispatch({

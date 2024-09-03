@@ -58,7 +58,7 @@ export function tableReducer(tableState: TableContextType, action: TableDispatch
 				const b = action.newVal;
 				const newWidth = Math.abs(Math.abs(b - a));
 				if (!isNaN(newWidth)) {
-					let newColWidths = tableState.columnWidths.map((value, index) => (index === tableState.activeCol ? newWidth : value));
+					const newColWidths = tableState.columnWidths.map((value, index) => (index === tableState.activeCol ? newWidth : value));
 					localStorage.setItem(`${tableState.tableName}-columnWidths`, newColWidths.join(','));
 					return {
 						...tableState,

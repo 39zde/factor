@@ -135,7 +135,7 @@ app.setName('Factor');
 // code. You can also put them in separate files and require them here.
 
 function readSettings(): AppSettingsType | null {
-	let homeDir = getHomeDir();
+	const homeDir = getHomeDir();
 	const settingsFile = readFileSync(homeDir + '/.factor/settings.json', {
 		encoding: 'utf8',
 		flag: 'r',
@@ -148,12 +148,12 @@ function readSettings(): AppSettingsType | null {
 }
 
 function writeSettings(settings: AppSettingsType) {
-	let homeDir = getHomeDir();
+	const homeDir = getHomeDir();
 	writeFileSync(homeDir + '/.factor/settings.json', JSON.stringify(settings), 'utf8');
 }
 
 function initSettings() {
-	let homeDir = getHomeDir();
+	const homeDir = getHomeDir();
 
 	const homeDirContents = readdirSync(homeDir, 'utf8');
 	if (!homeDirContents.includes('.factor')) {

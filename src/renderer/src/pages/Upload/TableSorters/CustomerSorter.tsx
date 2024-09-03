@@ -2,18 +2,9 @@ import React, { useRef, useState, useEffect } from 'react';
 
 import { ColumnSetter } from './ColumnSetter';
 import { useAppContext } from '@renderer/App';
-import type { CustomerSortingMap, ArticleSortingMap } from '@renderer/util/types/types';
+import type { CustomerSortingMap, SorterProps } from '@util/types/types';
 
-export function CustomerSorter({
-	columns,
-	hook,
-}: {
-	columns: string[];
-	hook: {
-		map: any;
-		setMap: (newVal: CustomerSortingMap | ArticleSortingMap) => void;
-	};
-}): React.JSX.Element {
+export function CustomerSorter({ columns, hook }: SorterProps): React.JSX.Element {
 	const { general } = useAppContext();
 	const [sortingMap, setSortingMap] = useState<CustomerSortingMap>({
 		addresses: {},
@@ -211,7 +202,7 @@ export function CustomerSorter({
 	}, [sortingMap]);
 
 	const inputHandler = (group, subject, index: number) => {
-		let currentMap = sortingMap;
+		const currentMap = sortingMap;
 		if (subject.mapKey !== undefined) {
 			if (currentMap[group.mapKey][subject.mapKey] === undefined) {
 				Object.defineProperty(currentMap[group.mapKey], subject.mapKey, {

@@ -13,7 +13,6 @@ import type {
 	DateInput,
 	UploadRow,
 	DerefPersonType,
-	CustomerBaseData,
 	ArticleSortingMap,
 	CustomerSortingMap,
 	DocumentSortingMap,
@@ -601,8 +600,8 @@ function sortData(
 					// variable definitions
 					const customerDB = customerDBrequest.result;
 					const oStores = customerDB.objectStoreNames;
-					let customer = structuredClone(templates.get('customer')) as Customer;
-					let customerCounter = {
+					const customer = structuredClone(templates.get('customer')) as Customer;
+					const customerCounter = {
 						count: 0,
 						total: 0,
 					};
@@ -621,7 +620,7 @@ function sortData(
 							return true;
 						},
 					};
-					let customerTracker = new Proxy<typeof customerCounter>(customerCounter, customerTrackerHandler);
+					const customerTracker = new Proxy<typeof customerCounter>(customerCounter, customerTrackerHandler);
 					// function definitions
 					// these need to be done in the customerDB request scope to 'function' properly
 					function insertEmail(data: EmailType, callback: (result: number | null) => void): void {
@@ -634,7 +633,7 @@ function sortData(
 								emailIndexRequest.onsuccess = () => {
 									if (emailIndexRequest.result !== undefined) {
 										// the email already exists
-										let preexistingEmailRow = emailIndexRequest.result as EmailType;
+										const preexistingEmailRow = emailIndexRequest.result as EmailType;
 										if (data.notes !== undefined) {
 											if (preexistingEmailRow.notes !== undefined) {
 												preexistingEmailRow.notes = [...preexistingEmailRow.notes, ...data.notes];
@@ -645,7 +644,7 @@ function sortData(
 										if (data.type !== undefined) {
 											preexistingEmailRow.type = data.type;
 										}
-										let putRequest = oStoreEmail.put(preexistingEmailRow);
+										const putRequest = oStoreEmail.put(preexistingEmailRow);
 										putRequest.onsuccess = () => {
 											callback(putRequest.result as number);
 											emailTransaction.commit();
@@ -660,7 +659,7 @@ function sortData(
 										emailCountRequest.onsuccess = () => {
 											const emailCount = emailCountRequest.result;
 											data.row = emailCount + 1;
-											let addRequest = oStoreEmail.add(data);
+											const addRequest = oStoreEmail.add(data);
 											addRequest.onsuccess = () => {
 												callback(addRequest.result as number);
 												emailTransaction.commit();
@@ -699,7 +698,7 @@ function sortData(
 								phoneIndexRequest.onsuccess = () => {
 									if (phoneIndexRequest.result !== undefined) {
 										// the phone already exists
-										let preexistingPhoneRow = phoneIndexRequest.result as PhoneNumberType;
+										const preexistingPhoneRow = phoneIndexRequest.result as PhoneNumberType;
 										if (data.notes !== undefined) {
 											if (preexistingPhoneRow.notes !== undefined) {
 												preexistingPhoneRow.notes = [...preexistingPhoneRow.notes, ...data.notes];
@@ -710,7 +709,7 @@ function sortData(
 										if (data.type !== undefined) {
 											preexistingPhoneRow.type = data.type;
 										}
-										let putRequest = oStorePhone.put(preexistingPhoneRow);
+										const putRequest = oStorePhone.put(preexistingPhoneRow);
 										putRequest.onsuccess = () => {
 											callback(putRequest.result as number);
 											phoneTransaction.commit();
@@ -725,7 +724,7 @@ function sortData(
 										phoneCountRequest.onsuccess = () => {
 											const phoneCount = phoneCountRequest.result;
 											data.row = phoneCount + 1;
-											let addRequest = oStorePhone.add(data);
+											const addRequest = oStorePhone.add(data);
 											addRequest.onsuccess = () => {
 												callback(addRequest.result as number);
 												phoneTransaction.commit();
@@ -766,7 +765,7 @@ function sortData(
 								addressIndexRequest.onsuccess = () => {
 									if (addressIndexRequest.result !== undefined) {
 										// address exist already
-										let addressRow = addressIndexRequest.result as AddressType;
+										const addressRow = addressIndexRequest.result as AddressType;
 										if (data.notes !== undefined) {
 											if (addressRow.notes !== undefined) {
 												addressRow.notes = [...addressRow.notes, ...data.notes];
@@ -780,7 +779,7 @@ function sortData(
 										if (data.type !== undefined) {
 											addressRow.type = data.type;
 										}
-										let putRequest = oStoreAddresses.put(addressRow);
+										const putRequest = oStoreAddresses.put(addressRow);
 										putRequest.onsuccess = () => {
 											callback(putRequest.result as number);
 											addressesTransaction.commit();
@@ -793,9 +792,9 @@ function sortData(
 										// address does not exist already
 										const addressesCountRequest = oStoreAddresses.count();
 										addressesCountRequest.onsuccess = () => {
-											let addressCount = addressesCountRequest.result;
+											const addressCount = addressesCountRequest.result;
 											data.row = addressCount + 1;
-											let addRequest = oStoreAddresses.add(data);
+											const addRequest = oStoreAddresses.add(data);
 
 											addRequest.onsuccess = () => {
 												callback(addRequest.result as number);
@@ -838,7 +837,7 @@ function sortData(
 								bankIndexRequest.onsuccess = () => {
 									if (bankIndexRequest.result !== undefined) {
 										// the iban already exists
-										let preexistingBankRow = bankIndexRequest.result as BankType;
+										const preexistingBankRow = bankIndexRequest.result as BankType;
 										if (data.notes !== undefined) {
 											if (preexistingBankRow.notes !== undefined) {
 												preexistingBankRow.notes = [...preexistingBankRow.notes, ...data.notes];
@@ -856,7 +855,7 @@ function sortData(
 											preexistingBankRow.name = data.name;
 										}
 
-										let putRequest = oStoreBank.put(preexistingBankRow);
+										const putRequest = oStoreBank.put(preexistingBankRow);
 										putRequest.onsuccess = () => {
 											callback(putRequest.result as number);
 											bankTransaction.commit();
@@ -871,7 +870,7 @@ function sortData(
 										bankCountRequest.onsuccess = () => {
 											const bankCount = bankCountRequest.result;
 											data.row = bankCount + 1;
-											let addRequest = oStoreBank.add(data);
+											const addRequest = oStoreBank.add(data);
 											addRequest.onsuccess = () => {
 												callback(addRequest.result as number);
 												bankTransaction.commit();
@@ -911,7 +910,7 @@ function sortData(
 								companyIndexRequest.onsuccess = () => {
 									if (companyIndexRequest.result !== undefined) {
 										// the iban already exists
-										let preexistingCompanyRow = companyIndexRequest.result as CompanyType;
+										const preexistingCompanyRow = companyIndexRequest.result as CompanyType;
 										if (data.notes !== undefined) {
 											if (preexistingCompanyRow.notes !== undefined) {
 												preexistingCompanyRow.notes = [...preexistingCompanyRow.notes, ...data.notes];
@@ -935,7 +934,7 @@ function sortData(
 											preexistingCompanyRow.taxNumber = data.taxNumber;
 										}
 
-										let putRequest = oStoreCompany.put(preexistingCompanyRow);
+										const putRequest = oStoreCompany.put(preexistingCompanyRow);
 										putRequest.onsuccess = () => {
 											callback(putRequest.result as number);
 											companyTransaction.commit();
@@ -950,7 +949,7 @@ function sortData(
 										companyCountRequest.onsuccess = () => {
 											const companyCount = companyCountRequest.result;
 											data.row = companyCount + 1;
-											let addRequest = oStoreCompany.add(data);
+											const addRequest = oStoreCompany.add(data);
 											addRequest.onsuccess = () => {
 												callback(addRequest.result as number);
 												companyTransaction.commit();
@@ -987,7 +986,7 @@ function sortData(
 							personsCountRequest.onsuccess = () => {
 								const personsCount = personsCountRequest.result;
 								data.row = personsCount + 1;
-								let addRequest = oStorePersons.add(data);
+								const addRequest = oStorePersons.add(data);
 								addRequest.onsuccess = () => {
 									personsTransaction.commit();
 									callback(true, addRequest.result as number);
@@ -1063,7 +1062,7 @@ function sortData(
 										if (data.website !== undefined) {
 											preexistingCustomer.website = data.website;
 										}
-										let putRequest = oStoreCustomers.put(preexistingCustomer);
+										const putRequest = oStoreCustomers.put(preexistingCustomer);
 										putRequest.onsuccess = () => {
 											callback(putRequest.result as number);
 											customerTransaction.commit();
@@ -1075,11 +1074,11 @@ function sortData(
 									} else {
 										// the customer does not already exist
 										// we can add
-										let customersCountRequest = oStoreCustomers.count();
+										const customersCountRequest = oStoreCustomers.count();
 										customersCountRequest.onsuccess = () => {
-											let customerCount = customersCountRequest.result;
+											const customerCount = customersCountRequest.result;
 											data.row = customerCount + 1;
-											let addRequest = oStoreCustomers.add(data);
+											const addRequest = oStoreCustomers.add(data);
 											addRequest.onsuccess = () => {
 												callback(addRequest.result as number);
 												customerTransaction.commit();
@@ -1102,15 +1101,15 @@ function sortData(
 					}
 
 					function parsePersons(data: DerefPersonType[], callback: (result: PersonType[] | null) => void): void {
-						let reffedPersons: PersonType[] = [];
+						const reffedPersons: PersonType[] = [];
 						let emailHolder = new WeakMap();
 						let phoneHolder = new WeakMap();
-						let counter = {
+						const counter = {
 							count: 0,
 							total: 0,
 						};
 
-						let counterHandler = {
+						const counterHandler = {
 							set(target, prop, value) {
 								target[prop] = value;
 								if (prop === 'count') {
@@ -1162,8 +1161,8 @@ function sortData(
 					}
 
 					function parseAddress(data: AddressType[], callback: (rowNumbers: number[]) => void): void {
-						let weakMap = new WeakMap();
-						let addressReferences: number[] = [];
+						const weakMap = new WeakMap();
+						const addressReferences: number[] = [];
 						weakMap.set(data, addressReferences);
 						const counter = {
 							count: 0,
@@ -1196,8 +1195,8 @@ function sortData(
 					}
 
 					function parseBanks(data: BankType[], callback: (rowNumbers: number[]) => void): void {
-						let weakMap = new WeakMap();
-						let companyReferences: number[] = [];
+						const weakMap = new WeakMap();
+						const companyReferences: number[] = [];
 						weakMap.set(data, companyReferences);
 						const counter = {
 							count: 0,
@@ -1227,8 +1226,8 @@ function sortData(
 					}
 
 					function parseCompany(data: CompanyType[], callback: (rowNumbers: number[]) => void): void {
-						let weakMap = new WeakMap();
-						let companyReferences: number[] = [];
+						const weakMap = new WeakMap();
+						const companyReferences: number[] = [];
 						weakMap.set(data, companyReferences);
 						const counter = {
 							count: 0,
@@ -1302,37 +1301,37 @@ function sortData(
 					}
 
 					if (map.customers.website !== undefined) {
-						let website = trimWhiteSpace(row[map.customers.website]);
+						const website = trimWhiteSpace(row[map.customers.website]);
 						website.replace('http://', 'https://');
 						customer.website = website;
 					}
 
-					let quedPersons: DerefPersonType[] = [];
-					let quedAddresses: AddressType[] = [];
-					let quedBanks: BankType[] = [];
-					let quedCompany: CompanyType[] = [];
+					const quedPersons: DerefPersonType[] = [];
+					const quedAddresses: AddressType[] = [];
+					const quedBanks: BankType[] = [];
+					const quedCompany: CompanyType[] = [];
 
 					// fill oStoreItems with templates
 					// the templates as filled with values from row[...]
 					for (const [k, v] of Object.entries(map)) {
 						// walk the map
-						let key = k as keyof CustomerSortingMap;
+						const key = k as keyof CustomerSortingMap;
 						if (key !== 'row' && key !== 'customers') {
 							// if the prop is not "row"
 							// and also not email
 							// and also not phone
 							// because those are nested
 							// get the value of the prop
-							let value: CustomerSortingMap[typeof key] = v;
-							let mainKey: 'persons' | 'banks' | 'addresses' | 'company' = key;
+							const value: CustomerSortingMap[typeof key] = v;
+							const mainKey: 'persons' | 'banks' | 'addresses' | 'company' = key;
 							if (Object.keys(value).length !== 0) {
 								// if there are actually any props in value
 								// clone the correct template
-								let template = structuredClone(templates.get(mainKey));
+								const template = structuredClone(templates.get(mainKey));
 								for (const [nk, nv] of Object.entries(value)) {
 									// walk the value
-									let nestedValue = nv; // this is the columnsName in row
-									let nestedKey = nk;
+									const nestedValue = nv; // this is the columnsName in row
+									const nestedKey = nk;
 									if (typeof nestedValue === 'string') {
 										// if the value is not undefined
 										if (nestedKey !== 'emails' && nestedKey !== 'phones') {
@@ -1347,14 +1346,14 @@ function sortData(
 									} else {
 										// this means nestedKey is either "phones" or "emails"
 										// this also means that key is either "customers" or "persons"
-										let nestedKeyLetterList: string[] = Array.from(nestedKey);
+										const nestedKeyLetterList: string[] = Array.from(nestedKey);
 										nestedKeyLetterList.pop();
-										let nestedNestedKey: 'email' | 'phone' = nestedKeyLetterList.join('') as 'email' | 'phone';
-										let nestedMainValue = trimWhiteSpace(row[nestedValue[nestedNestedKey]])
+										const nestedNestedKey: 'email' | 'phone' = nestedKeyLetterList.join('') as 'email' | 'phone';
+										const nestedMainValue = trimWhiteSpace(row[nestedValue[nestedNestedKey]])
 											.split(',')
 											.map((item) => trimWhiteSpace(item));
-										let personEmails = nestedMainValue.map((val: string) => {
-											let out: {
+										const personEmails = nestedMainValue.map((val: string) => {
+											const out: {
 												notes?: string[];
 												type?: string;
 											} = {
@@ -1383,7 +1382,7 @@ function sortData(
 								}
 								switch (mainKey) {
 									case 'addresses':
-										// @ts-ignore
+										//@ts-expect-error the template matches the mainKey regardless
 										quedAddresses.push(template as AddressType);
 										break;
 									case 'banks':
@@ -1641,9 +1640,9 @@ function sortData(
 function updateArrayBuffer(buffer: ArrayBuffer | undefined, value: number | ArrayBuffer): ArrayBuffer {
 	if (value instanceof ArrayBuffer) {
 		if (buffer instanceof ArrayBuffer) {
-			let base = new DataView(buffer);
-			let incoming = new DataView(value);
-			let start = base.byteLength / 2 - 1;
+			const base = new DataView(buffer);
+			const incoming = new DataView(value);
+			const start = base.byteLength / 2 - 1;
 			for (let i = 0; i < incoming.byteLength / 2 - 1; i++) {
 				let skip = false;
 				for (let j = start; j > 0; j--) {
@@ -1656,7 +1655,7 @@ function updateArrayBuffer(buffer: ArrayBuffer | undefined, value: number | Arra
 					if (base.buffer.resizable === true) {
 						// @ts-expect-error no ts implementation (or at least I wasn't able find the correct way)
 						base.buffer.resize(buf.byteLength + 2);
-						let insertIndex = base.byteLength / 2 - 1;
+						const insertIndex = base.byteLength / 2 - 1;
 						base.setUint16(insertIndex, incoming.getUint16(i));
 					}
 				}
@@ -1667,7 +1666,7 @@ function updateArrayBuffer(buffer: ArrayBuffer | undefined, value: number | Arra
 		}
 	} else {
 		if (buffer instanceof ArrayBuffer) {
-			let buf = buffer;
+			const buf = buffer;
 
 			for (let i = new DataView(buf).byteLength / 2 - 1; i > 0; i--) {
 				if (new DataView(buf).getUint16(i) === value) {

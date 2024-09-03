@@ -1,7 +1,7 @@
 export type { SideBarProps, RouterButtonProps, LowerButtonProps } from './comps/SideBar/SideBarProps';
 export type { RouteType } from './comps/SideBar/routes';
 
-export type { ImportModuleProps, ArticleSortingMap, UploadMode } from './pages/Upload/Upload';
+export type { ImportModuleProps, SorterProps, UploadMode } from './pages/Upload/Upload';
 
 export type {
 	Customer,
@@ -14,7 +14,6 @@ export type {
 	CompanyType,
 	ContactType,
 	CustomerDBObjectStores,
-	TaxInfos,
 	CustomerSortingMap,
 	CustomerSortingMapProps,
 	DerefPersonType,
