@@ -45,11 +45,13 @@
 
 .keyBoardShortcut {
 	display: flex;
+	flex-direction: row;
 	justify-content: center;
 	align-items: center;
-	border: 1px solid light-dark(var(--color-light-3), var(--color-dark-3));
 	padding: 2px 16px;
 	width: fit-content;
 	border-radius: 16px;
 	height: 32px;
+	gap: 8px
 }
+

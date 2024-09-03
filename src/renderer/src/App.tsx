@@ -13,6 +13,13 @@ const ImportWorker = (() => {
 	return work;
 })();
 
+const ExportWorker = (() => {
+	const work = new Worker(new URL('@util/worker/export.worker.ts', import.meta.url), {
+		type: 'module',
+	});
+	return work;
+})();
+
 const TableWorker = (() => {
 	const work = new Worker(new URL('@util/worker/table.worker.ts', import.meta.url), {
 		type: 'module',
@@ -68,6 +75,7 @@ const defaultContext: AppContextType = {
 	worker: {
 		ImportWorker: ImportWorker,
 		TableWorker: TableWorker,
+		ExportWorker: ExportWorker,
 	},
 };
 
@@ -169,6 +177,7 @@ function appReducer(appState: AppContextType, action: AppAction): AppContextType
 				worker: {
 					ImportWorker: appState.worker.ImportWorker,
 					TableWorker: appState.worker.TableWorker,
+					ExportWorker: appState.worker.ExportWorker,
 				},
 			};
 		}
@@ -200,6 +209,7 @@ function appReducer(appState: AppContextType, action: AppAction): AppContextType
 				worker: {
 					ImportWorker: appState.worker.ImportWorker,
 					TableWorker: appState.worker.TableWorker,
+					ExportWorker: appState.worker.ExportWorker,
 				},
 			};
 		}
@@ -227,77 +237,82 @@ function App(): JSX.Element {
 	const [showHelp, setShowHelp] = useState<boolean>(false);
 	const getHeight = useCallback(() => window.innerHeight, []);
 	const getWidth = useCallback(() => window.innerWidth, []);
-	const [appState, dispatch] = useReducer(appReducer, { defaultContext, document, TableWorker, ImportWorker, window }, (args): AppContextType => {
-		const dataBasesPromise = args.window.indexedDB.databases();
-		let out: AppContextType;
-		const storedSettings: AppSettingsType | null = args.window.electron.ipcRenderer.sendSync('settings', {
-			type: 'readSettings',
-		});
-		if (storedSettings !== null) {
-			out = {
-				...storedSettings,
-				worker: {
-					ImportWorker: args.ImportWorker,
-					TableWorker: args.TableWorker,
-				},
-			};
-			const themeTag = args.document.getElementById('theme');
-			if (themeTag !== null) {
-				themeTag.innerText = `:root{ color-scheme: ${storedSettings.appearances.colorTheme} ; }`;
+	const [appState, dispatch] = useReducer(
+		appReducer,
+		{ defaultContext, document, TableWorker, ImportWorker, ExportWorker, window },
+		(args): AppContextType => {
+			const dataBasesPromise = args.window.indexedDB.databases();
+			let out: AppContextType;
+			const storedSettings: AppSettingsType | null = args.window.electron.ipcRenderer.sendSync('settings', {
+				type: 'readSettings',
+			});
+			if (storedSettings !== null) {
+				out = {
+					...storedSettings,
+					worker: {
+						ImportWorker: args.ImportWorker,
+						TableWorker: args.TableWorker,
+						ExportWorker: args.ExportWorker,
+					},
+				};
+				const themeTag = args.document.getElementById('theme');
+				if (themeTag !== null) {
+					themeTag.innerText = `:root{ color-scheme: ${storedSettings.appearances.colorTheme} ; }`;
+				}
+			} else {
+				out = args.defaultContext;
 			}
-		} else {
-			out = args.defaultContext;
-		}
 
-		dataBasesPromise
-			.then((dbs) => {
-				const requests: Promise<{
-					dbName: string;
-					db: IDBDatabase | string;
-				}>[] = [];
-				for (const item of dbs) {
-					if (item.name !== undefined && item.version !== undefined) {
-						if (item.name === 'customer_db' || item.name === 'article_db' || item.name === 'document_db') {
-							requests.push(
-								new Promise((resolve, reject) => {
-									const request = indexedDB.open(item.name as string, item.version);
-									request.onsuccess = () => {
-										resolve({
-											dbName: item.name as string,
-											db: request.result,
-										});
-									};
-									request.onerror = () => {
-										reject(`error: failed to open ${item.name} database`);
-									};
-								})
-							);
+			dataBasesPromise
+				.then((dbs) => {
+					const requests: Promise<{
+						dbName: string;
+						db: IDBDatabase | string;
+					}>[] = [];
+					for (const item of dbs) {
+						if (item.name !== undefined && item.version !== undefined) {
+							if (item.name === 'customer_db' || item.name === 'article_db' || item.name === 'document_db') {
+								requests.push(
+									new Promise((resolve, reject) => {
+										const request = indexedDB.open(item.name as string, item.version);
+										request.onsuccess = () => {
+											resolve({
+												dbName: item.name as string,
+												db: request.result,
+											});
+										};
+										request.onerror = () => {
+											reject(`error: failed to open ${item.name} database`);
+										};
+									})
+								);
+							}
 						}
 					}
-				}
-				return Promise.all(requests);
-			})
-			.then((result) => {
-				for (const item of result) {
-					if (typeof item.db !== 'string') {
-						if (item.db.objectStoreNames.length !== 0) {
-							out.database.databases[item.dbName] = Array.from(item.db.objectStoreNames);
+					return Promise.all(requests);
+				})
+				.then((result) => {
+					for (const item of result) {
+						if (typeof item.db !== 'string') {
+							if (item.db.objectStoreNames.length !== 0) {
+								out.database.databases[item.dbName] = Array.from(item.db.objectStoreNames);
+							} else {
+								out.database.databases[item.dbName] = null;
+							}
 						} else {
 							out.database.databases[item.dbName] = null;
 						}
-					} else {
-						out.database.databases[item.dbName] = null;
 					}
-				}
-			})
-			.catch((error) => {
-				console.log(error);
-			});
-		out.appearances.height = window.innerHeight;
-		out.appearances.width = window.innerWidth;
+				})
+				.catch((error) => {
+					console.log(error);
+				});
+			out.appearances.height = window.innerHeight;
+			out.appearances.width = window.innerWidth;
 
-		return out;
-	});
+			return out;
+		}
+	);
 
 	const resizeHandler = () => {
 		const height = getHeight();

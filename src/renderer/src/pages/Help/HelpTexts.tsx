@@ -62,14 +62,15 @@ export const HelpTextEN: HelpTexts = {
 							<h4>Ways to navigate horizontally: </h4>
 							<ol>
 								<li>
-									<span>
-										<span className="keyboardKey">&#8679;</span>+ Scroll
+									<span className="keyBoardShortcut">
+										<span className="keyboardKey">&#8679;</span>
+										<span>+ Scroll</span>
 									</span>
 								</li>
 								<li>Press and hold the mouse wheel and drag towards the wanted direction</li>
 								<li>Using the Scrollbar</li>
 							</ol>
-							<h4>Ways to navigate vertically:: </h4>
+							<h4>Ways to navigate vertically: </h4>
 							<ol>
 								<li>Use the mouse wheel</li>
 								<li>Use the buttons in the upper and lower left corner of the table</li>

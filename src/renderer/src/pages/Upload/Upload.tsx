@@ -7,9 +7,10 @@ import { ImportModule } from './ImportModule';
 import { Table } from '@comps/Table/Table';
 import './Upload.css';
 import type { CustomerSortingMap, ArticleSortingMap, UploadMode, DocumentSortingMap } from '@util/types/types';
-import { useAppContext, solids } from '@renderer/App';
+import { useAppContext, solids, useChangeContext } from '@renderer/App';
 
 export function Upload(): React.JSX.Element {
+	const dispatch = useChangeContext();
 	const { general, worker, database } = useAppContext();
 	const fileSelector = useRef<HTMLInputElement>(null);
 	const [showTable, setShowTable] = useState<boolean>(false);
@@ -25,7 +26,13 @@ export function Upload(): React.JSX.Element {
 	const importButtonRef = useRef<HTMLButtonElement>(null);
 	const [map, setMap] = useState<CustomerSortingMap | ArticleSortingMap | DocumentSortingMap>({
 		row: 'row',
-		id: '',
+		customers: {
+			id: '',
+		},
+		persons: {},
+		addresses: {},
+		banks: {},
+		company: {},
 	});
 	const [tableImportMode, setTableImportMode] = useState<UploadMode | undefined>(undefined);
 	const tableImportModeHandler = (): void => {
@@ -39,11 +46,8 @@ export function Upload(): React.JSX.Element {
 	const fileHandler = async (): Promise<void> => {
 		const files = fileSelector.current?.files;
 		if (files !== undefined) {
-			// console.log(files)
-
 			if (files?.length === 1) {
 				try {
-					// console.log(files[0].type)
 					const data = await files[0].text();
 					sessionStorage.setItem('fileName', files[0].name);
 					sessionStorage.setItem('fileUpload', data);
@@ -94,13 +98,13 @@ export function Upload(): React.JSX.Element {
 
 	const sortingMapHook = {
 		map: map,
-		setMap: (newVal: ArticleSortingMap | CustomerSortingMap) => {
+		setMap: (newVal: ArticleSortingMap | CustomerSortingMap | DocumentSortingMap) => {
 			setMap(newVal);
 		},
 	};
 
 	const importHandler = () => {
-		if (tableImportMode === 'customer_db') {
+		if (tableImportMode === 'customer_db' && map !== undefined) {
 			if (map['customers']['id'] === undefined) {
 				window.alert('Customers ID is a requirement');
 			} else {
@@ -138,19 +142,18 @@ export function Upload(): React.JSX.Element {
 					if (tableImportModeInputRef.current !== null) {
 						switch (tableImportModeInputRef.current.value) {
 							case 'customers':
-							// const newTables = database;
-							// if (newTables.includes('customer_db')) {
-							// 	break;
-							// }
-							// newTables.push('customer_db');
-							// dispatch({
-							// 	type: 'set',
-							// 	change: {
-							// 		database: {
-							// 			tables: newTables,
-							// 		},
-							// 	},
-							// });
+								dispatch({
+									type: 'set',
+									change: {
+										database: {
+											databases: {
+												customer_db: ['customers', 'persons', 'emails', 'phones', 'addresses', 'banks', 'company'],
+												article_db: database.databases.article_db,
+												document_db: database.databases.document_db,
+											},
+										},
+									},
+								});
 						}
 					}
 

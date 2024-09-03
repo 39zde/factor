@@ -211,47 +211,53 @@ function importData(dataBaseName: string, dbVersion: number, data: string) {
 	const keys = getKeys(rows[0]);
 	const request = indexedDB.open(dataBaseName, dbVersion);
 
-	request.onsuccess = () => {
-		function deleteData(db: IDBDatabase) {
-			const transaction = db.transaction(['data_upload'], 'readwrite');
-			const objectStore = transaction.objectStore('data_upload');
-			objectStore.clear();
-		}
-		function addData({ keys, rows, db }: AddDataArgs) {
-			const transaction = db.transaction(['data_upload'], 'readwrite');
-			const objectStore = transaction.objectStore('data_upload');
-			let i = 1;
-			while (i < rows.length) {
-				const columns = rows[i].split(';');
-				const out = {};
-				out['row'] = i;
-				for (let j = 0; j < keys.length; j++) {
-					out[keys[j]] = columns[j];
-				}
-				objectStore.add(out);
-				i++;
-			}
-		}
+	request.onupgradeneeded = () => {
 		const db = request.result;
-		deleteData(db);
-		addData({ keys, rows, db });
-		const copy = [...keys];
-		copy.splice(0, 0, 'row');
-		return postMessage({
-			type: 'imported',
-			data: [rows.length, copy],
-		});
+		db.createObjectStore('data_upload', { keyPath: 'row' });
+		console.log('created oStore data_upload');
+	};
+
+	request.onsuccess = () => {
+		const db = request.result;
+		if (db.objectStoreNames.contains('data_upload')) {
+			console.log('db contains data_upload');
+			function deleteData(db: IDBDatabase) {
+				const transaction = db.transaction('data_upload', 'readwrite', { durability: 'strict' });
+				const objectStore = transaction.objectStore('data_upload');
+				objectStore.clear();
+				transaction.commit();
+			}
+			function addData({ keys, rows, db }: AddDataArgs) {
+				const transaction = db.transaction('data_upload', 'readwrite', { durability: 'strict' });
+				const objectStore = transaction.objectStore('data_upload');
+				let i = 1;
+				while (i < rows.length) {
+					const columns = rows[i].split(';');
+					const out = {};
+					out['row'] = i;
+					for (let j = 0; j < keys.length; j++) {
+						out[keys[j]] = columns[j];
+					}
+					objectStore.add(out);
+					i++;
+				}
+				transaction.commit();
+			}
+			deleteData(db);
+			addData({ keys, rows, db });
+			const copy = [...keys];
+			copy.splice(0, 0, 'row');
+			return postMessage({
+				type: 'imported',
+				data: [rows.length, copy],
+			});
+		}
 	};
 	request.onerror = () => {
 		return postMessage({
 			type: 'error',
 			data: 'failed to open database',
 		});
-	};
-
-	request.onupgradeneeded = () => {
-		const db = request.result;
-		db.createObjectStore('data_upload', { keyPath: 'row' });
 	};
 }
 
@@ -612,7 +618,7 @@ function sortData(
 								if (target['count'] == target['total']) {
 									insertCustomer(customer, (rowNumber: number | null) => {
 										if (rowNumber !== null) {
-											console.log('done with customer in row : ' + rowNumber);
+											// console.log('done with customer in row : ' + rowNumber);
 										}
 									});
 								}
@@ -1392,8 +1398,6 @@ function sortData(
 										quedCompany.push(template as CompanyType);
 										break;
 									case 'persons':
-										// console.log("add to que")
-										// console.log(template?.emails)
 										quedPersons.push(template as DerefPersonType);
 								}
 							}
@@ -1448,7 +1452,7 @@ function sortData(
 					if (quedAddresses.length === 0 && quedBanks.length === 0 && quedCompany.length === 0 && quedPersons.length === 0) {
 						insertCustomer(customer, (rowNumber: number | null) => {
 							if (rowNumber !== null) {
-								console.log('done with customer in row : ' + rowNumber);
+								// console.log('done with customer in row : ' + rowNumber);
 							}
 						});
 					}
@@ -1465,131 +1469,141 @@ function sortData(
 
 			function parseArticleData(dataBaseName: string, dataBaseVersion: number, map: ArticleSortingMap, row: UploadRow) {
 				//function definitions
-				function upgradeArticleDB(e: IDBVersionChangeEvent): void {
-					const target: IDBOpenDBRequest = e.target as IDBOpenDBRequest;
-					const db = target.result;
-					const stores = db.objectStoreNames;
+				// function upgradeArticleDB(e: IDBVersionChangeEvent): void {
+				// 	const target: IDBOpenDBRequest = e.target as IDBOpenDBRequest;
+				// 	const db = target.result;
+				// 	const stores = db.objectStoreNames;
 
-					if (!stores.contains('articles')) {
-						const articles = db.createObjectStore('articles', {
-							keyPath: 'row',
-						});
-						articles.createIndex('articles-id', 'id', {
-							unique: true,
-						});
-						articles.createIndex('articles-name', 'name', {
-							unique: false,
-						});
-						articles.createIndex('articles-count', 'count', {
-							unique: false,
-						});
-						articles.createIndex('articles-unit', 'unit', {
-							unique: false,
-						});
-						articles.createIndex('articles-lastSeen', 'lastSeen', {
-							unique: false,
-						});
-						articles.createIndex('articles-securityDeposit', 'securityDeposit', {
-							unique: false,
-						});
-					}
+				// 	if (!stores.contains('articles')) {
+				// 		const articles = db.createObjectStore('articles', {
+				// 			keyPath: 'row',
+				// 		});
+				// 		articles.createIndex('articles-id', 'id', {
+				// 			unique: true,
+				// 		});
+				// 		articles.createIndex('articles-name', 'name', {
+				// 			unique: false,
+				// 		});
+				// 		articles.createIndex('articles-count', 'count', {
+				// 			unique: false,
+				// 		});
+				// 		articles.createIndex('articles-unit', 'unit', {
+				// 			unique: false,
+				// 		});
+				// 		articles.createIndex('articles-lastSeen', 'lastSeen', {
+				// 			unique: false,
+				// 		});
+				// 		articles.createIndex('articles-securityDeposit', 'securityDeposit', {
+				// 			unique: false,
+				// 		});
+				// 	}
 
-					if (!stores.contains('acquisitions')) {
-						const acquisitions = db.createObjectStore('acquisitions', {
-							keyPath: 'row',
-						});
-						acquisitions.createIndex('acquisitions-date', 'date', {
-							unique: false,
-						});
-						acquisitions.createIndex('acquisitions-totalCost', 'totalCost', {
-							unique: false,
-						});
-						acquisitions.createIndex('acquisitions-purchaseInvoiceID', 'purchaseInvoiceID', {
-							unique: false,
-						});
-					}
-				}
+				// 	if (!stores.contains('acquisitions')) {
+				// 		const acquisitions = db.createObjectStore('acquisitions', {
+				// 			keyPath: 'row',
+				// 		});
+				// 		acquisitions.createIndex('acquisitions-date', 'date', {
+				// 			unique: false,
+				// 		});
+				// 		acquisitions.createIndex('acquisitions-totalCost', 'totalCost', {
+				// 			unique: false,
+				// 		});
+				// 		acquisitions.createIndex('acquisitions-purchaseInvoiceID', 'purchaseInvoiceID', {
+				// 			unique: false,
+				// 		});
+				// 	}
+				// }
+				let v1 = dataBaseName;
+				let v2 = dataBaseVersion;
+				let v3 = map;
+				let v4 = row;
+				console.log(v1, v2, v3, v4);
 			}
 
 			function parseDocumentData(dataBaseName: string, dataBaseVersion: number, map: DocumentSortingMap, row: UploadRow) {
 				//function definitions
-				function upgradeDocumentDB(e: IDBVersionChangeEvent): void {
-					const target: IDBOpenDBRequest = e.target as IDBOpenDBRequest;
-					const db = target.result;
-					const stores = db.objectStoreNames;
+				// function upgradeDocumentDB(e: IDBVersionChangeEvent): void {
+				// 	const target: IDBOpenDBRequest = e.target as IDBOpenDBRequest;
+				// 	const db = target.result;
+				// 	const stores = db.objectStoreNames;
 
-					if (!stores.contains('quotes')) {
-						const quotes = db.createObjectStore('quotes', {
-							keyPath: 'row',
-						});
+				// 	if (!stores.contains('quotes')) {
+				// 		const quotes = db.createObjectStore('quotes', {
+				// 			keyPath: 'row',
+				// 		});
 
-						quotes.createIndex('quotes-id', 'id', {
-							unique: true,
-						});
+				// 		quotes.createIndex('quotes-id', 'id', {
+				// 			unique: true,
+				// 		});
 
-						quotes.createIndex('quotes-date', 'date', {
-							unique: true,
-						});
+				// 		quotes.createIndex('quotes-date', 'date', {
+				// 			unique: true,
+				// 		});
 
-						quotes.createIndex('quotes-customerID', 'customerID', {
-							unique: true,
-						});
-					}
+				// 		quotes.createIndex('quotes-customerID', 'customerID', {
+				// 			unique: true,
+				// 		});
+				// 	}
 
-					if (!stores.contains('invoices')) {
-						const invoices = db.createObjectStore('invoices', {
-							keyPath: 'row',
-						});
+				// 	if (!stores.contains('invoices')) {
+				// 		const invoices = db.createObjectStore('invoices', {
+				// 			keyPath: 'row',
+				// 		});
 
-						invoices.createIndex('invoices-id', 'id', {
-							unique: true,
-						});
+				// 		invoices.createIndex('invoices-id', 'id', {
+				// 			unique: true,
+				// 		});
 
-						invoices.createIndex('invoices-date', 'date', {
-							unique: false,
-						});
+				// 		invoices.createIndex('invoices-date', 'date', {
+				// 			unique: false,
+				// 		});
 
-						invoices.createIndex('invoices-customerID', 'customerID', {
-							unique: false,
-						});
-					}
+				// 		invoices.createIndex('invoices-customerID', 'customerID', {
+				// 			unique: false,
+				// 		});
+				// 	}
 
-					if (!stores.contains('deliveries')) {
-						const deliveries = db.createObjectStore('deliveries', {
-							keyPath: 'row',
-						});
+				// 	if (!stores.contains('deliveries')) {
+				// 		const deliveries = db.createObjectStore('deliveries', {
+				// 			keyPath: 'row',
+				// 		});
 
-						deliveries.createIndex('deliveries-id', 'id', {
-							unique: true,
-						});
+				// 		deliveries.createIndex('deliveries-id', 'id', {
+				// 			unique: true,
+				// 		});
 
-						deliveries.createIndex('deliveries-date', 'date', {
-							unique: false,
-						});
+				// 		deliveries.createIndex('deliveries-date', 'date', {
+				// 			unique: false,
+				// 		});
 
-						deliveries.createIndex('deliveries-customerID', 'customerID', {
-							unique: false,
-						});
-					}
+				// 		deliveries.createIndex('deliveries-customerID', 'customerID', {
+				// 			unique: false,
+				// 		});
+				// 	}
 
-					if (!stores.contains('returnees')) {
-						const returnees = db.createObjectStore('returnees', {
-							keyPath: 'row',
-						});
+				// 	if (!stores.contains('returnees')) {
+				// 		const returnees = db.createObjectStore('returnees', {
+				// 			keyPath: 'row',
+				// 		});
 
-						returnees.createIndex('returnees-id', 'id', {
-							unique: true,
-						});
+				// 		returnees.createIndex('returnees-id', 'id', {
+				// 			unique: true,
+				// 		});
 
-						returnees.createIndex('returnees-date', 'date', {
-							unique: false,
-						});
+				// 		returnees.createIndex('returnees-date', 'date', {
+				// 			unique: false,
+				// 		});
 
-						returnees.createIndex('returnees-customerID', 'customerID', {
-							unique: false,
-						});
-					}
-				}
+				// 		returnees.createIndex('returnees-customerID', 'customerID', {
+				// 			unique: false,
+				// 		});
+				// 	}
+				// }
+				let v1 = dataBaseName;
+				let v2 = dataBaseVersion;
+				let v3 = map;
+				let v4 = row;
+				console.log(v1, v2, v3, v4);
 			}
 
 			cursorRequest.onsuccess = () => {

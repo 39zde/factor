@@ -40,7 +40,6 @@ export const TableBodyDisplay = forwardRef<HTMLTableSectionElement>(function Tab
 		if (start.current - 1 >= 1) {
 			start.current = Math.max(start.current - 1, 1);
 			lastOrdered.current = start.current;
-			// console.log('ordering ', lastOrdered.current);
 			worker.TableWorker.postMessage({
 				type: 'stream',
 				storeName: tableState.tableName,
@@ -65,13 +64,6 @@ export const TableBodyDisplay = forwardRef<HTMLTableSectionElement>(function Tab
 					lastOrdered.current = tableState.start + tableState.scope;
 				} else {
 					if (Math.abs(lastOrdered.current - tableState.lastReceived) > tableState.scope) {
-						// console.log(
-						// 	'lastOrdered: ',
-						// 	lastOrdered.current,
-						// 	' lastReceived: ',
-						// 	tableState.lastReceived
-						// );
-						// console.log('returning');
 						return;
 					}
 				}

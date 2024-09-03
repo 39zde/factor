@@ -146,20 +146,22 @@ function getStartingRows(
 		};
 
 		const db = dbRequest.result;
-		const transaction = db.transaction(storeName, 'readonly');
-		const oStore = transaction.objectStore(storeName);
-		const cursorRequest = oStore.openCursor(null, 'nextunique');
-		const doneHandler = new Proxy(done, doneListener);
-		cursorRequest.onsuccess = () => {
-			const cursor: IDBCursorWithValue | null = cursorRequest.result;
-			if (cursor) {
-				if (counter < scope) {
-					fillReferences(db, cursor.value, undefined, doneHandler);
-					counter += 1;
-					cursor.continue();
+		if (db.objectStoreNames.contains(storeName)) {
+			const transaction = db.transaction(storeName, 'readonly');
+			const oStore = transaction.objectStore(storeName);
+			const cursorRequest = oStore.openCursor(null, 'nextunique');
+			const doneHandler = new Proxy(done, doneListener);
+			cursorRequest.onsuccess = () => {
+				const cursor: IDBCursorWithValue | null = cursorRequest.result;
+				if (cursor) {
+					if (counter < scope) {
+						fillReferences(db, cursor.value, undefined, doneHandler);
+						counter += 1;
+						cursor.continue();
+					}
 				}
-			}
-		};
+			};
+		}
 	};
 }
 
@@ -176,37 +178,36 @@ function getColumns(dataBaseName: string, dbVersion: number, storeName: string, 
 					data: 'unknown Object Store',
 				});
 			}
-		}
-		const objectStore = db.transaction(storeName, 'readonly').objectStore(storeName);
-		const cursorRequest = objectStore.openCursor(null);
-		cursorRequest.onsuccess = () => {
-			let cursor = cursorRequest.result ?? false;
-			if (cursor) {
-				// console.log("keys")
-				// console.log(Object.keys(cursor.value))
+		} else {
+			const columnTransaction = db.transaction(storeName, 'readonly', { durability: 'strict' });
+			const oStore = columnTransaction.objectStore(storeName);
+			const cursorRequest = oStore.openCursor(null);
+			cursorRequest.onsuccess = () => {
+				let cursor = cursorRequest.result ?? false;
+				if (cursor) {
+					if (callback !== undefined) {
+						callback(Object.keys(cursor.value));
+					} else {
+						postMessage({
+							type: 'columns',
+							data: Object.keys(cursor.value),
+						});
+					}
+					cursor = false;
+				}
+			};
+
+			cursorRequest.onerror = (e) => {
 				if (callback !== undefined) {
-					callback(Object.keys(cursor.value));
+					callback(undefined);
 				} else {
 					postMessage({
-						type: 'columns',
-						data: Object.keys(cursor.value),
+						type: 'error',
+						data: e,
 					});
 				}
-				cursor = false;
-			}
-		};
-
-		cursorRequest.onerror = (e) => {
-			if (callback !== undefined) {
-				callback(undefined);
-			} else {
-				postMessage({
-					type: 'error',
-					data: e,
-				});
-			}
-		};
-
+			};
+		}
 		dbRequest.onerror = (e) => {
 			if (callback !== undefined) {
 				callback(undefined);
@@ -233,27 +234,29 @@ function getCount(dataBaseName: string, dbVersion: number, storeName: string, ca
 				});
 				throw new Error('unknown Object Store: ' + storeName);
 			}
+		} else {
+			const countTransaction = db.transaction(storeName, 'readonly', { durability: 'strict' });
+			const oStore = countTransaction.objectStore(storeName);
+			let countRequest = oStore.count();
+			countRequest.onsuccess = () => {
+				if (callback !== undefined) {
+					callback(countRequest.result);
+				} else {
+					postMessage({ type: 'count', data: countRequest.result });
+				}
+			};
+
+			countRequest.onerror = (e) => {
+				if (callback !== undefined) {
+					callback(undefined);
+				} else {
+					postMessage({
+						type: 'error',
+						data: e,
+					});
+				}
+			};
 		}
-		const countRequest = db.transaction(storeName, 'readonly').objectStore(storeName).count();
-
-		countRequest.onsuccess = () => {
-			if (callback !== undefined) {
-				callback(countRequest.result);
-			} else {
-				postMessage({ type: 'count', data: countRequest.result });
-			}
-		};
-
-		countRequest.onerror = (e) => {
-			if (callback !== undefined) {
-				callback(undefined);
-			} else {
-				postMessage({
-					type: 'error',
-					data: e,
-				});
-			}
-		};
 	};
 
 	dbRequest.onerror = (e) => {
@@ -313,19 +316,21 @@ function fillReferences(dataBase: IDBDatabase, row: TableRow, actionType?: Table
 				// the ArrayBuffer has stored $location at $i
 
 				// query the object store $key at $location
-				const transaction = dataBase.transaction(key, 'readonly');
-				const oStore = transaction.objectStore(key);
-				const only = IDBKeyRange.only(location);
-				const request = oStore.get(only);
-				request.onsuccess = () => {
-					// insert the requested item into our copy
-					copy[key][i] = request.result;
-					// increase the counter
-					proxy.count += 1;
-				};
-				request.onerror = () => {
-					proxy.count += 1;
-				};
+				if (dataBase.objectStoreNames.contains(key)) {
+					const transaction = dataBase.transaction(key, 'readonly');
+					const oStore = transaction.objectStore(key);
+					const only = IDBKeyRange.only(location);
+					const request = oStore.get(only);
+					request.onsuccess = () => {
+						// insert the requested item into our copy
+						copy[key][i] = request.result;
+						// increase the counter
+						proxy.count += 1;
+					};
+					request.onerror = () => {
+						proxy.count += 1;
+					};
+				}
 			}
 		}
 	}
@@ -364,41 +369,43 @@ function stream(eventData: TableWorkerRequestMessage) {
 	const dbRequest = indexedDB.open(eventData.dataBaseName, eventData.dbVersion);
 	dbRequest.onsuccess = () => {
 		const streamDB = dbRequest.result;
-		const transaction = streamDB.transaction(eventData.storeName, 'readwrite');
-		const oStore = transaction.objectStore(eventData.storeName);
-		if (eventData.action === undefined) {
-			return postMessage({
-				type: 'error',
-				data: 'undefined action',
-			});
+		if (streamDB.objectStoreNames.contains(eventData.storeName)) {
+			const transaction = streamDB.transaction(eventData.storeName, 'readwrite');
+			const oStore = transaction.objectStore(eventData.storeName);
+			if (eventData.action === undefined) {
+				return postMessage({
+					type: 'error',
+					data: 'undefined action',
+				});
+			}
+			const only = IDBKeyRange.only(eventData.action.pos);
+			const req = oStore.get(only);
+			req.onsuccess = () => {
+				if (eventData.action === undefined) {
+					return postMessage({
+						type: 'error',
+						data: 'undefined action',
+					});
+				}
+				if (req.result) {
+					const row = req.result as TableRow;
+					fillReferences(streamDB, row, eventData.action.type);
+				}
+			};
+			req.onerror = (ev) => {
+				if (eventData.action === undefined) {
+					return postMessage({
+						type: 'error',
+						data: 'undefined action',
+					});
+				}
+				postMessage({
+					type: 'error',
+					action: eventData.action.type,
+					data: ev,
+					index: eventData.action.pos,
+				});
+			};
 		}
-		const only = IDBKeyRange.only(eventData.action.pos);
-		const req = oStore.get(only);
-		req.onsuccess = () => {
-			if (eventData.action === undefined) {
-				return postMessage({
-					type: 'error',
-					data: 'undefined action',
-				});
-			}
-			if (req.result) {
-				const row = req.result as TableRow;
-				fillReferences(streamDB, row, eventData.action.type);
-			}
-		};
-		req.onerror = (ev) => {
-			if (eventData.action === undefined) {
-				return postMessage({
-					type: 'error',
-					data: 'undefined action',
-				});
-			}
-			postMessage({
-				type: 'error',
-				action: eventData.action.type,
-				data: ev,
-				index: eventData.action.pos,
-			});
-		};
 	};
 }

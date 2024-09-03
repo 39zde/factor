@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { CheckBox } from '../CheckBox/CheckBox';
 import { useTableDispatch, useTableContext } from './Table';
 
@@ -6,7 +6,7 @@ export function ColumnCheckBox({ index, columnName }: { index: number; columnNam
 	const dispatch = useTableDispatch();
 	const tableState = useTableContext();
 	const [checked, setChecked] = useState<boolean>(false);
-	const columnChecker = () => {
+	const columnChecker = useCallback(() => {
 		if (tableState.columns.includes(columnName)) {
 			dispatch({
 				type: 'set',
@@ -30,7 +30,7 @@ export function ColumnCheckBox({ index, columnName }: { index: number; columnNam
 				newVal: tableState.columns.toSpliced(insertIndex, 0, tableState.allColumns[index]),
 			});
 		}
-	};
+	}, [tableState.columns, tableState.allColumns, index, columnName, tableState.tableName]);
 
 	// exec once on first render
 	useEffect(() => {
@@ -39,7 +39,7 @@ export function ColumnCheckBox({ index, columnName }: { index: number; columnNam
 		} else {
 			setChecked(false);
 		}
-	}, []);
+	}, [tableState.columns, tableState.tableName]);
 
 	const mouseDownHandler = () => {
 		setChecked(!checked);

@@ -33,8 +33,8 @@ function createWindow(): void {
 		webPreferences: {
 			preload: join(__dirname, '../preload/index.mjs'),
 			sandbox: false,
-			nodeIntegrationInWorker: false,
-			// nodeIntegration: false,
+			nodeIntegrationInWorker: true,
+			nodeIntegration: true,
 			defaultEncoding: 'UTF-8',
 		},
 		// fullscreen: true,

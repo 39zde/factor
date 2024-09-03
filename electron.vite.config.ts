@@ -11,6 +11,10 @@ export default defineConfig({
 		plugins: [externalizeDepsPlugin()],
 	},
 	renderer: {
+		build: {
+			reportCompressedSize: true,
+			minify: 'esbuild',
+		},
 		worker: {
 			format: 'es',
 		},
@@ -23,6 +27,6 @@ export default defineConfig({
 				'@comps': resolve('src/renderer/src/comps'),
 			},
 		},
-		plugins: [react(), mkcert(), externalizeDepsPlugin()],
+		plugins: [react(), mkcert()],
 	},
 });

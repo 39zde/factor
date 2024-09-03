@@ -42,12 +42,6 @@ export function RowShifter({ cols }: { cols: string[] }): React.JSX.Element {
 		if (Number.isNaN(offsetInput) || offsetInput === 0) {
 			console.log('offset cannot be zero and must be an integer below the number of columns');
 		}
-		console.log({
-			col: colInput,
-			value: valInput,
-			offset: offsetInput,
-			direction: directionInput,
-		});
 		worker.ImportWorker.postMessage({
 			type: 'align',
 			dbVersion: database.dbVersion,

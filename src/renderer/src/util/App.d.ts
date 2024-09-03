@@ -5,11 +5,12 @@ export interface AppContextType extends AppSettingsType {
 		 * stores and cleans uploaded data and assigns the date to various tables
 		 */
 		ImportWorker: Worker;
-		//
 		/**
 		 * streams data from IDB
 		 */
 		TableWorker: Worker;
+		/** Export Worker: writes the data in a specified format to files */
+		ExportWorker: Worker;
 	};
 }
 

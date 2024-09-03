@@ -52,7 +52,6 @@ export function ColRemover({
 	};
 
 	const goHandler = () => {
-		console.log('starting ranking');
 		worker.postMessage({
 			type: 'rankColsByCondition',
 			dbVersion: database.dbVersion,
@@ -78,10 +77,7 @@ export function ColRemover({
 					break;
 				case 'ranking':
 					const ranking = e.data.message;
-					console.log('starting deletion');
-					console.log(ranking);
 					for (const [column, conditionSuccessCount] of ranking) {
-						console.log(column);
 						if (conditionSuccessCount === count) {
 							updateHook.setUpdate(true);
 							worker.postMessage({
@@ -95,7 +91,6 @@ export function ColRemover({
 					break;
 				case 'colDeletion':
 					updateHook.setUpdate(false);
-					console.log(e.data.message);
 					break;
 				default:
 					console.log(e.data);

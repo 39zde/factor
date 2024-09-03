@@ -60,6 +60,7 @@ export function Table({ dataBaseName, tableName, colsHook, entriesHook, updateHo
 	const [tableState, dispatch] = useReducer(tableReducer, PlaceHolderTableContext);
 	/** dispatch all tableState properties or invoke functions that do so */
 	const initTableState = useCallback(() => {
+		setMenuItems([]);
 		// signal that we haven't started
 		dispatch({
 			type: 'set',
@@ -143,7 +144,7 @@ export function Table({ dataBaseName, tableName, colsHook, entriesHook, updateHo
 
 	// listen for any updates
 	useEffect(() => {
-		console.log('update:', update);
+		setMenuActive(false);
 		if (update !== undefined) {
 			if (tableState.update !== update) {
 				dispatch({
@@ -401,12 +402,27 @@ export function Table({ dataBaseName, tableName, colsHook, entriesHook, updateHo
 				if (dataBaseName !== 'factor_db') {
 					// check if there are already saved columnsWidths in localStorage
 					const savedColumnsWidths = localStorage.getItem(`${tableName}-columnWidths`);
-					if (savedColumnsWidths !== null) {
+					if (savedColumnsWidths !== null && savedColumnsWidths !== 'NaN') {
 						// if so use those
 						dispatch({
 							type: 'set',
 							name: 'columnWidths',
-							newVal: savedColumnsWidths.split(',').map((item) => parseFloat(item)),
+							newVal: savedColumnsWidths.split(',').map((item, index) => (index === 0 ? rowColumnWidth : parseFloat(item))),
+						});
+					} else {
+						// create if there nothing in local Storage
+						localStorage.setItem(
+							`${tableName}-columnWidths`,
+							cols
+								.map((_item, index) => (index === 0 ? rowColumnWidth : isNaN(appearances.columnWidth) ? 100 : appearances.columnWidth))
+								.join(',')
+						);
+						dispatch({
+							type: 'set',
+							name: 'columnWidths',
+							newVal: cols.map((_item, index) =>
+								index === 0 ? rowColumnWidth : isNaN(appearances.columnWidth) ? 100 : appearances.columnWidth
+							),
 						});
 					}
 				} else {
@@ -448,7 +464,6 @@ export function Table({ dataBaseName, tableName, colsHook, entriesHook, updateHo
 				if (updateHook !== undefined) {
 					updateHook.setUpdate(false);
 				}
-				console.log(tableState);
 				break;
 			case 'error':
 				console.log(eventData);

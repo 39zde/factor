@@ -197,7 +197,6 @@ export function CustomerSorter({ columns, hook }: SorterProps): React.JSX.Elemen
 	];
 
 	useEffect(() => {
-		console.log(sortingMap);
 		hook.setMap(sortingMap);
 	}, [sortingMap]);
 

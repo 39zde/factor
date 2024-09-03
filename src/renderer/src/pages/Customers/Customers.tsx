@@ -10,7 +10,6 @@ export function Customers(): React.JSX.Element {
 	const updateHook = {
 		update: update,
 		setUpdate: (newValue: boolean) => {
-			console.log('hook: update: ', newValue);
 			setUpdate(newValue);
 		},
 	};
