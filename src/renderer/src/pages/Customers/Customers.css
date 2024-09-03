@@ -1,8 +1,18 @@
-.page:has(.customersWrapper) {
-	align-content: center;
+.customersWrapper {
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+
+	&>ul.tooolbar {
+		margin-right: 12px;
+		box-sizing: border-box;
+	}
 }
 
-.customersWrapper {
-	height: 95%;
-	width: 100%;
+.toolBarWrapper {
+	display: flex;
+}
+
+button.tableActive {
+	background: light-dark(var(--color-primary-light), var(--color-primary-dark));
 }
