@@ -1,11 +1,4 @@
-import type {
-	TableWorkerRequestMessage,
-	TableRow,
-	TableWorkerRequestMessageActionType,
-	DerefRow,
-	DoneHandler,
-	StarterPackage,
-} from '../types/types';
+import type { TableWorkerRequestMessage, TableRow, TableWorkerRequestMessageActionType, DerefRow, DoneHandler, StarterPackage } from '../types/types';
 
 self.onmessage = function requestHandler(e: MessageEvent) {
 	const eventData = e.data as TableWorkerRequestMessage;
@@ -29,11 +22,7 @@ self.onmessage = function requestHandler(e: MessageEvent) {
 				starterRows: undefined,
 			};
 			const starterHandler = {
-				set(
-					target: StarterPackage,
-					prop: keyof StarterPackage,
-					value: number | string[] | DerefRow[]
-				) {
+				set(target: StarterPackage, prop: keyof StarterPackage, value: number | string[] | DerefRow[]) {
 					let undefinedCount = 0;
 					// @ts-expect-error the values will match the prop
 					target[prop] = value;
@@ -54,52 +43,28 @@ self.onmessage = function requestHandler(e: MessageEvent) {
 				},
 			};
 			const proxy = new Proxy(starterPackage, starterHandler);
-			getCount(
-				eventData.dataBaseName,
-				eventData.dbVersion,
-				eventData.storeName,
-				(count: number | undefined) => {
-					if (count !== undefined) {
-						proxy.startingCount = count;
-					}
+			getCount(eventData.dataBaseName, eventData.dbVersion, eventData.storeName, (count: number | undefined) => {
+				if (count !== undefined) {
+					proxy.startingCount = count;
 				}
-			);
-			getColumns(
-				eventData.dataBaseName,
-				eventData.dbVersion,
-				eventData.storeName,
-				(cols: string[] | undefined) => {
-					if (cols !== undefined) {
-						proxy.startingColumns = cols;
-					}
+			});
+			getColumns(eventData.dataBaseName, eventData.dbVersion, eventData.storeName, (cols: string[] | undefined) => {
+				if (cols !== undefined) {
+					proxy.startingColumns = cols;
 				}
-			);
-			getStartingRows(
-				eventData.dataBaseName,
-				eventData.dbVersion,
-				eventData.storeName,
-				eventData.scope,
-				(rows: DerefRow[] | undefined) => {
-					if (rows !== undefined) {
-						proxy.starterRows = rows;
-					}
+			});
+			getStartingRows(eventData.dataBaseName, eventData.dbVersion, eventData.storeName, eventData.scope, (rows: DerefRow[] | undefined) => {
+				if (rows !== undefined) {
+					proxy.starterRows = rows;
 				}
-			);
+			});
 
 			break;
 		case 'columns':
-			getColumns(
-				eventData.dataBaseName,
-				eventData.dbVersion,
-				eventData.storeName
-			);
+			getColumns(eventData.dataBaseName, eventData.dbVersion, eventData.storeName);
 			break;
 		case 'count':
-			getCount(
-				eventData.dataBaseName,
-				eventData.dbVersion,
-				eventData.storeName
-			);
+			getCount(eventData.dataBaseName, eventData.dbVersion, eventData.storeName);
 			break;
 		case 'startingRows':
 			if (eventData.scope === undefined) {
@@ -108,12 +73,7 @@ self.onmessage = function requestHandler(e: MessageEvent) {
 					data: 'undefined action',
 				});
 			}
-			getStartingRows(
-				eventData.dataBaseName,
-				eventData.dbVersion,
-				eventData.storeName,
-				eventData.scope
-			);
+			getStartingRows(eventData.dataBaseName, eventData.dbVersion, eventData.storeName, eventData.scope);
 			break;
 		default:
 			postMessage({ type: 'error', data: 'unknown request type' });
@@ -165,11 +125,7 @@ function getStartingRows(
 		};
 
 		const doneListener = {
-			set(
-				target: DoneHandler,
-				prop: keyof DoneHandler,
-				value: boolean | DerefRow
-			) {
+			set(target: DoneHandler, prop: keyof DoneHandler, value: boolean | DerefRow) {
 				if (prop === 'add' && typeof value === 'object') {
 					const data = target['data'];
 					data.push(value);
@@ -207,12 +163,7 @@ function getStartingRows(
 	};
 }
 
-function getColumns(
-	dataBaseName: string,
-	dbVersion: number,
-	storeName: string,
-	callback?: (cols: string[] | undefined) => void
-) {
+function getColumns(dataBaseName: string, dbVersion: number, storeName: string, callback?: (cols: string[] | undefined) => void) {
 	const dbRequest = indexedDB.open(dataBaseName, dbVersion);
 	dbRequest.onsuccess = () => {
 		const db = dbRequest.result;
@@ -226,9 +177,7 @@ function getColumns(
 				});
 			}
 		}
-		const objectStore = db
-			.transaction(storeName, 'readonly')
-			.objectStore(storeName);
+		const objectStore = db.transaction(storeName, 'readonly').objectStore(storeName);
 		const cursorRequest = objectStore.openCursor(null);
 		cursorRequest.onsuccess = () => {
 			let cursor = cursorRequest.result ?? false;
@@ -270,12 +219,7 @@ function getColumns(
 		};
 	};
 }
-function getCount(
-	dataBaseName: string,
-	dbVersion: number,
-	storeName: string,
-	callback?: (count: number | undefined) => void
-) {
+function getCount(dataBaseName: string, dbVersion: number, storeName: string, callback?: (count: number | undefined) => void) {
 	const dbRequest = indexedDB.open(dataBaseName, dbVersion);
 	dbRequest.onsuccess = () => {
 		const db = dbRequest.result;
@@ -290,10 +234,7 @@ function getCount(
 				throw new Error('unknown Object Store: ' + storeName);
 			}
 		}
-		const countRequest = db
-			.transaction(storeName, 'readonly')
-			.objectStore(storeName)
-			.count();
+		const countRequest = db.transaction(storeName, 'readonly').objectStore(storeName).count();
 
 		countRequest.onsuccess = () => {
 			if (callback !== undefined) {
@@ -327,12 +268,7 @@ function getCount(
 	};
 }
 
-function fillReferences(
-	dataBase: IDBDatabase,
-	row: TableRow,
-	actionType?: TableWorkerRequestMessageActionType,
-	doneHandler?: DoneHandler
-): void {
+function fillReferences(dataBase: IDBDatabase, row: TableRow, actionType?: TableWorkerRequestMessageActionType, doneHandler?: DoneHandler): void {
 	const copy = structuredClone(row);
 	let targetCount = 0;
 	type CounterType = {
@@ -403,15 +339,8 @@ function fillReferences(
 	}
 }
 
-function postStream(
-	oStoreItem: DerefRow,
-	actionType: TableWorkerRequestMessageActionType,
-	position: number
-): void {
-	if (
-		Object.keys(oStoreItem).includes('row') &&
-		typeof oStoreItem.row === 'number'
-	) {
+function postStream(oStoreItem: DerefRow, actionType: TableWorkerRequestMessageActionType, position: number): void {
+	if (Object.keys(oStoreItem).includes('row') && typeof oStoreItem.row === 'number') {
 		// what if there is a row property
 		postMessage({
 			type: 'stream',
@@ -432,16 +361,10 @@ function postStream(
 }
 
 function stream(eventData: TableWorkerRequestMessage) {
-	const dbRequest = indexedDB.open(
-		eventData.dataBaseName,
-		eventData.dbVersion
-	);
+	const dbRequest = indexedDB.open(eventData.dataBaseName, eventData.dbVersion);
 	dbRequest.onsuccess = () => {
 		const streamDB = dbRequest.result;
-		const transaction = streamDB.transaction(
-			eventData.storeName,
-			'readwrite'
-		);
+		const transaction = streamDB.transaction(eventData.storeName, 'readwrite');
 		const oStore = transaction.objectStore(eventData.storeName);
 		if (eventData.action === undefined) {
 			return postMessage({

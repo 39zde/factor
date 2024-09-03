@@ -34,10 +34,7 @@ export function ColumnOrderer(): React.JSX.Element {
 									setDraggedElementIndex(index);
 								}}
 								style={{
-									background:
-										draggedElementIndex === index
-											? 'light-dark(var(--color-light-3),var(--color-dark-3))'
-											: 'none',
+									background: draggedElementIndex === index ? 'light-dark(var(--color-light-3),var(--color-dark-3))' : 'none',
 									userSelect: 'none',
 									padding: '0 0 0 6px',
 								}}

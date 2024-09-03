@@ -17,19 +17,13 @@ export const HelpTextDE: HelpTexts = {
 										<span>Scroll</span>
 									</span>
 								</li>
-								<li>
-									Mittlere Maustaste gedrückt halten und in die
-									gewünschte Richtung ziehen
-								</li>
+								<li>Mittlere Maustaste gedrückt halten und in die gewünschte Richtung ziehen</li>
 								<li>Scroll-Leiste benutzen</li>
 							</ol>
 							<h4>Wege zum vertikalen Navigieren: </h4>
 							<ol>
 								<li>Scroll-Rad</li>
-								<li>
-									Die Pfeile in der linken oberen und unteren Ecke der
-									Tabelle drücken
-								</li>
+								<li>Die Pfeile in der linken oberen und unteren Ecke der Tabelle drücken</li>
 							</ol>
 						</div>
 					</>
@@ -45,12 +39,9 @@ export const HelpTextDE: HelpTexts = {
 				item: (
 					<>
 						<p>
-							'Beim Hochladen von Dateien ist sowohl auf den Dateityp,
-							als auch auf das Trennzeichen zu achten. Beim Dateityp muss
-							es sich um eine CSV Datei handeln. Das Trennzeichen sollte
-							ein Semicolon (;), da ein Komma auch oft in den
-							Tabellenfeldern vorkommt. Je nach Art des zu importierenden
-							Datensatzes können so Problemen vorgebeugt werden.',
+							'Beim Hochladen von Dateien ist sowohl auf den Dateityp, als auch auf das Trennzeichen zu achten. Beim Dateityp muss es sich um
+							eine CSV Datei handeln. Das Trennzeichen sollte ein Semicolon (;), da ein Komma auch oft in den Tabellenfeldern vorkommt. Je nach
+							Art des zu importierenden Datensatzes können so Problemen vorgebeugt werden.',
 						</p>
 					</>
 				),
@@ -72,23 +63,16 @@ export const HelpTextEN: HelpTexts = {
 							<ol>
 								<li>
 									<span>
-										<span className="keyboardKey">&#8679;</span>+
-										Scroll
+										<span className="keyboardKey">&#8679;</span>+ Scroll
 									</span>
 								</li>
-								<li>
-									Press and hold the mouse wheel and drag towards the
-									wanted direction
-								</li>
+								<li>Press and hold the mouse wheel and drag towards the wanted direction</li>
 								<li>Using the Scrollbar</li>
 							</ol>
 							<h4>Ways to navigate vertically:: </h4>
 							<ol>
 								<li>Use the mouse wheel</li>
-								<li>
-									Use the buttons in the upper and lower left corner of
-									the table
-								</li>
+								<li>Use the buttons in the upper and lower left corner of the table</li>
 							</ol>
 						</div>
 					</>
@@ -104,12 +88,9 @@ export const HelpTextEN: HelpTexts = {
 				item: (
 					<>
 						<p>
-							While uploading consider the type of file and the
-							delimiting character.The supported file type is CSV. The
-							delimiter should be a semicolon (;), because a comma
-							appears often in the value of cells. This would distort the
-							whole table. Depending on the to be imported dataset, this
-							way problems can be mitigated in advance.
+							While uploading consider the type of file and the delimiting character.The supported file type is CSV. The delimiter should be a
+							semicolon (;), because a comma appears often in the value of cells. This would distort the whole table. Depending on the to be
+							imported dataset, this way problems can be mitigated in advance.
 						</p>
 					</>
 				),

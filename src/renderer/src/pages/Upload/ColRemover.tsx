@@ -16,15 +16,9 @@ export function ColRemover({
 	const numberRef = useRef<HTMLInputElement>(null);
 	const [stringInput, setStringInput] = useState<string>('');
 	const [numberInput, setNumberInput] = useState<string>('');
-	const [conditionValue, setConditionValue] = useState<
-		| 'empty text'
-		| 'undefined'
-		| 'null'
-		| '0'
-		| 'custom string'
-		| 'custom number'
-		| '-'
-	>('empty text');
+	const [conditionValue, setConditionValue] = useState<'empty text' | 'undefined' | 'null' | '0' | 'custom string' | 'custom number' | '-'>(
+		'empty text'
+	);
 	const [showTextInput, setShowTextInput] = useState<boolean>(false);
 	const [showNumberInput, setShowNumberInput] = useState<boolean>(false);
 	const [progress, setProgress] = useState<string>('Go!');
@@ -112,88 +106,45 @@ export function ColRemover({
 	return (
 		<>
 			<div className="colRemover">
-				<button
-					onClick={() => setShowOptions((old) => !old)}
-					className="removerButton">
-					{general.language === 'deutsch'
-						? 'Spalten Entfernen'
-						: 'Remove Columns'}
+				<button onClick={() => setShowOptions((old) => !old)} className="removerButton">
+					{general.language === 'deutsch' ? 'Spalten Entfernen' : 'Remove Columns'}
 				</button>
-				<div
-					className="removerOptions"
-					style={{ display: showOptions ? 'flex' : 'none' }}>
+				<div className="removerOptions" style={{ display: showOptions ? 'flex' : 'none' }}>
 					<p>
 						{general.language === 'deutsch'
 							? 'Spalte entfernen, wenn der Wert in jeder Zeile gleich'
 							: 'Remove a column, if the value in every row matches'}
 					</p>
-					<select
-						ref={conditionRef}
-						id="colInput"
-						onInput={conditionHandler}>
+					<select ref={conditionRef} id="colInput" onInput={conditionHandler}>
 						<option defaultChecked>-</option>
 						<optgroup>
-							<option value={'empty text'}>
-								{general.language === 'deutsch'
-									? 'leerer Text'
-									: 'empty text'}
-							</option>
-							<option value={'undefined'}>
-								{general.language === 'deutsch'
-									? 'nicht ausgefüllt (undefined value)'
-									: 'undefined value'}
-							</option>
-							<option value={'null'}>
-								{general.language === 'deutsch'
-									? 'leer (null value)'
-									: 'empty (null value)'}
-							</option>
+							<option value={'empty text'}>{general.language === 'deutsch' ? 'leerer Text' : 'empty text'}</option>
+							<option value={'undefined'}>{general.language === 'deutsch' ? 'nicht ausgefüllt (undefined value)' : 'undefined value'}</option>
+							<option value={'null'}>{general.language === 'deutsch' ? 'leer (null value)' : 'empty (null value)'}</option>
 							<option value={'0'}>0</option>
 						</optgroup>
 						<optgroup>
-							<option value={'custom text'}>
-								{general.language === 'deutsch'
-									? 'eigener text'
-									: 'custom text'}
-							</option>
-							<option value={'custom number'}>
-								{general.language === 'deutsch'
-									? 'eigene Zahl'
-									: 'custom number'}
-							</option>
+							<option value={'custom text'}>{general.language === 'deutsch' ? 'eigener text' : 'custom text'}</option>
+							<option value={'custom number'}>{general.language === 'deutsch' ? 'eigene Zahl' : 'custom number'}</option>
 						</optgroup>
 					</select>
 					{showNumberInput ? (
 						<>
-							<input
-								type="number"
-								id="number-match"
-								placeholder="my number"
-								ref={numberRef}
-								onInput={numberInputHandler}
-							/>
+							<input type="number" id="number-match" placeholder="my number" ref={numberRef} onInput={numberInputHandler} />
 						</>
 					) : (
 						<></>
 					)}
 					{showTextInput ? (
 						<>
-							<input
-								ref={stringRef}
-								type="text"
-								id="string-match"
-								placeholder="my custom "
-								onInput={stringInputHandler}
-							/>
+							<input ref={stringRef} type="text" id="string-match" placeholder="my custom " onInput={stringInputHandler} />
 						</>
 					) : (
 						<></>
 					)}
 					<div className="divider" />
 					<div className="removerActions">
-						<button onClick={() => setShowOptions(false)}>
-							{general.language === 'deutsch' ? 'Abbrechen' : 'Cancel'}
-						</button>
+						<button onClick={() => setShowOptions(false)}>{general.language === 'deutsch' ? 'Abbrechen' : 'Cancel'}</button>
 						<button onClick={goHandler}>{progress}</button>
 					</div>
 				</div>

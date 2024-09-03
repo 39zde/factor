@@ -1257,7 +1257,6 @@ function sortData(
 						}
 					}
 
-
 					//the actual sorting logic
 
 					customer.id = trimWhiteSpace(row[map.customers.id] as string);
@@ -1421,8 +1420,7 @@ function sortData(
 							customerTracker.total += rowNumbers.length;
 							for (let i = 0; i < rowNumbers.length; i++) {
 								customer.addresses = updateArrayBuffer(customer.addresses, rowNumbers[i]);
-								customerTracker.count += 1
-
+								customerTracker.count += 1;
 							}
 						}
 					});
@@ -1433,7 +1431,7 @@ function sortData(
 
 							for (let i = 0; i < rowNumbers.length; i++) {
 								customer.banks = updateArrayBuffer(customer.addresses, rowNumbers[i]);
-								customerTracker.count += 1
+								customerTracker.count += 1;
 							}
 						}
 					});
@@ -1443,19 +1441,18 @@ function sortData(
 							customerTracker.total += rowNumbers.length;
 							for (let i = 0; i < rowNumbers.length; i++) {
 								customer.company = updateArrayBuffer(customer.addresses, rowNumbers[i]);
-								customerTracker.count += 1
+								customerTracker.count += 1;
 							}
 						}
-					})
+					});
 
-					if(quedAddresses.length === 0 && quedBanks.length === 0 && quedCompany.length === 0 && quedPersons.length === 0){
+					if (quedAddresses.length === 0 && quedBanks.length === 0 && quedCompany.length === 0 && quedPersons.length === 0) {
 						insertCustomer(customer, (rowNumber: number | null) => {
 							if (rowNumber !== null) {
 								console.log('done with customer in row : ' + rowNumber);
 							}
 						});
 					}
-
 				};
 
 				customerDBrequest.onblocked = () => {

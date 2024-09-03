@@ -16,12 +16,7 @@ export interface TableWorkerRequestMessageAction {
 
 export type TableWorkerRequestMessageActionType = 'add' | 'next' | 'prev';
 
-export type TableWorkerRequestMessageType =
-	| 'stream'
-	| 'columns'
-	| 'count'
-	| 'startingRows'
-	| 'startingPackage';
+export type TableWorkerRequestMessageType = 'stream' | 'columns' | 'count' | 'startingRows' | 'startingPackage';
 
 export interface TableWorkerResponseMessage {
 	type: TableWorkerResponseMessageType;
@@ -30,10 +25,7 @@ export interface TableWorkerResponseMessage {
 	action?: TableWorkerRequestMessageActionType;
 }
 
-export type TableWorkerResponseMessageType =
-	| TableWorkerRequestMessageType
-	| 'error'
-	| 'success';
+export type TableWorkerResponseMessageType = TableWorkerRequestMessageType | 'error' | 'success';
 
 export type DoneHandler = {
 	data: DerefRow[];

@@ -15,12 +15,7 @@ export function CheckBox({ ticked }: { ticked: boolean }): React.JSX.Element {
 				}}>
 				{ticked ? (
 					<>
-						<Check
-							aria-modal="true"
-							color="var(--color-light-1)"
-							size={solids.icon.size.tiny}
-							strokeWidth={solids.icon.strokeWidth.tiny}
-						/>
+						<Check aria-modal="true" color="var(--color-light-1)" size={solids.icon.size.tiny} strokeWidth={solids.icon.strokeWidth.tiny} />
 					</>
 				) : (
 					<></>

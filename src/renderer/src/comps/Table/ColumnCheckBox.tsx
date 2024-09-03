@@ -2,13 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { CheckBox } from '../CheckBox/CheckBox';
 import { useTableDispatch, useTableContext } from './Table';
 
-export function ColumnCheckBox({
-	index,
-	columnName,
-}: {
-	index: number;
-	columnName: string;
-}): React.JSX.Element {
+export function ColumnCheckBox({ index, columnName }: { index: number; columnName: string }): React.JSX.Element {
 	const dispatch = useTableDispatch();
 	const tableState = useTableContext();
 	const [checked, setChecked] = useState<boolean>(false);
@@ -17,10 +11,7 @@ export function ColumnCheckBox({
 			dispatch({
 				type: 'set',
 				name: 'columns',
-				newVal: tableState.columns.toSpliced(
-					tableState.columns.indexOf(columnName),
-					1
-				),
+				newVal: tableState.columns.toSpliced(tableState.columns.indexOf(columnName), 1),
 			});
 		} else {
 			let insertIndex = index;
@@ -36,11 +27,7 @@ export function ColumnCheckBox({
 			dispatch({
 				type: 'set',
 				name: 'columns',
-				newVal: tableState.columns.toSpliced(
-					insertIndex,
-					0,
-					tableState.allColumns[index]
-				),
+				newVal: tableState.columns.toSpliced(insertIndex, 0, tableState.allColumns[index]),
 			});
 		}
 	};
@@ -63,10 +50,7 @@ export function ColumnCheckBox({
 		<>
 			{index !== 0 ? (
 				<>
-					<p
-						aria-modal="true"
-						className="menuRow"
-						onMouseDown={mouseDownHandler}>
+					<p aria-modal="true" className="menuRow" onMouseDown={mouseDownHandler}>
 						{columnName}
 						<CheckBox ticked={checked} />
 					</p>

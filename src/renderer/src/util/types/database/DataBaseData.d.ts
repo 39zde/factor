@@ -4,7 +4,7 @@ export interface TableRow extends BaseRow {
 
 export interface UploadRow {
 	row: number;
-	[key: string]: string
+	[key: string]: string;
 }
 
 export type BaseRow = {
@@ -16,19 +16,6 @@ export type DerefRow = {
 	[key: CustomerKeys]: number | Date | string | string[] | DerefRow[];
 };
 
-export type CustomerKeys =
-	| 'row'
-	| 'id'
-	| 'altIDs'
-	| 'description'
-	| 'firstContact'
-	| 'latestContact'
-	| 'created'
-	| 'notes'
-	| CustomerReferences;
+export type CustomerKeys = 'row' | 'id' | 'altIDs' | 'description' | 'firstContact' | 'latestContact' | 'created' | 'notes' | CustomerReferences;
 
-export type CustomerReferences =
-	| 'company'
-	| 'persons'
-	| 'addresses'
-	| 'banks';
+export type CustomerReferences = 'company' | 'persons' | 'addresses' | 'banks';

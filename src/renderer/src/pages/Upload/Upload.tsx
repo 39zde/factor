@@ -6,12 +6,7 @@ import { ImportModule } from './ImportModule';
 
 import { Table } from '@comps/Table/Table';
 import './Upload.css';
-import type {
-	CustomerSortingMap,
-	ArticleSortingMap,
-	UploadMode,
-	DocumentSortingMap,
-} from '@util/types/types';
+import type { CustomerSortingMap, ArticleSortingMap, UploadMode, DocumentSortingMap } from '@util/types/types';
 import { useAppContext, solids } from '@renderer/App';
 
 export function Upload(): React.JSX.Element {
@@ -32,9 +27,7 @@ export function Upload(): React.JSX.Element {
 		row: 'row',
 		id: '',
 	});
-	const [tableImportMode, setTableImportMode] = useState<
-		UploadMode | undefined
-	>(undefined);
+	const [tableImportMode, setTableImportMode] = useState<UploadMode | undefined>(undefined);
 	const tableImportModeHandler = (): void => {
 		if (tableImportModeInputRef.current === null) {
 			return;
@@ -107,11 +100,10 @@ export function Upload(): React.JSX.Element {
 	};
 
 	const importHandler = () => {
-		if(tableImportMode === "customer_db"){
-			if(map["customers"]["id"] === undefined){
-				window.alert("Customers ID is a requirement")
-
-			}else{
+		if (tableImportMode === 'customer_db') {
+			if (map['customers']['id'] === undefined) {
+				window.alert('Customers ID is a requirement');
+			} else {
 				worker.ImportWorker.postMessage({
 					type: 'sort',
 					data: map,
@@ -120,8 +112,7 @@ export function Upload(): React.JSX.Element {
 					dataBaseName: 'factor_db',
 				});
 			}
-		}else{
-
+		} else {
 			worker.ImportWorker.postMessage({
 				type: 'sort',
 				data: map,
@@ -142,10 +133,7 @@ export function Upload(): React.JSX.Element {
 					break;
 				case 'success':
 					if (importButtonRef.current !== null) {
-						importButtonRef.current.innerText =
-							general.language === 'deutsch'
-								? 'Tabelle erstellen/erneuern'
-								: 'Create/Update Table';
+						importButtonRef.current.innerText = general.language === 'deutsch' ? 'Tabelle erstellen/erneuern' : 'Create/Update Table';
 					}
 					if (tableImportModeInputRef.current !== null) {
 						switch (tableImportModeInputRef.current.value) {
@@ -223,17 +211,11 @@ export function Upload(): React.JSX.Element {
 									style={{
 										display: showFile ? 'flex' : 'none',
 									}}>
-									<button
-										onClick={removeFileHandler}
-										className="removeFile">
+									<button onClick={removeFileHandler} className="removeFile">
 										<XIcon
 											onMouseEnter={() => setIsRed(true)}
 											onMouseLeave={() => setIsRed(false)}
-											color={
-												isRed
-													? 'var(--color-primary)'
-													: 'light-dark(var(--color-dark-2),var(--color-light-2))'
-											}
+											color={isRed ? 'var(--color-primary)' : 'light-dark(var(--color-dark-2),var(--color-light-2))'}
 											size={solids.icon.size.regular}
 											strokeWidth={solids.icon.strokeWidth.regular}
 										/>
@@ -247,11 +229,7 @@ export function Upload(): React.JSX.Element {
 								</div>
 								<button
 									style={{
-										display: showFile
-											? showTable
-												? 'none'
-												: 'flex'
-											: 'none',
+										display: showFile ? (showTable ? 'none' : 'flex') : 'none',
 									}}
 									onClick={actionHandler}>
 									<ImportIcon
@@ -259,35 +237,23 @@ export function Upload(): React.JSX.Element {
 										size={solids.icon.size.regular}
 										strokeWidth={solids.icon.strokeWidth.regular}
 									/>
-									{general.language === 'deutsch'
-										? 'Importieren'
-										: 'Import'}
+									{general.language === 'deutsch' ? 'Importieren' : 'Import'}
 								</button>
 							</div>
 						</li>
 						{showTable && cols.length !== 0 ? (
 							<>
 								<li key={'tableInfo1'}>
-									{general.language === 'deutsch'
-										? 'Einträge'
-										: 'Entries'}
-									: {entries.toString() ?? '-'}
+									{general.language === 'deutsch' ? 'Einträge' : 'Entries'}: {entries.toString() ?? '-'}
 								</li>
 								<li key={'tableInfo2'}>
-									{general.language === 'deutsch'
-										? 'Spalten'
-										: 'Columns'}
-									: {cols.length ?? '-'}
+									{general.language === 'deutsch' ? 'Spalten' : 'Columns'}: {cols.length ?? '-'}
 								</li>
 								<li key={'tableInfo3'}>
 									<RowShifter cols={cols} />
 								</li>
 								<li key={'tableInfo4'}>
-									<ColRemover
-										updateHook={updateHook}
-										count={entries}
-										worker={worker.ImportWorker}
-									/>
+									<ColRemover updateHook={updateHook} count={entries} worker={worker.ImportWorker} />
 								</li>
 							</>
 						) : (
@@ -317,43 +283,19 @@ export function Upload(): React.JSX.Element {
 				<div className="dataSorter">
 					{showTable ? (
 						<>
-							<h2>
-								{general.language === 'english'
-									? 'Sort and Assign Data'
-									: 'Daten Sortieren und Einordnen'}
-							</h2>
+							<h2>{general.language === 'english' ? 'Sort and Assign Data' : 'Daten Sortieren und Einordnen'}</h2>
 							<ul className="toolbar">
 								<li>
-									<select
-										onInput={tableImportModeHandler}
-										ref={tableImportModeInputRef}
-										defaultValue={undefined}>
+									<select onInput={tableImportModeHandler} ref={tableImportModeInputRef} defaultValue={undefined}>
 										<option value={undefined}>-</option>
-										<option value="article_db">
-											{general.language == 'deutsch'
-												? 'Artikel'
-												: 'articles'}
-										</option>
-										<option value="customer_db">
-											{general.language == 'deutsch'
-												? 'Kunden'
-												: 'customers'}
-										</option>
-										<option value="document_db">
-											{general.language == 'deutsch'
-												? 'Dokumente'
-												: 'Documents'}
-										</option>
-
+										<option value="article_db">{general.language == 'deutsch' ? 'Artikel' : 'articles'}</option>
+										<option value="customer_db">{general.language == 'deutsch' ? 'Kunden' : 'customers'}</option>
+										<option value="document_db">{general.language == 'deutsch' ? 'Dokumente' : 'Documents'}</option>
 									</select>
 								</li>
 								<li>
-									<button
-										ref={importButtonRef}
-										onClick={importHandler}>
-										{general.language === 'deutsch'
-											? 'Tabelle erstellen/erneuern'
-											: 'Create/Update Table'}
+									<button ref={importButtonRef} onClick={importHandler}>
+										{general.language === 'deutsch' ? 'Tabelle erstellen/erneuern' : 'Create/Update Table'}
 									</button>
 								</li>
 							</ul>
@@ -364,11 +306,7 @@ export function Upload(): React.JSX.Element {
 					<div className="assignWrapper">
 						{tableImportMode !== undefined ? (
 							<>
-								<ImportModule
-									mode={tableImportMode}
-									columns={cols}
-									hook={sortingMapHook}
-								/>
+								<ImportModule mode={tableImportMode} columns={cols} hook={sortingMapHook} />
 							</>
 						) : (
 							<></>

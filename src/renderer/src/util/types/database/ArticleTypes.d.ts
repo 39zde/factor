@@ -26,7 +26,6 @@ export interface Article {
 	bulkDiscount?: DiscountRange[];
 }
 
-
 export type PriceType = {
 	VAT: number;
 	unit: 'EUR' | 'USD';
@@ -34,8 +33,7 @@ export type PriceType = {
 	discount: number;
 	/** price without vat and discount */
 	price: number;
-}
-
+};
 
 export interface AcquisitionType {
 	row: number;
@@ -54,30 +52,24 @@ export interface AcquisitionType {
 	purchaseInvoiceID?: string;
 }
 
-
 // ordered list from first:  parent category -> ...sub categories -> article category
 type CategoryType = Set<string>;
-
 
 /**
  * range: first number marks start, second number marks the end
  * type: should the amount interpreted a percentage or as a monetary value
  * */
 export type DiscountRange = {
-	range:	[number, number];
+	range: [number, number];
 	/** type applies to the amount prop */
-	type: "percentage" | "monetary"
+	type: 'percentage' | 'monetary';
 	amount: number;
-}
+};
 
-
-export type ArticleDBObjectStores = "articles" | "acquisitions";
+export type ArticleDBObjectStores = 'articles' | 'acquisitions';
 
 export type ArticleSortingMap = {
 	row: number;
-	articles:{
-	},
-	discounts:{
-
-	}
-}
+	articles: {};
+	discounts: {};
+};

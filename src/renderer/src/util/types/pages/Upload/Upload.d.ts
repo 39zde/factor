@@ -12,7 +12,4 @@ export interface ImportModuleProps {
 	};
 }
 
-export type UploadMode =
-	| 'article_db'
-	| 'customer_db'
-	| 'document_db'
+export type UploadMode = 'article_db' | 'customer_db' | 'document_db';

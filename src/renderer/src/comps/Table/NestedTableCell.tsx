@@ -1,19 +1,7 @@
 import React from 'react';
-import {
-	AddressType,
-	CompanyType,
-	EmailType,
-	PersonType,
-	PhoneNumberType,
-} from '@renderer/util/types/types';
+import { AddressType, CompanyType, EmailType, PersonType, PhoneNumberType } from '@renderer/util/types/types';
 
-export function NestedTableCell({
-	columnName,
-	data,
-}: {
-	columnName: string;
-	data: object[] | string[];
-}): React.JSX.Element {
+export function NestedTableCell({ columnName, data }: { columnName: string; data: object[] | string[] }): React.JSX.Element {
 	switch (columnName) {
 		case 'persons':
 			return <PersonTableCell data={data as PersonType[]} />;
@@ -62,11 +50,7 @@ function PersonTableCell({ data }: { data: PersonType[] }): React.JSX.Element {
 	);
 }
 
-function AddressTableCell({
-	data,
-}: {
-	data: AddressType[];
-}): React.JSX.Element {
+function AddressTableCell({ data }: { data: AddressType[] }): React.JSX.Element {
 	return (
 		<>
 			<span className="nestedCell">
@@ -123,11 +107,7 @@ function EmailTableCell({ data }: { data: EmailType[] }): React.JSX.Element {
 	);
 }
 
-function PhoneTableCell({
-	data,
-}: {
-	data: PhoneNumberType[];
-}): React.JSX.Element {
+function PhoneTableCell({ data }: { data: PhoneNumberType[] }): React.JSX.Element {
 	return (
 		<>
 			<span className="nestedCell">
@@ -165,11 +145,7 @@ function NotesTableCell({ data }: { data: string[] }): React.JSX.Element {
 	);
 }
 
-function CompanyTableCell({
-	data,
-}: {
-	data: CompanyType[];
-}): React.JSX.Element {
+function CompanyTableCell({ data }: { data: CompanyType[] }): React.JSX.Element {
 	return (
 		<>
 			<span className="nestedCell">

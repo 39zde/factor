@@ -26,22 +26,12 @@ export function TableFoot(): React.JSX.Element {
 							return (
 								<>
 									<th
-									style={{
-										maxHeight: appearances.rowHeight,
-									}}
+										style={{
+											maxHeight: appearances.rowHeight,
+										}}
 										key={`tfoot-${index}-${item}`}
-										ref={
-											index === 0
-												? tableState.footerRowFirstElementRef
-												: undefined
-										}>
-										<span className="guts">
-											{item !== undefined && index !== 0 ? (
-												<>{item}</>
-											) : (
-												<></>
-											)}
-										</span>
+										ref={index === 0 ? tableState.footerRowFirstElementRef : undefined}>
+										<span className="guts">{item !== undefined && index !== 0 ? <>{item}</> : <></>}</span>
 									</th>
 								</>
 							);

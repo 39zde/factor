@@ -53,7 +53,7 @@ export type CustomerBaseData = {
 	addresses: AddressType[];
 	company: CompanyType[];
 	banks: BankType[];
-}
+};
 
 /** customer_db>persons oStore item */
 export interface PersonType {
@@ -91,7 +91,6 @@ export interface DerefPersonType {
 	/** (optional) notes on that person */
 	notes?: string[];
 }
-
 
 /** customer_db>emails oStore item */
 export interface EmailType {
@@ -178,20 +177,18 @@ export type ContactType =
 	| 'delivery'
 	| '';
 
-
 export interface CustomerSortingMap {
 	row: 'row';
 	customers: CustomersMap;
 	persons: PersonsMap;
 	addresses: AddressesMap;
 	banks: BanksMap;
-	company:CompanyMap;
+	company: CompanyMap;
 }
 
+export type CustomerMapTypes = CustomersMap | PersonsMap | AddressesMap | BanksMap | CompanyMap;
 
-export type CustomerMapTypes = CustomersMap | PersonsMap | AddressesMap | BanksMap | CompanyMap
-
-export type CustomersMap =  {
+export type CustomersMap = {
 	id: string;
 	altIDs?: string;
 	description?: string;
@@ -209,9 +206,9 @@ export type CustomersMap =  {
 		phone?: string;
 		notes?: string;
 	};
-}
+};
 
-export type PersonsMap  = {
+export type PersonsMap = {
 	title?: string;
 	firstName?: string;
 	personAlias?: string;
@@ -227,7 +224,7 @@ export type PersonsMap  = {
 		notes?: string;
 	};
 	notes?: string;
-}
+};
 
 export type AddressesMap = {
 	type?: string;
@@ -238,7 +235,7 @@ export type AddressesMap = {
 	notes?: string;
 };
 
-export type BanksMap =  {
+export type BanksMap = {
 	name?: string;
 	iban?: string;
 	bic?: string;
@@ -246,7 +243,7 @@ export type BanksMap =  {
 	notes?: string;
 };
 
-export type CompanyMap =  {
+export type CompanyMap = {
 	name?: string;
 	alias?: string;
 	notes?: string;
@@ -255,14 +252,6 @@ export type CompanyMap =  {
 	ustID?: string;
 };
 
-
 export type CustomerSortingMapProps = keyof CustomerSortingMap;
 
-export type CustomerDBObjectStores =
-	| 'customers'
-	| 'persons'
-	| 'emails'
-	| 'phones'
-	| 'addresses'
-	| 'banks'
-	| 'company';
+export type CustomerDBObjectStores = 'customers' | 'persons' | 'emails' | 'phones' | 'addresses' | 'banks' | 'company';

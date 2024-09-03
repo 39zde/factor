@@ -10,9 +10,7 @@ export function RowShifter({ cols }: { cols: string[] }): React.JSX.Element {
 	const [colInput, setColInput] = useState<string>('');
 	const [valInput, setValInput] = useState<string>('');
 	const [offsetInput, setOffsetInput] = useState<number>(1);
-	const [directionInput, setDirectionInput] = useState<'Left' | 'Right'>(
-		'Left'
-	);
+	const [directionInput, setDirectionInput] = useState<'Left' | 'Right'>('Left');
 	const colInputHandler = () => {
 		if (colInputRef.current?.value !== undefined) {
 			setColInput(colInputRef.current?.value);
@@ -42,9 +40,7 @@ export function RowShifter({ cols }: { cols: string[] }): React.JSX.Element {
 
 	const goHandler = () => {
 		if (Number.isNaN(offsetInput) || offsetInput === 0) {
-			console.log(
-				'offset cannot be zero and must be an integer below the number of columns'
-			);
+			console.log('offset cannot be zero and must be an integer below the number of columns');
 		}
 		console.log({
 			col: colInput,
@@ -73,25 +69,12 @@ export function RowShifter({ cols }: { cols: string[] }): React.JSX.Element {
 	return (
 		<>
 			<div className="rowShifter">
-				<button
-					onClick={() => setShowOptions((old) => !old)}
-					className="alignButton">
-					{general.language === 'deutsch'
-						? 'Zeilen ausrichten'
-						: 'Align Rows'}
+				<button onClick={() => setShowOptions((old) => !old)} className="alignButton">
+					{general.language === 'deutsch' ? 'Zeilen ausrichten' : 'Align Rows'}
 				</button>
-				<div
-					className="alignOptions"
-					style={{ display: showOptions ? 'flex' : 'none' }}>
-					<p>
-						{general.language === 'deutsch'
-							? 'Zeile soll ausgerichtet werden, wenn'
-							: 'Shift Row, if'}
-					</p>
-					<select
-						ref={colInputRef}
-						id="colInput"
-						onInput={colInputHandler}>
+				<div className="alignOptions" style={{ display: showOptions ? 'flex' : 'none' }}>
+					<p>{general.language === 'deutsch' ? 'Zeile soll ausgerichtet werden, wenn' : 'Shift Row, if'}</p>
+					<select ref={colInputRef} id="colInput" onInput={colInputHandler}>
 						<option defaultChecked>-</option>
 						{cols.length !== 0 ? (
 							<>
@@ -103,18 +86,12 @@ export function RowShifter({ cols }: { cols: string[] }): React.JSX.Element {
 							<></>
 						)}
 					</select>
-					<p>
-						{general.language === 'deutsch'
-							? 'den Wert'
-							: 'has the value'}
-					</p>
+					<p>{general.language === 'deutsch' ? 'den Wert' : 'has the value'}</p>
 					<input
 						ref={valueInputRef}
 						type="text"
 						id="colValueInput"
-						placeholder={
-							general.language === 'deutsch' ? 'diesen Wert' : 'my value'
-						}
+						placeholder={general.language === 'deutsch' ? 'diesen Wert' : 'my value'}
 						onInput={colValueInputHandler}
 					/>
 					<p>{general.language === 'deutsch' ? 'um' : 'by'}</p>
@@ -123,29 +100,19 @@ export function RowShifter({ cols }: { cols: string[] }): React.JSX.Element {
 						min={1}
 						max={cols.length}
 						id="offsetCount"
-						placeholder={
-							general.language === 'deutsch'
-								? 'diese Anzahl'
-								: 'my number'
-						}
+						placeholder={general.language === 'deutsch' ? 'diese Anzahl' : 'my number'}
 						ref={offsetInputRef}
 						onInput={offsetInputHandler}
 					/>
 					<p>{general.language === 'deutsch' ? 'zur' : 'towards the'}</p>
 					<select onInput={directionHandler} ref={directionRef}>
-						<option value={'Left'}>
-							{general.language === 'deutsch' ? 'linken' : 'left'}
-						</option>
-						<option value={'Right'}>
-							{general.language === 'deutsch' ? 'rechten' : 'right'}
-						</option>
+						<option value={'Left'}>{general.language === 'deutsch' ? 'linken' : 'left'}</option>
+						<option value={'Right'}>{general.language === 'deutsch' ? 'rechten' : 'right'}</option>
 					</select>
 					<p>{general.language === 'deutsch' ? 'Seite' : 'side'}</p>
 					<div className="divider" />
 					<div className="alignActions">
-						<button onClick={() => setShowOptions(false)}>
-							{general.language === 'deutsch' ? 'Abbrechen' : 'Cancel'}
-						</button>
+						<button onClick={() => setShowOptions(false)}>{general.language === 'deutsch' ? 'Abbrechen' : 'Cancel'}</button>
 						<button onClick={goHandler}>Go!</button>
 					</div>
 				</div>

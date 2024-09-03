@@ -40,18 +40,12 @@ function UnfoldHelp({ help }: { help: HelpTexts }) {
 				return (
 					<>
 						<h2 key={`help-h2-${index}`}>{entry[1].title}</h2>
-						<div
-							className="helpCategoryWrapper"
-							key={`help-div1-${index}`}>
+						<div className="helpCategoryWrapper" key={`help-div1-${index}`}>
 							{entry[1].items.map((item, index2) => {
 								return (
 									<>
-										<h3 key={`help-h3-${index}-${index2}`}>
-											{item.title}
-										</h3>
-										<div
-											className="helpCategoryItemWrapper"
-											key={`help-div2-${index}-${index2}`}>
+										<h3 key={`help-h3-${index}-${index2}`}>{item.title}</h3>
+										<div className="helpCategoryItemWrapper" key={`help-div2-${index}-${index2}`}>
 											{item.item}
 										</div>
 									</>

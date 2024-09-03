@@ -25,5 +25,5 @@ export const PlaceHolderTableContext: TableContextType = {
 	accept: 'next',
 	lastReceived: 0,
 	hasStarted: false,
-	footerRowFirstElementRef: null
+	footerRowFirstElementRef: null,
 };

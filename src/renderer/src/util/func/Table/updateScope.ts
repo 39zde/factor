@@ -35,10 +35,7 @@ export function updateScope(
 		// check by how much the 2 scopes differ
 		const diff = Math.abs(tableValues.oldScope - tableValues.newScope);
 
-		if (
-			tableValues.newScope < tableValues.oldScope &&
-			tableValues.newScope !== 0
-		) {
+		if (tableValues.newScope < tableValues.oldScope && tableValues.newScope !== 0) {
 			// the new scope is smaller than the previous one
 			// we need to take away rows
 

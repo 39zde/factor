@@ -1,8 +1,4 @@
-import type {
-	CustomerDBObjectStores,
-	ArticleDBObjectStores,
-	DocumentDBObjectStores,
-} from './types/types';
+import type { CustomerDBObjectStores, ArticleDBObjectStores, DocumentDBObjectStores } from './types/types';
 export interface AppContextType extends AppSettingsType {
 	worker: {
 		/**

@@ -1,12 +1,6 @@
 import { app, shell, BrowserWindow, ipcMain } from 'electron';
 import { join, resolve } from 'path';
-import {
-	readFileSync,
-	writeFileSync,
-	copyFileSync,
-	readdirSync,
-	mkdirSync,
-} from 'fs';
+import { readFileSync, writeFileSync, copyFileSync, readdirSync, mkdirSync } from 'fs';
 import { userInfo } from 'os';
 import { env, platform } from 'process';
 import { electronApp, optimizer, is } from '@electron-toolkit/utils';
@@ -155,11 +149,7 @@ function readSettings(): AppSettingsType | null {
 
 function writeSettings(settings: AppSettingsType) {
 	let homeDir = getHomeDir();
-	writeFileSync(
-		homeDir + '/.factor/settings.json',
-		JSON.stringify(settings),
-		'utf8'
-	);
+	writeFileSync(homeDir + '/.factor/settings.json', JSON.stringify(settings), 'utf8');
 }
 
 function initSettings() {
@@ -171,10 +161,7 @@ function initSettings() {
 	}
 	const factorContents = readdirSync(homeDir + '/.factor', 'utf8');
 	if (!factorContents.includes('settings.json')) {
-		copyFileSync(
-			__dirname + '../../../resources/defaultSettings.json',
-			homeDir + '/.factor/settings.json'
-		);
+		copyFileSync(__dirname + '../../../resources/defaultSettings.json', homeDir + '/.factor/settings.json');
 	}
 }
 

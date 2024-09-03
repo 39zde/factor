@@ -14,7 +14,7 @@ export default defineConfig({
 		worker: {
 			format: 'es',
 		},
-		appType: "spa",
+		appType: 'spa',
 		resolve: {
 			extensions: ['.tsx', '.ts', '.d.ts'],
 			alias: {

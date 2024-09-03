@@ -2,12 +2,7 @@ import React, { useState } from 'react';
 import type { LowerButtonProps } from '@util/types/types';
 import './SideBar.css';
 
-export function LowerButton({
-	handler,
-	icon,
-	text,
-	active,
-}: LowerButtonProps): React.JSX.Element {
+export function LowerButton({ handler, icon, text, active }: LowerButtonProps): React.JSX.Element {
 	const [hover, setHover] = useState<boolean>(false);
 
 	return (

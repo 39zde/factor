@@ -1,6 +1,2 @@
 export type { TableProps } from './TableProps';
-export type {
-	TableContextType,
-	ResizeStyle,
-	TableDispatchAction,
-} from './TableContextType';
+export type { TableContextType, ResizeStyle, TableDispatchAction } from './TableContextType';

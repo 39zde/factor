@@ -43,12 +43,7 @@ export function TableRows(): React.JSX.Element {
 										overflow: 'hidden',
 									}}
 									key={uni}>
-									<RowItems
-										key={`i-${uni}`}
-										items={item}
-										colIndex={index}
-										uniqueParentKey={uni}
-									/>
+									<RowItems key={`i-${uni}`} items={item} colIndex={index} uniqueParentKey={uni} />
 								</tr>
 							</>
 						);

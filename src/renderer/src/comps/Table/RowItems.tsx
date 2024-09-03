@@ -4,10 +4,7 @@ import type { TableRowItemProps } from '@renderer/util/types/comps/Table/TableRo
 import { useTableContext } from './Table';
 import { NestedTableCell } from './NestedTableCell';
 
-export function RowItems({
-	items,
-	uniqueParentKey,
-}: TableRowItemProps): React.JSX.Element {
+export function RowItems({ items, uniqueParentKey }: TableRowItemProps): React.JSX.Element {
 	const tableState = useTableContext();
 	return (
 		<>
@@ -15,11 +12,7 @@ export function RowItems({
 				return (
 					<>
 						<TableCellWrapper key={`col${index}${uniqueParentKey}`}>
-							<TableCell
-								parentKey={`col${index}${uniqueParentKey}`}
-								contents={items[columnName]}
-								columnName={columnName}
-							/>
+							<TableCell parentKey={`col${index}${uniqueParentKey}`} contents={items[columnName]} columnName={columnName} />
 						</TableCellWrapper>
 					</>
 				);
@@ -60,12 +53,7 @@ function TableCell({
 	}
 }
 
-function TableCellWrapper({
-	children,
-}: {
-	key?: string;
-	children: React.JSX.Element | string;
-}): React.JSX.Element {
+function TableCellWrapper({ children }: { key?: string; children: React.JSX.Element | string }): React.JSX.Element {
 	const { appearances } = useAppContext();
 	return (
 		<>

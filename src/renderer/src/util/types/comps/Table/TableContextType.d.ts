@@ -25,7 +25,7 @@ export interface TableContextType {
 	accept: 'prev' | 'next';
 	lastReceived: number;
 	hasStarted: boolean;
-	footerRowFirstElementRef: React.RefObject<HTMLTableCellElement> |null;
+	footerRowFirstElementRef: React.RefObject<HTMLTableCellElement> | null;
 }
 
 export interface ResizeStyle {
@@ -36,18 +36,9 @@ export interface ResizeStyle {
 export interface TableDispatchAction {
 	type: TableDispatchActionType;
 	index?: number;
-	name?: 'set' extends TableDispatchAction['type']
-		? keyof TableContextType
-		: undefined;
+	name?: 'set' extends TableDispatchAction['type'] ? keyof TableContextType : undefined;
 	newVal: TableContextType[TableDispatchAction['name']];
 	worker?: Worker;
 }
 
-export type TableDispatchActionType =
-	| 'set'
-	| 'mouseDown'
-	| 'mouseUp'
-	| 'mouseMove'
-	| 'mouseEnter'
-	| 'mouseLeave'
-	| 'changeAccept';
+export type TableDispatchActionType = 'set' | 'mouseDown' | 'mouseUp' | 'mouseMove' | 'mouseEnter' | 'mouseLeave' | 'changeAccept';

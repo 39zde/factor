@@ -11,7 +11,6 @@ Delivery
 Returnee
  */
 
-
 export interface QuoteType extends BaseType {
 	// unique id for the quote
 	id: string;
@@ -35,7 +34,7 @@ export interface InvoiceType extends BaseType {
 
 export interface DeliveryType extends BaseType {
 	id: string;
-	parentQuote: ArrayBuffer
+	parentQuote: ArrayBuffer;
 	parentInvoice: ArrayBuffer;
 }
 
@@ -45,8 +44,8 @@ export interface ReturneeType extends BaseType {
 	returned: Date;
 	// (optional) Notes on the returned Items
 	notes?: string[];
-	parentQuote: ArrayBuffer
-	parentInvoice: ArrayBuffer
+	parentQuote: ArrayBuffer;
+	parentInvoice: ArrayBuffer;
 	parentDelivery: ArrayBuffer;
 }
 
@@ -63,16 +62,9 @@ interface BaseType {
 	};
 }
 
-export type DocumentDBObjectStores =
-	| 'deliveries'
-	| 'invoices'
-	| 'quotes'
-	| 'returnees';
+export type DocumentDBObjectStores = 'deliveries' | 'invoices' | 'quotes' | 'returnees';
 
 export type DocumentSortingMap = {
 	row: number;
-	deliveries:{
-
-	}
-}
-
+	deliveries: {};
+};
