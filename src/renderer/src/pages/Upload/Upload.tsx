@@ -201,7 +201,7 @@ export function Upload(): React.JSX.Element {
 		<>
 			<div className="uploadPage page" style={{ overflow: 'hidden' }}>
 				<div className="tableInfoWrapper">
-					<ul className="tableInfo">
+					<ul className="toolbar">
 						<li className="fileSelector">
 							<div className="uploader">
 								<input
@@ -322,7 +322,7 @@ export function Upload(): React.JSX.Element {
 									? 'Sort and Assign Data'
 									: 'Daten Sortieren und Einordnen'}
 							</h2>
-							<ul className="sorter">
+							<ul className="toolbar">
 								<li>
 									<select
 										onInput={tableImportModeHandler}
