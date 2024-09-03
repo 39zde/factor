@@ -9,3 +9,4 @@ parser: "typescript"
 endOfLine: "lf"
 singleAttributePerLine: false
 proseWrap: "preserve"
+printWidth: 150
