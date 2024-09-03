@@ -157,15 +157,6 @@ h3 {
 	text-align: center;
 }
 
-.divider {
-	border-top: 1px solid light-dark(var(--color-dark-3), var(--color-light-3));
-	height: 1px;
-	width: 100%;
-	margin: 4px 0;
-	width: 100%;
-	border-radius: none;
-}
-
 a {
 	text-decoration: underline;
 	color: light-dark(var(--color-dark-1), var(--color-light-1))

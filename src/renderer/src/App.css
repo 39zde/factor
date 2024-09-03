@@ -13,6 +13,7 @@
 	height: 100%;
 	width: 100%;
 	position: relative;
+	overflow-x: hidden;
 
 	& .appRoute {
 		position: absolute;
@@ -39,5 +40,37 @@ div.helper {
 	&>div {
 		max-width: 1040px;
 		align-self: center;
+	}
+}
+
+.divider {
+	border-top: 1px solid light-dark(var(--color-dark-3), var(--color-light-3));
+	height: 1px;
+	width: 100%;
+	margin: 4px 0;
+	width: 100%;
+	border-radius: none;
+}
+
+ul.toolbar{
+	padding: 12px 0;
+	width: 100%;
+	align-self: center;
+	margin: 12px 12px;
+	border-radius: 16px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	overflow-x: visible;
+	overflow-y: visible;
+	width: 100%;
+	background-color: light-dark(var(--color-light-2), var(--color-dark-2));
+	&>li:not(:last-child){
+		border-right: 1px solid light-dark(var(--color-light-3), var(--color-dark-3));
+	}
+	&>li{
+		min-height: 36px;
+		align-content: center;
+		padding: 0 12px;
 	}
 }
