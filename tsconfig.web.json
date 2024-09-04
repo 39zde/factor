@@ -1,11 +1,9 @@
 {
   "extends": "@electron-toolkit/tsconfig/tsconfig.web.json",
   "include": [
-    "src/renderer/src/env.d.ts",
-    "src/renderer/src/**/*",
-    "src/renderer/src/**/*.tsx",
-    "src/renderer/src/util/worker/*.ts",
-    "src/preload/*.d.ts",
+	 "package.json",
+	 "electron.vite.config.*",
+    "src/renderer/**/*"
   ],
   "exclude": [
 	"./.yarnrc.yml"
@@ -19,9 +17,10 @@
 	 "strict": true,
 	 "noFallthroughCasesInSwitch": false,
 	 "noImplicitReturns": false,
+	 "typeRoots" : ["./node_modules/@types"],
     "paths": {
       "@renderer/*": [
-        "src/renderer/src/*",
+        "src/renderer/src/*"
       ],
       "@util/*":[
         "src/renderer/src/util/*"
