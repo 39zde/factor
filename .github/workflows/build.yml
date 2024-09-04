@@ -23,10 +23,10 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
 
-   #  - name: install dependencies
-   #    run: |
-   #      corepack enable
-   #      yarn install
+    - name: install dependencies
+      run: |
+        corepack enable
+        yarn install
 
    #  - name: roll-up js files
    #    run: yarn run build
