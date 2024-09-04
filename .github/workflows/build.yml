@@ -36,8 +36,8 @@ jobs:
       run: yarn run electron-vite build
 
     - name: build electron app
-	 	env:
-			GH_TOKEN: ${{ secrets.GH_TOKEN }}
+      env:
+         GH_TOKEN: ${{ secrets.GH_TOKEN }}
       run: yarn run electron-builder
 
    # - name: release
