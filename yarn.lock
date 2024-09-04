@@ -3002,6 +3002,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"electron@npm:31.4.0":
+  version: 31.4.0
+  resolution: "electron@npm:31.4.0"
+  dependencies:
+    "@electron/get": "npm:^2.0.0"
+    "@types/node": "npm:^20.9.0"
+    extract-zip: "npm:^2.0.1"
+  bin:
+    electron: cli.js
+  checksum: 10c0/9ed10f363f864912bb9be0a387309babb476df20473ed7ea3f8df609daf19125763fe9ba4b9f5b422673b688e00b31afc52b308623829b7cced28f99687a9d03
+  languageName: node
+  linkType: hard
+
 "electron@npm:^23.1.2":
   version: 23.3.13
   resolution: "electron@npm:23.3.13"
@@ -3012,19 +3025,6 @@ __metadata:
   bin:
     electron: cli.js
   checksum: 10c0/6fa13fd4177b7ca051f52ee2190ede9e2b269639cc7665568144caa46a46fe13009de9da3d60912b7c8e9a370825c0488f34860c8952b6f5b88283b91a4d4e00
-  languageName: node
-  linkType: hard
-
-"electron@npm:^31.4.0":
-  version: 31.4.0
-  resolution: "electron@npm:31.4.0"
-  dependencies:
-    "@electron/get": "npm:^2.0.0"
-    "@types/node": "npm:^20.9.0"
-    extract-zip: "npm:^2.0.1"
-  bin:
-    electron: cli.js
-  checksum: 10c0/9ed10f363f864912bb9be0a387309babb476df20473ed7ea3f8df609daf19125763fe9ba4b9f5b422673b688e00b31afc52b308623829b7cced28f99687a9d03
   languageName: node
   linkType: hard
 
@@ -3576,7 +3576,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": "npm:^8.2.0"
     "@typescript-eslint/parser": "npm:^8.2.0"
     "@vitejs/plugin-react": "npm:^4.3.1"
-    electron: "npm:^31.4.0"
+    electron: "npm:31.4.0"
     electron-builder: "npm:^24.13.3"
     electron-updater: "npm:^6.3.4"
     electron-vite: "npm:^2.3.0"
