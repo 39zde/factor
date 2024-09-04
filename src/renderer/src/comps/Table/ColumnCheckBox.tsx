@@ -50,10 +50,10 @@ export function ColumnCheckBox({ index, columnName }: { index: number; columnNam
 		<>
 			{index !== 0 ? (
 				<>
-					<p aria-modal="true" className="menuRow" onMouseDown={mouseDownHandler}>
-						{columnName}
+					<div aria-modal="true" className="menuRow" onMouseDown={mouseDownHandler}>
+						<p aria-modal="true">{columnName}</p>
 						<CheckBox ticked={checked} />
-					</p>
+					</div>
 				</>
 			) : (
 				<></>
