@@ -29,15 +29,9 @@ jobs:
         yarn install
 
     - name: roll-up js files
-      run: yarn run build
+      run: |
+			yarn run build
 
     - name: build electron app
-      run: yarn run electron-builder
-
-	 # - name: release
-	 # uses: softprops/action-gh-release@v2
-	 # if: startsWith(github.ref, 'refs/tags/')
-	 # with:
-	 #  files: ./dist/factor-v[0-9].[0-9][?0-9].[0-9][?0-9].*(app|exe|dmg|deb)
-	 #  token: ${{ secrets.PUB_TOKEN }}
-
+	   run: |
+			yarn run electron-builder
