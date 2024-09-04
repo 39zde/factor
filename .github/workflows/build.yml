@@ -2,6 +2,7 @@ name: Build & Release
 
 on:
   push:
+    tags: "v*.*.*"
     branches: [ "master" ]
 
 jobs:
@@ -36,9 +37,9 @@ jobs:
       run: yarn run electron-vite build
 
     - name: build electron app
-	 	env:
-			GH_TOKEN: ${{ secrets.GH_TOKEN }}
-      run: yarn run electron-builder
+      env:
+         GH_TOKEN: ${{ secrets.GH_TOKEN }}
+      run: yarn run electron-builder --publish always
 
    # - name: release
    #   uses: softprops/action-gh-release@v2
