@@ -30,7 +30,7 @@ jobs:
         ls
 
     - name: roll-up js files
-      run: yarn run build
+      run: yarn run typecheck && electron-vite build
 
     - name: build electron app
       run: yarn run electron-builder
