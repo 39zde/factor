@@ -37,12 +37,5 @@ linux:
 appImage:
     artifactName: Setup-${name}-v${version}.${ext}
 npmRebuild: true
-publish:
-	 provider: github
- 	 repo: factor
- 	 owner: 39zde
- 	 vPrefixedTagName: true
- 	 host: github.com
- 	 protocol: https
 electronDownload:
     mirror: https://npmmirror.com/mirrors/electron/
