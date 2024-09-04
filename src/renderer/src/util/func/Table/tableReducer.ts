@@ -17,6 +17,9 @@ export function tableReducer(tableState: TableContextType, action: TableDispatch
 					writable: true,
 					value: action.newVal,
 				});
+				if (action.name === 'columns') {
+					localStorage.setItem(`${tableState.tableName}-columns`, (action.newVal as string[]).join(','));
+				}
 			}
 			return {
 				...tableState,

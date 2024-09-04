@@ -368,11 +368,20 @@ export function Table({ dataBaseName, tableName, colsHook, entriesHook, updateHo
 					name: 'allColumns',
 					newVal: cols,
 				});
-				dispatch({
-					type: 'set',
-					name: 'columns',
-					newVal: cols,
-				});
+				const savedColumns = localStorage.getItem(`${tableName}-columns`);
+				if (savedColumns !== null) {
+					dispatch({
+						type: 'set',
+						name: 'columns',
+						newVal: savedColumns.split(','),
+					});
+				} else {
+					dispatch({
+						type: 'set',
+						name: 'columns',
+						newVal: cols,
+					});
+				}
 				// create refs used for getting the with of a columns.
 				// we need this for resizing the columns
 				dispatch({
