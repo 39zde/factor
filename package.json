@@ -6,7 +6,7 @@
     "author": "39zde",
     "type": "module",
     "homepage": "https://github.com/39zde/factor",
-	 "repository":"https://github.com/39zde/factor",
+    "repository": "https://github.com/39zde/factor",
     "license": "Apache-2.0",
     "scripts": {
         "format": "prettier --write .",
@@ -17,13 +17,13 @@
         "start": "electron-vite preview",
         "dev": "electron-vite dev",
         "devtools": "yarn react-devtools",
-        "build": "yarn run typecheck && electron-vite build",
+        "bundle": "yarn run typecheck && electron-vite build",
         "postinstall": "electron-builder install-app-deps",
         "build:unpack": "yarn run build && electron-builder --dir",
         "build:win": "yarn run build && electron-builder --win",
         "build:mac": "electron-vite build && electron-builder --mac",
         "build:linux": "electron-vite build && electron-builder --linux",
-		  "dist": "electron-builder --publish always"
+        "dist": "electron-builder --publish always"
     },
     "dependencies": {
         "@react-pdf/renderer": "^3.4.4",
