@@ -29,8 +29,11 @@ jobs:
         yarn install
         yarn run electron-builder install-app-deps
 
-    - name: roll-up js files
-      run: yarn run typecheck && electron-vite build
+    - name: check types
+      run: yarn run typecheck
+
+	 - name: bundle
+		run: yarn run electron-vite build
 
     - name: build electron app
       run: yarn run electron-builder
