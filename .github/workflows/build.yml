@@ -31,9 +31,9 @@ jobs:
 
     - name: check types
       run: yarn run typecheck
-
-	 - name: bundle
-		run: yarn run electron-vite build
+    
+    - name: bundle
+      run: yarn run electron-vite build
 
     - name: build electron app
       run: yarn run electron-builder
