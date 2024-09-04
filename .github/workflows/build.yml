@@ -27,6 +27,7 @@ jobs:
       run: |
         corepack enable
         yarn install
+        ls
 
     - name: roll-up js files
       run: yarn run build
