@@ -18,7 +18,6 @@
         "dev": "electron-vite dev",
         "devtools": "yarn react-devtools",
         "bundle": "yarn run typecheck && electron-vite build",
-        "postinstall": "electron-builder install-app-deps",
         "build:unpack": "yarn run build && electron-builder --dir",
         "build:win": "yarn run build && electron-builder --win",
         "build:mac": "electron-vite build && electron-builder --mac",
