@@ -32,7 +32,7 @@ jobs:
       run: yarn run build
 
     - name: build electron app
-      run: yarn run dist
+      run: yarn run electron-builder
 
 	 # - name: release
 	 # uses: softprops/action-gh-release@v2
