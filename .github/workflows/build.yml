@@ -1,0 +1,35 @@
+name: Build & Release
+
+on:
+  push:
+    branches: [ "master" ]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+        node-version: ['20.16.0']
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+    steps:
+    - name: check out git repo
+      uses: actions/checkout@master
+
+    - name: Setup Node
+      uses: actions/setup-node@master
+      with:
+        node-version: ${{ matrix.node-version }}
+
+   #  - name: install dependencies
+   #    run: |
+   #      corepack enable
+   #      yarn install
+
+   #  - name: roll-up js files
+   #    run: yarn run build
+
+   #  - name: build electron app
+   #    run: yarn run dist

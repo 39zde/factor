@@ -1,11 +1,12 @@
 {
     "name": "factor",
-    "version": "1.1.0",
+    "version": "v1.1.0",
     "description": "An invoicing application built with TypeScript:React on top of IndexDB packaged with Electron",
     "main": "./out/main/index.js",
     "author": "39zde",
     "type": "module",
     "homepage": "https://github.com/39zde/factor",
+	 "repository":"https://github.com/39zde/factor",
     "license": "Apache-2.0",
     "scripts": {
         "format": "prettier --write .",
@@ -15,13 +16,14 @@
         "typecheck": "yarn run typecheck:node && yarn run typecheck:web",
         "start": "electron-vite preview",
         "dev": "electron-vite dev",
+        "devtools": "yarn react-devtools",
         "build": "yarn run typecheck && electron-vite build",
         "postinstall": "electron-builder install-app-deps",
         "build:unpack": "yarn run build && electron-builder --dir",
         "build:win": "yarn run build && electron-builder --win",
         "build:mac": "electron-vite build && electron-builder --mac",
         "build:linux": "electron-vite build && electron-builder --linux",
-        "devtools": "yarn react-devtools"
+		  "dist": "electron-builder --publish always"
     },
     "dependencies": {
         "@react-pdf/renderer": "^3.4.4",
@@ -61,5 +63,5 @@
     "engines": {
         "node": "v20.16.0"
     },
-	 "readme": "./README.md"
+    "readme": "./README.md"
 }
