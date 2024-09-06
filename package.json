@@ -1,6 +1,6 @@
 {
     "name": "factor",
-    "version": "v1.1.0",
+    "version": "v1.2.0",
     "description": "An invoicing application built with TypeScript:React on top of IndexDB packaged with Electron",
     "main": "./out/main/index.js",
     "author": "39zde",
