@@ -1,5 +1,5 @@
 import React, { MouseEvent } from 'react';
-import { AddressType, CompanyType, EmailType, PersonType, PhoneNumberType } from '@renderer/util/types/types';
+import { AddressType, BankType, CompanyType, EmailType, PersonType, PhoneNumberType } from '@renderer/util/types/types';
 
 export function NestedTableCell({ columnName, data }: { columnName: string; data: object[] | string[] }): React.JSX.Element {
 	switch (columnName) {
@@ -17,6 +17,8 @@ export function NestedTableCell({ columnName, data }: { columnName: string; data
 			return <CompanyTableCell data={data as CompanyType[]} />;
 		case 'website':
 			return <WebsiteTableCell data={data[0] as string} />;
+		case 'banks':
+			return <BankTableCell data={data as BankType[]} />;
 		default:
 			return <></>;
 	}
@@ -191,6 +193,35 @@ function WebsiteTableCell({ data }: { data: string }): React.JSX.Element {
 					{data.replace('https://', '')}
 				</a>
 			</span>
+		</>
+	);
+}
+
+function BankTableCell({ data }: { data: BankType[] }): React.JSX.Element {
+	return (
+		<>
+			{data !== undefined ? (
+				data.map((item, index) => {
+					let line1 = item.name;
+					let item2 = item.iban;
+					let item3 = item.notes;
+
+					return (
+						<div key={`nestedBank-${index}-${line1}-${item2}`}>
+							<p>{line1}</p>
+							{item2 !== undefined ? (
+								<>
+									<p>{item2}</p>
+								</>
+							) : (
+								<></>
+							)}
+						</div>
+					);
+				})
+			) : (
+				<></>
+			)}
 		</>
 	);
 }
