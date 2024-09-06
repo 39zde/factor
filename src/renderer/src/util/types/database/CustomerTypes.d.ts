@@ -1,9 +1,4 @@
-export interface Customer {
-	row: number;
-	/** An unique ID  */
-	id: string;
-	/** old or alternative Identifiers */
-	altIDs?: string[];
+export interface Customer extends BaseCustomer {
 	/** Reference Index to persons */
 	persons?: ArrayBuffer;
 	/** Reference Index to addresses oStore */
@@ -16,6 +11,39 @@ export interface Customer {
 	emails?: ArrayBuffer;
 	/** Reference Index to phones oStore  */
 	phones?: ArrayBuffer;
+}
+
+export interface PreInsertCustomer extends BaseCustomer {
+	/** Reference Index to persons */
+	persons?: ArrayBuffer;
+	/** Reference Index to addresses oStore */
+	addresses?: ArrayBuffer;
+	/** Reference Index to banks oStore */
+	banks?: ArrayBuffer;
+	/** Reference Index to company oStore  */
+	company?: ArrayBuffer;
+	/** Customer associated emails */
+	emails?: EmailType[];
+	/** customer associated phone numbers  */
+	phones?: PhoneNumberType[];
+}
+
+/** Dereferenced Version of Customer. This is what will be posted to main tread */
+export interface DerefCustomer extends BaseCustomer {
+	persons?: PersonType[];
+	addresses?: AddressType[];
+	banks?: BankType[];
+	company?: CompanyType[];
+	emails?: EmailType[];
+	phones?: PhoneNumberType[];
+}
+
+export interface BaseCustomer {
+	row: number;
+	/** An unique ID  */
+	id: string;
+	/** old or alternative Identifiers */
+	altIDs?: string[];
 	/** Description of the customer; What do they do? */
 	description?: string;
 	/** Date of the first interaction  */
@@ -28,24 +56,6 @@ export interface Customer {
 	notes?: string[];
 	/** Website */
 	website?: string;
-}
-
-/** Dereferenced Version of Customer. This is what will be posted to main tread */
-export interface CustomerRow {
-	row: number;
-	id: string;
-	altIDs?: string[];
-	persons?: PersonType[];
-	addresses?: AddressType[];
-	banks?: BankType[];
-	company?: CompanyType;
-	emails?: EmailType[];
-	phones?: PhoneNumberType[];
-	description?: string;
-	firstContact?: Date;
-	latestContact?: Date;
-	created: Date;
-	notes?: string[];
 }
 
 export type CustomerBaseData = {
@@ -196,16 +206,8 @@ export type CustomersMap = {
 	latestContact?: string;
 	notes?: string;
 	website?: string;
-	emails?: {
-		type?: string;
-		email?: string;
-		notes?: string;
-	};
-	phones?: {
-		type?: string;
-		phone?: string;
-		notes?: string;
-	};
+	emails?: EmailMap;
+	phones?: PhoneMap;
 };
 
 export type PersonsMap = {
@@ -250,6 +252,18 @@ export type CompanyMap = {
 	taxID?: string;
 	taxNumber?: string;
 	ustID?: string;
+};
+
+export type EmailMap = {
+	email?: string;
+	type?: string;
+	notes?: string;
+};
+
+export type PhoneMap = {
+	phone?: string;
+	type?: string;
+	notes?: string;
 };
 
 export type CustomerSortingMapProps = keyof CustomerSortingMap;

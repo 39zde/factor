@@ -9,6 +9,7 @@ import type {
 	BankType,
 	CompanyType,
 	Customer,
+	DerefCustomer,
 	AddDataArgs,
 	DateInput,
 	UploadRow,
@@ -16,6 +17,11 @@ import type {
 	ArticleSortingMap,
 	CustomerSortingMap,
 	DocumentSortingMap,
+	CustomersMap,
+	EmailMap,
+	PhoneMap,
+	ContactType,
+	PreInsertCustomer,
 } from '../types/types';
 import { getAddressHash } from '../func/func';
 
@@ -606,7 +612,7 @@ function sortData(
 					// variable definitions
 					const customerDB = customerDBrequest.result;
 					const oStores = customerDB.objectStoreNames;
-					const customer = structuredClone(templates.get('customer')) as Customer;
+					const customer = structuredClone(templates.get('customer')) as PreInsertCustomer;
 					const customerCounter = {
 						count: 0,
 						total: 0,
@@ -616,11 +622,7 @@ function sortData(
 							target[prop] = value;
 							if (prop === 'count') {
 								if (target['count'] == target['total']) {
-									insertCustomer(customer, (rowNumber: number | null) => {
-										if (rowNumber !== null) {
-											// console.log('done with customer in row : ' + rowNumber);
-										}
-									});
+									insertCustomers(customer);
 								}
 							}
 							return true;
@@ -1106,6 +1108,20 @@ function sortData(
 						}
 					}
 
+					function insertCustomers(customer: PreInsertCustomer) {
+						parseCustomer([customer], (result: Customer[] | null) => {
+							if (result !== null) {
+								for (let i = 0; i < result.length; i++) {
+									insertCustomer(result[i], (rowNumber: number | null) => {
+										if (rowNumber !== null) {
+											// console.log('done with customer in row : ' + rowNumber);
+										}
+									});
+								}
+							}
+						});
+					}
+
 					function parsePersons(data: DerefPersonType[], callback: (result: PersonType[] | null) => void): void {
 						const reffedPersons: PersonType[] = [];
 						let emailHolder = new WeakMap();
@@ -1262,55 +1278,71 @@ function sortData(
 						}
 					}
 
+					function parseCustomer(data: PreInsertCustomer[], callback: (result: Customer[] | null) => void): void {
+						const reffedCustomers: Customer[] = [];
+						let emailHolder = new WeakMap();
+						let phoneHolder = new WeakMap();
+						const counter = {
+							count: 0,
+							total: 0,
+						};
+
+						const counterHandler = {
+							set(target, prop, value) {
+								target[prop] = value;
+								if (prop === 'count') {
+									if (target['count'] === target['total']) {
+										callback(reffedCustomers);
+										counter.count = 0;
+										counter.count = 0;
+										phoneHolder = new WeakMap();
+										emailHolder = new WeakMap();
+									}
+								}
+								return true;
+							},
+						};
+						const tracker = new Proxy<typeof counter>(counter, counterHandler);
+
+						for (let i = 0; i < data.length; i++) {
+							emailHolder.set(data[i], data[i].emails);
+							phoneHolder.set(data[i], data[i].phones);
+							const refCustomer = data[i] as Customer;
+							refCustomer.emails = undefined;
+							refCustomer.phones = undefined;
+							reffedCustomers[i] = refCustomer;
+
+							if (emailHolder.get(data[i]) !== undefined) {
+								for (let j = 0; j < emailHolder.get(data[i]).length; j++) {
+									tracker.total += 1;
+									insertEmail(emailHolder.get(data[i])[j], (result: number | null) => {
+										if (result !== null) {
+											reffedCustomers[i].emails = updateArrayBuffer(reffedCustomers[i].emails, result);
+										}
+										tracker.count += 1;
+									});
+								}
+							}
+
+							if (phoneHolder.get(data[i]) !== undefined) {
+								for (let j = 0; j < phoneHolder.get(data[i]).length; j++) {
+									tracker.total += 1;
+									insertPhone(phoneHolder.get(data[i])[j], (result: number | null) => {
+										if (result !== null) {
+											reffedCustomers[i].phones = updateArrayBuffer(reffedCustomers[i].phones, result);
+										}
+										tracker.count += 1;
+									});
+								}
+							}
+						}
+					}
+
 					//the actual sorting logic
 
 					customer.id = trimWhiteSpace(row[map.customers.id] as string);
 					customer.row = row.row;
 					customer.created = new Date();
-
-					if (map.customers.notes !== undefined) {
-						const note = trimWhiteSpace(row[map.customers.notes] as string);
-						const notes = note.split(',').map((item) => trimWhiteSpace(item));
-						if (customer.notes === undefined) {
-							customer.notes = [];
-						}
-						for (const n of notes) {
-							if (n.trim() !== '') {
-								customer.notes.push(n);
-							}
-						}
-					}
-
-					if (map.customers.description !== undefined) {
-						customer.description = trimWhiteSpace(row[map.customers.description] as string);
-					}
-
-					if (map.customers.firstContact !== undefined) {
-						customer.firstContact = parseDate(row[map.customers.firstContact] as string, 'YYYY-MM-DD hh:mm:ss');
-					}
-
-					if (map.customers.latestContact !== undefined) {
-						customer.latestContact = parseDate(row[map.customers.latestContact] as string, 'YYYY-MM-DD hh:mm:ss');
-					}
-
-					if (map.customers.altIDs !== undefined) {
-						const altIDs = trimWhiteSpace(row[map.customers.altIDs] as string);
-						const ids = altIDs.split(',').map((item) => trimWhiteSpace(item));
-						if (customer.altIDs === undefined) {
-							customer.altIDs = [];
-						}
-						for (const id of ids) {
-							if (id.trim() !== '') {
-								customer.altIDs.push(id);
-							}
-						}
-					}
-
-					if (map.customers.website !== undefined) {
-						const website = trimWhiteSpace(row[map.customers.website]);
-						website.replace('http://', 'https://');
-						customer.website = website;
-					}
 
 					const quedPersons: DerefPersonType[] = [];
 					const quedAddresses: AddressType[] = [];
@@ -1402,6 +1434,76 @@ function sortData(
 								}
 							}
 						}
+
+						if (key === 'customers') {
+							const value = v as CustomersMap;
+							for (const [nk, nv] of Object.entries(value)) {
+								const nestedKey = nk as keyof CustomersMap;
+								if (nv !== undefined) {
+									if (nestedKey === 'notes' || nestedKey === 'altIDs') {
+										const itemValue = trimWhiteSpace(row[nv as string] as string);
+										const itemValues = itemValue.split(',').map((item) => trimWhiteSpace(item));
+										if (customer[nestedKey] === undefined) {
+											customer[nestedKey] = [];
+										}
+										for (const item of itemValues) {
+											if (item.trim() !== '') {
+												customer[nestedKey].push(item);
+											}
+										}
+									}
+									if (nestedKey === 'phones') {
+										let nestedValue = nv as PhoneMap;
+										if (nestedValue.phone !== undefined) {
+											let mainItem = row[nestedValue.phone];
+											let phone = mainItem.split(',');
+											let phones: PhoneNumberType[] = phone.map(
+												(item: string): PhoneNumberType => ({
+													row: 0,
+													phone: trimWhiteSpace(item),
+													type: nestedValue.type !== undefined ? (trimWhiteSpace(row[nestedValue.type]) as ContactType) : undefined,
+													notes:
+														nestedValue.notes !== undefined
+															? row[nestedValue.notes].split(',').map((note) => trimWhiteSpace(note))
+															: undefined,
+												})
+											);
+											customer[nestedKey] = phones;
+										}
+									}
+									if (nestedKey === 'emails') {
+										let nestedValue = nv as EmailMap;
+										if (nestedValue.email !== undefined) {
+											let mainItem = row[nestedValue.email];
+											let email = mainItem.split(',');
+											let emails: EmailType[] = email.map(
+												(item: string): EmailType => ({
+													row: 0,
+													email: trimWhiteSpace(item),
+													type: nestedValue.type !== undefined ? (trimWhiteSpace(row[nestedValue.type]) as ContactType) : undefined,
+													notes:
+														nestedValue.notes !== undefined
+															? row[nestedValue.notes].split(',').map((note) => trimWhiteSpace(note))
+															: undefined,
+												})
+											);
+											customer[nestedKey] = emails;
+										}
+									}
+									if (nestedKey === 'firstContact' || nestedKey === 'latestContact') {
+										customer[nestedKey] = parseDate(row[nv as string] as string, 'YYYY-MM-DD hh:mm:ss');
+									}
+									if (nestedKey === 'website') {
+										const website = trimWhiteSpace(row[nv as string]);
+										website.replace('http://', 'https://');
+										customer[nestedKey] = website;
+									}
+									if (nestedKey === 'description') {
+										customer[nestedKey] = trimWhiteSpace(row[nv as string]);
+									}
+								}
+							}
+						}
 					}
 
 					parsePersons(quedPersons, (result) => {
@@ -1450,11 +1552,7 @@ function sortData(
 					});
 
 					if (quedAddresses.length === 0 && quedBanks.length === 0 && quedCompany.length === 0 && quedPersons.length === 0) {
-						insertCustomer(customer, (rowNumber: number | null) => {
-							if (rowNumber !== null) {
-								// console.log('done with customer in row : ' + rowNumber);
-							}
-						});
+						insertCustomers(customer);
 					}
 				};
 

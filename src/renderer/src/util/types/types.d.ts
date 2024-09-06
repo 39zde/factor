@@ -5,7 +5,7 @@ export type { ImportModuleProps, SorterProps, UploadMode } from './pages/Upload/
 
 export type {
 	Customer,
-	CustomerRow,
+	DerefCustomer,
 	PersonType,
 	EmailType,
 	PhoneNumberType,
@@ -18,6 +18,11 @@ export type {
 	CustomerSortingMapProps,
 	DerefPersonType,
 	CustomerBaseData,
+	CustomersMap,
+	PhoneMap,
+	EmailMap,
+	PreInsertCustomer,
+	BaseCustomer,
 } from './database/CustomerTypes';
 
 export type { TableProps, TableDispatchAction, TableContextType, ResizeStyle } from './comps/Table/Table';
