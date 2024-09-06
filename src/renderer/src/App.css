@@ -52,8 +52,7 @@ div.helper {
 	border-radius: none;
 }
 
-ul.toolbar{
-	padding: 12px 0;
+ul.toolbar {
 	width: 100%;
 	align-self: center;
 	margin: 12px 12px;
@@ -61,16 +60,19 @@ ul.toolbar{
 	display: flex;
 	justify-content: center;
 	align-items: center;
+	flex-wrap: wrap;
 	overflow-x: visible;
 	overflow-y: visible;
-	width: 100%;
 	background-color: light-dark(var(--color-light-2), var(--color-dark-2));
-	&>li:not(:last-child){
+
+	&>li:not(:last-child) {
 		border-right: 1px solid light-dark(var(--color-light-3), var(--color-dark-3));
 	}
-	&>li{
+
+	&>li {
 		min-height: 36px;
 		align-content: center;
 		padding: 0 12px;
+		margin: 12px 0;
 	}
 }
