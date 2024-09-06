@@ -48,7 +48,6 @@ git clone https://github.com/39zde/factor.git
 cd factor
 yarn install
 yarn dev
-yarn devtools
 ```
 see [`CONTRIBUTING.md`](./CONTRIBUTING.md) for more information
 

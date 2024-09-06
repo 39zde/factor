@@ -24,6 +24,18 @@ Some files are hidden by default in [`factor.code-workspace`](./factor.code-work
 
 To use yarn the official way [corepack](https://nodejs.org/api/corepack.html) must be enabled. Follow [this](https://yarnpkg.com/getting-started/install) instruction guide to get started.
 
+## React Devtools
+
+Run
+```bash
+yarn devtools
+```
+and uncomment
+```html
+<script src="http://localhost:8097"></script>
+```
+in [index.html](./src/renderer/index.html)
+
 ## Theming
 
 Theming is done via the [light-dark](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/light-dark) CSS color function. The theme is then being changed by setting a different `color-scheme` value in a CSS root tag. Try to follow the general styling.
