@@ -39,6 +39,7 @@ jobs:
 
     - name: build electron app
       env:
+         PUBLISH_FOR_PULL_REQUEST: true
          GH_TOKEN: ${{ secrets.GH_TOKEN }}
       run: yarn run electron-builder --publish always
 
