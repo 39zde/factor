@@ -202,9 +202,9 @@ function BankTableCell({ data }: { data: BankType[] }): React.JSX.Element {
 		<>
 			{data !== undefined ? (
 				data.map((item, index) => {
-					let line1 = item.name;
-					let item2 = item.iban;
-					let item3 = item.notes;
+					const line1 = item.name;
+					const item2 = item.iban;
+					// const item3 = item.notes;
 
 					return (
 						<div key={`nestedBank-${index}-${line1}-${item2}`}>

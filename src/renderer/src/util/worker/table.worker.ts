@@ -237,7 +237,7 @@ function getCount(dataBaseName: string, dbVersion: number, storeName: string, ca
 		} else {
 			const countTransaction = db.transaction(storeName, 'readonly', { durability: 'strict' });
 			const oStore = countTransaction.objectStore(storeName);
-			let countRequest = oStore.count();
+			const countRequest = oStore.count();
 			countRequest.onsuccess = () => {
 				if (callback !== undefined) {
 					callback(countRequest.result);
