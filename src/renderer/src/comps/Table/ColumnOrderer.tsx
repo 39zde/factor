@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useTableContext, useTableDispatch } from './Table';
 
 export function ColumnOrderer(): React.JSX.Element {
@@ -11,10 +11,10 @@ export function ColumnOrderer(): React.JSX.Element {
 	const [useUpper, setUseUpper] = useState<boolean>(true);
 
 	const mouseUpHandler = () => {
-		let cols = allColumns.toSpliced(draggedElementIndex, 1);
-		let colWidths = columnWidths;
-		let colWidth = colWidths.splice(draggedElementIndex, 1);
-		let colsRefCopy = colsRef;
+		const cols = allColumns.toSpliced(draggedElementIndex, 1);
+		const colWidths = columnWidths;
+		const colWidth = colWidths.splice(draggedElementIndex, 1);
+		const colsRefCopy = colsRef;
 		let colsRefElement: React.RefObject<HTMLTableCellElement> | undefined;
 		if (colsRefCopy !== null) {
 			colsRefElement = colsRefCopy.splice(draggedElementIndex, 1)[0];
@@ -54,7 +54,7 @@ export function ColumnOrderer(): React.JSX.Element {
 	function mouseMoveHandler(e: MouseEvent) {
 		if (elementRef !== null) {
 			//@ts-expect-error blah blah
-			let indicatorIndex = dragIndicatorIndex - Math.round((elementRef.current?.getBoundingClientRect().y - e.pageY) / 33.5);
+			const indicatorIndex = dragIndicatorIndex - Math.round((elementRef.current?.getBoundingClientRect().y - e.pageY) / 33.5);
 			if (indicatorIndex >= 1 && indicatorIndex <= allColumns.length) {
 				setDragIndicatorIndex(indicatorIndex);
 				lastDragIndicatorIndex.current = indicatorIndex;

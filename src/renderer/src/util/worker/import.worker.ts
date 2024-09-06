@@ -9,7 +9,6 @@ import type {
 	BankType,
 	CompanyType,
 	Customer,
-	DerefCustomer,
 	AddDataArgs,
 	DateInput,
 	UploadRow,
@@ -1453,11 +1452,11 @@ function sortData(
 										}
 									}
 									if (nestedKey === 'phones') {
-										let nestedValue = nv as PhoneMap;
+										const nestedValue = nv as PhoneMap;
 										if (nestedValue.phone !== undefined) {
-											let mainItem = row[nestedValue.phone];
-											let phone = mainItem.split(',');
-											let phones: PhoneNumberType[] = phone.map(
+											const mainItem = row[nestedValue.phone];
+											const phone = mainItem.split(',');
+											const phones: PhoneNumberType[] = phone.map(
 												(item: string): PhoneNumberType => ({
 													row: 0,
 													phone: trimWhiteSpace(item),
@@ -1472,11 +1471,11 @@ function sortData(
 										}
 									}
 									if (nestedKey === 'emails') {
-										let nestedValue = nv as EmailMap;
+										const nestedValue = nv as EmailMap;
 										if (nestedValue.email !== undefined) {
-											let mainItem = row[nestedValue.email];
-											let email = mainItem.split(',');
-											let emails: EmailType[] = email.map(
+											const mainItem = row[nestedValue.email];
+											const email = mainItem.split(',');
+											const emails: EmailType[] = email.map(
 												(item: string): EmailType => ({
 													row: 0,
 													email: trimWhiteSpace(item),
@@ -1611,10 +1610,10 @@ function sortData(
 				// 		});
 				// 	}
 				// }
-				let v1 = dataBaseName;
-				let v2 = dataBaseVersion;
-				let v3 = map;
-				let v4 = row;
+				const v1 = dataBaseName;
+				const v2 = dataBaseVersion;
+				const v3 = map;
+				const v4 = row;
 				console.log(v1, v2, v3, v4);
 			}
 
@@ -1697,10 +1696,10 @@ function sortData(
 				// 		});
 				// 	}
 				// }
-				let v1 = dataBaseName;
-				let v2 = dataBaseVersion;
-				let v3 = map;
-				let v4 = row;
+				const v1 = dataBaseName;
+				const v2 = dataBaseVersion;
+				const v3 = map;
+				const v4 = row;
 				console.log(v1, v2, v3, v4);
 			}
 
