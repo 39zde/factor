@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { MouseEvent } from 'react';
 import { AddressType, CompanyType, EmailType, PersonType, PhoneNumberType } from '@renderer/util/types/types';
 
 export function NestedTableCell({ columnName, data }: { columnName: string; data: object[] | string[] }): React.JSX.Element {
@@ -15,6 +15,8 @@ export function NestedTableCell({ columnName, data }: { columnName: string; data
 			return <NotesTableCell data={data as string[]} />;
 		case 'company':
 			return <CompanyTableCell data={data as CompanyType[]} />;
+		case 'website':
+			return <WebsiteTableCell data={data[0] as string} />;
 		default:
 			return <></>;
 	}
@@ -172,6 +174,22 @@ function CompanyTableCell({ data }: { data: CompanyType[] }): React.JSX.Element 
 						</>
 					);
 				})}
+			</span>
+		</>
+	);
+}
+
+function WebsiteTableCell({ data }: { data: string }): React.JSX.Element {
+	const clickHandler = (e: MouseEvent) => {
+		e.preventDefault();
+		window.electron.ipcRenderer.send('openURL', data);
+	};
+	return (
+		<>
+			<span className="nestedCell">
+				<a href={data} onClick={clickHandler}>
+					{data.replace('https://', '')}
+				</a>
 			</span>
 		</>
 	);

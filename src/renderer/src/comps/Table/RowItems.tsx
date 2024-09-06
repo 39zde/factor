@@ -50,6 +50,9 @@ function TableCell({
 			case 'boolean':
 				return <>{contents}</>;
 			case 'string':
+				if (columnName === 'website') {
+					return <NestedTableCell columnName={columnName} data={[contents]} />;
+				}
 				return <>{contents}</>;
 			default:
 				return <></>;

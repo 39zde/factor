@@ -111,6 +111,11 @@ app.whenReady().then(() => {
 		}
 	});
 
+	// open urls in external Browser
+	ipcMain.on('openURL', (_e, message: string) => {
+		shell.openExternal(message);
+	});
+
 	createWindow();
 
 	app.on('activate', function () {
