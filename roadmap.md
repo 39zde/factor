@@ -1,6 +1,6 @@
 # Roadmap
 ## Short Term
-- [ ] add nested cols
+- [x] add nested cols
 - [x] allow to order cols
 - [x] remember col sizes
 - [ ] localize column names
