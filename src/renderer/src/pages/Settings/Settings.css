@@ -1,7 +1,5 @@
 @import url("@renderer/base.css");
 
-.versionsWrapper {}
-
 .settingsPage {
 	display: flex;
 	flex-direction: column;
@@ -45,7 +43,11 @@
 	& button {
 		display: flex;
 		justify-content: center;
-		background-color: light-dark(var(--color-primary), var(--color-primary));
+		background-color: light-dark(var(--color-primary), var(--color-primary-dark));
+		&:hover{
+			background-color: light-dark(var(--color-primary-light), var(--color-primary));
+			border-color: light-dark(var(--color-primary-light), var(--color-primary));
+		}
 	}
 }
 

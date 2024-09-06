@@ -97,7 +97,7 @@ select {
 button {
 	background: none;
 	color: light-dark(var(--color-dark-1), var(--color-light-1));
-	border-color: var(--color-primary);
+	border-color: light-dark(var(--color-primary-light), var(--color-primary-dark));
 	box-shadow: var(--box-shadow);
 }
 
