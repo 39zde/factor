@@ -189,7 +189,7 @@ function WebsiteTableCell({ data }: { data: string }): React.JSX.Element {
 	return (
 		<>
 			<span className="nestedCell">
-				<a href={data} onClick={clickHandler}>
+				<a tabIndex={-1} href={data} onClick={clickHandler}>
 					{data.replace('https://', '')}
 				</a>
 			</span>
