@@ -19,6 +19,7 @@ import { TableBodyDisplay } from './TableBodyDisplay';
 import { TableFootDisplay } from './TableFootDisplay';
 import { ColumnCheckBox } from './ColumnCheckBox';
 import { ContextMenu } from '../ContextMenu/ContextMenu';
+import { ColumnOrderer } from './ColumnOrderer';
 import './Table.css';
 
 import { tableReducer, updateSizing, PlaceHolderTableContext } from '@renderer/util/func/func';
@@ -363,19 +364,33 @@ export function Table({ dataBaseName, tableName, colsHook, entriesHook, updateHo
 							.toSpliced(0, 1),
 					},
 				]);
-				dispatch({
-					type: 'set',
-					name: 'allColumns',
-					newVal: cols,
-				});
+				// first check for saved columns older
+				const savedAllColumns = localStorage.getItem(`${tableName}-allColumns`);
+				if (savedAllColumns !== null) {
+					// use them if they are there
+					dispatch({
+						type: 'set',
+						name: 'allColumns',
+						newVal: savedAllColumns.split(','),
+					});
+				} else {
+					dispatch({
+						type: 'set',
+						name: 'allColumns',
+						newVal: cols,
+					});
+				}
+				// first check for saved columns
 				const savedColumns = localStorage.getItem(`${tableName}-columns`);
 				if (savedColumns !== null) {
+					// if not, the use the default
 					dispatch({
 						type: 'set',
 						name: 'columns',
 						newVal: savedColumns.split(','),
 					});
 				} else {
+					// if not, the use the default
 					dispatch({
 						type: 'set',
 						name: 'columns',
@@ -589,8 +604,21 @@ export function Table({ dataBaseName, tableName, colsHook, entriesHook, updateHo
 					})
 					.toSpliced(0, 1),
 			},
+			{
+				component: (
+					<div aria-modal={'true'} className="menuRow">
+						<p>{general.language === 'deutsch' ? 'Spalten anordnen' : 'Order columns'}</p>
+						<ChevronRight
+							size={solids.icon.size.small}
+							strokeWidth={solids.icon.strokeWidth.small}
+							color="light-dark(var(--color-dark-1),var(--color-light-1))"
+						/>
+					</div>
+				),
+				subMenu: [{ component: <ColumnOrderer /> }],
+			},
 		]);
-	}, [general.language, tableState.allColumns]);
+	}, [general.language, tableState.allColumns, tableName]);
 
 	return (
 		<>
@@ -661,8 +689,8 @@ tableWorkerRequest: starterPackage
 |
 tableWorkerResponse: starterPackage
 |		|-tableState.count
-|		|-tableState.columns
-|		|-tableState.allColumns
+|		|-tableState.columns (can use localStorage)
+|		|-tableState.allColumns (can use localStorage)
 |		|-tableState.colsRef
 |		|-tableState.resizeStyles
 |		|-tableState.columnWidths

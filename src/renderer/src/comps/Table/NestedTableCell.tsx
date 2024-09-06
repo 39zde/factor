@@ -24,27 +24,31 @@ function PersonTableCell({ data }: { data: PersonType[] }): React.JSX.Element {
 	return (
 		<>
 			<span className="nestedCell">
-				{data.map((item) => {
-					let text = '';
-					if (item?.title !== undefined) {
-						text += item.title + ' ';
-					}
-					if (item?.firstName !== undefined) {
-						text += item.firstName + ' ';
-					}
-					if (item?.alias !== undefined) {
-						text += "'" + item.alias + "' ";
-					}
-					if (item?.lastName !== undefined) {
-						text += item.lastName;
-					}
+				{data !== undefined ? (
+					data.map((item) => {
+						let text = '';
+						if (item?.title !== undefined) {
+							text += item.title + ' ';
+						}
+						if (item?.firstName !== undefined) {
+							text += item.firstName + ' ';
+						}
+						if (item?.alias !== undefined) {
+							text += "'" + item.alias + "' ";
+						}
+						if (item?.lastName !== undefined) {
+							text += item.lastName;
+						}
 
-					return (
-						<>
-							<p>{text}</p>
-						</>
-					);
-				})}
+						return (
+							<>
+								<p key={text}>{text}</p>
+							</>
+						);
+					})
+				) : (
+					<></>
+				)}
 			</span>
 		</>
 	);
@@ -54,32 +58,36 @@ function AddressTableCell({ data }: { data: AddressType[] }): React.JSX.Element 
 	return (
 		<>
 			<span className="nestedCell">
-				{data.map((item) => {
-					let textRow1 = '';
-					if (item?.street !== undefined) {
-						textRow1 += item.street + ' ';
-					}
-					let textRow2 = '';
-					if (item?.zip !== undefined) {
-						textRow2 += item.zip + ' ';
-					}
-					if (item?.city !== undefined) {
-						textRow2 += item.city + ' ';
-					}
-					let textRow3 = '';
-					if (item?.country !== undefined) {
-						textRow3 += item.country;
-					}
+				{data !== undefined ? (
+					data.map((item) => {
+						let textRow1 = '';
+						if (item?.street !== undefined) {
+							textRow1 += item.street + ' ';
+						}
+						let textRow2 = '';
+						if (item?.zip !== undefined) {
+							textRow2 += item.zip + ' ';
+						}
+						if (item?.city !== undefined) {
+							textRow2 += item.city + ' ';
+						}
+						let textRow3 = '';
+						if (item?.country !== undefined) {
+							textRow3 += item.country;
+						}
 
-					return (
-						<>
-							<p>{textRow1}</p>
-							<p>
-								{textRow2}({textRow3})
-							</p>
-						</>
-					);
-				})}
+						return (
+							<>
+								<p key={textRow1}>{textRow1}</p>
+								<p key={textRow2}>
+									{textRow2}({textRow3})
+								</p>
+							</>
+						);
+					})
+				) : (
+					<></>
+				)}
 			</span>
 		</>
 	);
@@ -89,19 +97,23 @@ function EmailTableCell({ data }: { data: EmailType[] }): React.JSX.Element {
 	return (
 		<>
 			<span className="nestedCell">
-				{data.map((item) => {
-					let text1 = '';
-					if (item?.email !== undefined) {
-						text1 += item.email;
-					}
-					return (
-						<>
-							<a tabIndex={-1} href={`mailto:${text1}`}>
-								{text1}
-							</a>
-						</>
-					);
-				})}
+				{data !== undefined ? (
+					data.map((item) => {
+						let text1 = '';
+						if (item?.email !== undefined) {
+							text1 += item.email;
+						}
+						return (
+							<>
+								<a key={text1} tabIndex={-1} href={`mailto:${text1}`}>
+									{text1}
+								</a>
+							</>
+						);
+					})
+				) : (
+					<></>
+				)}
 			</span>
 		</>
 	);
@@ -118,7 +130,7 @@ function PhoneTableCell({ data }: { data: PhoneNumberType[] }): React.JSX.Elemen
 					}
 					return (
 						<>
-							<a tabIndex={-1} href={`tel:${text1}`}>
+							<a key={text1} tabIndex={-1} href={`tel:${text1}`}>
 								{text1}
 							</a>
 						</>

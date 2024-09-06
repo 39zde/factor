@@ -8,14 +8,18 @@ export function RowItems({ items, uniqueParentKey }: TableRowItemProps): React.J
 	const tableState = useTableContext();
 	return (
 		<>
-			{tableState.columns.map((columnName, index) => {
-				return (
-					<>
-						<TableCellWrapper key={`col${index}${uniqueParentKey}`}>
-							<TableCell parentKey={`col${index}${uniqueParentKey}`} contents={items[columnName]} columnName={columnName} />
-						</TableCellWrapper>
-					</>
-				);
+			{tableState.allColumns.map((columnName, index) => {
+				if (tableState.columns.includes(columnName)) {
+					return (
+						<>
+							<TableCellWrapper key={`col${index}${uniqueParentKey}`}>
+								<TableCell parentKey={`col${index}${uniqueParentKey}`} contents={items[columnName]} columnName={columnName} />
+							</TableCellWrapper>
+						</>
+					);
+				} else {
+					return <></>;
+				}
 			})}
 		</>
 	);

@@ -1,12 +1,17 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { ResizeElement } from './ResizeElement';
 import { useAppContext } from '@renderer/App';
 import { useTableContext, useTableDispatch } from './Table';
 
 export function TableHead(): React.JSX.Element {
 	const { appearances } = useAppContext();
+	const [tableColumns, setTableColumns] = useState<string[]>([]);
 	const tableState = useTableContext();
 	const dispatch = useTableDispatch();
+
+	useEffect(() => {
+		setTableColumns(tableState.columns);
+	}, [tableState.columns]);
 
 	return (
 		<>
@@ -17,13 +22,14 @@ export function TableHead(): React.JSX.Element {
 					minHeight: appearances.rowHeight,
 				}}>
 				<tr
+					key={`tableHeadRow-${tableState.tableName}`}
 					style={{
 						height: appearances.rowHeight,
 						maxHeight: appearances.rowHeight,
 						minHeight: appearances.rowHeight,
 					}}>
 					{tableState.allColumns.map((item, index) => {
-						if (tableState.columns.includes(item)) {
+						if (tableColumns.includes(item)) {
 							return (
 								<>
 									<th
@@ -57,7 +63,7 @@ export function TableHead(): React.JSX.Element {
 															});
 														}
 													}}
-													key={`rz-${index}`}
+													key={`rz-${index}-${tableState.allColumns[index]}`}
 													onMouseDown={() => {
 														dispatch({
 															type: 'mouseDown',

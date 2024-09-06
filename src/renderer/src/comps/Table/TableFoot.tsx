@@ -14,6 +14,7 @@ export function TableFoot(): React.JSX.Element {
 					minHeight: appearances.rowHeight,
 				}}>
 				<tr
+					key={`tableFootRow-${tableState.tableName}`}
 					style={{
 						maxHeight: appearances.rowHeight,
 						height: '100%',

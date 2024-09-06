@@ -20,6 +20,12 @@ export function tableReducer(tableState: TableContextType, action: TableDispatch
 				if (action.name === 'columns') {
 					localStorage.setItem(`${tableState.tableName}-columns`, (action.newVal as string[]).join(','));
 				}
+				if (action.name === 'allColumns') {
+					localStorage.setItem(`${tableState.tableName}-allColumns`, (action.newVal as string[]).join(','));
+				}
+				if(action.name === "columnWidths"){
+					localStorage.setItem(`${tableState.tableName}-columnWidths`, (action.newVal as number[]).join(','));
+				}
 			}
 			return {
 				...tableState,
