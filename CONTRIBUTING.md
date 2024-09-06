@@ -74,7 +74,12 @@ Ratings:
  ### Local Storage
  ---
 
-  Saved the columns widths of every column of every table.<br>
+  Saves the columns widths of every column of every table as a comma separated list of floats. Key: `${tableName}-columnWidths`
+
+  Saves the column order of all columns of a table as a comma separated list of strings. Key: `${tableName}-allColumns`
+
+  Saves the visible columns of a table as a comma separated list of strings. Key: `${tableName}-columns`
+
   _Rating: Low_
 
 ## Data Structures
