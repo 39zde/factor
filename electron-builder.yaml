@@ -13,11 +13,13 @@ asarUnpack:
     - resources/**
 win:
     executableName: Factor
+    icon: build/factor-white.ico
 nsis:
     artifactName: Setup-${name}-v${version}.${ext}
     shortcutName: ${productName}
     uninstallDisplayName: ${productName}
     createDesktopShortcut: false
+    oneClick: true
 mac:
     entitlementsInherit: build/entitlements.mac.plist
     extendInfo:
@@ -25,6 +27,7 @@ mac:
         - NSDocumentsFolderUsageDescription: Application requests access to the user's Documents folder.
         - NSDownloadsFolderUsageDescription: Application requests access to the user's Downloads folder.
     notarize: false
+    icon: build/factor-white.icns
 dmg:
     artifactName: Setup-${name}-v${version}.${ext}
 linux:
@@ -33,6 +36,7 @@ linux:
         - deb
     maintainer: electronjs.org
     category: Utility
+    icon: build/factor-white.icns
 appImage:
     artifactName: Setup-${name}-v${version}.${ext}
 npmRebuild: true
