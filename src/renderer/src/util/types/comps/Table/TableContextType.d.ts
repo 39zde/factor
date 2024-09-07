@@ -72,7 +72,7 @@ export interface TableContextType {
 }
 
 export interface ResizeStyle {
-	background: 'light-dark(var(--color-dark-3),var(--color-dark-3))' | 'none';
+	background: 'var(--color-secondary-dark)' | 'none';
 	cursor: 'col-resize' | 'initial';
 }
 

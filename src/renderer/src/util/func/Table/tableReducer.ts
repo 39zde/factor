@@ -101,7 +101,7 @@ export function tableReducer(tableState: TableContextType, action: TableDispatch
 					: tableState.resizeStyles.map((val, index) =>
 							action.newVal === index
 								? {
-										background: 'light-dark(var(--color-dark-3),var(--color-dark-3))',
+										background: 'var(--color-secondary-dark)',
 										cursor: 'col-resize',
 									}
 								: val

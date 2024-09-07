@@ -3,9 +3,9 @@
 	--color-primary: hsl(0, 100%, 65%);
 	--color-primary-dark: hsl(0, 55%, 48%);
 	--color-primary-light: hsl(0, 100%, 77%);
-	--color-secondary: #4878ff;
-	--color-secondary-dark: #112e80;
-	--color-secondary-light: #88a7ff;
+	--color-secondary: hsl(224, 100%, 64%);
+	--color-secondary-dark: hsl(224, 40%, 60%);
+	--color-secondary-light: hsl(224, 100%, 77%);
 
 
 	--font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,
