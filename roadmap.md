@@ -5,7 +5,7 @@
 - [x] remember col sizes
 - [x] localize column names
 - [x] Add synthetic test data
-- [ ] Notifications
+- [x] Notifications
 
 ## Long Term
 - [ ] support editing

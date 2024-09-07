@@ -219,13 +219,13 @@ function importData(dataBaseName: string, dbVersion: number, data: string) {
 	request.onupgradeneeded = () => {
 		const db = request.result;
 		db.createObjectStore('data_upload', { keyPath: 'row' });
-		console.log('created oStore data_upload');
+		// console.log('created oStore data_upload');
 	};
 
 	request.onsuccess = () => {
 		const db = request.result;
 		if (db.objectStoreNames.contains('data_upload')) {
-			console.log('db contains data_upload');
+			// console.log('db contains data_upload');
 			function deleteData(db: IDBDatabase) {
 				const transaction = db.transaction('data_upload', 'readwrite', { durability: 'strict' });
 				const objectStore = transaction.objectStore('data_upload');
@@ -1447,6 +1447,7 @@ function sortData(
 										}
 										for (const item of itemValues) {
 											if (item.trim() !== '') {
+												//@ts-expect-error we made already sure this is not undefined
 												customer[nestedKey].push(item);
 											}
 										}

@@ -93,7 +93,7 @@ export function ColRemover({
 					updateHook.setUpdate(false);
 					break;
 				default:
-					console.log(e.data);
+					break;
 			}
 		};
 	};

@@ -20,7 +20,7 @@ export type TableWorkerRequestMessageType = 'stream' | 'columns' | 'count' | 'st
 
 export interface TableWorkerResponseMessage {
 	type: TableWorkerResponseMessageType;
-	data: TableRow | Array<TableRow | string> | number | StarterPackage;
+	data: TableRow | Array<TableRow | string> | number | StarterPackage | string;
 	index?: number;
 	action?: TableWorkerRequestMessageActionType;
 }

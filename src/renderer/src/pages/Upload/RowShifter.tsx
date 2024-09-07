@@ -40,7 +40,9 @@ export function RowShifter({ cols }: { cols: string[] }): React.JSX.Element {
 
 	const goHandler = () => {
 		if (Number.isNaN(offsetInput) || offsetInput === 0) {
-			console.log('offset cannot be zero and must be an integer below the number of columns');
+			new Notification(general.language === "deutsch" ? "Ein Fehler ist aufgetreten": "An error occurred",{
+				body: 'offset cannot be zero and must be an integer below the number of columns'
+			})
 		}
 		worker.ImportWorker.postMessage({
 			type: 'align',
@@ -54,8 +56,7 @@ export function RowShifter({ cols }: { cols: string[] }): React.JSX.Element {
 			},
 		});
 
-		worker.ImportWorker.onmessage = (e) => {
-			console.log(e.data);
+		worker.ImportWorker.onmessage = () => {
 			setShowOptions(false);
 		};
 	};

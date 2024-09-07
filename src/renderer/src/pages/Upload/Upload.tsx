@@ -54,7 +54,9 @@ export function Upload(): React.JSX.Element {
 					setFileName(files[0].name);
 					setShowFile(true);
 				} catch (e) {
-					console.log(e);
+					new Notification(general.language === 'deutsch' ? 'Ein Fehler ist aufgetreten' : 'An error occurred', {
+						body: 'Failed to convert file to text',
+					});
 				}
 			}
 		}
@@ -106,7 +108,9 @@ export function Upload(): React.JSX.Element {
 	const importHandler = () => {
 		if (tableImportMode === 'customer_db' && map !== undefined) {
 			if (map['customers']['id'] === undefined) {
-				window.alert('Customers ID is a requirement');
+				new Notification(general.language === 'deutsch' ? 'Ein Fehler ist aufgetreten' : 'An error occurred', {
+					body: "'Customers ID is a requirement'",
+				});
 			} else {
 				worker.ImportWorker.postMessage({
 					type: 'sort',
@@ -160,7 +164,9 @@ export function Upload(): React.JSX.Element {
 					break;
 				case 'error':
 				default:
-					window.alert('Import Error: \n' + e.data?.data);
+					new Notification(general.language === 'deutsch' ? 'Ein Fehler ist aufgetreten' : 'An error occurred', {
+						body: 'Import Error: \n' + e.data?.data,
+					});
 			}
 		}
 	};

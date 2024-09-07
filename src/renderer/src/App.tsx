@@ -135,7 +135,9 @@ function appReducer(appState: AppContextType, action: AppAction): AppContextType
 				},
 			});
 			if (result !== 'success') {
-				window.alert('settings not saved');
+				new Notification("An error occurred",{
+					body: "settings could not be saved"
+				})
 			}
 			return {
 				appearances: {
@@ -215,7 +217,9 @@ function appReducer(appState: AppContextType, action: AppAction): AppContextType
 		}
 
 		default:
-			console.log('app State error');
+			new Notification("An Error occurred",{
+				body: "performed unknown action on app context"
+			})
 			return appState;
 	}
 }
@@ -304,8 +308,10 @@ function App(): JSX.Element {
 						}
 					}
 				})
-				.catch((error) => {
-					console.log(error);
+				.catch(() => {
+					new Notification("An error occurred",{
+						body: "Failed to probe indexedDB for databases or object stores"
+					})
 				});
 			out.appearances.height = window.innerHeight;
 			out.appearances.width = window.innerWidth;

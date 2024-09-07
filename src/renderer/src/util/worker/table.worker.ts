@@ -96,7 +96,7 @@ function getStartingRows(
 		} else {
 			postMessage({
 				type: 'error',
-				data: e,
+				data: 'Database access was blocked',
 			});
 		}
 	};
@@ -107,13 +107,9 @@ function getStartingRows(
 		} else {
 			postMessage({
 				type: 'error',
-				data: e,
+				data: 'Database access failed',
 			});
 		}
-	};
-
-	dbRequest.onupgradeneeded = () => {
-		console.log('upgradeNeeded');
 	};
 
 	dbRequest.onsuccess = () => {
@@ -203,7 +199,7 @@ function getColumns(dataBaseName: string, dbVersion: number, storeName: string, 
 				} else {
 					postMessage({
 						type: 'error',
-						data: e,
+						data: 'Database cursor request failed, while getting column names',
 					});
 				}
 			};
@@ -214,7 +210,7 @@ function getColumns(dataBaseName: string, dbVersion: number, storeName: string, 
 			} else {
 				postMessage({
 					type: 'error',
-					data: e,
+					data: 'Database access failed, while getting column names',
 				});
 			}
 		};
@@ -230,9 +226,8 @@ function getCount(dataBaseName: string, dbVersion: number, storeName: string, ca
 			} else {
 				postMessage({
 					type: 'error',
-					data: 'unknown Object Store',
+					data: 'unknown object store',
 				});
-				throw new Error('unknown Object Store: ' + storeName);
 			}
 		} else {
 			const countTransaction = db.transaction(storeName, 'readonly', { durability: 'strict' });
@@ -252,20 +247,20 @@ function getCount(dataBaseName: string, dbVersion: number, storeName: string, ca
 				} else {
 					postMessage({
 						type: 'error',
-						data: e,
+						data: 'Failed to get table entries',
 					});
 				}
 			};
 		}
 	};
 
-	dbRequest.onerror = (e) => {
+	dbRequest.onerror = () => {
 		if (callback !== undefined) {
 			callback(undefined);
 		} else {
 			postMessage({
 				type: 'error',
-				data: e,
+				data: 'Database access Failed, while getting table entries',
 			});
 		}
 	};
@@ -392,7 +387,7 @@ function stream(eventData: TableWorkerRequestMessage) {
 					fillReferences(streamDB, row, eventData.action.type);
 				}
 			};
-			req.onerror = (ev) => {
+			req.onerror = () => {
 				if (eventData.action === undefined) {
 					return postMessage({
 						type: 'error',
@@ -402,7 +397,7 @@ function stream(eventData: TableWorkerRequestMessage) {
 				postMessage({
 					type: 'error',
 					action: eventData.action.type,
-					data: ev,
+					data: 'undefined action',
 					index: eventData.action.pos,
 				});
 			};
