@@ -1,0 +1,56 @@
+@import url('../../base.css');
+
+.exportPage {
+	display: flex;
+	justify-content: flex-start;
+	align-items: center;
+	flex-direction: column;
+	padding-right: 12px;
+}
+
+.exportDatabases {
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-start;
+	align-items: flex-start;
+	align-self: center;
+	width: 100%;
+	max-width: 1040px;
+}
+
+.exportDatabase,
+.exportOStores {
+	width: 100%;
+	display: flex;
+	justify-content: stretch;
+	align-items: flex-start;
+	flex-direction: column;
+	gap: 16px
+}
+
+
+.exportOStore,
+.exportWholeDatabase {
+	display: flex;
+	width: 100%;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.fileExportFormatSelectWrapper,
+.fileExportCompressionSelectWrapper {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+	gap: 12px
+}
+
+.exportAllButton {
+	max-width: 1040px;
+	width: 100%;
+	text-align: center;
+	display: flex;
+	justify-content: center;
+	margin-top: 32px;
+}
