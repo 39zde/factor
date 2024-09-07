@@ -43,7 +43,7 @@ export const solids: AppSolidsType = {
 		},
 	},
 	contextMenu: {
-		width: 200,
+		width: 225,
 		normalItemHeight: 32,
 	},
 };

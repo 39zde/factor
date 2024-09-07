@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { CheckBox } from '../CheckBox/CheckBox';
 import { useTableDispatch, useTableContext } from './Table';
+import { ColumnTitleString } from './ColumnTitle';
 
 export function ColumnCheckBox({ index, columnName }: { index: number; columnName: string }): React.JSX.Element {
 	const dispatch = useTableDispatch();
@@ -51,7 +52,9 @@ export function ColumnCheckBox({ index, columnName }: { index: number; columnNam
 			{index !== 0 ? (
 				<>
 					<div aria-modal="true" className="menuRow" onMouseDown={mouseDownHandler}>
-						<p aria-modal="true">{columnName}</p>
+						<p aria-modal="true">
+							<ColumnTitleString column={columnName} />
+						</p>
 						<CheckBox ticked={checked} />
 					</div>
 				</>

@@ -617,6 +617,22 @@ export function Table({ dataBaseName, tableName, colsHook, entriesHook, updateHo
 				),
 				subMenu: [{ component: <ColumnOrderer /> }],
 			},
+			{
+				component: (
+					<>
+						<div aria-modal="true" className="menuRow">
+							<p>{general.language === 'deutsch' ? 'Spaltenbreite zurücksetzen' : 'Reset column widths'}</p>
+						</div>
+					</>
+				),
+				action: () => {
+					dispatch({
+						type: 'set',
+						name: 'columnWidths',
+						newVal: tableState.allColumns.map((_v, index) => (index !== 0 ? appearances.columnWidth : rowColumnWidth)),
+					});
+				},
+			},
 		]);
 	}, [general.language, tableState.allColumns, tableName]);
 

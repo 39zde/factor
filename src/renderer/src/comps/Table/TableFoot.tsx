@@ -33,7 +33,7 @@ export function TableFoot(): React.JSX.Element {
 										}}
 										key={`tfoot-${index}-${item}`}
 										ref={index === 0 ? tableState.footerRowFirstElementRef : undefined}>
-										<span className="guts">{index !== 0  ? <ColumnTitle column={item} /> : ''}</span>
+										<span className="guts">{index !== 0 ? <ColumnTitle column={item} /> : ''}</span>
 									</th>
 								</>
 							);

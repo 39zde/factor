@@ -104,6 +104,7 @@ export const ContextMenu = forwardRef<HTMLDivElement, ContextMenuProps>(function
 					left: ownX,
 					top: ownY,
 					display: ownActive ? 'block' : 'none',
+					width: solids.contextMenu.width,
 				}}>
 				<ul className="contextMenuList" ref={menuRef}>
 					{items !== undefined ? (
@@ -269,6 +270,7 @@ export const ContextMenu2 = forwardRef<HTMLDivElement, ContextMenuProps>(functio
 					left: ownX,
 					top: ownY,
 					display: ownActive ? 'block' : 'none',
+					width: solids.contextMenu.width,
 				}}>
 				<ul className="contextMenuList" ref={menuRef}>
 					{items !== undefined ? (

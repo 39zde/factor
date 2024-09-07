@@ -1,33 +1,65 @@
 @import url("../../base.css");
 
+
+.helpContents{
+	display: flex;
+	justify-content: flex-start;
+	align-items: flex-start;
+	flex-direction: column;
+	width: 80%;
+	gap: 48px;
+}
+
 .helpWrapper {
 	overflow-y: scroll;
 	scrollbar-gutter: stable both-edges;
 	display: flex;
 	flex-direction: column;
 	justify-content: flex-start;
-	align-items: stretch;
+	align-items: flex-start;
 	gap: 8px;
 	height: 100vh;
 	scrollbar-width: thin;
+	&>h1{
+		align-self: center;
+	}
+}
+
+.helpContentItem{
+	display: flex;
+	justify-content: flex-start;
+	align-items: flex-start;
+	flex-direction: column;
+
 }
 
 .helpCategoryWrapper {
 	display: flex;
 	flex-direction: column;
 	justify-content: flex-start;
-	align-items: stretch;
-	gap: 4px;
+	align-items: flex-start;
+	gap: 16px;
+	padding-left: 32px;
+}
+
+.helpCategory{
+	display: flex;
+	justify-content: flex-start;
+	align-items: flex-start;
+	flex-direction: column;
+	&>h3{
+		font-weight: 500;
+	}
 }
 
 .helpCategoryItemWrapper {
 	display: flex;
 	flex-direction: column;
 	justify-content: flex-start;
-	align-items: stretch;
-	width: 80%;
+	align-items: flex-start;
+	width:100%;
 	align-self: center;
-	margin: 8px 0;
+	padding-left: 32px;
 }
 
 .keyboardKey {
@@ -53,5 +85,11 @@
 	border-radius: 16px;
 	height: 32px;
 	gap: 8px
+}
+
+.helpItem {
+	&>h4 {
+		text-decoration: underline;
+	}
 }
 

@@ -1,5 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useTableContext, useTableDispatch } from './Table';
+import { ColumnTitleString } from './ColumnTitle';
+import { solids } from '@renderer/App';
 
 export function ColumnOrderer(): React.JSX.Element {
 	const { columns, allColumns, colsRef, columnWidths } = useTableContext();
@@ -109,6 +111,8 @@ export function ColumnOrderer(): React.JSX.Element {
 									}}
 									style={{
 										background: draggedElementIndex === index ? 'light-dark(var(--color-light-3),var(--color-dark-3))' : 'none',
+										height: solids.contextMenu.normalItemHeight,
+										borderRadius: solids.contextMenu.normalItemHeight / 2,
 									}}
 									key={`column-orderer-${index}`}>
 									<p
@@ -117,7 +121,7 @@ export function ColumnOrderer(): React.JSX.Element {
 											textDecoration: !columns.includes(item) ? 'line-through' : 'none',
 											color: !columns.includes(item) ? 'light-dark(var(--color-dark-3),var(--color-light-3))' : 'inherit',
 										}}>
-										{item}
+										<ColumnTitleString column={item} />
 									</p>
 								</div>
 								{dragIndicatorIndex === index + 1 && !useUpper ? (

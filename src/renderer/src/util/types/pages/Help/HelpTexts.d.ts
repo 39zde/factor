@@ -1,10 +1,6 @@
 import React from 'react';
 export interface HelpTexts {
-	usage: {
-		title: string;
-		items: HelpItem[];
-	};
-	pages: {
+	[key: string]: {
 		title: string;
 		items: HelpItem[];
 	};

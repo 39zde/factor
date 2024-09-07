@@ -3,85 +3,99 @@ import React from 'react';
 import { useAppContext } from '@renderer/App';
 
 export function ColumnTitle({ column }: { column: string }): React.JSX.Element {
+	return (
+		<>
+			<h4>
+				<ColumnTitleString column={column} />
+			</h4>
+		</>
+	);
+}
+
+export function ColumnTitleString({ column }: { column: string }): string {
 	const { general } = useAppContext();
 	switch (column) {
 		case 'id':
-			return <>{<h4>{general.language === 'deutsch' ? 'Kundennummer' : 'Customer ID'}</h4>}</>;
+			return general.language === 'deutsch' ? 'Kundennummer' : 'Customer ID';
 		case 'persons':
-			return <>{<h4>{general.language === 'deutsch' ? 'Personen' : 'Persons'}</h4>}</>;
+			return general.language === 'deutsch' ? 'Personen' : 'Persons';
 		case 'company':
-			return <>{<h4>{general.language === 'deutsch' ? 'Firma' : 'Company'}</h4>}</>;
+			return general.language === 'deutsch' ? 'Firma' : 'Company';
 		case 'description':
-			return <>{<h4>{general.language === 'deutsch' ? 'Beschreibung' : 'Description'}</h4>}</>;
+			return general.language === 'deutsch' ? 'Beschreibung' : 'Description';
 		case 'altIDs':
-			return <>{<h4>{general.language === 'deutsch' ? 'Alte Kundennummern' : 'Old Customer IDs'}</h4>}</>;
+			return general.language === 'deutsch' ? 'Alte Kundennummern' : 'Old Customer IDs';
 		case 'website':
-			return <>{<h4>{general.language === 'deutsch' ? 'Internetseite' : 'Website'}</h4>}</>;
+			return general.language === 'deutsch' ? 'Internetseite' : 'Website';
 		case 'addresses':
-			return <>{<h4>{general.language === 'deutsch' ? 'Adressen' : 'Addresses'}</h4>}</>;
+			return general.language === 'deutsch' ? 'Adressen' : 'Addresses';
 		case 'banks':
-			return <>{<h4>{general.language === 'deutsch' ? 'Bankverbindung' : 'Bank Details'}</h4>}</>;
+			return general.language === 'deutsch' ? 'Bankverbindung' : 'Bank Details';
 		case 'emails':
-			return <>{<h4>{general.language === 'deutsch' ? 'Email' : 'Email'}</h4>}</>;
+			return general.language === 'deutsch' ? 'Email' : 'Email';
 		case 'phones':
-			return <>{<h4>{general.language === 'deutsch' ? 'Telefon' : 'Phone'}</h4>}</>;
+			return general.language === 'deutsch' ? 'Telefon' : 'Phone';
 		case 'firstContact':
-			return <>{<h4>{general.language === 'deutsch' ? 'Erstkontakt' : 'First Interaction'}</h4>}</>;
+			return general.language === 'deutsch' ? 'Erstkontakt' : 'First Interaction';
 		case 'latestContact':
-			return <>{<h4>{general.language === 'deutsch' ? 'Zuletzt Gesehen' : 'Last Seen'}</h4>}</>;
+			return general.language === 'deutsch' ? 'Zuletzt Gesehen' : 'Last Seen';
 		case 'created':
-			return <>{<h4>{general.language === 'deutsch' ? 'Erstellungsdatum' : 'Creation Date'}</h4>}</>;
+			return general.language === 'deutsch' ? 'Erstellungsdatum' : 'Creation Date';
 		case 'firstName':
-			return <>{<h4>{general.language === 'deutsch' ? 'Vorname' : 'First Name'}</h4>}</>;
+			return general.language === 'deutsch' ? 'Vorname' : 'First Name';
 		case 'lastName':
-			return <>{<h4>{general.language === 'deutsch' ? 'Nachname' : 'Last Name'}</h4>}</>;
+			return general.language === 'deutsch' ? 'Nachname' : 'Last Name';
 		case 'name':
-			return <>{<h4>{general.language === 'deutsch' ? 'Name' : 'Name'}</h4>}</>;
+			return general.language === 'deutsch' ? 'Name' : 'Name';
 		case 'notes':
-			return <>{<h4>{general.language === 'deutsch' ? 'Notizen' : 'Notes'}</h4>}</>;
+			return general.language === 'deutsch' ? 'Notizen' : 'Notes';
 		case 'city':
-			return <>{<h4>{general.language === 'deutsch' ? 'Stadt' : 'City'}</h4>}</>;
+			return general.language === 'deutsch' ? 'Stadt' : 'City';
 		case 'country':
-			return <>{<h4>{general.language === 'deutsch' ? 'Nation' : 'Nation'}</h4>}</>;
+			return general.language === 'deutsch' ? 'Nation' : 'Nation';
 		case 'street':
-			return <>{<h4>{general.language === 'deutsch' ? 'Straße' : 'Street'}</h4>}</>;
+			return general.language === 'deutsch' ? 'Straße' : 'Street';
 		case 'zip':
-			return <>{<h4>{general.language === 'deutsch' ? 'Postleitzahl' : 'Postal Code'}</h4>}</>;
+			return general.language === 'deutsch' ? 'Postleitzahl' : 'Postal Code';
 		case 'hash':
-			return <>{<h4>{general.language === 'deutsch' ? 'Hash' : 'Hash'}</h4>}</>;
+			return general.language === 'deutsch' ? 'Hash' : 'Hash';
 		case 'type':
-			return <>{<h4>{general.language === 'deutsch' ? 'Art' : 'Category'}</h4>}</>;
+			return general.language === 'deutsch' ? 'Art' : 'Category';
 		case 'bic':
-			return <>{<h4>{general.language === 'deutsch' ? 'BIC' : 'BIC'}</h4>}</>;
+			return general.language === 'deutsch' ? 'BIC' : 'BIC';
 		case 'bankCode':
-			return <>{<h4>{general.language === 'deutsch' ? 'BLZ' : 'Bank Code'}</h4>}</>;
+			return general.language === 'deutsch' ? 'BLZ' : 'Bank Code';
 		case 'iban':
-			return <>{<h4>{general.language === 'deutsch' ? 'IBAN' : 'IBAN'}</h4>}</>;
+			return general.language === 'deutsch' ? 'IBAN' : 'IBAN';
 		case 'title':
-			return <>{<h4>{general.language === 'deutsch' ? 'Anrede' : 'Title'}</h4>}</>;
+			return general.language === 'deutsch' ? 'Anrede' : 'Title';
 		case 'alias':
-			return <>{<h4>{general.language === 'deutsch' ? 'Alias' : 'Alias'}</h4>}</>;
+			return general.language === 'deutsch' ? 'Alias' : 'Alias';
+		case 'email':
+			return general.language === 'deutsch' ? 'Email' : 'Email';
+		case 'phone':
+			return general.language === 'deutsch' ? 'Telefonnummer' : 'Phone Number';
 		// case '':
-		// 	return <>{<h4>{general.language === 'deutsch' ? '' : ''}</h4>}</>;
+		// 	return general.language === 'deutsch' ? '' : '';
 		// case '':
-		// 	return <>{<h4>{general.language === 'deutsch' ? '' : ''}</h4>}</>;
+		// 	return general.language === 'deutsch' ? '' : '';
 		// case '':
-		// 	return <>{<h4>{general.language === 'deutsch' ? '' : ''}</h4>}</>;
+		// 	return general.language === 'deutsch' ? '' : '';
 		// case '':
-		// 	return <>{<h4>{general.language === 'deutsch' ? '' : ''}</h4>}</>;
+		// 	return general.language === 'deutsch' ? '' : '';
 		// case '':
-		// 	return <>{<h4>{general.language === 'deutsch' ? '' : ''}</h4>}</>;
+		// 	return general.language === 'deutsch' ? '' : '';
 		// case '':
-		// 	return <>{<h4>{general.language === 'deutsch' ? '' : ''}</h4>}</>;
+		// 	return general.language === 'deutsch' ? '' : '';
 		// case '':
-		// 	return <>{<h4>{general.language === 'deutsch' ? '' : ''}</h4>}</>;
+		// 	return general.language === 'deutsch' ? '' : '';
 		// case '':
-		// 	return <>{<h4>{general.language === 'deutsch' ? '' : ''}</h4>}</>;
+		// 	return general.language === 'deutsch' ? '' : '';
 		// case '':
-		// 	return <>{<h4>{general.language === 'deutsch' ? '' : ''}</h4>}</>;
+		// 	return general.language === 'deutsch' ? '' : '';
 		// case '':
-		// 	return <>{<h4>{general.language === 'deutsch' ? '' : ''}</h4>}</>;
+		// 	return general.language === 'deutsch' ? '' : '';
 		default:
-			return <></>;
+			return column;
 	}
 }
