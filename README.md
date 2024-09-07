@@ -1,6 +1,6 @@
 # Factor
 
-![Logo](./resources/icons/android/solo_whiteldpi.png)
+![Logo](./build/appx/Wide310x150Logo.png)
 
 An invoicing application built with TypeScript:React on top of IndexDB packaged with Electron
 
