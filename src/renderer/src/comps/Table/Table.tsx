@@ -490,15 +490,15 @@ export function Table({ dataBaseName, tableName, colsHook, entriesHook, updateHo
 				}
 				break;
 			case 'error':
-				new Notification(general.language === "deutsch" ? "Ein Fehler ist aufgetreten": "An error occurred", {
-					body: eventData.data as string
-				})
+				new Notification(general.language === 'deutsch' ? 'Ein Fehler ist aufgetreten' : 'An error occurred', {
+					body: eventData.data as string,
+				});
 				break;
 			case 'success':
-				new Notification(general.language === "deutsch" ? "Action erfolgreich": "Action successful", {
+				new Notification(general.language === 'deutsch' ? 'Action erfolgreich' : 'Action successful', {
 					body: eventData.data as string,
-					silent: true
-				})
+					silent: true,
+				});
 				break;
 			default:
 				break;

@@ -16,9 +16,9 @@ function Versions(): React.JSX.Element {
 				setFree(((storage.quota ?? 0) / (Math.pow(1024, 2) * 1000)).toFixed(1));
 			}
 		} catch (e) {
-			new Notification(general.language === "deutsch" ? "Ein Fehler ist aufgetreten": "An error occurred",{
-				body: "Failed to estimate disk usage"
-			})
+			new Notification(general.language === 'deutsch' ? 'Ein Fehler ist aufgetreten' : 'An error occurred', {
+				body: 'Failed to estimate disk usage',
+			});
 		}
 	}, []);
 
