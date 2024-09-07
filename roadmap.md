@@ -3,7 +3,7 @@
 - [x] add nested cols
 - [x] allow to order cols
 - [x] remember col sizes
-- [ ] localize column names
+- [x] localize column names
 - [x] Add synthetic test data
 - [ ] Notifications
 

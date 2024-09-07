@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTableContext } from './Table';
+import { ColumnTitle } from './ColumnTitle';
 import { useAppContext } from '@renderer/App';
 /** mostly  a copy of table head without the ability to  resize */
 export function TableFoot(): React.JSX.Element {
@@ -32,7 +33,7 @@ export function TableFoot(): React.JSX.Element {
 										}}
 										key={`tfoot-${index}-${item}`}
 										ref={index === 0 ? tableState.footerRowFirstElementRef : undefined}>
-										<span className="guts">{item !== undefined && index !== 0 ? <>{item}</> : <></>}</span>
+										<span className="guts">{index !== 0  ? <ColumnTitle column={item} /> : ''}</span>
 									</th>
 								</>
 							);
