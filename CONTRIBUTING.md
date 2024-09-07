@@ -24,6 +24,9 @@ Some files are hidden by default in [`factor.code-workspace`](./factor.code-work
 
 To use yarn the official way [corepack](https://nodejs.org/api/corepack.html) must be enabled. Follow [this](https://yarnpkg.com/getting-started/install) instruction guide to get started.
 
+ ### Environment Variables
+	set ESLINT_USE_FLAT_CONFIG=true as as system environment variable
+
 ## React Devtools
 
 Run
