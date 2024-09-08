@@ -1,9 +1,9 @@
-export function Home() {
+import React from 'react';
+
+export function Home(): React.JSX.Element {
 	return (
 		<>
-			<div className="settingsPage appRoute">
-				<p>Homes</p>
-			</div>
+			<div className="settingsPage appRoute"></div>
 		</>
 	);
 }
