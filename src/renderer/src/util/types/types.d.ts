@@ -50,3 +50,5 @@ export type { ContextMenuProps, MenuItem } from './comps/ContextMenu/ContextMenu
 export type { ArticleDBObjectStores, ArticleSortingMap } from './database/ArticleTypes';
 
 export type { DocumentDBObjectStores, DocumentSortingMap } from './database/DocumentTypes';
+
+export type { CompressionTypes, ExportWorkerRequest, ExportWorkerResponse, ExportFileStreamer } from './worker/export.worker';

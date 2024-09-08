@@ -1,10 +1,12 @@
 import { app, shell, BrowserWindow, ipcMain } from 'electron';
 import { join, resolve } from 'path';
-import { readFileSync, writeFileSync, copyFileSync, readdirSync, mkdirSync } from 'fs';
+import { readFileSync, writeFileSync, copyFileSync, readdirSync, mkdirSync, createWriteStream } from 'fs';
 import { userInfo, homedir } from 'os';
 import { env, platform } from 'process';
+import { createGzip, createBrotliCompress, createDeflate } from 'zlib';
 import { electronApp, optimizer, is } from '@electron-toolkit/utils';
 import { AppSettingsType } from '../renderer/src/util/App';
+import { ExportWorkerResponse } from '../renderer/src/util/types/types';
 
 function createWindow(): void {
 	const settings = readSettings();
@@ -112,56 +114,32 @@ app.whenReady().then(() => {
 		}
 	});
 
-	// In the main process, we receive the port.
+	const downloadsDir = getDownloadsFolder();
+
 	ipcMain.once('port', (event) => {
-		// When we receive a MessagePort in the main process, it becomes a
-		// MessagePortMain.
 		console.log('test1');
 		const port = event.ports[0];
+		//@ts-expect-error WriteStream is a Node.js type
+		let fileWriter: WriteStream | undefined;
 
-		// MessagePortMain uses the Node.js-style events API, rather than the
-		// web-style events API. So .on('message', ...) instead of .onmessage = ...
 		port.on('message', (event) => {
-			// data is { answer: 42 }
-			const data = event.data;
-			console.log(data);
-			// const downloadsDir = getDownloadsFolder();
-			// const activeExports = new Map();
-			// 	switch (data.type) {
-			// 		case 'init':
-			// 			let fileName = downloadsDir + '/' + data.fileName;
-			// 			let stream = new TextDecoderStream();
-			// 			let writer = stream.writable.getWriter();
-			// 			let reader = stream.readable.getReader();
-			// 			let initObj : ExportFileStreamer = {
-			// 				filePath: downloadsDir + '/' + data.fileName,
-			// 				fileName: data.fileName,
-			// 				stream: stream,
-			// 				writer: writer,
-			// 				reader: reader,
-			// 				compression: data.compression
-			// 			};
-			// 			function readData(value:ReadableStreamReadResult<string>){
-			// 				if(!value.done){
-			// 					reader.read().then(readData)
-			// 					console.log(value.value)
-			// 				}
-			// 			}
-			// 			reader.read().then(readData)
-			// 			activeExports.set(fileName, initObj);
-			// 			break;
-			// 		case 'stream':
-			// 			let streamer = activeExports.get(data.fileName) as ExportFileStreamer
-			// 			streamer.writer.ready.then(()=>streamer.writer.write(data.data))
-			// 			break;
-			// 		case 'finish':
-			// 			break;
-			// 		default:
-			// 			break;
-			// 	}
+			const data = event.data as ExportWorkerResponse;
+			if (data.type === 'init') {
+				fileWriter = createWriteStream(downloadsDir + '/' + data.fileName);
+				let fileInfos = data.fileName.split('.');
+				fileWriter.write(`{"${fileInfos[0]}":{"${fileInfos[1]}":[\n`);
+			}
+			if (data.type === 'stream' && fileWriter !== undefined) {
+				let de = new TextDecoder();
+				fileWriter.write(de.decode(data.data));
+			}
+			if (data.type === 'finish' && fileWriter !== undefined) {
+				fileWriter.write(']}}');
+				fileWriter.close();
+				fileWriter = undefined;
+			}
 		});
 
-		// MessagePortMain queues messages until the .start() method has been called.
 		port.start();
 	});
 
@@ -245,7 +223,7 @@ function getHomeDir(): string {
 		}
 	}
 
-	return resolve(homeDir);
+	return resolve(homedir());
 }
 
 function getDownloadsFolder(): string {
@@ -253,9 +231,42 @@ function getDownloadsFolder(): string {
 	const homeDirFiles = readdirSync(homeDir);
 	let downloadsDir = homeDir;
 	if (homeDirFiles.includes('Downloads')) {
-		downloadsDir += downloadsDir + '/Downloads';
+		downloadsDir = downloadsDir + '/Downloads';
 	} else if (homeDirFiles.includes('downloads')) {
-		downloadsDir += downloadsDir + '/downloads';
+		downloadsDir = downloadsDir + '/downloads';
 	}
 	return resolve(downloadsDir);
 }
+
+// function initStreamer(data: ExportWorkerResponse, downloadsDir: string): ExportFileStreamer {
+// 	// In the main process, we receive the port.
+// 	// let filePath = downloadsDir + '/' + data.fileName;
+
+// 	// let initObj: ExportFileStreamer = {
+// 	// 	filePath: filePath,
+// 	// 	fileName: data.fileName,
+// 	// 	compression: data.compression,
+// 	// };
+// 	// return initObj;
+// 	// if(data.)
+// 	// switch (data.type) {
+// 	// 	case 'init':
+// 	// 		function readData(value: ReadableStreamReadResult<string>) {
+// 	// 			if (!value.done) {
+// 	// 				reader.read().then(readData);
+// 	// 				console.log(value.value);
+// 	// 			}
+// 	// 		}
+// 	// 		reader.read().then(readData);
+// 	// 		activeExports.set(fileName, initObj);
+// 	// 		break;
+// 	// 	case 'stream':
+// 	// 		let streamer = activeExports.get(data.fileName) as ExportFileStreamer;
+// 	// 		streamer.writer.ready.then(() => streamer.writer.write(data.data));
+// 	// 		break;
+// 	// 	case 'finish':
+// 	// 		break;
+// 	// 	default:
+// 	// 		break;
+// 	// }
+// }
