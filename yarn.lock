@@ -1389,12 +1389,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^20.16.4":
-  version: 20.16.4
-  resolution: "@types/node@npm:20.16.4"
+"@types/node@npm:^20.16.5":
+  version: 20.16.5
+  resolution: "@types/node@npm:20.16.5"
   dependencies:
     undici-types: "npm:~6.19.2"
-  checksum: 10c0/1dfd24b8a1552adf1f37c189bcebb6e287184852188d8aa28f8e955f15079f8ee62d88f142b6a52c0fd59132fc40644bf6197c139e4e1d645c1db040b231caaa
+  checksum: 10c0/6af7994129815010bcbc4cf8221865559c8116ff43e74a6549525c2108267596fc2d18aff5d5ecfe089fb60a119f975631343e2c65c52bfa0955ed9dc56733d6
   languageName: node
   linkType: hard
 
@@ -3002,16 +3002,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron@npm:31.4.0":
-  version: 31.4.0
-  resolution: "electron@npm:31.4.0"
+"electron@npm:31.5.0":
+  version: 31.5.0
+  resolution: "electron@npm:31.5.0"
   dependencies:
     "@electron/get": "npm:^2.0.0"
     "@types/node": "npm:^20.9.0"
     extract-zip: "npm:^2.0.1"
   bin:
     electron: cli.js
-  checksum: 10c0/9ed10f363f864912bb9be0a387309babb476df20473ed7ea3f8df609daf19125763fe9ba4b9f5b422673b688e00b31afc52b308623829b7cced28f99687a9d03
+  checksum: 10c0/09f823c422c3e8109242d43874e283a728d8f8650b1e289c1b756d07e8e68d2a000e15289001dc9b450edd77ddf923fac92e975f494642df0b2d35a6fc5c34f7
   languageName: node
   linkType: hard
 
@@ -3570,20 +3570,20 @@ __metadata:
     "@eslint/js": "npm:^9.9.1"
     "@react-pdf/renderer": "npm:^3.4.4"
     "@types/eslint__js": "npm:^8.42.3"
-    "@types/node": "npm:^20.16.4"
+    "@types/node": "npm:^20.16.5"
     "@types/react": "npm:^18.3.5"
     "@types/react-dom": "npm:^18.3.0"
     "@typescript-eslint/eslint-plugin": "npm:^8.2.0"
     "@typescript-eslint/parser": "npm:^8.2.0"
     "@vitejs/plugin-react": "npm:^4.3.1"
-    electron: "npm:31.4.0"
+    electron: "npm:31.5.0"
     electron-builder: "npm:^24.13.3"
     electron-updater: "npm:^6.3.4"
     electron-vite: "npm:^2.3.0"
     eslint: "npm:^8.57.0"
     eslint-plugin-react: "npm:^7.35.0"
     globals: "npm:^15.9.0"
-    lucide-react: "npm:^0.438.0"
+    lucide-react: "npm:^0.439.0"
     prettier: "npm:^3.3.3"
     react: "npm:^18.3.1"
     react-devtools: "npm:^5.3.1"
@@ -5086,12 +5086,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lucide-react@npm:^0.438.0":
-  version: 0.438.0
-  resolution: "lucide-react@npm:0.438.0"
+"lucide-react@npm:^0.439.0":
+  version: 0.439.0
+  resolution: "lucide-react@npm:0.439.0"
   peerDependencies:
     react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0-rc
-  checksum: 10c0/d5e9e9130e301b3231fffd3e5fab85975a7523fb5ab160a8125ad6937de713af46d0ac7a96c1ba532b9ff39a14d940aefa9ea41cb30123ff7f8ce88f44cfe2f1
+  checksum: 10c0/153c6da6a1bdcc03c47080b00a50a341b7e485ccbb479a742c0fb606355acf93c136630626dad2d57cafe1f5c691dd4f2fcd0f2b7c813e7c9e0e1f065cf62be0
   languageName: node
   linkType: hard
 
