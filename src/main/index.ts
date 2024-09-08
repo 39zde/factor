@@ -193,3 +193,15 @@ function getHomeDir(): string {
 
 	return resolve(homeDir);
 }
+
+function getDownloadsFolder(): string {
+	const homeDir = getHomeDir();
+	const homeDirFiles = readdirSync(homeDir);
+	let downloadsDir = homeDir;
+	if (homeDirFiles.includes('Downloads')) {
+		downloadsDir += downloadsDir + '/Downloads';
+	} else if (homeDirFiles.includes('downloads')) {
+		downloadsDir += downloadsDir + '/downloads';
+	}
+	return resolve(downloadsDir);
+}
