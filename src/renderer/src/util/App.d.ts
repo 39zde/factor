@@ -12,6 +12,9 @@ export interface AppContextType extends AppSettingsType {
 		/** Export Worker: writes the data in a specified format to files */
 		ExportWorker: Worker;
 	};
+	channel: {
+		ExportChannel: MessagePort[];
+	};
 }
 
 export interface AppSettingsType {

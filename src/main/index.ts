@@ -33,9 +33,10 @@ function createWindow(): void {
 		webPreferences: {
 			preload: join(__dirname, '../preload/index.mjs'),
 			sandbox: false,
-			nodeIntegrationInWorker: true,
+			nodeIntegrationInWorker: false,
 			nodeIntegration: true,
 			defaultEncoding: 'UTF-8',
+			contextIsolation: false, // needed for export worker MessageChannel
 		},
 		// fullscreen: true,
 		resizable: true,
@@ -109,6 +110,59 @@ app.whenReady().then(() => {
 			default:
 				console.log('[index.ts] ', 'defaulted Settings');
 		}
+	});
+
+	// In the main process, we receive the port.
+	ipcMain.once('port', (event) => {
+		// When we receive a MessagePort in the main process, it becomes a
+		// MessagePortMain.
+		console.log('test1');
+		const port = event.ports[0];
+
+		// MessagePortMain uses the Node.js-style events API, rather than the
+		// web-style events API. So .on('message', ...) instead of .onmessage = ...
+		port.on('message', (event) => {
+			// data is { answer: 42 }
+			const data = event.data;
+			console.log(data);
+			// const downloadsDir = getDownloadsFolder();
+			// const activeExports = new Map();
+			// 	switch (data.type) {
+			// 		case 'init':
+			// 			let fileName = downloadsDir + '/' + data.fileName;
+			// 			let stream = new TextDecoderStream();
+			// 			let writer = stream.writable.getWriter();
+			// 			let reader = stream.readable.getReader();
+			// 			let initObj : ExportFileStreamer = {
+			// 				filePath: downloadsDir + '/' + data.fileName,
+			// 				fileName: data.fileName,
+			// 				stream: stream,
+			// 				writer: writer,
+			// 				reader: reader,
+			// 				compression: data.compression
+			// 			};
+			// 			function readData(value:ReadableStreamReadResult<string>){
+			// 				if(!value.done){
+			// 					reader.read().then(readData)
+			// 					console.log(value.value)
+			// 				}
+			// 			}
+			// 			reader.read().then(readData)
+			// 			activeExports.set(fileName, initObj);
+			// 			break;
+			// 		case 'stream':
+			// 			let streamer = activeExports.get(data.fileName) as ExportFileStreamer
+			// 			streamer.writer.ready.then(()=>streamer.writer.write(data.data))
+			// 			break;
+			// 		case 'finish':
+			// 			break;
+			// 		default:
+			// 			break;
+			// 	}
+		});
+
+		// MessagePortMain queues messages until the .start() method has been called.
+		port.start();
 	});
 
 	// open urls in external Browser

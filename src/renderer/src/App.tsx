@@ -27,6 +27,13 @@ const TableWorker = (() => {
 	return work;
 })();
 
+const ExportChannel = (() => {
+	const channel = new MessageChannel();
+	const receiver = channel.port1;
+	const sender = channel.port2;
+	return [receiver, sender];
+})();
+
 export const solids: AppSolidsType = {
 	icon: {
 		size: {
@@ -76,6 +83,9 @@ const defaultContext: AppContextType = {
 		ImportWorker: ImportWorker,
 		TableWorker: TableWorker,
 		ExportWorker: ExportWorker,
+	},
+	channel: {
+		ExportChannel: ExportChannel,
 	},
 };
 
@@ -181,6 +191,9 @@ function appReducer(appState: AppContextType, action: AppAction): AppContextType
 					TableWorker: appState.worker.TableWorker,
 					ExportWorker: appState.worker.ExportWorker,
 				},
+				channel: {
+					ExportChannel: appState.channel.ExportChannel,
+				},
 			};
 		}
 		case 'setHW': {
@@ -213,6 +226,9 @@ function appReducer(appState: AppContextType, action: AppAction): AppContextType
 					TableWorker: appState.worker.TableWorker,
 					ExportWorker: appState.worker.ExportWorker,
 				},
+				channel: {
+					ExportChannel: appState.channel.ExportChannel,
+				},
 			};
 		}
 
@@ -235,6 +251,10 @@ export function useChangeContext() {
 	return useContext(ChangeContext);
 }
 
+window.electron.ipcRenderer.postMessage('ping', null);
+ExportChannel[1].postMessage('tester');
+ExportChannel[1].start();
+window.electron.ipcRenderer.postMessage('port', null, [ExportChannel[0]]);
 function App(): JSX.Element {
 	const [route, setRoute] = useState<RouteType>('Home');
 	const [showSettings, setShowSettings] = useState<boolean>(false);
@@ -243,7 +263,7 @@ function App(): JSX.Element {
 	const getWidth = useCallback(() => window.innerWidth, []);
 	const [appState, dispatch] = useReducer(
 		appReducer,
-		{ defaultContext, document, TableWorker, ImportWorker, ExportWorker, window },
+		{ defaultContext, document, TableWorker, ImportWorker, ExportWorker, window, ExportChannel },
 		(args): AppContextType => {
 			const dataBasesPromise = args.window.indexedDB.databases();
 			let out: AppContextType;
@@ -257,6 +277,9 @@ function App(): JSX.Element {
 						ImportWorker: args.ImportWorker,
 						TableWorker: args.TableWorker,
 						ExportWorker: args.ExportWorker,
+					},
+					channel: {
+						ExportChannel: args.ExportChannel,
 					},
 				};
 				const themeTag = args.document.getElementById('theme');
