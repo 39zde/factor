@@ -4,6 +4,8 @@ Anyone can contribute. This is not a Pet-Project nor do I follow any agenda with
 
 - [Workspace](#workspace)
 	- [Yarn Package Manager](#yarn-package-manager)
+	- [Environment Variables](#environment-variables)
+- [React Dev Tools](#react-devtools)
 - [Theming](#theming)
 - [Data Storage](#data-storage)
 	- [File Storage](#file-storage)
@@ -15,6 +17,7 @@ Anyone can contribute. This is not a Pet-Project nor do I follow any agenda with
 	- [Local Storage](#local-storage)
 	- [Session Storage](#session-storage)
 - [Sample Data](#sample-data)
+- [Build](#build)
 
 ## Workspace
 
