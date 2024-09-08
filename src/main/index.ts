@@ -1,7 +1,7 @@
 import { app, shell, BrowserWindow, ipcMain } from 'electron';
 import { join, resolve } from 'path';
 import { readFileSync, writeFileSync, copyFileSync, readdirSync, mkdirSync } from 'fs';
-import { userInfo } from 'os';
+import { userInfo, homedir } from 'os';
 import { env, platform } from 'process';
 import { electronApp, optimizer, is } from '@electron-toolkit/utils';
 import { AppSettingsType } from '../renderer/src/util/App';
@@ -173,16 +173,21 @@ function initSettings() {
 function getHomeDir(): string {
 	let homeDir = userInfo().homedir;
 	if (homeDir === undefined) {
-		if (env['HOME'] !== undefined) {
-			homeDir = resolve(env['HOME']);
-		} else if (env['HOMEPATH'] !== undefined) {
-			homeDir = resolve(env['HOMEPATH']);
-		} else {
-			if (platform === 'win32') {
-				homeDir = 'C:/Users/' + userInfo().username;
-			} else if (platform === 'linux') {
-				homeDir = '/home/' + userInfo().username;
+		let osHome = homedir();
+		if (osHome === '') {
+			if (env['HOME'] !== undefined) {
+				homeDir = resolve(env['HOME']);
+			} else if (env['HOMEPATH'] !== undefined) {
+				homeDir = resolve(env['HOMEPATH']);
+			} else {
+				if (platform === 'win32') {
+					homeDir = 'C:/Users/' + userInfo().username;
+				} else if (platform === 'linux') {
+					homeDir = '/home/' + userInfo().username;
+				}
 			}
+		} else {
+			homeDir = osHome;
 		}
 	}
 
