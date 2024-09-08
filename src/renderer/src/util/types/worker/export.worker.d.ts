@@ -20,7 +20,7 @@ export type ExportFileStreamer = {
 	filePath: string;
 	fileName: string;
 	stream: TextDecoderStream;
-	writer:  WritableStreamDefaultWriter<BufferSource>;
+	writer: WritableStreamDefaultWriter<BufferSource>;
 	reader: ReadableStreamDefaultReader<string>;
 	compression?: CompressionTypes;
 };

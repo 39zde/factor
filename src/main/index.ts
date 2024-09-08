@@ -237,36 +237,3 @@ function getDownloadsFolder(): string {
 	}
 	return resolve(downloadsDir);
 }
-
-// function initStreamer(data: ExportWorkerResponse, downloadsDir: string): ExportFileStreamer {
-// 	// In the main process, we receive the port.
-// 	// let filePath = downloadsDir + '/' + data.fileName;
-
-// 	// let initObj: ExportFileStreamer = {
-// 	// 	filePath: filePath,
-// 	// 	fileName: data.fileName,
-// 	// 	compression: data.compression,
-// 	// };
-// 	// return initObj;
-// 	// if(data.)
-// 	// switch (data.type) {
-// 	// 	case 'init':
-// 	// 		function readData(value: ReadableStreamReadResult<string>) {
-// 	// 			if (!value.done) {
-// 	// 				reader.read().then(readData);
-// 	// 				console.log(value.value);
-// 	// 			}
-// 	// 		}
-// 	// 		reader.read().then(readData);
-// 	// 		activeExports.set(fileName, initObj);
-// 	// 		break;
-// 	// 	case 'stream':
-// 	// 		let streamer = activeExports.get(data.fileName) as ExportFileStreamer;
-// 	// 		streamer.writer.ready.then(() => streamer.writer.write(data.data));
-// 	// 		break;
-// 	// 	case 'finish':
-// 	// 		break;
-// 	// 	default:
-// 	// 		break;
-// 	// }
-// }
