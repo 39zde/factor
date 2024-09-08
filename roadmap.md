@@ -2,6 +2,7 @@
 ## Short Term
 - [ ] add export/backup support
 - [ ] support editing
+- [ ] remember table start position 
 
 ## Long Term
 - [ ] add articles table
