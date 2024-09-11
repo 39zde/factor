@@ -1,0 +1,25 @@
+[package]
+name = "factor"
+version = "2.0.0"
+description = "An invoicing application built with TypeScript:React on top of IndexDB packaged with Tauri"
+authors = ["39zde"]
+license = "Apache-2.0"
+repository = "https://github.com/39zde/factor"
+edition = "2021"
+rust-version = "1.71"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+name = "app_lib"
+crate-type = ["staticlib", "cdylib", "lib"]
+
+[build-dependencies]
+tauri-build = { version = "2.0.0-rc.9", features = [] }
+
+[dependencies]
+serde_json = "1.0"
+serde = { version = "1.0", features = ["derive"] }
+tauri = { version = "2.0.0-rc.10", features = [] }
+tauri-plugin-fs = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v2" }
+tauri-plugin-window-state = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v2" }

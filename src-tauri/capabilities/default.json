@@ -1,0 +1,16 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "enables the default permissions",
+  "windows": [
+    "main"
+  ],
+  "permissions": [
+    "core:default",
+	 "core:webview:deny-print",
+	 "core:app:allow-tauri-version",
+	 "fs:allow-download-write",
+	 "fs:allow-appconfig-read",
+	 "fs:allow-appconfig-write"
+  ]
+}

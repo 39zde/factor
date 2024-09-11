@@ -2,7 +2,9 @@
 ## Short Term
 - [ ] add export/backup support
 - [ ] support editing
-- [ ] remember table start position 
+- [ ] remember table start position
+- [ ] add search
+- [ ] add sorting
 
 ## Long Term
 - [ ] add articles table
@@ -11,8 +13,6 @@
 - [ ] add quotes table
 - [ ] add returnees table
 - [ ] add document creation
-- [ ] add search
-- [ ] add sorting
 
 ## Long Long Term
 - [ ] use CanvasAPI for performance

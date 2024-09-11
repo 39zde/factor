@@ -1,0 +1,88 @@
+{
+  "productName": "Factor",
+  "version": "2.0.0",
+  "identifier": "factor",
+  "build": {
+    "frontendDist": "../out",
+    "devUrl": "https://localhost:5173",
+    "beforeDevCommand": "yarn dev:web",
+    "beforeBuildCommand": "yarn bundle"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "Factor",
+        "width": 800,
+        "height": 600,
+        "resizable": true,
+        "fullscreen": false
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; script-src 'self'; connect-src 'self'; worker-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:"
+    }
+  },
+  "bundle": {
+	"linux": {
+		"appimage": {
+			"bundleMediaFramework": false,
+			"files": {}
+		},
+		"deb": {
+			"files": {}
+		},
+		"rpm": {
+			"epoch": 0,
+			"files": {},
+			"release": "1"
+		}
+	},
+	"macOS": {
+		"dmg": {
+			"appPosition": {
+				"x": 180,
+				"y": 170
+			},
+			"applicationFolderPosition": {
+				"x": 480,
+				"y": 170
+			},
+			"windowSize": {
+				"height": 400,
+				"width": 660
+			}
+		},
+		"files": {},
+		"hardenedRuntime": true,
+		"minimumSystemVersion": "10.13"
+	},
+	"windows": {
+		"allowDowngrades": true,
+		"certificateThumbprint": null,
+		"digestAlgorithm": null,
+		"nsis": null,
+		"signCommand": null,
+		"timestampUrl": null,
+		"tsp": false,
+		"webviewInstallMode": {
+			"silent": true,
+			"type": "downloadBootstrapper"
+		},
+		"wix": null
+	},
+    "active": true,
+    "targets": "all",
+    "icon": [
+      "./icons/32x32.png",
+      "./icons/128x128.png",
+      "./icons/128x128@2x.png",
+      "./icons/icon.icns",
+      "./icons/icon.ico"
+    ],
+	 "resources":["../resources/defaultSettings.json"],
+	 "category": "Utility",
+	 "licenseFile": "../LICENSE",
+	 "homepage": "https://github.com/39zde/factor"
+  },
+  "$schema": "../node_modules/@tauri-apps/cli/config.schema.json"
+}
