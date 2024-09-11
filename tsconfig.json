@@ -1,4 +1,32 @@
-{ 
-  "files": [],
-  "references": [{ "path": "./tsconfig.node.json" }, { "path": "./tsconfig.web.json" }]
-}
+{
+	"compilerOptions": {
+	  "target": "ESNext",
+	  "useDefineForClassFields": true,
+	  "lib": ["ESNext", "DOM", "DOM.Iterable"],
+	  "module": "ESNext",
+	  "skipLibCheck": true,
+
+	  /* Bundler mode */
+	  "moduleResolution": "bundler",
+	  "allowImportingTsExtensions": true,
+	  "resolveJsonModule": true,
+	  "isolatedModules": true,
+	  "noEmit": true,
+	  "jsx": "react-jsx",
+
+	  /* Linting */
+	  "strict": true,
+	  "noUnusedLocals": true,
+	  "noUnusedParameters": true,
+	  "noFallthroughCasesInSwitch": false,
+	  "paths": {
+		"@typings":["./src/util/types/types.d.ts"],
+      "@util":["./src/util/util.ts"],
+      "@comps":["./src/comps/Comps.ts"],
+		"@app":["./src/App.tsx"],
+		"@worker":["./src/util/worker"]
+	  }
+	},
+	"include": ["src"],
+	"references": [{ "path": "./tsconfig.node.json" }]
+ }

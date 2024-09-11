@@ -1,7 +1,0 @@
-/* prettier-ignore */
-@import url('../../base.css');
-
-
-:root {
-	scrollbar-color: var(--color-dark-3) var(--color-light-1);
-}

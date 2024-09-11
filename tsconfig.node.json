@@ -1,16 +1,10 @@
 {
-  "extends": "@electron-toolkit/tsconfig/tsconfig.node.json",
-  "include": [
-	"package.json",
-   "src/main/**/*",
-   "src/preload/**/*",
-	"src/preload/*.d.ts",
-  ],
-  "compilerOptions": {
-    "composite": true,
-    "module":"ESNext",
-	 "moduleResolution": "Node",
-	 "resolveJsonModule": true,
-	 "allowSyntheticDefaultImports": true
-  }
-}
+	"compilerOptions": {
+	  "composite": true,
+	  "skipLibCheck": true,
+	  "module": "ESNext",
+	  "moduleResolution": "bundler",
+	  "allowSyntheticDefaultImports": true
+	},
+	"include": ["vite.config.ts"]
+ }

@@ -13,7 +13,7 @@ jobs:
     strategy:
       matrix:
         os: [macos-latest, ubuntu-latest, windows-latest]
-        node-version: ['20.16.0']
+        node-version: ['lts']
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
@@ -25,28 +25,35 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
 
-    - name: install dependencies
+	 - name: Setup Rust
+	   uses: dtolnay/rust-toolchain@stable
+
+	 - name: Rust cache
+      uses: swatinem/rust-cache@v2
+      with:
+        workspaces: './src-tauri -> target'
+
+    - name: install js dependencies
       run: |
         corepack enable
         yarn install
-        yarn run electron-builder install-app-deps
 
-    - name: check types
-      run: yarn run typecheck
+	 - name: install rust dependencies
+      run: |
+        cd src-tauri
+        cargo update
 
-    - name: bundle
-      run: yarn run electron-vite build
 
-    - name: build electron app
-      env:
-         PUBLISH_FOR_PULL_REQUEST: true
-         GH_TOKEN: ${{ secrets.GH_TOKEN }}
-      run: yarn run electron-builder --publish always
+	 - uses: tauri-apps/tauri-action@v0
+		env:
+		   PUBLISH_FOR_PULL_REQUEST: true
+			GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+		with:
+			tagName: app-v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version.
+			releaseName: 'App v__VERSION__'
+			releaseBody: 'See the assets to download this version and install.'
+			releaseDraft: true
+			prerelease: false
+			args: ${{ matrix.args }}
 
-   # - name: release
-   #   uses: softprops/action-gh-release@v2
-   #   if: startsWith(github.ref, 'refs/tags/')
-   #   with:
-   #   files: ./dist/factor-v[0-9].[0-9][?0-9].[0-9][?0-9].*(app|exe|dmg|deb)
-   #   token: ${{ secrets.PUB_TOKEN }}
 
