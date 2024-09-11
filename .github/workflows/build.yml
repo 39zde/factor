@@ -37,7 +37,6 @@ jobs:
       uses: actions/setup-node@master
       with:
         node-version: lts/*
-        cache: 'yarn'
 
     - name: Setup Rust
       uses: dtolnay/rust-toolchain@stable
