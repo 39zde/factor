@@ -8,7 +8,7 @@ import * as tsParser from '@typescript-eslint/parser';
 
 export default tseslint.config(tseslint.configs.eslintRecommended, tseslint.configs.base, ...tseslint.configs.recommended, {
 	name: 'project settings',
-	files: ['./src/env.d.ts', './src/**/*', './src/**/*.tsx', './src/*.d.ts'],
+	files: ['./src/vite.env.d.ts', './src/**/*.tsx', './src/*.d.ts', './src/**/*.ts'],
 	plugins: {
 		react,
 	},

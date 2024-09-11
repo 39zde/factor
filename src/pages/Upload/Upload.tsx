@@ -54,7 +54,7 @@ export function Upload(): React.JSX.Element {
 					sessionStorage.setItem('fileUpload', data);
 					setFileName(files[0].name);
 					setShowFile(true);
-				} catch (e) {
+				} catch {
 					new Notification(general.language === 'deutsch' ? 'Ein Fehler ist aufgetreten' : 'An error occurred', {
 						body: 'Failed to convert file to text',
 					});

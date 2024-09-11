@@ -1,4 +1,5 @@
-import type { CustomerSortingMap } from '../../database/CustomerTypes';
+import React from 'react';
+import type { CustomerSortingMap, CustomerSortingMapProps } from '../../database/CustomerTypes';
 import type { DocumentSortingMap } from '../../database/DocumentTypes';
 import type { ArticleSortingMap } from '../../database/ArticleTypes';
 
@@ -15,3 +16,17 @@ export interface SorterProps {
 }
 
 export type UploadMode = 'article_db' | 'customer_db' | 'document_db';
+
+export type CustomerSorterInputGroup = {
+	head: string;
+	mapKey: CustomerSortingMapProps;
+	underlings: CustomerSorterInputGroupUnderling[];
+};
+
+export type CustomerSorterInputGroupUnderling = {
+	name: string;
+	mapKey?: 'emails' | 'phones';
+	fields: string[];
+	refGroup: React.MutableRefObject<React.RefObject<HTMLSelectElement>[]>;
+	fieldKeys: string[];
+};

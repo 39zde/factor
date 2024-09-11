@@ -2,7 +2,7 @@
 
 ![Logo](./src-tauri/icons/Wide310x150Logo.png)
 
-An invoicing application built with TypeScript:React on top of IndexDB packaged with Tauri[^1]
+An invoicing application built with TypeScript:React on top of IndexDB packaged with Tauri v2[^1]
 
 ## Status
 The most important step is already done, which is the Table Component in in `./src/comps/Table`.
@@ -26,6 +26,9 @@ works without problems. WebWorkers[^4] do most of the heavy lifting. Certainly m
 
 For now the uploading of data can only be done in csv with semi-colon (;) separated fields with customers as the only upload option. There are still a bunch of things to do (see [roadmap.md](./roadmap.md)), before adding new tables.
 
+Now this app uses Tauri v2, instead of Electron, for better IPC/File-Handling. Also the Executable Size decreased darmatically, by using the native WebView used on the System.
+There are also some major performance gains everywhere, which is really nice to see. Tauri v2 is quite young, so some bugs will be expected, but adopting v2 this early should pay off in the future by not having to migrate from v1.
+
 ## Screen Shots
 
 <img src="./resources/img/screenshots/contextMenu.png" alt="Context Menu" height="300">
@@ -33,7 +36,7 @@ For now the uploading of data can only be done in csv with semi-colon (;) separa
 <img src="./resources/img/screenshots/upload.png" alt="Settings Page" height="300">
 
 
-## Development
+## Quick Start
 
 Prerequisites:
 - nmv[^6] or other Node.js[^7] version management tool

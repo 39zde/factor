@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from 'react';
 // non-lib imports
 import { ColumnSetter } from './ColumnSetter';
 import { useAppContext } from '@app';
-import type { CustomerSortingMap, SorterProps } from '@typings';
+import type { CustomerSortingMap, SorterProps, CustomerSorterInputGroup, CustomerSorterInputGroupUnderling } from '@typings';
 
 export function CustomerSorter({ columns, hook }: SorterProps): React.JSX.Element {
 	const { general } = useAppContext();
@@ -105,7 +105,7 @@ export function CustomerSorter({ columns, hook }: SorterProps): React.JSX.Elemen
 		general.language === 'deutsch' ? 'UstID' : 'UstID',
 	];
 	const companyFieldKeys = ['name', 'alias', 'notes', 'taxID', 'taxNumber', 'ustID'];
-	const groups = [
+	const groups: CustomerSorterInputGroup[] = [
 		{
 			head: general.language === 'deutsch' ? 'Kunde' : 'Customer',
 			mapKey: 'customers',
@@ -200,32 +200,36 @@ export function CustomerSorter({ columns, hook }: SorterProps): React.JSX.Elemen
 		hook.setMap(sortingMap);
 	}, [sortingMap]);
 
-	const inputHandler = (group, subject, index: number) => {
-		const currentMap = sortingMap;
-		if (subject.mapKey !== undefined) {
-			if (currentMap[group.mapKey][subject.mapKey] === undefined) {
-				Object.defineProperty(currentMap[group.mapKey], subject.mapKey, {
+	const inputHandler = (group: CustomerSorterInputGroup, subject: CustomerSorterInputGroupUnderling, index: number) => {
+		const currentMap: CustomerSortingMap = sortingMap;
+		if (group.mapKey !== 'row') {
+			if (subject.mapKey !== undefined) {
+				// @ts-expect-error everything will match because of descendance
+				if (currentMap[group.mapKey][subject.mapKey] === undefined) {
+					Object.defineProperty(currentMap[group.mapKey], subject.mapKey, {
+						configurable: true,
+						enumerable: true,
+						writable: true,
+						value: {},
+					});
+				}
+				// @ts-expect-error everything will match because of descendance
+				Object.defineProperty(currentMap[group.mapKey][subject.mapKey], subject.fieldKeys[index], {
 					configurable: true,
 					enumerable: true,
 					writable: true,
-					value: {},
+					value: subject.refGroup.current[index].current?.value ?? undefined,
+				});
+			} else {
+				Object.defineProperty(currentMap[group.mapKey], subject.fieldKeys[index], {
+					enumerable: true,
+					configurable: true,
+					writable: true,
+					value: subject.refGroup.current[index].current?.value ?? undefined,
 				});
 			}
-			Object.defineProperty(currentMap[group.mapKey][subject.mapKey], subject.fieldKeys[index], {
-				configurable: true,
-				enumerable: true,
-				writable: true,
-				value: subject.refGroup.current[index].current?.value ?? undefined,
-			});
-		} else {
-			Object.defineProperty(currentMap[group.mapKey], subject.fieldKeys[index], {
-				enumerable: true,
-				configurable: true,
-				writable: true,
-				value: subject.refGroup.current[index].current?.value ?? undefined,
-			});
+			setSortingMap(currentMap);
 		}
-		setSortingMap(currentMap);
 	};
 
 	return (

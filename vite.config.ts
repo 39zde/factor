@@ -6,22 +6,23 @@ import react from '@vitejs/plugin-react';
 // https://vitejs.dev/config/
 export default defineConfig({
 	plugins: [react(), mkcert()],
-	appType: "spa",
-	build:{
+	appType: 'spa',
+	build: {
 		reportCompressedSize: true,
 		minify: 'esbuild',
+		outDir: 'bundle',
 	},
-	worker:{
-		format: "es"
+	worker: {
+		format: 'es',
 	},
-	resolve:{
+	resolve: {
 		extensions: ['.tsx', '.ts', '.d.ts'],
 		alias: {
 			'@typings': resolve('./src/util/types/types.d.ts'),
 			'@util': resolve('./src/util/util.ts'),
 			'@comps': resolve('./src/comps/Comps.ts'),
 			'@app': resolve('./src/App.tsx'),
-			"@worker":resolve("./src/util/worker")
+			'@worker': resolve('./src/util/worker'),
 		},
 	},
 	// Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`

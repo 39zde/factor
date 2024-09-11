@@ -15,7 +15,7 @@ export function Versions(): React.JSX.Element {
 				setUsed(((storage.usage ?? 0) / Math.pow(1024, 2)).toFixed(1));
 				setFree(((storage.quota ?? 0) / (Math.pow(1024, 2) * 1000)).toFixed(1));
 			}
-		} catch (e) {
+		} catch {
 			new Notification(general.language === 'deutsch' ? 'Ein Fehler ist aufgetreten' : 'An error occurred', {
 				body: 'Failed to estimate disk usage',
 			});
@@ -88,5 +88,3 @@ export function Versions(): React.JSX.Element {
 		</ul>
 	);
 }
-
-

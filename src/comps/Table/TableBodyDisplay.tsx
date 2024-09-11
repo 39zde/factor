@@ -6,7 +6,6 @@ import { useTableContext, useTableDispatch } from './Table';
 import { TableRows } from './TableBody';
 import { useAppContext, solids } from '@app';
 
-
 export const TableBodyDisplay = forwardRef<HTMLTableSectionElement>(function TableBodyDisplay(_props, ref): React.JSX.Element {
 	const tableState = useTableContext();
 	const dispatch = useTableDispatch();

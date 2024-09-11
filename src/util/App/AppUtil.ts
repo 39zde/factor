@@ -30,15 +30,15 @@ const defaultSettings: AppSettingsType = {
 
 export async function getSettings(): Promise<AppSettingsType> {
 	try {
-		let settingsExist = await exists('settings.json', { baseDir: BaseDirectory.AppConfig });
+		const settingsExist = await exists('settings.json', { baseDir: BaseDirectory.AppConfig });
 		let settings: AppSettingsType;
 		if (!settingsExist) {
-			let settingsFile = await create('settings.json', { baseDir: BaseDirectory.AppConfig });
+			const settingsFile = await create('settings.json', { baseDir: BaseDirectory.AppConfig });
 			await settingsFile.write(new TextEncoder().encode(JSON.stringify(defaultSettings)));
 			await settingsFile.close();
 			settings = defaultSettings;
 		} else {
-			let existingSettingsFile = await readFile('settings.json', { baseDir: BaseDirectory.AppConfig });
+			const existingSettingsFile = await readFile('settings.json', { baseDir: BaseDirectory.AppConfig });
 			settings = JSON.parse(new TextDecoder().decode(existingSettingsFile));
 		}
 		return settings;
@@ -52,21 +52,21 @@ export async function getSettings(): Promise<AppSettingsType> {
 export async function writeSettings(settings: AppSettingsType): Promise<boolean> {
 	try {
 		await writeFile('settings.json', new TextEncoder().encode(JSON.stringify(settings)), { baseDir: BaseDirectory.AppConfig });
-		return true
+		return true;
 	} catch (e) {
-		console.warn("failed to save settings")
+		console.warn('failed to save settings');
 		return false;
 	}
 }
 
 export async function getDatabases(): Promise<AppSettingsDatabaseDatabases> {
-	let databases: AppSettingsDatabaseDatabases = {
+	const databases: AppSettingsDatabaseDatabases = {
 		article_db: null,
 		customer_db: null,
 		document_db: null,
 	};
 	try {
-		let dbs = await window.indexedDB.databases();
+		const dbs = await window.indexedDB.databases();
 		const requests: Promise<{
 			dbName: string;
 			db: IDBDatabase | string;
@@ -106,8 +106,28 @@ export async function getDatabases(): Promise<AppSettingsDatabaseDatabases> {
 				databases[item.dbName as 'customer_db' | 'article_db' | 'document_db'] = null;
 			}
 		}
-	} catch (e) {
+	} catch {
 	} finally {
 		return databases;
 	}
+}
+
+export function disableMenu() {
+	document.addEventListener(
+		'contextmenu',
+		(e) => {
+			e.preventDefault();
+			return false;
+		},
+		{ capture: true }
+	);
+
+	// document.addEventListener(
+	// 	'selectstart',
+	// 	(e) => {
+	// 		e.preventDefault();
+	// 		return false;
+	// 	},
+	// 	{ capture: true }
+	// );
 }

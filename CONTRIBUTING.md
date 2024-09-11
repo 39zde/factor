@@ -2,6 +2,7 @@
 
 Anyone can contribute. This is not a Pet-Project nor do I follow any agenda with this repo. So I'm happy to accept any contributions. As long as it fits in I have no objections. I hope this goes without saying, but make sure to be verbose while messaging. This minimizes all the guessing work one might have to do.
 
+- [Getting Started](#getting-started)
 - [Workspace](#workspace)
 	- [Yarn Package Manager](#yarn-package-manager)
 	- [Environment Variables](#environment-variables)
@@ -18,6 +19,25 @@ Anyone can contribute. This is not a Pet-Project nor do I follow any agenda with
 	- [Session Storage](#session-storage)
 - [Sample Data](#sample-data)
 - [Build](#build)
+
+## Getting Started
+
+Prerequisites:
+- [nmv](https://www.freecodecamp.org/news/node-version-manager-nvm-install-guide/) or other Node.js version management tool
+- [Node.js](https://nodejs.org/en) Long Term Support version
+- [git](https://git-scm.com/)
+- [Rust toolchain](https://www.rust-lang.org/learn/get-started)
+- [... more OS specific installs](https://v2.tauri.app/start/prerequisites/)
+
+```bash
+nvm install lts
+nvm use lts
+corepack enable
+git clone https://github.com/39zde/factor.git
+cd factor
+yarn install
+yarn dev
+```
 
 ## Workspace
 
@@ -57,7 +77,7 @@ Ratings:
 
  ### File Storage
 
-  The App saves the it's settings as a json file. The reason for doing so is user/system accessibility and persistence between reinstalls. The AppSettings are being saved at the $HOME/.factor/settings.json file, to persist values between restarts and install. Be aware, that there will be a new folder created. There are plans to change this behavior to choose the recommended folder by the system, but for now, that's what it is.<br>
+  The App saves the it's settings as a json file. The reason for doing so is user/system accessibility and persistence between reinstalls. The AppSettings are being saved at the $APPCONFIG/settings.json file, to persist values between restarts and install. Check the [Tauri Docs](https://v2.tauri.app/reference/javascript/fs/) for more.<br>
   _Rating: Medium_
 
  ### IndexedDB

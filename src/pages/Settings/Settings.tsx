@@ -132,8 +132,8 @@ export function Settings() {
 			const copy = changed;
 			const parentKeys = Object.keys(change);
 			if (parentKeys !== undefined) {
-				let parentKey = parentKeys[0] as keyof AppSettingsChange;
-				let child = change[parentKey] as AppSettingsAppearance | AppSettingsGeneral | AppSettingsDatabase;
+				const parentKey = parentKeys[0] as keyof AppSettingsChange;
+				const child = change[parentKey] as AppSettingsAppearance | AppSettingsGeneral | AppSettingsDatabase;
 				const key = Object.keys(child)[0];
 				if (copy[parentKey] === undefined) {
 					Object.defineProperty(copy, parentKey, {

@@ -1,4 +1,4 @@
-import type { ExportWorkerRequest, CompressionTypes } from '../types/types';
+import type { ExportWorkerRequest, CompressionTypes, TableRow } from '../types/types';
 
 self.onmessage = (event: MessageEvent) => {
 	const eventData = event.data as ExportWorkerRequest;
@@ -24,7 +24,7 @@ function exportOStore(
 	sender: MessagePort,
 	compression?: CompressionTypes
 ) {
-	let today = new Date();
+	const today = new Date();
 	let fileName = dataBaseName + '.' + oStoreName + '.' + today.getFullYear() + '.' + today.getMonth() + '.' + today.getDate() + '.' + format;
 	if (compression !== undefined) {
 		fileName = fileName + '.' + compression;
@@ -33,17 +33,18 @@ function exportOStore(
 
 	const dataBaseRequest = indexedDB.open(dataBaseName, dbVersion);
 	dataBaseRequest.onsuccess = () => {
-		let fuse: boolean = true;
+		const fuse: boolean = true;
 		const encoder = new TextEncoderStream();
 		const encoderWriter = encoder.writable.getWriter();
 		const encoderReader = encoder.readable.getReader();
 
 		const sourceStream = new WritableStream({
-			write(chunk: object) {
+			write(chunk: TableRow) {
 				let out: string = '';
 				for (const [key, val] of Object.entries(chunk)) {
 					if (val instanceof ArrayBuffer) {
-						chunk[key] = turnArrayBufferInfoNumberArray(val);
+						//@ts-expect-error will match because of data structure
+						chunk[key] = turnArrayBufferIntoNumberArray(val);
 					}
 				}
 				if (format === 'csv') {
@@ -89,18 +90,18 @@ function exportOStore(
 	dataBaseRequest.onupgradeneeded = () => {};
 }
 
-function turnArrayBufferInfoNumberArray(input: ArrayBuffer): number[] {
-	let output: number[] = [];
-	let view = new DataView(input);
-	for (let i = 0; i < view.byteLength / 2 - 1; i++) {
-		output.push(view[i]);
+function turnArrayBufferIntoNumberArray(input: ArrayBuffer): number[] {
+	const output: number[] = [];
+	const view = new DataView(input);
+	for (let i: number = 0; i < view.byteLength / 2 - 1; i++) {
+		output.push(view.getUint16(i));
 	}
 	return output;
 }
 
-function turnObjectToCSVRow(input: object): string {
+function turnObjectToCSVRow(input: TableRow): string {
 	let out = '';
-	let keys: string[] = Object.keys(input);
+	const keys: string[] = Object.keys(input);
 	for (let i = 0; i < keys.length; i++) {
 		out += input[i];
 		if (i !== keys.length - 1) {

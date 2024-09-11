@@ -20,15 +20,13 @@ export function ExportPage(): React.JSX.Element {
 			compression: useCompression,
 		});
 		// if (channel.ExportChannel !== undefined) {
-		worker.ExportWorker.postMessage(
-			{
-				type: type,
-				dataBaseName: dataBaseName,
-				oStoreName: oStoreName,
-				format: format,
-				compression: useCompression,
-			}
-		);
+		worker.ExportWorker.postMessage({
+			type: type,
+			dataBaseName: dataBaseName,
+			oStoreName: oStoreName,
+			format: format,
+			compression: useCompression,
+		});
 		// }
 	};
 
@@ -77,8 +75,8 @@ export function ExportPage(): React.JSX.Element {
 				</ul>
 				<div className="exportDatabases">
 					{Object.entries(database.databases).map(([key, value]) => {
-						let oStores = value as string[];
-						let dbName = key as string;
+						const oStores = value as string[];
+						const dbName = key as string;
 						if (value !== null) {
 							return (
 								<div key={key} className="exportDatabase">

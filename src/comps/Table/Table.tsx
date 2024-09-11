@@ -32,7 +32,6 @@ import type {
 import { tableReducer, updateSizing, PlaceHolderTableContext } from '@util';
 import './Table.css';
 
-
 const TableContext = createContext<TableContextType>(PlaceHolderTableContext);
 const TableDispatchContext =
 	//!TODO find the correct type for this to not need ts-ignore

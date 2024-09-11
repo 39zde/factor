@@ -22,7 +22,7 @@ import type {
 	ContactType,
 	PreInsertCustomer,
 	TableRow,
-	TableRowCounter
+	TableRowCounter,
 } from '@typings';
 import { getAddressHash } from '@util';
 
@@ -241,7 +241,7 @@ function importData(dataBaseName: string, dbVersion: number, data: string) {
 				while (i < rows.length) {
 					const columns = rows[i].split(';');
 					const out = {
-						row: 0
+						row: 0,
 					} as TableRow;
 					out['row'] = i;
 					for (let j = 0; j < keys.length; j++) {
@@ -286,10 +286,10 @@ function alignData(
 		const keys = Object.keys(item);
 		if (to > 0) {
 			for (let i = 1; i < keys.length; i++) {
-				let key = keys[i]
+				const key = keys[i];
 				if (i <= Math.abs(to)) {
 					let filler: string | number = '';
-					if ((typeof copy[key]) as string === 'number') {
+					if ((typeof copy[key] as string) === 'number') {
 						filler = 0;
 					}
 					out[key] = filler;
@@ -413,7 +413,7 @@ function rankColsByCondition(dataBaseName: string, dbVersion: number, condition:
 			const count = keysRequest.result;
 			const keysReq = objStore.get(1);
 			keysReq.onsuccess = () => {
-				let firstRow: TableRow = keysReq.result
+				const firstRow: TableRow = keysReq.result;
 				const keys = Object.keys(firstRow);
 				keys.splice(keys.indexOf('row'), 1);
 				const counter = firstRow as TableRowCounter;
@@ -623,7 +623,7 @@ function sortData(
 						total: 0,
 					};
 					const customerTrackerHandler = {
-						set(target: typeof customerCounter, prop: "count" | "total", value: number) {
+						set(target: typeof customerCounter, prop: 'count' | 'total', value: number) {
 							target[prop] = value;
 							if (prop === 'count') {
 								if (target['count'] == target['total']) {
@@ -1137,7 +1137,7 @@ function sortData(
 						};
 
 						const counterHandler = {
-							set(target: typeof counter, prop: "count" | "total", value: number) {
+							set(target: typeof counter, prop: 'count' | 'total', value: number) {
 								target[prop] = value;
 								if (prop === 'count') {
 									if (target['count'] === target['total']) {
@@ -1196,7 +1196,7 @@ function sortData(
 							total: 0,
 						};
 						const trackerHandler = {
-							set(target: typeof counter, prop: "count" | "total", value: number) {
+							set(target: typeof counter, prop: 'count' | 'total', value: number) {
 								target[prop] = value;
 								if (prop === 'count') {
 									if (target['count'] === target['total']) {
@@ -1230,7 +1230,7 @@ function sortData(
 							total: 0,
 						};
 						const trackerHandler = {
-							set(target: typeof counter, prop: "count"|"total", value: number) {
+							set(target: typeof counter, prop: 'count' | 'total', value: number) {
 								target[prop] = value;
 								if (prop === 'count') {
 									if (target['count'] === target['total']) {
@@ -1261,7 +1261,7 @@ function sortData(
 							total: 0,
 						};
 						const trackerHandler = {
-							set(target: typeof counter, prop: "count" | "total", value: number) {
+							set(target: typeof counter, prop: 'count' | 'total', value: number) {
 								target[prop] = value;
 								if (prop === 'count') {
 									if (target['count'] === target['total']) {
@@ -1293,7 +1293,7 @@ function sortData(
 						};
 
 						const counterHandler = {
-							set(target: typeof counter, prop: "count" | "total", value: number) {
+							set(target: typeof counter, prop: 'count' | 'total', value: number) {
 								target[prop] = value;
 								if (prop === 'count') {
 									if (target['count'] === target['total']) {

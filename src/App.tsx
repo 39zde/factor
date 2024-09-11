@@ -2,22 +2,11 @@ import React, { useState, createContext, useMemo, useCallback, useEffect, useRed
 // non-lib imports
 import { Pages } from './pages/Pages';
 import Comps from '@comps';
-import { getSettings, getDatabases, writeSettings } from '@util';
-import type {
-	AppSettingsAppearance,
-	ArticleDBObjectStores,
-	CustomerDBObjectStores,
-	DocumentDBObjectStores,
-	RouteType,
-	AppSettingsDatabase,
-	AppContextType,
-	AppSettingsType,
-	AppSettingsChange,
-	AppAction,
-	AppSolidsType,
-	AppSettingsGeneral,
-} from '@typings';
+import { getSettings, getDatabases, writeSettings, disableMenu } from '@util';
+import type { AppSettingsAppearance, RouteType, AppContextType, AppSettingsChange, AppAction, AppSolidsType } from '@typings';
 import './App.css';
+
+disableMenu();
 
 const ImportWorker = (() => {
 	const work = new Worker(new URL('@worker/import.worker.ts', import.meta.url), {
@@ -94,7 +83,7 @@ function appReducer(appState: AppContextType, action: AppAction): AppContextType
 	switch (action.type) {
 		case 'set': {
 			if (action.change.appearances !== undefined) {
-				let appearanceChanges = action.change.appearances as AppSettingsAppearance;
+				const appearanceChanges = action.change.appearances as AppSettingsAppearance;
 				if (appearanceChanges.colorTheme !== undefined) {
 					const themeTag = document.getElementById('theme');
 					if (themeTag !== null) {
@@ -279,8 +268,9 @@ function App(): JSX.Element {
 						},
 					},
 				});
-			}).finally(()=>{
-				resizeHandler()
+			})
+			.finally(() => {
+				resizeHandler();
 			});
 	}, []);
 

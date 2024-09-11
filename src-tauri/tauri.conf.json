@@ -3,7 +3,7 @@
   "version": "2.0.0",
   "identifier": "factor",
   "build": {
-    "frontendDist": "../out",
+    "frontendDist": "../bundle",
     "devUrl": "https://localhost:5173",
     "beforeDevCommand": "yarn dev:web",
     "beforeBuildCommand": "yarn bundle"
@@ -12,13 +12,15 @@
     "windows": [
       {
         "title": "Factor",
-        "width": 800,
-        "height": 600,
         "resizable": true,
-        "fullscreen": false
+        "fullscreen": false,
+		  "center": true
       }
     ],
     "security": {
+		"capabilities": [
+			
+		],
       "csp": "default-src 'self'; script-src 'self'; connect-src 'self'; worker-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:"
     }
   },

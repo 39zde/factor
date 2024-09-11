@@ -4,7 +4,6 @@ import { useTableContext } from './Table';
 import { RowItems } from './RowItems';
 import { useAppContext } from '@app';
 
-
 export function TableRows(): React.JSX.Element {
 	const tableState = useTableContext();
 	const { appearances } = useAppContext();

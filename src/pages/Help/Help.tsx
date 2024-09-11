@@ -5,8 +5,6 @@ import { useAppContext } from '@app';
 import type { HelpTexts } from '@typings';
 import './Help.css';
 
-
-
 export function Help(): React.JSX.Element {
 	const { general } = useAppContext();
 	return (

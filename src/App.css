@@ -1,4 +1,4 @@
-@import './base.css';
+@import url('./base.css');
 
 .appWrapper {
 	position: absolute;

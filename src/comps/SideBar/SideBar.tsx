@@ -20,7 +20,6 @@ import { useAppContext, solids } from '@app';
 import { RouteType, SideBarProps } from '@typings';
 import './SideBar.css';
 
-
 export function SideBar({ routesHook }: SideBarProps): React.JSX.Element {
 	const { appearances, general, database } = useAppContext();
 	const [sideBarWidth, setSideBarWidth] = useState<number>(appearances.sideBarWidth);

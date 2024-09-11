@@ -27,7 +27,7 @@ self.onmessage = function requestHandler(e: MessageEvent) {
 					// @ts-expect-error the values will match the prop
 					target[prop] = value;
 					for (const key of Object.keys(target)) {
-					// @ts-expect-error the values will match the prop
+						// @ts-expect-error the values will match the prop
 						if (target[key] === undefined) {
 							undefinedCount += 1;
 						}
