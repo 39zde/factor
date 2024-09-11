@@ -81,7 +81,6 @@
       "./icons/icon.icns",
       "./icons/icon.ico"
     ],
-	 "resources":["../resources/defaultSettings.json"],
 	 "category": "Utility",
 	 "licenseFile": "../LICENSE",
 	 "homepage": "https://github.com/39zde/factor"
