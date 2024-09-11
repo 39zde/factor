@@ -25,10 +25,10 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
 
-	 - name: Setup Rust
-	   uses: dtolnay/rust-toolchain@stable
+    - name: Setup Rust
+      uses: dtolnay/rust-toolchain@stable
 
-	 - name: Rust cache
+    - name: Rust cache
       uses: swatinem/rust-cache@v2
       with:
         workspaces: './src-tauri -> target'
@@ -38,22 +38,22 @@ jobs:
         corepack enable
         yarn install
 
-	 - name: install rust dependencies
+    - name: install rust dependencies
       run: |
         cd src-tauri
         cargo update
 
 
-	 - uses: tauri-apps/tauri-action@v0
-		env:
-		   PUBLISH_FOR_PULL_REQUEST: true
-			GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-		with:
-			tagName: app-v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version.
-			releaseName: 'App v__VERSION__'
-			releaseBody: 'See the assets to download this version and install.'
-			releaseDraft: true
-			prerelease: false
-			args: ${{ matrix.args }}
+    - uses: tauri-apps/tauri-action@v0
+      env:
+        PUBLISH_FOR_PULL_REQUEST: true
+        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+      with:
+        tagName: v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version.
+        releaseName: 'Factor v__VERSION__'
+        releaseBody: 'See the assets to download this version and install.'
+        releaseDraft: true
+        prerelease: false
+        args: ${{ matrix.args }}
 
 
