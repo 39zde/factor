@@ -1,3 +1,5 @@
+import { app, core, dpi, event, image, menu, mocks, path, tray, webview, webviewWindow, window } from '@tauri-apps/api';
+
 export type { SideBarProps, RouterButtonProps, LowerButtonProps } from './comps/SideBar/SideBarProps';
 export type { RouteType } from './comps/SideBar/routes';
 
@@ -67,3 +69,28 @@ export type {
 	AppSettingsGeneral,
 	AppSettingsDatabaseDatabases,
 } from './App';
+
+declare global {
+	interface Window {
+		__TAURI__: {
+			app: typeof app;
+			core: typeof core;
+			dpi: typeof dpi;
+			event: typeof event;
+			image: typeof image;
+			menu: typeof menu;
+			mocks: typeof mocks;
+			path: typeof path;
+			tray: typeof tray;
+			webview: typeof webview;
+			webviewWindow: typeof webviewWindow;
+			window: typeof window;
+		};
+		navigator: {
+			userAgentData: {
+				mobile: boolean;
+				platform: string;
+			};
+		};
+	}
+}
