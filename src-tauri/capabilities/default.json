@@ -50,6 +50,7 @@
 	"core:webview:deny-set-webview-zoom",
 	"core:webview:allow-internal-toggle-devtools",
 	"fs:allow-download-write",
+	"fs:allow-download-read",
 	"fs:allow-appconfig-read",
 	"fs:allow-appconfig-write",
 	"notification:allow-request-permission",

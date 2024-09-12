@@ -1,4 +1,4 @@
-import type { ExportWorkerRequest, CompressionTypes, TableRow } from '../types/types';
+import type { ExportWorkerRequest, CompressionTypes, TableRow } from '@typings';
 
 self.onmessage = (event: MessageEvent) => {
 	const eventData = event.data as ExportWorkerRequest;
@@ -6,7 +6,7 @@ self.onmessage = (event: MessageEvent) => {
 	switch (eventData.type) {
 		case 'oStore':
 			if (eventData.oStoreName !== undefined) {
-				exportOStore(eventData.dataBaseName, eventData.dbVersion, eventData.oStoreName, eventData.format, event.ports[0] as MessagePort);
+				exportOStore(eventData.dataBaseName, eventData.dbVersion, eventData.oStoreName, eventData.format);
 			}
 			break;
 		case 'db':
@@ -16,20 +16,15 @@ self.onmessage = (event: MessageEvent) => {
 	}
 };
 
-function exportOStore(
-	dataBaseName: string,
-	dbVersion: number,
-	oStoreName: string,
-	format: 'json' | 'csv',
-	sender: MessagePort,
-	compression?: CompressionTypes
-) {
+function exportOStore(dataBaseName: string, dbVersion: number, oStoreName: string, format: 'json' | 'csv', compression?: CompressionTypes) {
 	const today = new Date();
 	let fileName = dataBaseName + '.' + oStoreName + '.' + today.getFullYear() + '.' + today.getMonth() + '.' + today.getDate() + '.' + format;
 	if (compression !== undefined) {
 		fileName = fileName + '.' + compression;
 	}
-	sender.postMessage({ type: 'init', fileName: fileName, compression: compression });
+	postMessage({ type: 'create', data: fileName });
+
+	// sender.postMessage({ type: 'init', fileName: fileName, compression: compression });
 
 	const dataBaseRequest = indexedDB.open(dataBaseName, dbVersion);
 	dataBaseRequest.onsuccess = () => {
@@ -54,15 +49,23 @@ function exportOStore(
 					out += turnObjectToCSVRow(chunk);
 				}
 				if (format === 'json') {
-					out = JSON.stringify(chunk) + ',\n';
+					if(fuse){
+						out = `{"${dataBaseName}":{"${oStoreName}":[`
+					}
+					out += JSON.stringify(chunk) + ',\n';
 				}
 				encoderWriter.write(out);
 			},
 		});
 		function postStream(value: ReadableStreamReadResult<Uint8Array>) {
-			sender.postMessage({ fileName: fileName, data: value.value, type: 'stream' });
 			if (!value.done) {
+				postMessage({ type: 'data', data: value.value });
 				encoderReader.read().then(postStream);
+			} else {
+				if(format === "json"){
+					postMessage({type: 'data', data: new TextEncoder().encode("]}}")})
+				}
+				postMessage({ type: 'close', data: fileName });
 			}
 		}
 		encoderReader.read().then(postStream);
@@ -80,7 +83,6 @@ function exportOStore(
 			} else {
 				encoderWriter.close();
 				sourceWriter.close();
-				sender.postMessage({ type: 'finish', fileName: fileName });
 			}
 		};
 		cursorRequest.onerror = () => {};

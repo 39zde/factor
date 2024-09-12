@@ -10,10 +10,8 @@ export type ExportWorkerRequest = {
 };
 
 export type ExportWorkerResponse = {
-	type: 'init' | 'finish' | 'stream';
-	fileName: string;
-	compression?: CompressionTypes;
-	data?: Uint8Array;
+	type: 'create' | 'data' | 'close';
+	data: Uint8Array | string;
 };
 
 export type ExportFileStreamer = {
