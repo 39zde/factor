@@ -58,6 +58,9 @@
 	"notification:allow-notify",
 	"notification:allow-show",
 	"notification:allow-permission-state",
-	"notification:default"
+	"notification:default",
+	"shell:allow-open",
+	"shell:allow-execute",
+	"shell:default"
 ]
 }
