@@ -1,7 +1,9 @@
-import { useCallback, useRef, useState } from 'react';
-import './Settings.css';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { requestPermission } from '@tauri-apps/plugin-notification';
+import { Save } from 'lucide-react';
+// non-lib imports
+import { useAppContext, useChangeContext, solids } from '@app';
 import Comps from '@comps';
-import { useAppContext, useChangeContext, solids } from '../../App';
 import {
 	ColorThemeSetting,
 	AppSettingsChange,
@@ -11,7 +13,7 @@ import {
 	AppSettingsGeneral,
 	AppSettingsDatabase,
 } from '@typings';
-import { Save } from 'lucide-react';
+import './Settings.css';
 export function Settings() {
 	const context = useAppContext();
 	const dispatch = useChangeContext();
@@ -22,6 +24,7 @@ export function Settings() {
 	const decimalSeparatorInputRef = useRef<HTMLSelectElement>(null);
 	const sideBarWidthInputRef = useRef<HTMLInputElement>(null);
 	const scrollSpeedRef = useRef<HTMLInputElement>(null);
+	const notificationInputRef = useRef<HTMLInputElement>(null);
 	const [changed, setChanged] = useState<AppSettingsChange>({});
 	const [colorTheme, setColorTheme] = useState<ColorThemeSetting>(context.appearances.colorTheme);
 	const [rowHeight, setRowHeight] = useState<number>(context.appearances.rowHeight);
@@ -30,6 +33,13 @@ export function Settings() {
 	const [decimalSeparator, setDecimalSeparator] = useState<DecimalSeparatorSetting>(context.general.decimalSeparator);
 	const [sideBarWidth, setSideBarWidth] = useState<number>(context.appearances.sideBarWidth + 26);
 	const [scrollSpeed, setScrollSpeed] = useState<number>(context.general.scrollSpeed);
+	const [allowNotifications, setAllowNotifications] = useState<boolean>(context.general.notifications);
+
+	useEffect(() => {
+		if (notificationInputRef.current !== undefined) {
+			notificationInputRef.current?.setAttribute('checked', allowNotifications.toString());
+		}
+	}, [allowNotifications]);
 
 	const themeInputHandler = () => {
 		if (themeInputRef.current !== null) {
@@ -123,6 +133,20 @@ export function Settings() {
 				updateChanged({
 					general: { scrollSpeed: parseInt(scrollSpeedRef.current.value) },
 				});
+			}
+		}
+	};
+
+	const notificationInputHandler = () => {
+		if (notificationInputRef.current !== null) {
+			if (notificationInputRef.current.checked !== undefined) {
+				if (notificationInputRef.current.checked) {
+					setAllowNotifications(true);
+					updateChanged({ general: { notifications: true } });
+				} else {
+					setAllowNotifications(false);
+					updateChanged({ general: { notifications: false } });
+				}
 			}
 		}
 	};
@@ -225,6 +249,18 @@ export function Settings() {
 								(px)
 							</p>
 							<input onInput={scrollSpeedInputHandler} ref={scrollSpeedRef} type="number" min={1} max={150} step={1} value={scrollSpeed} />
+						</div>
+						<div className="settingsOption">
+							<div>
+								<p>{context.general.language === 'deutsch' ? 'Benachrichtigungen ' : 'Notifications '}</p>
+								<span
+									onClick={() => {
+										context.notify({ title: 'test', body: 'test' }).then((r) => console.log(r));
+									}}>
+									{context.general.language === 'deutsch' ? 'Benachrichtigungen testen' : 'Test Notifications'}
+								</span>
+							</div>
+							<input onChange={notificationInputHandler} ref={notificationInputRef} type="checkbox" />
 						</div>
 					</div>
 

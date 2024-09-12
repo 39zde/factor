@@ -1207,6 +1207,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tauri-apps/plugin-notification@npm:^2.0.0-rc.1":
+  version: 2.0.0-rc.1
+  resolution: "@tauri-apps/plugin-notification@npm:2.0.0-rc.1"
+  dependencies:
+    "@tauri-apps/api": "npm:^2.0.0-rc.4"
+  checksum: 10c0/ae4c823400b961b3c09f1bcf5055dfe49c61bf2e5eb6a3d8ede6f616e0887fdf9d6cee88fd1d3ec634aef2b3721a2675d925989701676aa713b5eef15c9c89a2
+  languageName: node
+  linkType: hard
+
 "@tauri-apps/plugin-window-state@npm:^2.0.0-rc.1":
   version: 2.0.0-rc.1
   resolution: "@tauri-apps/plugin-window-state@npm:2.0.0-rc.1"
@@ -2885,6 +2894,7 @@ __metadata:
     "@tauri-apps/api": "npm:^2.0.0-rc.4"
     "@tauri-apps/cli": "npm:^2.0.0-rc.12"
     "@tauri-apps/plugin-fs": "npm:^2.0.0-rc.2"
+    "@tauri-apps/plugin-notification": "npm:^2.0.0-rc.1"
     "@tauri-apps/plugin-window-state": "npm:^2.0.0-rc.1"
     "@types/eslint__js": "npm:^8.42.3"
     "@types/node": "npm:^20.16.5"

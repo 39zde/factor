@@ -1,8 +1,10 @@
+import type { Options } from '@tauri-apps/plugin-notification';
 // import type { CustomerDBObjectStores, ArticleDBObjectStores, DocumentDBObjectStores } from './database/DataBaseData';
 import type { CustomerDBObjectStores } from './database/CustomerTypes';
 import type { ArticleDBObjectStores } from './database/ArticleTypes';
 import type { DocumentDBObjectStores } from './database/DocumentTypes';
-export interface AppContextType extends AppSettingsType {
+
+export interface AppContextType extends AppSettingsType, Object {
 	worker: {
 		/**
 		 * stores and cleans uploaded data and assigns the date to various tables
@@ -15,6 +17,7 @@ export interface AppContextType extends AppSettingsType {
 		/** Export Worker: writes the data in a specified format to files */
 		ExportWorker: Worker;
 	};
+	notify: (options:Options) => Promise<string>;
 }
 
 export interface AppSettingsType {
@@ -45,6 +48,7 @@ export interface AppSettingsType {
 		 * how many rows to change on on scroll event
 		 */
 		scrollSpeed: number;
+		notifications: boolean;
 	};
 }
 export type AppSettingsDatabaseDatabases = {
@@ -80,6 +84,7 @@ export type AppSettingsGeneral = {
 	 * how many rows to change on on scroll event
 	 */
 	scrollSpeed: number;
+	notifications: boolean;
 };
 
 export type AppSettingsChange = {

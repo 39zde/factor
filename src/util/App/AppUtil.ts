@@ -4,7 +4,7 @@ import type { CustomerDBObjectStores } from '../types/database/CustomerTypes';
 import type { ArticleDBObjectStores } from '../types/database/ArticleTypes';
 import type { DocumentDBObjectStores } from '../types/database/DocumentTypes';
 
-const defaultSettings: AppSettingsType = {
+export const defaultSettings: AppSettingsType = {
 	appearances: {
 		colorTheme: 'light dark',
 		rowHeight: 40,
@@ -25,6 +25,7 @@ const defaultSettings: AppSettingsType = {
 		decimalSeparator: '.',
 		language: 'english',
 		scrollSpeed: 2,
+		notifications: true,
 	},
 };
 

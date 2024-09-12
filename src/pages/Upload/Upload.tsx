@@ -12,7 +12,7 @@ import './Upload.css';
 
 export function Upload(): React.JSX.Element {
 	const dispatch = useChangeContext();
-	const { general, worker, database } = useAppContext();
+	const { general, worker, database, notify } = useAppContext();
 	const fileSelector = useRef<HTMLInputElement>(null);
 	const [showTable, setShowTable] = useState<boolean>(false);
 	const [showFile, setShowFile] = useState<boolean>(false);
@@ -55,9 +55,7 @@ export function Upload(): React.JSX.Element {
 					setFileName(files[0].name);
 					setShowFile(true);
 				} catch {
-					new Notification(general.language === 'deutsch' ? 'Ein Fehler ist aufgetreten' : 'An error occurred', {
-						body: 'Failed to convert file to text',
-					});
+					notify({title: general.language === 'deutsch' ? 'Ein Fehler ist aufgetreten' : 'An error occurred', body: 'Failed to convert file to text',})
 				}
 			}
 		}

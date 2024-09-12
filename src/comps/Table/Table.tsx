@@ -20,6 +20,7 @@ import { ColumnCheckBox } from './ColumnCheckBox';
 import { ContextMenu } from '../ContextMenu/ContextMenu';
 import { ColumnOrderer } from './ColumnOrderer';
 import { solids, useAppContext } from '@app';
+import { tableReducer, updateSizing, PlaceHolderTableContext } from '@util';
 import type {
 	TableProps,
 	TableContextType,
@@ -29,7 +30,6 @@ import type {
 	StarterPackageResponse,
 	MenuItem,
 } from '@typings';
-import { tableReducer, updateSizing, PlaceHolderTableContext } from '@util';
 import './Table.css';
 
 const TableContext = createContext<TableContextType>(PlaceHolderTableContext);
@@ -49,7 +49,7 @@ export function useTableDispatch() {
 export function Table({ dataBaseName, tableName, colsHook, entriesHook, updateHook, uniqueKey, update }: TableProps): React.JSX.Element {
 	const rowColumnWidth = 30;
 	const scrollBarHeight = 5;
-	const { database, appearances, worker, general } = useAppContext();
+	const { database, appearances, worker, general, notify } = useAppContext();
 	const tableBodyRef = useRef<HTMLTableSectionElement>(null);
 	const wrapperRef = useRef<HTMLDivElement>(null);
 	const [menuActive, setMenuActive] = useState<boolean>(false);
@@ -489,15 +489,10 @@ export function Table({ dataBaseName, tableName, colsHook, entriesHook, updateHo
 				}
 				break;
 			case 'error':
-				new Notification(general.language === 'deutsch' ? 'Ein Fehler ist aufgetreten' : 'An error occurred', {
-					body: eventData.data as string,
-				});
+				notify({ title: general.language === 'deutsch' ? 'Ein Fehler ist aufgetreten' : 'An error occurred', body: eventData.data as string})
 				break;
 			case 'success':
-				new Notification(general.language === 'deutsch' ? 'Action erfolgreich' : 'Action successful', {
-					body: eventData.data as string,
-					silent: true,
-				});
+				notify({ title: general.language === 'deutsch' ? 'Action erfolgreich' : 'Action successful', body: eventData.data as string, silent: true})
 				break;
 			default:
 				break;
