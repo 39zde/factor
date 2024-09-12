@@ -86,6 +86,7 @@ declare global {
 			webviewWindow: typeof webviewWindow;
 			window: typeof window;
 		};
+		__FACTOR_VERSION__: string;
 		navigator: {
 			userAgentData: {
 				mobile: boolean;

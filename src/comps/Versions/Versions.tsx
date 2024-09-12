@@ -53,6 +53,9 @@ export function Versions(): React.JSX.Element {
 
 	return (
 		<ul className="versions">
+			<li title={general.language === 'deutsch' ? `Name+Version dieser Anwendung` : `The name+version of this application`}>
+				Factor {window.__FACTOR_VERSION__}
+			</li>
 			<li
 				title={
 					general.language === 'deutsch'

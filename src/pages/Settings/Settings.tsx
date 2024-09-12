@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { requestPermission } from '@tauri-apps/plugin-notification';
 import { Save } from 'lucide-react';
 // non-lib imports
 import { useAppContext, useChangeContext, solids } from '@app';
