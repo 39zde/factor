@@ -1,4 +1,5 @@
 import React, { MouseEvent } from 'react';
+import { open } from "@tauri-apps/plugin-shell"
 // non-lib imports
 import { AddressType, BankType, CompanyType, EmailType, PersonType, PhoneNumberType } from '@typings';
 
@@ -185,7 +186,7 @@ function CompanyTableCell({ data }: { data: CompanyType[] }): React.JSX.Element 
 function WebsiteTableCell({ data }: { data: string }): React.JSX.Element {
 	const clickHandler = (e: MouseEvent) => {
 		e.preventDefault();
-		//!TODO open link in external browser
+		open(data)
 	};
 	return (
 		<>
