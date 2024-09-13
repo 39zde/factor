@@ -55,7 +55,10 @@ export function Upload(): React.JSX.Element {
 					setFileName(files[0].name);
 					setShowFile(true);
 				} catch {
-					notify({title: general.language === 'deutsch' ? 'Ein Fehler ist aufgetreten' : 'An error occurred', body: 'Failed to convert file to text',})
+					notify({
+						title: general.language === 'deutsch' ? 'Ein Fehler ist aufgetreten' : 'An error occurred',
+						body: 'Failed to convert file to text',
+					});
 				}
 			}
 		}
@@ -108,8 +111,9 @@ export function Upload(): React.JSX.Element {
 		if (tableImportMode === 'customer_db' && map !== undefined) {
 			//@ts-expect-error this needs work
 			if (map['customers']['id'] === undefined) {
-				new Notification(general.language === 'deutsch' ? 'Ein Fehler ist aufgetreten' : 'An error occurred', {
-					body: "'Customers ID is a requirement'",
+				notify({
+					title: general.language === 'deutsch' ? 'Ein Fehler ist aufgetreten' : 'An error occurred',
+					body: general.language === 'deutsch' ? 'Kundennummer fehlt' : 'Customers ID is a requirement',
 				});
 			} else {
 				worker.ImportWorker.postMessage({
@@ -160,7 +164,7 @@ export function Upload(): React.JSX.Element {
 								});
 						}
 					}
-
+					console.log(database.databases);
 					break;
 				case 'error':
 				default:
@@ -209,7 +213,7 @@ export function Upload(): React.JSX.Element {
 									ref={fileSelector}
 									type="file"
 									id="table_file_upload"
-									accept="text/csv"
+									accept="text/csv,application/json"
 									// accept="text/csv,application/vnd.oasis.opendocument.spreadsheet,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 									className="fileInput"
 									onInput={fileHandler}
