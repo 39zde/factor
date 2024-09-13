@@ -12,6 +12,7 @@ export type ExportWorkerRequest = {
 export type ExportWorkerResponse = {
 	type: 'create' | 'data' | 'close';
 	data: Uint8Array | string;
+	scope?: 'db' | 'oStore' | 'all';
 };
 
 export type ExportFileStreamer = {

@@ -11,7 +11,7 @@ export function ExportPage(): React.JSX.Element {
 	const [useCompression, setUseCompression] = useState<CompressionTypes | undefined>(undefined);
 	const [fileHandle, setFileHandle] = useState<FileHandle | undefined>(undefined);
 	const formatRef = useRef<HTMLSelectElement>(null);
-	const compressionRef = useRef<HTMLSelectElement>(null);
+	// const compressionRef = useRef<HTMLSelectElement>(null);
 
 	const exportHandler = (type: 'db' | 'oStore' | 'all', dataBaseName: string, oStoreName: string | undefined) => {
 		console.log({
@@ -21,7 +21,8 @@ export function ExportPage(): React.JSX.Element {
 			format: format,
 			compression: useCompression,
 		});
-		// if (channel.ExportChannel !== undefined) {
+		setFileHandle(undefined);
+
 		context.worker.ExportWorker.postMessage({
 			type: type,
 			dataBaseName: dataBaseName,
@@ -35,45 +36,53 @@ export function ExportPage(): React.JSX.Element {
 	const formatHandler = () => {
 		if (formatRef.current !== null) {
 			if (formatRef.current.value !== undefined) {
+				console.log(formatRef.current.value);
 				setFormat(formatRef.current.value as 'json' | 'csv');
 			}
 		}
 	};
 
-	const compressionHandler = () => {
-		if (compressionRef.current !== null) {
-			setUseCompression(compressionRef.current.value as CompressionTypes);
-		}
-	};
+	// const compressionHandler = () => {
+	// 	if (compressionRef.current !== null) {
+	// 		setUseCompression(compressionRef.current.value as CompressionTypes);
+	// 	}
+	// };
 
 	context.worker.ExportWorker.onmessage = (e) => {
 		const eventData = e.data as ExportWorkerResponse;
 		switch (eventData.type) {
 			case 'create':
+				let channel = new BroadcastChannel('file-callbacks');
 				let fileName = eventData.data as string;
 				create(fileName, { baseDir: BaseDirectory.Download }).then((handle) => {
 					setFileHandle(handle);
+					if (eventData.scope !== undefined) {
+						console.log('create');
+						channel.postMessage({ type: 'create', name: fileName, scope: eventData.scope });
+					}
 				});
+
 				break;
 			case 'data':
 				if (fileHandle !== undefined) {
 					fileHandle.write(eventData.data as Uint8Array);
+				} else {
+					// context.notify({ title: 'some content failed to write', body: new TextDecoder().decode(eventData.data as Uint8Array) });
+					console.error('failed to write ', new TextDecoder().decode(eventData.data as Uint8Array));
 				}
 				break;
 			case 'close':
 				if (fileHandle !== undefined) {
-					let fileName = eventData.data as string;
-					fileHandle
-						.close()
-						.then(() => {
-							return context.notify({
-								title: context.general.language === 'deutsch' ? 'Export abgeschlossen' : 'Exported data',
-								body: `${context.general.language === 'deutsch' ? 'Datei ' : 'File '}${fileName} ${context.general.language === 'deutsch' ? 'wurde im Download-Ordner abgelegt' : 'was written to the download folder'}`
-							});
-						})
-						.then((value) => {
-							console.log('file export result: ', value);
+					// let fileName = eventData.data as string;
+					fileHandle.close().then(() => {
+						let channel = new BroadcastChannel('file-callbacks');
+						channel.postMessage({ type: 'close', name: eventData.data, scope: eventData.scope });
+						setFileHandle(undefined);
+						return context.notify({
+							title: context.general.language === 'deutsch' ? 'Export abgeschlossen' : 'Exported data',
+							body: `${context.general.language === 'deutsch' ? 'Datei ' : 'File '}${fileName} ${context.general.language === 'deutsch' ? 'wurde im Download-Ordner abgelegt' : 'was written to the download folder'}`,
 						});
+					});
 				}
 				break;
 		}
@@ -94,10 +103,10 @@ export function ExportPage(): React.JSX.Element {
 							</select>
 						</div>
 					</li>
-					<li>
+					{/* <li>
 						<div className="fileExportCompressionSelectWrapper">
 							<p>{context.general.language === 'deutsch' ? 'Kompressionsverfahren:' : 'Compression Type:'}</p>
-							<select ref={formatRef} onInput={compressionHandler}>
+							<select ref={compressionRef} onInput={compressionHandler}>
 								<option value={undefined} defaultChecked>
 									{context.general.language === 'deutsch' ? 'Keines' : 'None'}
 								</option>
@@ -106,7 +115,7 @@ export function ExportPage(): React.JSX.Element {
 								<option value={'zz'}>Deflate</option>
 							</select>
 						</div>
-					</li>
+					</li> */}
 				</ul>
 				<div className="exportDatabases">
 					{Object.entries(context.database.databases).map(([key, value]) => {
@@ -146,9 +155,9 @@ export function ExportPage(): React.JSX.Element {
 						}
 					})}
 				</div>
-				<button className="exportAllButton" onClick={() => exportHandler('all', 'all', undefined)}>
+				{/* <button className="exportAllButton" onClick={() => exportHandler('all', 'all', undefined)}>
 					{context.general.language === 'deutsch' ? 'Alles Exportieren' : 'Export All'}
-				</button>
+				</button> */}
 			</div>
 		</>
 	);
