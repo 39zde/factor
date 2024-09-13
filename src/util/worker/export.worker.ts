@@ -181,7 +181,7 @@ function exportOStore(
 							// indicate the fuse is used now
 							fuse.set(encoder, false);
 						} else {
-							weak.set(chunk, JSON.stringify(chunk));
+							weak.set(chunk, JSON.stringify(chunk)+ ",");
 						}
 					}
 					encoderWriter.write(weak.get(chunk));
