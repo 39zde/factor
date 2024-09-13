@@ -1786,8 +1786,9 @@ function updateArrayBuffer(buffer: ArrayBuffer | undefined, value: number | Arra
 	} else {
 		if (buffer instanceof ArrayBuffer) {
 			const buf = buffer;
-
-			for (let i = new DataView(buf).byteLength / 2 - 1; i > 0; i--) {
+			const view = new DataView(buf)
+			const byteLength = view.byteLength
+			for (let i = byteLength - 2; i > 0; i-=2) {
 				if (new DataView(buf).getUint16(i) === value) {
 					return buf;
 				}
@@ -1801,11 +1802,9 @@ function updateArrayBuffer(buffer: ArrayBuffer | undefined, value: number | Arra
 				}
 
 				// @ts-expect-error no ts implementation (or at least I wasn't able find the correct way)
-				buf.resize(buf.byteLength + 2);
-				const view = new DataView(buf);
-				const index = (view.byteLength as number) / 2 - 1;
-
-				view.setUint16(index, value);
+				buf.resize(byteLength + 2);
+				const viewer = new DataView(buf);
+				viewer.setUint16(byteLength, value);
 
 				return buf;
 			} else {
