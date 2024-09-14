@@ -79,10 +79,11 @@ export const ContextMenu = forwardRef<HTMLDivElement, ContextMenuProps>(function
 					setArea(0);
 					setOwnX(x);
 					setOwnY(y);
-					setOpacity(1);
+					break;
 				default:
 					break;
 			}
+			setOpacity(1);
 		}
 	}, [x, y, appearances.width, menuRef.current]);
 
@@ -178,6 +179,7 @@ export const ContextMenu2 = forwardRef<HTMLDivElement, ContextMenuProps>(functio
 	const [ownX, setOwnX] = useState<number>(0);
 	const [ownY, setOwnY] = useState<number>(0);
 	const [ownActive, setOwnActive] = useState<boolean>(false);
+	const [opacity, setOpacity] = useState<0 | 1>(0);
 	const [area, setArea] = useState<0 | 1 | 2 | 3>(0);
 	const [nestedX, setNestedX] = useState<number>(0);
 	const [nestedY, setNestedY] = useState<number>(0);
@@ -185,6 +187,9 @@ export const ContextMenu2 = forwardRef<HTMLDivElement, ContextMenuProps>(functio
 	const [nestedItems, setNestedItems] = useState<Array<MenuItem> | undefined>(undefined);
 
 	useEffect(() => {
+		setOpacity(0);
+		setOwnX(x);
+		setOwnY(y);
 		setNestedActive(false);
 		// determine the distance between the right edge of the contextMenu and the right edge of the window
 		const rightDistance = appearances.width - x - solids.contextMenu.width;
@@ -192,7 +197,6 @@ export const ContextMenu2 = forwardRef<HTMLDivElement, ContextMenuProps>(functio
 		let bottomDistance = appearances.height - y;
 		if (menuRef.current !== null) {
 			bottomDistance -= menuRef.current.getBoundingClientRect().height;
-
 			/*
 				P(x,y) is the click point
 				x ∈ ax
@@ -217,41 +221,37 @@ export const ContextMenu2 = forwardRef<HTMLDivElement, ContextMenuProps>(functio
 				// add 2
 				sum += 2;
 			}
-
 			// the sum shows us what area we need to avoid 'overflowing'
 			switch (sum) {
 				case 1:
 					setArea(sum);
 					setOwnX(x - solids.contextMenu.width);
 					setOwnY(y);
+					setOpacity(1);
 					break;
 				case 2:
 					setArea(sum);
 					setOwnX(x);
-					if (menuRef.current !== null) {
-						setOwnY(y - menuRef.current.getBoundingClientRect().height);
-					} else {
-						setOwnY(y);
-					}
+					setOwnY(y - menuRef.current.getBoundingClientRect().height);
+					setOpacity(1);
 					break;
 				case 3:
 					setArea(sum);
 					setOwnX(x - solids.contextMenu.width);
-					if (menuRef.current !== null) {
-						setOwnY(y - menuRef.current.getBoundingClientRect().height);
-					} else {
-						setOwnY(y);
-					}
+					setOwnY(y - menuRef.current.getBoundingClientRect().height);
+					setOpacity(1);
 					break;
 				case 0:
-				default:
 					setArea(0);
 					setOwnX(x);
 					setOwnY(y);
 					break;
+				default:
+					break;
 			}
+			setOpacity(1);
 		}
-	}, [x, y, appearances.width]);
+	}, [x, y, appearances.width, menuRef.current]);
 
 	useEffect(() => {
 		if (active === false) {
@@ -267,6 +267,7 @@ export const ContextMenu2 = forwardRef<HTMLDivElement, ContextMenuProps>(functio
 				aria-modal="true"
 				className="contextMenu"
 				style={{
+					opacity: opacity,
 					left: ownX,
 					top: ownY,
 					display: ownActive ? 'block' : 'none',
@@ -287,6 +288,7 @@ export const ContextMenu2 = forwardRef<HTMLDivElement, ContextMenuProps>(functio
 										}}
 										onMouseDown={(e: MouseEvent) => {
 											if (item.subMenu !== undefined) {
+												setNestedActive(!nestedActive);
 												setNestedItems(item.subMenu);
 												setNestedY(
 													// @ts-expect-error ts does not know about this dom element
@@ -305,8 +307,6 @@ export const ContextMenu2 = forwardRef<HTMLDivElement, ContextMenuProps>(functio
 														setNestedX(ownX + solids.contextMenu.width);
 													}
 												}
-
-												setNestedActive(!nestedActive);
 											}
 										}}>
 										{item.component}
