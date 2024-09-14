@@ -150,9 +150,14 @@ input[type="checkbox"] {
 }
 
 input[type="checkbox"]::before {
-	content: "";
+	content: "off";
 	height: inherit;
+	font-size: small;
+	text-align: center;
 	width: 26px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -175,8 +180,8 @@ input[type="checkbox"]::after {
 }
 
 input[type="checkbox"]:checked::before {
-	/* right: 0; */
-	/* left: unset; */
+	content: "on";
+	font-size: small;
 	transform: translateX(calc(26px));
 	transition: all 100ms ease-in-out;
 }
