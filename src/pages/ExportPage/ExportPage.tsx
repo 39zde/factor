@@ -83,7 +83,7 @@ export function ExportPage(): React.JSX.Element {
 							type: 'notify',
 							notification: {
 								title: context.general.language === 'deutsch' ? 'Export abgeschlossen' : 'Exported data',
-								body: `${context.general.language === 'deutsch' ? 'Datei ' : 'File '}${fileName} ${context.general.language === 'deutsch' ? 'wurde im Download-Ordner abgelegt' : 'was written to the download folder'}`,
+								body: `${context.general.language === 'deutsch' ? 'Datei ' : 'File '}${eventData.data} ${context.general.language === 'deutsch' ? 'wurde im Download-Ordner abgelegt' : 'was written to the download folder'}`,
 							},
 						});
 					});
