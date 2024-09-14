@@ -76,9 +76,9 @@ export function ExportPage(): React.JSX.Element {
 				if (fileHandle !== undefined) {
 					// let fileName = eventData.data as string;
 					fileHandle.close().then(() => {
+						setFileHandle(undefined);
 						let channel = new BroadcastChannel('file-callbacks');
 						channel.postMessage({ type: 'close', name: eventData.data, scope: eventData.scope });
-						setFileHandle(undefined);
 						return dispatch({
 							type: 'notify',
 							notification: {
@@ -132,7 +132,17 @@ export function ExportPage(): React.JSX.Element {
 										<h2>
 											{context.general.language === 'deutsch' ? 'Datenbank' : 'Database'}: <em>{dbName}</em>
 										</h2>
-										<button onClick={() => exportHandler('db', dbName, undefined)}>
+										<button
+											onClick={() => {
+												if (fileHandle === undefined) {
+													exportHandler('db', dbName, undefined);
+												}
+											}}
+											style={{
+												cursor: fileHandle !== undefined ? 'no-drop' : 'initial',
+												border: fileHandle !== undefined ? '2px solid light-dark(var(--color-dark-3),var(--color-dark-3))' : '',
+												background: fileHandle !== undefined ? 'none' : '',
+											}}>
 											{context.general.language === 'deutsch' ? 'Datenbank exportieren' : 'Export Database'}
 										</button>
 									</div>
@@ -144,7 +154,18 @@ export function ExportPage(): React.JSX.Element {
 														<p>
 															{context.general.language === 'deutsch' ? 'Tabelle' : 'Table'}: <em>{oStore}</em>
 														</p>
-														<button onClick={() => exportHandler('oStore', dbName, oStore)}>
+														<button
+															onClick={() => {
+																if (fileHandle == undefined) {
+																	exportHandler('oStore', dbName, oStore);
+																}
+															}}
+															style={{
+																cursor: fileHandle !== undefined ? 'no-drop' : 'initial',
+																border:
+																	fileHandle !== undefined ? '2px solid light-dark(var(--color-dark-3),var(--color-dark-3))' : '',
+																background: fileHandle !== undefined ? 'none' : '',
+															}}>
 															{context.general.language === 'deutsch' ? 'Tabelle exportieren' : 'Export Table'}
 														</button>
 													</div>
