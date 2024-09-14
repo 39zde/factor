@@ -3,7 +3,7 @@ import { app, core, dpi, event, image, menu, mocks, path, tray, webview, webview
 export type { SideBarProps, RouterButtonProps, LowerButtonProps } from './comps/SideBar/SideBarProps';
 export type { RouteType } from './comps/SideBar/routes';
 
-export type { ImportModuleProps, SorterProps, UploadMode, CustomerSorterInputGroup, CustomerSorterInputGroupUnderling } from './pages/Upload/Upload';
+export type { ImportModuleProps, SorterProps, CustomerSorterInputGroup, CustomerSorterInputGroupUnderling } from './pages/Upload/Upload';
 
 export type {
 	Customer,
@@ -45,7 +45,7 @@ export type {
 
 export type { AddDataArgs, DateInput } from './worker/import.worker';
 
-export type { TableRow, DerefRow, CustomerKeys, CustomerReferences, BaseRow, UploadRow, TableRowCounter } from './database/DataBaseData';
+export type { TableRow, DerefRow, CustomerKeys, CustomerReferences, BaseRow, UploadRow, TableRowCounter, DataBaseNames } from './database/DataBaseData';
 
 export type { ContextMenuProps, MenuItem } from './comps/ContextMenu/ContextMenu';
 

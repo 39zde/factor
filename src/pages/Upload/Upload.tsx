@@ -7,12 +7,12 @@ import { ColRemover } from './ColRemover';
 import { ImportModule } from './ImportModule';
 import { useAppContext, solids, useChangeContext } from '@app';
 import Comps from '@comps';
-import type { CustomerSortingMap, ArticleSortingMap, UploadMode, DocumentSortingMap } from '@typings';
+import type { CustomerSortingMap, ArticleSortingMap, DataBaseNames, DocumentSortingMap } from '@typings';
 import './Upload.css';
 
 export function Upload(): React.JSX.Element {
 	const dispatch = useChangeContext();
-	const { general, worker, database, notify } = useAppContext();
+	const { general, worker, database } = useAppContext();
 	const fileSelector = useRef<HTMLInputElement>(null);
 	const [showTable, setShowTable] = useState<boolean>(false);
 	const [showFile, setShowFile] = useState<boolean>(false);
@@ -35,7 +35,7 @@ export function Upload(): React.JSX.Element {
 		banks: {},
 		company: {},
 	});
-	const [tableImportMode, setTableImportMode] = useState<UploadMode | undefined>(undefined);
+	const [tableImportMode, setTableImportMode] = useState<DataBaseNames | undefined>(undefined);
 	const tableImportModeHandler = (): void => {
 		if (tableImportModeInputRef.current === null) {
 			return;
@@ -55,9 +55,12 @@ export function Upload(): React.JSX.Element {
 					setFileName(files[0].name);
 					setShowFile(true);
 				} catch {
-					notify({
-						title: general.language === 'deutsch' ? 'Ein Fehler ist aufgetreten' : 'An error occurred',
-						body: 'Failed to convert file to text',
+					dispatch({
+						type: 'notify',
+						notification: {
+							title: general.language === 'deutsch' ? 'Ein Fehler ist aufgetreten' : 'An error occurred',
+							body: 'Failed to convert file to text',
+						},
 					});
 				}
 			}
@@ -111,9 +114,12 @@ export function Upload(): React.JSX.Element {
 		if (tableImportMode === 'customer_db' && map !== undefined) {
 			//@ts-expect-error this needs work
 			if (map['customers']['id'] === undefined) {
-				notify({
-					title: general.language === 'deutsch' ? 'Ein Fehler ist aufgetreten' : 'An error occurred',
-					body: general.language === 'deutsch' ? 'Kundennummer fehlt' : 'Customers ID is a requirement',
+				dispatch({
+					type: 'notify',
+					notification: {
+						title: general.language === 'deutsch' ? 'Ein Fehler ist aufgetreten' : 'An error occurred',
+						body: general.language === 'deutsch' ? 'Kundennummer fehlt' : 'Customers ID is a requirement',
+					},
 				});
 			} else {
 				worker.ImportWorker.postMessage({

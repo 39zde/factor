@@ -1,12 +1,13 @@
 import React, { useRef, useState } from 'react';
 import { FileHandle, create, BaseDirectory } from '@tauri-apps/plugin-fs';
 // non-lib imports
-import { useAppContext } from '@app';
+import { useAppContext, useChangeContext } from '@app';
 import type { CompressionTypes, ExportWorkerResponse } from '@typings';
 import './ExportPage.css';
 
 export function ExportPage(): React.JSX.Element {
 	const context = useAppContext();
+	const dispatch = useChangeContext();
 	const [format, setFormat] = useState<'json' | 'csv'>('json');
 	const [useCompression, setUseCompression] = useState<CompressionTypes | undefined>(undefined);
 	const [fileHandle, setFileHandle] = useState<FileHandle | undefined>(undefined);
@@ -78,9 +79,12 @@ export function ExportPage(): React.JSX.Element {
 						let channel = new BroadcastChannel('file-callbacks');
 						channel.postMessage({ type: 'close', name: eventData.data, scope: eventData.scope });
 						setFileHandle(undefined);
-						return context.notify({
-							title: context.general.language === 'deutsch' ? 'Export abgeschlossen' : 'Exported data',
-							body: `${context.general.language === 'deutsch' ? 'Datei ' : 'File '}${fileName} ${context.general.language === 'deutsch' ? 'wurde im Download-Ordner abgelegt' : 'was written to the download folder'}`,
+						return dispatch({
+							type: 'notify',
+							notification: {
+								title: context.general.language === 'deutsch' ? 'Export abgeschlossen' : 'Exported data',
+								body: `${context.general.language === 'deutsch' ? 'Datei ' : 'File '}${fileName} ${context.general.language === 'deutsch' ? 'wurde im Download-Ordner abgelegt' : 'was written to the download folder'}`,
+							},
 						});
 					});
 				}

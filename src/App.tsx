@@ -1,11 +1,10 @@
 import React, { useState, createContext, useMemo, useCallback, useEffect, useReducer, useContext } from 'react';
-import { isPermissionGranted, sendNotification, requestPermission } from '@tauri-apps/plugin-notification';
-import type { Options } from '@tauri-apps/plugin-notification';
+import { requestPermission } from '@tauri-apps/plugin-notification';
 // non-lib imports
 import { Pages } from './pages/Pages';
 import Comps from '@comps';
-import { getSettings, getDatabases, writeSettings, disableMenu, defaultSettings } from '@util';
-import type { AppSettingsAppearance, RouteType, AppContextType, AppSettingsChange, AppAction, AppSolidsType, AppSettingsType } from '@typings';
+import { getSettings, getDatabases, appReducer, disableMenu, defaultSettings } from '@util';
+import type { RouteType, AppContextType, AppSettingsChange, AppAction, AppSolidsType } from '@typings';
 import './App.css';
 
 disableMenu();
@@ -52,7 +51,6 @@ export const solids: AppSolidsType = {
 	},
 };
 
-//@ts-expect-error we add the notify function as a protype
 const defaultContext: AppContextType = {
 	...defaultSettings,
 	worker: {
@@ -61,134 +59,6 @@ const defaultContext: AppContextType = {
 		ExportWorker: ExportWorker,
 	},
 };
-
-defaultContext.constructor.prototype.notify = notify;
-
-async function notify(options: Options): Promise<string> {
-	try {
-		let permissionGranted = await isPermissionGranted();
-		if (!permissionGranted) {
-			// @ts-expect-error we added via prototype, so this returns the context obj
-			if (this.general.notifications) {
-				await requestPermission();
-			}
-		}
-		// @ts-expect-error we added via prototype, so this returns the context obj
-		if (permissionGranted && this.general.notifications) {
-			sendNotification({
-				...options,
-			});
-			return 'success';
-		} else {
-			return 'disallowed';
-		}
-	} catch (e) {
-		console.error(e);
-		return 'error';
-	}
-}
-
-function appReducer(appState: AppContextType, action: AppAction): AppContextType {
-	switch (action.type) {
-		case 'set': {
-			if (action.change.appearances !== undefined) {
-				const appearanceChanges = action.change.appearances as AppSettingsAppearance;
-				if (appearanceChanges.colorTheme !== undefined) {
-					const themeTag = document.getElementById('theme');
-					if (themeTag !== null) {
-						themeTag.innerText = `:root{ color-scheme: ${appearanceChanges.colorTheme} ; }`;
-					}
-				}
-			}
-			const stagedSettings: AppSettingsType = {
-				appearances: {
-					colorTheme:
-						action.change?.appearances?.colorTheme !== undefined ? action.change.appearances.colorTheme : appState.appearances.colorTheme,
-					columnWidth:
-						action.change?.appearances?.columnWidth !== undefined ? action.change.appearances.columnWidth : appState.appearances.columnWidth,
-					height: appState.appearances.height,
-					rowHeight: action.change?.appearances?.rowHeight !== undefined ? action.change.appearances.rowHeight : appState.appearances.rowHeight,
-					sideBarWidth:
-						action.change?.appearances?.sideBarWidth !== undefined ? action.change.appearances.sideBarWidth : appState.appearances.sideBarWidth,
-					width: appState.appearances.width,
-				},
-				database: {
-					dbVersion: action.change?.database?.dbVersion !== undefined ? action.change.database.dbVersion : appState.database.dbVersion,
-					databases: {
-						customer_db:
-							action.change?.database?.databases?.customer_db !== undefined
-								? action.change.database.databases.customer_db
-								: appState.database.databases.customer_db,
-						article_db:
-							action.change?.database?.databases?.article_db !== undefined
-								? action.change.database.databases.article_db
-								: appState.database.databases.article_db,
-						document_db:
-							action.change?.database?.databases?.document_db !== undefined
-								? action.change.database.databases.document_db
-								: appState.database.databases.document_db,
-					},
-				},
-				general: {
-					decimalSeparator:
-						action.change?.general?.decimalSeparator !== undefined ? action.change.general.decimalSeparator : appState.general.decimalSeparator,
-					language: action.change?.general?.language !== undefined ? action.change.general.language : appState.general.language,
-					scrollSpeed: action.change?.general?.scrollSpeed !== undefined ? action.change.general.scrollSpeed : appState.general.scrollSpeed,
-					notifications:
-						action.change?.general?.notifications !== undefined ? action.change.general.notifications : appState.general.notifications,
-				},
-			};
-			writeSettings(stagedSettings).then((result) => {
-				if (!result) {
-					appState.notify({ title: 'An error occurred', body: 'settings could not be saved' });
-				}
-			});
-			return {
-				...appState,
-				...stagedSettings,
-			};
-		}
-		case 'setHW': {
-			return {
-				...appState,
-				appearances: {
-					colorTheme: appState.appearances.colorTheme,
-					columnWidth: appState.appearances.columnWidth,
-					height: action.change.appearances?.height !== undefined ? action.change.appearances.height : appState.appearances.height,
-					rowHeight: appState.appearances.rowHeight,
-					sideBarWidth: appState.appearances.sideBarWidth,
-					width: action.change.appearances?.width !== undefined ? action.change.appearances.width : appState.appearances.width,
-				},
-				database: {
-					dbVersion: appState.database.dbVersion,
-					databases: {
-						customer_db: appState.database.databases.customer_db,
-						article_db: appState.database.databases.article_db,
-						document_db: appState.database.databases.document_db,
-					},
-				},
-				general: {
-					decimalSeparator: appState.general.decimalSeparator,
-					language: appState.general.language,
-					scrollSpeed: appState.general.scrollSpeed,
-					notifications: appState.general.notifications,
-				},
-				worker: {
-					ImportWorker: appState.worker.ImportWorker,
-					TableWorker: appState.worker.TableWorker,
-					ExportWorker: appState.worker.ExportWorker,
-				},
-			};
-		}
-
-		default:
-			appState.notify({
-				title: 'An Error occurred',
-				body: 'performed unknown action on app context',
-			});
-			return appState;
-	}
-}
 
 const AppContext = createContext<AppContextType>(defaultContext);
 //@ts-expect-error reducer error

@@ -17,7 +17,6 @@ export interface AppContextType extends AppSettingsType, Object {
 		/** Export Worker: writes the data in a specified format to files */
 		ExportWorker: Worker;
 	};
-	notify: (options:Options) => Promise<string>;
 }
 
 export interface AppSettingsType {
@@ -100,8 +99,9 @@ export type DecimalSeparatorSetting = '.' | ',';
 export type ColorThemeSetting = 'light' | 'dark' | 'light dark';
 
 export type AppAction = {
-	type: 'set' | 'setHW';
-	change: AppSettingsChange;
+	type: 'set' | 'setHW' | "notify";
+	change?: AppSettingsChange;
+	notification?: Options
 };
 
 /** Some value to be used all over, to be consistent with styling,sizing... , easy controllable */

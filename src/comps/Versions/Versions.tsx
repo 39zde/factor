@@ -1,10 +1,11 @@
 import React, { useState, useMemo } from 'react';
 // non-lib imports
-import { useAppContext } from '@app';
+import { useAppContext, useChangeContext } from '@app';
 import './Versions.css';
 
 export function Versions(): React.JSX.Element {
-	const { general, appearances, notify } = useAppContext();
+	const { general, appearances } = useAppContext();
+	const dispatch = useChangeContext();
 	const [tauriVersion, setTauriVersion] = useState<string>();
 	const [platform, setPlatform] = useState<string>();
 	const [used, setUsed] = useState<string>('');
@@ -42,9 +43,12 @@ export function Versions(): React.JSX.Element {
 				setTauriVersion('error');
 
 				console.error('error', e);
-				notify({
-					title: general.language === 'deutsch' ? 'Ein Fehler ist aufgetreten' : 'An error occurred',
-					body: 'Failed to estimate disk usage',
+				dispatch({
+					type: 'notify',
+					notification: {
+						title: general.language === 'deutsch' ? 'Ein Fehler ist aufgetreten' : 'An error occurred',
+						body: 'Failed to estimate disk usage',
+					},
 				});
 			}
 		}

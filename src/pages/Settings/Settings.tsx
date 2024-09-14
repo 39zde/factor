@@ -250,11 +250,11 @@ export function Settings() {
 							<input onInput={scrollSpeedInputHandler} ref={scrollSpeedRef} type="number" min={1} max={150} step={1} value={scrollSpeed} />
 						</div>
 						<div className="settingsOption">
-							<div className='settingsOptionChild'>
+							<div className="settingsOptionChild">
 								<p>{context.general.language === 'deutsch' ? 'Benachrichtigungen ' : 'Notifications '}</p>
 								<div
 									onClick={() => {
-										context.notify({ title: 'test', body: 'test' }).then((r) => console.log(r));
+										dispatch({ type: 'notify', notification: { title: 'test', body: 'test' } });
 									}}>
 									<small>{context.general.language === 'deutsch' ? 'Benachrichtigungen testen' : 'Test Notifications'}</small>
 								</div>
