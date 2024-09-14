@@ -17,12 +17,13 @@ import {
 import { RouterButton } from './RouterButton';
 import { LowerButton } from './LowerButton';
 import { useAppContext, solids } from '@app';
-import { RouteType, SideBarProps } from '@typings';
+import { RouteType, SideBarProps, DataBaseNames } from '@typings';
 import './SideBar.css';
 
 export function SideBar({ routesHook }: SideBarProps): React.JSX.Element {
 	const { appearances, general, database } = useAppContext();
 	const [sideBarWidth, setSideBarWidth] = useState<number>(appearances.sideBarWidth);
+	const [databases, setDataBases] = useState<DataBaseNames[]>([]);
 	const routeHandler = (newVal: RouteType) => {
 		if (routesHook !== undefined) {
 			routesHook.setShowSettings(false);
@@ -34,6 +35,20 @@ export function SideBar({ routesHook }: SideBarProps): React.JSX.Element {
 	useEffect(() => {
 		setSideBarWidth(appearances.sideBarWidth);
 	}, [appearances.sideBarWidth]);
+
+	useEffect(() => {
+		let databasesAvail: DataBaseNames[] = [];
+		if (database.databases.article_db !== null) {
+			databasesAvail.push('article_db');
+		}
+		if (database.databases.customer_db !== null) {
+			databasesAvail.push('customer_db');
+		}
+		if (database.databases.document_db !== null) {
+			databasesAvail.push('document_db');
+		}
+		setDataBases(databasesAvail);
+	}, [database.databases.article_db, database.databases.customer_db, database.databases.document_db]);
 
 	return (
 		<>
@@ -133,7 +148,7 @@ export function SideBar({ routesHook }: SideBarProps): React.JSX.Element {
 						textOverride={general.language === 'deutsch' ? 'Vorlagen' : 'Templates'}
 					/>
 					<div className="divider" />
-					{database.databases.article_db !== null ? (
+					{databases.includes('article_db') ? (
 						<>
 							<RouterButton
 								active={!routesHook.showHelp && !routesHook.showSettings}
@@ -161,7 +176,7 @@ export function SideBar({ routesHook }: SideBarProps): React.JSX.Element {
 					) : (
 						<></>
 					)}
-					{database.databases.customer_db !== null ? (
+					{databases.includes('customer_db') !== null ? (
 						<>
 							<RouterButton
 								active={!routesHook.showHelp && !routesHook.showSettings}

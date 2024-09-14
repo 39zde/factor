@@ -15,8 +15,6 @@ export interface SorterProps {
 	};
 }
 
-export type UploadMode = 'article_db' | 'customer_db' | 'document_db';
-
 export type CustomerSorterInputGroup = {
 	head: string;
 	mapKey: CustomerSortingMapProps;
