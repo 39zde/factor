@@ -302,13 +302,13 @@ function fillReferences(dataBase: IDBDatabase, row: TableRow, actionType?: Table
 		if (value instanceof ArrayBuffer) {
 			//in row $copy.row : $key is of type ArrayBuffer
 			// increase $targetCunt by $increment
-			const byteLength = new DataView(value).byteLength
+			const byteLength = new DataView(value).byteLength;
 			const elementCount = byteLength / 2;
 			targetCount += elementCount;
 
 			// replace the ArrayBuffer with an regular array in our copy
 			copy[key] = new Array(elementCount);
-			for (let i = 0; i < byteLength; i+=2) {
+			for (let i = 0; i < byteLength; i += 2) {
 				const location = new DataView(value).getInt16(i);
 				// the ArrayBuffer has stored $location at $i
 
@@ -321,7 +321,7 @@ function fillReferences(dataBase: IDBDatabase, row: TableRow, actionType?: Table
 					request.onsuccess = () => {
 						// insert the requested item into our copy
 						// @ts-expect-error we know we are writing to an array
-						copy[key][i/2] = request.result;
+						copy[key][i / 2] = request.result;
 						// increase the counter
 						proxy.count += 1;
 					};

@@ -38,8 +38,8 @@ export default defineConfig({
 			ignored: ['**/src-tauri/**'],
 		},
 	},
-	define:{
-		__FACTOR_VERSION__: JSON.stringify(process.env.npm_package_version)
+	define: {
+		__FACTOR_VERSION__: JSON.stringify(process.env.npm_package_version),
 	},
 	// to access the Tauri environment variables set by the CLI with information about the current target
 	envPrefix: [

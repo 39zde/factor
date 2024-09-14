@@ -45,7 +45,16 @@ export type {
 
 export type { AddDataArgs, DateInput } from './worker/import.worker';
 
-export type { TableRow, DerefRow, CustomerKeys, CustomerReferences, BaseRow, UploadRow, TableRowCounter, DataBaseNames } from './database/DataBaseData';
+export type {
+	TableRow,
+	DerefRow,
+	CustomerKeys,
+	CustomerReferences,
+	BaseRow,
+	UploadRow,
+	TableRowCounter,
+	DataBaseNames,
+} from './database/DataBaseData';
 
 export type { ContextMenuProps, MenuItem } from './comps/ContextMenu/ContextMenu';
 

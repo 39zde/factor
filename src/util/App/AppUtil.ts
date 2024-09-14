@@ -139,7 +139,7 @@ export function disableMenu() {
 export function appReducer(appState: AppContextType, action: AppAction): AppContextType {
 	switch (action.type) {
 		case 'set': {
-			if(action.change !== undefined){
+			if (action.change !== undefined) {
 				if (action.change.appearances !== undefined) {
 					const appearanceChanges = action.change.appearances as AppSettingsAppearance;
 					if (appearanceChanges.colorTheme !== undefined) {
@@ -156,9 +156,12 @@ export function appReducer(appState: AppContextType, action: AppAction): AppCont
 						columnWidth:
 							action.change?.appearances?.columnWidth !== undefined ? action.change.appearances.columnWidth : appState.appearances.columnWidth,
 						height: appState.appearances.height,
-						rowHeight: action.change?.appearances?.rowHeight !== undefined ? action.change.appearances.rowHeight : appState.appearances.rowHeight,
+						rowHeight:
+							action.change?.appearances?.rowHeight !== undefined ? action.change.appearances.rowHeight : appState.appearances.rowHeight,
 						sideBarWidth:
-							action.change?.appearances?.sideBarWidth !== undefined ? action.change.appearances.sideBarWidth : appState.appearances.sideBarWidth,
+							action.change?.appearances?.sideBarWidth !== undefined
+								? action.change.appearances.sideBarWidth
+								: appState.appearances.sideBarWidth,
 						width: appState.appearances.width,
 					},
 					database: {
@@ -180,7 +183,9 @@ export function appReducer(appState: AppContextType, action: AppAction): AppCont
 					},
 					general: {
 						decimalSeparator:
-							action.change?.general?.decimalSeparator !== undefined ? action.change.general.decimalSeparator : appState.general.decimalSeparator,
+							action.change?.general?.decimalSeparator !== undefined
+								? action.change.general.decimalSeparator
+								: appState.general.decimalSeparator,
 						language: action.change?.general?.language !== undefined ? action.change.general.language : appState.general.language,
 						scrollSpeed: action.change?.general?.scrollSpeed !== undefined ? action.change.general.scrollSpeed : appState.general.scrollSpeed,
 						notifications:
@@ -196,12 +201,12 @@ export function appReducer(appState: AppContextType, action: AppAction): AppCont
 					...appState,
 					...stagedSettings,
 				};
-			}else{
-				return appState
+			} else {
+				return appState;
 			}
 		}
 		case 'setHW': {
-			if(action.change !== undefined){
+			if (action.change !== undefined) {
 				return {
 					...appState,
 					appearances: {
@@ -213,25 +218,27 @@ export function appReducer(appState: AppContextType, action: AppAction): AppCont
 						width: action.change.appearances?.width !== undefined ? action.change.appearances.width : appState.appearances.width,
 					},
 				};
-			}else{
-				return appState
+			} else {
+				return appState;
 			}
 		}
-		case "notify":{
-			if(action.notification !== undefined){
-				notify(action.notification, appState)
+		case 'notify': {
+			if (action.notification !== undefined) {
+				notify(action.notification, appState);
 			}
-			return appState
+			return appState;
 		}
 		default:
-			notify({
-				title: 'An Error occurred',
-				body: 'performed unknown action on app context',
-			}, appState);
+			notify(
+				{
+					title: 'An Error occurred',
+					body: 'performed unknown action on app context',
+				},
+				appState
+			);
 			return appState;
 	}
 }
-
 
 // defaultContext.constructor.prototype.notify = notify;
 async function notify(options: Options, context: AppContextType): Promise<string> {

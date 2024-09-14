@@ -99,9 +99,9 @@ export type DecimalSeparatorSetting = '.' | ',';
 export type ColorThemeSetting = 'light' | 'dark' | 'light dark';
 
 export type AppAction = {
-	type: 'set' | 'setHW' | "notify";
+	type: 'set' | 'setHW' | 'notify';
 	change?: AppSettingsChange;
-	notification?: Options
+	notification?: Options;
 };
 
 /** Some value to be used all over, to be consistent with styling,sizing... , easy controllable */
