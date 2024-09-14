@@ -215,7 +215,7 @@ function exportOStore(
 						}
 					}
 					if (!isChild) {
-						// send the signal to close the file
+						// send the signal to close the file, wait for callback on channel
 						postMessage({ type: 'close', data: fileName, scope: 'oStore' });
 					}
 				}
@@ -223,6 +223,7 @@ function exportOStore(
 					// get confirmation that the file has been closed
 					if (e.data.type === 'close' && e.data.scope === 'oStore') {
 						// callback
+
 						callback();
 					}
 				};
@@ -239,10 +240,9 @@ function exportOStore(
 					// write to the stream
 					sourceWriter.write(cursor.value);
 					cursor.continue();
-				} else {
+				}else{
 					encoderWriter.close();
 					sourceWriter.close();
-					// fuse = true;
 				}
 			};
 			cursorRequest.onerror = () => {};
