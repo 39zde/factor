@@ -638,24 +638,26 @@ function sortData(
 					// these need to be done in the customerDB request scope to 'function' properly
 					function insertEmail(data: EmailType, callback: (result: number | null) => void): void {
 						if (oStores.contains('emails')) {
+							let emailData = data;
+							emailData.email = emailData.email.toLowerCase();
 							const emailTransaction = customerDB.transaction('emails', 'readwrite', { durability: 'strict' });
 							const oStoreEmail = emailTransaction.objectStore('emails');
 							if (oStoreEmail.indexNames.contains('emails-email')) {
 								const emailIndex = oStoreEmail.index('emails-email');
-								const emailIndexRequest = emailIndex.get(data.email);
+								const emailIndexRequest = emailIndex.get(emailData.email);
 								emailIndexRequest.onsuccess = () => {
 									if (emailIndexRequest.result !== undefined) {
 										// the email already exists
 										const preexistingEmailRow = emailIndexRequest.result as EmailType;
-										if (data.notes !== undefined) {
+										if (emailData.notes !== undefined) {
 											if (preexistingEmailRow.notes !== undefined) {
-												preexistingEmailRow.notes = [...preexistingEmailRow.notes, ...data.notes];
+												preexistingEmailRow.notes = [...preexistingEmailRow.notes, ...emailData.notes];
 											} else {
-												preexistingEmailRow.notes = data.notes;
+												preexistingEmailRow.notes = emailData.notes;
 											}
 										}
-										if (data.type !== undefined) {
-											preexistingEmailRow.type = data.type;
+										if (emailData.type !== undefined) {
+											preexistingEmailRow.type = emailData.type;
 										}
 										const putRequest = oStoreEmail.put(preexistingEmailRow);
 										putRequest.onsuccess = () => {
@@ -671,8 +673,8 @@ function sortData(
 										const emailCountRequest = oStoreEmail.count();
 										emailCountRequest.onsuccess = () => {
 											const emailCount = emailCountRequest.result;
-											data.row = emailCount + 1;
-											const addRequest = oStoreEmail.add(data);
+											emailData.row = emailCount + 1;
+											const addRequest = oStoreEmail.add(emailData);
 											addRequest.onsuccess = () => {
 												callback(addRequest.result as number);
 												emailTransaction.commit();
@@ -1154,15 +1156,24 @@ function sortData(
 						const tracker = new Proxy<typeof counter>(counter, counterHandler);
 
 						for (let i = 0; i < data.length; i++) {
-							emailHolder.set(data[i], data[i].emails);
-							phoneHolder.set(data[i], data[i].phones);
+							if (data[i].emails !== undefined) {
+								emailHolder.set(data[i], data[i].emails);
+							} else {
+								emailHolder.set(data[i], []);
+							}
+							if (data[i].phones !== undefined) {
+								phoneHolder.set(data[i], data[i].phones);
+							} else {
+								phoneHolder.set(data[i], []);
+							}
 							const refPerson = data[i] as PersonType;
 							refPerson.emails = undefined;
 							refPerson.phones = undefined;
 							reffedPersons[i] = refPerson;
 
-							if (emailHolder.get(data[i]) !== undefined) {
-								for (let j = 0; j < emailHolder.get(data[i]).length; j++) {
+							if (emailHolder.has(data[i]) && emailHolder.get(data[i]) !== undefined) {
+								let emailArray = emailHolder.get(data[i]) as EmailType[];
+								for (let j = 0; j < emailArray.length; j++) {
 									tracker.total += 1;
 									insertEmail(emailHolder.get(data[i])[j], (result: number | null) => {
 										if (result !== null) {
@@ -1173,8 +1184,9 @@ function sortData(
 								}
 							}
 
-							if (phoneHolder.get(data[i]) !== undefined) {
-								for (let j = 0; j < phoneHolder.get(data[i]).length; j++) {
+							if (phoneHolder.has(data[i]) && phoneHolder.get(data[i]) !== undefined) {
+								let phoneArray = phoneHolder.get(data[i]) as PhoneNumberType[];
+								for (let j = 0; j < phoneArray.length; j++) {
 									tracker.total += 1;
 									insertPhone(phoneHolder.get(data[i])[j], (result: number | null) => {
 										if (result !== null) {
@@ -1310,26 +1322,36 @@ function sortData(
 						const tracker = new Proxy<typeof counter>(counter, counterHandler);
 
 						for (let i = 0; i < data.length; i++) {
-							emailHolder.set(data[i], data[i].emails);
-							phoneHolder.set(data[i], data[i].phones);
-							const refCustomer = data[i] as Customer;
-							refCustomer.emails = undefined;
-							refCustomer.phones = undefined;
-							reffedCustomers[i] = refCustomer;
+							if (data[i] !== undefined) {
+								if (data[i].emails === undefined) {
+									emailHolder.set(data[i], []);
+								} else {
+									emailHolder.set(data[i], data[i].emails);
+								}
+								if (data[i].phones === undefined) {
+									phoneHolder.set(data[i], []);
+								} else {
+									phoneHolder.set(data[i], data[i].phones);
+								}
+								const refCustomer = data[i] as Customer;
+								refCustomer.emails = undefined;
+								refCustomer.phones = undefined;
+								reffedCustomers[i] = refCustomer;
 
-							if (emailHolder.get(data[i]) !== undefined) {
-								for (let j = 0; j < emailHolder.get(data[i]).length; j++) {
-									tracker.total += 1;
-									insertEmail(emailHolder.get(data[i])[j], (result: number | null) => {
-										if (result !== null) {
-											reffedCustomers[i].emails = updateArrayBuffer(reffedCustomers[i].emails, result);
-										}
-										tracker.count += 1;
-									});
+								if (Array.isArray(emailHolder.get(data[i]))) {
+									for (let j = 0; j < emailHolder.get(data[i]).length; j++) {
+										tracker.total += 1;
+										insertEmail(emailHolder.get(data[i])[j], (result: number | null) => {
+											if (result !== null) {
+												reffedCustomers[i].emails = updateArrayBuffer(reffedCustomers[i].emails, result);
+											}
+											tracker.count += 1;
+										});
+									}
 								}
 							}
 
-							if (phoneHolder.get(data[i]) !== undefined) {
+							if (Array.isArray(phoneHolder.get(data[i]))) {
 								for (let j = 0; j < phoneHolder.get(data[i]).length; j++) {
 									tracker.total += 1;
 									insertPhone(phoneHolder.get(data[i])[j], (result: number | null) => {
@@ -1786,9 +1808,9 @@ function updateArrayBuffer(buffer: ArrayBuffer | undefined, value: number | Arra
 	} else {
 		if (buffer instanceof ArrayBuffer) {
 			const buf = buffer;
-			const view = new DataView(buf)
-			const byteLength = view.byteLength
-			for (let i = byteLength - 2; i > 0; i-=2) {
+			const view = new DataView(buf);
+			const byteLength = view.byteLength;
+			for (let i = byteLength - 2; i > 0; i -= 2) {
 				if (new DataView(buf).getUint16(i) === value) {
 					return buf;
 				}
