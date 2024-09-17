@@ -607,7 +607,7 @@ function sortData(
 						company.createIndex('company-taxNumber', 'taxNumber', {
 							unique: false,
 						});
-						company.createIndex('company-ustID', 'ustID', {
+						company.createIndex('company-vatID', 'vatID', {
 							unique: false,
 						});
 					}

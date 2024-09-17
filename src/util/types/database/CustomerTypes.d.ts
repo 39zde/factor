@@ -159,7 +159,7 @@ export interface CompanyType {
 	notes?: string[];
 	taxID?: string;
 	taxNumber?: string;
-	ustID?: string;
+	vatID?: string;
 }
 
 export type ContactType =
@@ -251,7 +251,7 @@ export type CompanyMap = {
 	notes?: string;
 	taxID?: string;
 	taxNumber?: string;
-	ustID?: string;
+	vatID?: string;
 };
 
 export type EmailMap = {

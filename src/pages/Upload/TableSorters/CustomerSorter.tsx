@@ -102,9 +102,9 @@ export function CustomerSorter({ columns, hook }: SorterProps): React.JSX.Elemen
 		general.language === 'deutsch' ? 'Notizen zur Firma' : 'Notes about the company',
 		general.language === 'deutsch' ? 'SteuerID' : 'Tax ID',
 		general.language === 'deutsch' ? 'Steuernummer' : 'Tax number',
-		general.language === 'deutsch' ? 'UstID' : 'UstID',
+		general.language === 'deutsch' ? 'UstID' : 'VatID',
 	];
-	const companyFieldKeys = ['name', 'alias', 'notes', 'taxID', 'taxNumber', 'ustID'];
+	const companyFieldKeys = ['name', 'alias', 'notes', 'taxID', 'taxNumber', 'vatID'];
 	const groups: CustomerSorterInputGroup[] = [
 		{
 			head: general.language === 'deutsch' ? 'Kunde' : 'Customer',
