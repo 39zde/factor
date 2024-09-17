@@ -100,6 +100,7 @@ button {
 	color: light-dark(var(--color-dark-1), var(--color-light-1));
 	border-color: light-dark(var(--color-primary-light), var(--color-primary-dark));
 	box-shadow: var(--box-shadow);
+	text-align: center;
 }
 
 
@@ -147,10 +148,13 @@ input[type="checkbox"] {
 	height: 26px;
 	width: calc(26px * 2);
 	position: relative;
+	border-radius: 13px;
+
 }
 
 input[type="checkbox"]::before {
 	content: "off";
+	color: light-dark(var(--color-dark-3), var(--color-dark-3-t));
 	height: inherit;
 	font-size: small;
 	text-align: center;
@@ -219,4 +223,25 @@ code {
 	padding: 1px 3px;
 	font-size: 16px;
 	border-radius: 4px;
+}
+
+dialog{
+	min-width: 30vw;
+	max-width: 50vw;
+	min-height: 30vh;
+	max-height: 70vh;
+	border-radius: 16px;
+	background-color: light-dark(var(--color-light-2),var(--color-dark-2));
+	border: none;
+	align-self: center;
+	justify-self: center;
+	box-shadow: var(--box-shadow);
+	outline: none;
+	padding: 32px;
+	&>div{
+		position: relative;
+	}
+	&::backdrop{
+		background-color: var(--color-dark-1-t);
+	}
 }
