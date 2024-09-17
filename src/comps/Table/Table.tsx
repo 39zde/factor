@@ -46,7 +46,16 @@ export function useTableDispatch() {
 	return useContext(TableDispatchContext);
 }
 
-export function Table({ dataBaseName, tableName, colsHook, entriesHook, updateHook, uniqueKey, update }: TableProps): React.JSX.Element {
+export function Table({
+	dataBaseName,
+	tableName,
+	colsHook,
+	entriesHook,
+	updateHook,
+	uniqueKey,
+	update,
+	nativeColumnNames,
+}: TableProps): React.JSX.Element {
 	const rowColumnWidth = 30;
 	const scrollBarHeight = 5;
 	const { database, appearances, worker, general } = useAppContext();
@@ -133,6 +142,19 @@ export function Table({ dataBaseName, tableName, colsHook, entriesHook, updateHo
 				appearances.rowHeight,
 				worker.TableWorker
 			);
+		}
+		if (nativeColumnNames !== undefined) {
+			dispatch({
+				type: 'set',
+				name: 'nativeColumnNames',
+				newVal: nativeColumnNames,
+			});
+		} else {
+			dispatch({
+				type: 'set',
+				name: 'nativeColumnNames',
+				newVal: false,
+			});
 		}
 	}, [tableName, dataBaseName, uniqueKey, database.dbVersion]);
 
@@ -366,7 +388,7 @@ export function Table({ dataBaseName, tableName, colsHook, entriesHook, updateHo
 				]);
 				// first check for saved columns older
 				const savedAllColumns = localStorage.getItem(`${tableName}-allColumns`);
-				if (savedAllColumns !== null) {
+				if (savedAllColumns !== null && nativeColumnNames) {
 					// use them if they are there
 					dispatch({
 						type: 'set',

@@ -16,4 +16,5 @@ export interface TableProps {
 	uniqueKey: string;
 	key?: string;
 	update?: boolean;
+	nativeColumnNames?: boolean;
 }

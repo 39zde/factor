@@ -17,13 +17,13 @@ export function tableReducer(tableState: TableContextType, action: TableDispatch
 					writable: true,
 					value: action.newVal,
 				});
-				if (action.name === 'columns') {
+				if (action.name === 'columns' && tableState.nativeColumnNames === false) {
 					localStorage.setItem(`${tableState.tableName}-columns`, (action.newVal as string[]).join(','));
 				}
-				if (action.name === 'allColumns') {
+				if (action.name === 'allColumns'&& tableState.nativeColumnNames === false) {
 					localStorage.setItem(`${tableState.tableName}-allColumns`, (action.newVal as string[]).join(','));
 				}
-				if (action.name === 'columnWidths') {
+				if (action.name === 'columnWidths' && tableState.nativeColumnNames === false) {
 					localStorage.setItem(`${tableState.tableName}-columnWidths`, (action.newVal as number[]).join(','));
 				}
 			}
@@ -68,7 +68,9 @@ export function tableReducer(tableState: TableContextType, action: TableDispatch
 				const newWidth = Math.abs(Math.abs(b - a));
 				if (!isNaN(newWidth)) {
 					const newColWidths = tableState.columnWidths.map((value, index) => (index === tableState.activeCol ? newWidth : value));
-					localStorage.setItem(`${tableState.tableName}-columnWidths`, newColWidths.join(','));
+					if(tableState.nativeColumnNames === false){
+						localStorage.setItem(`${tableState.tableName}-columnWidths`, newColWidths.join(','));
+					}
 					return {
 						...tableState,
 						cursorX: tableState.isMouseDown ? action.newVal : tableState.cursorX,

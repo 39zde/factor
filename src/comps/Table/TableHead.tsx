@@ -46,7 +46,9 @@ export function TableHead(): React.JSX.Element {
 										// @ts-expect-error we accept the ref might be null
 										ref={tableState.colsRef[index]}
 										key={`thead-tr-th${index}`}>
-										<span className="guts">{index !== 0 ? <ColumnTitle column={item} /> : ''}</span>
+										<span className="guts">
+											{index !== 0 ? tableState.nativeColumnNames ? <>{item}</> : <ColumnTitle column={item} /> : ''}
+										</span>
 										{index !== 0 ? (
 											<>
 												<ResizeElement

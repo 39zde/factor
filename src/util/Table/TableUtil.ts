@@ -189,6 +189,7 @@ export const PlaceHolderTableContext: TableContextType = {
 	lastReceived: 0,
 	hasStarted: false,
 	footerRowFirstElementRef: null,
+	nativeColumnNames: false,
 };
 
 export { tableReducer } from './tableReducer';

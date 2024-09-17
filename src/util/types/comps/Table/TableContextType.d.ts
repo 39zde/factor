@@ -69,6 +69,7 @@ export interface TableContextType {
 	 * used for portal-ing the lower row arrow button to the table foot
 	 */
 	footerRowFirstElementRef: React.RefObject<HTMLTableCellElement> | null;
+	nativeColumnNames: boolean;
 }
 
 export interface ResizeStyle {
