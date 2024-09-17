@@ -142,4 +142,7 @@ node genData.cli.js
 
 ## Build
 
-To build follow the [official guide](https://www.electronjs.org/docs/latest/development/build-instructions-gn)
+```bash
+yarn build
+```
+This command does the trick. For further details consult the official docs. Also keep in mind [Tauri v2](https://v2.tauri.app/) is very young
