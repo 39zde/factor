@@ -74,10 +74,80 @@
 	display: flex;
 	width: fit-content;
 	flex-direction: row;
-	gap:16;
+	align-items: center;
+	justify-content: center;
+	gap:16px;
 	&>div>small{
 		text-decoration: underline;
 		cursor: pointer;
-		margin-left: 16px;
+	}
+}
+
+.dataBaseDeletionModal{
+	display: grid;
+	grid-template-areas:
+		'a a a'
+		'b b b'
+		'c c c';
+	grid-template-rows: auto ;
+	grid-template-columns: auto;
+
+}
+
+.dataBaseDeletionModal>h3{
+	width: 100%;
+	text-align: center;
+	grid-area: a;
+}
+
+.dataBaseDeletionModal>p{
+	width: 100%;
+	text-align: center;
+	grid-area: b;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.dataBaseDeletionModal>.dataBaseDeletionButtons{
+	display: flex;
+	width: 100%;
+	flex-direction: row;
+	align-items: end;
+	justify-content: space-between;
+	gap: 32px;
+	grid-area: c;
+	&>button{
+		width: 100%;
+		text-align: center;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		&:last-of-type{
+			background-color: light-dark(var(--color-primary-light), var(--color-primary-dark));
+		}
+		&:last-of-type:hover{
+			background-color: light-dark(var(--color-primary), var(--color-primary));
+			border-color: light-dark(var(--color-primary), var(--color-primary));
+		}
+	}
+}
+
+.deletionNote,.notificationTester{
+	color: light-dark(var(--color-dark-3),var(--color-light-3))
+}
+
+.dangerZone{
+	display: flex;
+	justify-content: stretch;
+	align-items: center;
+	width: 100%;
+	gap: 12px;
+	&>div{
+		height: 2px;
+		border-color: var(--color-secondary);
+		border-width: 3px 0;
+		border-style: solid;
+		width: 100%;
 	}
 }
