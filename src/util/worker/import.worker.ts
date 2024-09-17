@@ -193,6 +193,9 @@ const updateManager = (total: number) => {
 			ratchet += increment;
 			postUpdate(`${(progress * 100).toFixed(0)}%`);
 			if (progress === 1) {
+				postMessage({
+					type: "success"
+				})
 				ratchet = 0.1;
 				counter = 0;
 				progress = 0;
@@ -506,7 +509,7 @@ function sortData(
 			const update = updateManager(dataCount);
 			const cursorRequest = dataUpload.openCursor(null, 'next');
 
-			function parseCustomerData(dataBaseName: string, dbVersion: number, map: CustomerSortingMap, row: UploadRow) {
+			function parseCustomerData(dataBaseName: string, dbVersion: number, map: CustomerSortingMap, row: UploadRow, update: () => void) {
 				const customerDBrequest = indexedDB.open(dataBaseName, dbVersion);
 
 				customerDBrequest.onupgradeneeded = function upgradeCustomerDB(e: IDBVersionChangeEvent): void {
@@ -627,7 +630,7 @@ function sortData(
 							target[prop] = value;
 							if (prop === 'count') {
 								if (target['count'] == target['total']) {
-									insertCustomers(customer);
+									insertCustomers(customer, update);
 								}
 							}
 							return true;
@@ -1021,7 +1024,7 @@ function sortData(
 						}
 					}
 
-					function insertCustomer(data: Customer, callback: (rowNumber: number | null) => void): void {
+					function insertCustomer(data: Customer, callback: (rowNumber: [number | null, () => void]) => void, update: () => void): void {
 						if (oStores.contains('customers')) {
 							const customerTransaction = customerDB.transaction('customers', 'readwrite', { durability: 'strict' });
 							const oStoreCustomers = customerTransaction.objectStore('customers');
@@ -1079,11 +1082,11 @@ function sortData(
 										}
 										const putRequest = oStoreCustomers.put(preexistingCustomer);
 										putRequest.onsuccess = () => {
-											callback(putRequest.result as number);
+											callback([putRequest.result as number, update]);
 											customerTransaction.commit();
 										};
 										putRequest.onerror = () => {
-											callback(null);
+											callback([null, update]);
 											customerTransaction.commit();
 										};
 									} else {
@@ -1095,38 +1098,48 @@ function sortData(
 											data.row = customerCount + 1;
 											const addRequest = oStoreCustomers.add(data);
 											addRequest.onsuccess = () => {
-												callback(addRequest.result as number);
+												callback([addRequest.result as number, update]);
 												customerTransaction.commit();
 											};
 											addRequest.onerror = () => {
-												callback(null);
+												callback([null, update]);
 												customerTransaction.commit();
 											};
 										};
 									}
 								};
 								customersIndexRequest.onerror = () => {
-									callback(null);
+									callback([null, update]);
 									customerTransaction.commit();
 								};
 							}
 						} else {
-							callback(null);
+							callback([null, update]);
 						}
 					}
 
-					function insertCustomers(customer: PreInsertCustomer) {
-						parseCustomer([customer], (result: Customer[] | null) => {
-							if (result !== null) {
-								for (let i = 0; i < result.length; i++) {
-									insertCustomer(result[i], (rowNumber: number | null) => {
-										if (rowNumber !== null) {
-											// console.log('done with customer in row : ' + rowNumber);
-										}
-									});
+					function insertCustomers(customer: PreInsertCustomer, update: () => void) {
+						console.log('parse Customer');
+						parseCustomer(
+							[customer],
+							(result: [Customer[] | null, () => void]) => {
+								if (result[0] !== null) {
+									for (let i = 0; i < result[0].length; i++) {
+										insertCustomer(
+											result[0][i],
+											(rowNumber: [number | null, () => void]) => {
+												// if (rowNumber !== null) {
+												// console.log('done with customer in row : ' + rowNumber);
+												// }
+												rowNumber[1]();
+											},
+											result[1]
+										);
+									}
 								}
-							}
-						});
+							},
+							update
+						);
 					}
 
 					function parsePersons(data: DerefPersonType[], callback: (result: PersonType[] | null) => void): void {
@@ -1295,13 +1308,18 @@ function sortData(
 						}
 					}
 
-					function parseCustomer(data: PreInsertCustomer[], callback: (result: Customer[] | null) => void): void {
+					function parseCustomer(
+						data: PreInsertCustomer[],
+						callback: (result: [Customer[] | null, () => void]) => void,
+						update: () => void
+					): void {
 						const reffedCustomers: Customer[] = [];
 						let emailHolder = new WeakMap();
 						let phoneHolder = new WeakMap();
 						const counter = {
 							count: 0,
 							total: 0,
+							update: update,
 						};
 
 						const counterHandler = {
@@ -1309,7 +1327,7 @@ function sortData(
 								target[prop] = value;
 								if (prop === 'count') {
 									if (target['count'] === target['total']) {
-										callback(reffedCustomers);
+										callback([reffedCustomers, target['update']]);
 										counter.count = 0;
 										counter.count = 0;
 										phoneHolder = new WeakMap();
@@ -1338,7 +1356,7 @@ function sortData(
 								refCustomer.phones = undefined;
 								reffedCustomers[i] = refCustomer;
 
-								if (Array.isArray(emailHolder.get(data[i]))) {
+								if (Array.isArray(emailHolder.get(data[i])) && emailHolder.get(data[i]).length !== 0) {
 									for (let j = 0; j < emailHolder.get(data[i]).length; j++) {
 										tracker.total += 1;
 										insertEmail(emailHolder.get(data[i])[j], (result: number | null) => {
@@ -1348,18 +1366,29 @@ function sortData(
 											tracker.count += 1;
 										});
 									}
-								}
-							}
-
-							if (Array.isArray(phoneHolder.get(data[i]))) {
-								for (let j = 0; j < phoneHolder.get(data[i]).length; j++) {
+								} else {
 									tracker.total += 1;
-									insertPhone(phoneHolder.get(data[i])[j], (result: number | null) => {
-										if (result !== null) {
-											reffedCustomers[i].phones = updateArrayBuffer(reffedCustomers[i].phones, result);
-										}
-										tracker.count += 1;
-									});
+								}
+
+								if (Array.isArray(phoneHolder.get(data[i]) && phoneHolder.get(data[i]).length !== 0)) {
+									for (let j = 0; j < phoneHolder.get(data[i]).length; j++) {
+										tracker.total += 1;
+										insertPhone(phoneHolder.get(data[i])[j], (result: number | null) => {
+											if (result !== null) {
+												reffedCustomers[i].phones = updateArrayBuffer(reffedCustomers[i].phones, result);
+											}
+											tracker.count += 1;
+										});
+									}
+								} else {
+									tracker.total += 1;
+								}
+
+								if (!Array.isArray(phoneHolder.get(data[i])) || emailHolder.get(data[i]).length === 0) {
+									tracker.count += 1;
+								}
+								if (!Array.isArray(emailHolder.get(data[i])) || emailHolder.get(data[i]).length === 0) {
+									tracker.count += 1;
 								}
 							}
 						}
@@ -1581,7 +1610,7 @@ function sortData(
 					});
 
 					if (quedAddresses.length === 0 && quedBanks.length === 0 && quedCompany.length === 0 && quedPersons.length === 0) {
-						insertCustomers(customer);
+						insertCustomers(customer, update);
 					}
 				};
 
@@ -1741,7 +1770,7 @@ function sortData(
 							parseArticleData('article_db', dbVersion, sortingMap as ArticleSortingMap, cursor.value);
 							break;
 						case 'customer_db':
-							parseCustomerData('customer_db', dbVersion, sortingMap as CustomerSortingMap, cursor.value);
+							parseCustomerData('customer_db', dbVersion, sortingMap as CustomerSortingMap, cursor.value, update);
 							break;
 						case 'document_db':
 							parseDocumentData('document_db', dbVersion, sortingMap as DocumentSortingMap, cursor.value);
@@ -1749,7 +1778,6 @@ function sortData(
 						default:
 							break;
 					}
-					update();
 					cursor.continue();
 				} else {
 					return;
