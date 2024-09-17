@@ -134,8 +134,11 @@ Index Names have the following structure:
 
 ## Sample Data
 
- The Sample Data was generated with [fakery.dev](https://fakery.dev/). All Sample data is stored in [`./resources/data`](./resources/data)
-
+ There is a way to generate sample data, which is ready for importing. The script is located at [`./resources/data/genData.cli.js`](./resources/data/genData.cli.js).
+ ```bash
+node genData.cli.js
+ ```
+ After calling the script you will be asked, how many rows you want. Shortly after a file will appear, ready to be used.
 
 ## Build
 
