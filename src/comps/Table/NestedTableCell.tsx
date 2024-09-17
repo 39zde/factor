@@ -40,7 +40,18 @@ function PersonTableCell({ data }: { data: PersonType[] }): React.JSX.Element {
 							text += item.firstName + ' ';
 						}
 						if (item?.alias !== undefined) {
-							text += "'" + item.alias + "' ";
+							if (item.alias.length !== 0) {
+								text +=
+									"'" +
+									item.alias
+										.map((val) => {
+											if (val !== '') {
+												return val;
+											}
+										})
+										.join(', ') +
+									"' ";
+							}
 						}
 						if (item?.lastName !== undefined) {
 							text += item.lastName;
