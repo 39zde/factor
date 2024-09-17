@@ -2511,10 +2511,9 @@ function genBank() {
 		"BE",
 		"FR",
 		"NL",
-		"UK"
 	]
 	crypto.getRandomValues(rand)
-	const countryIndex = Math.round((rand[0] + (countryCode.length - 1)) / 255)
+	const countryIndex = Math.round((rand[0] * (countryCode.length -1)) / 255)
 	const bankName = "SomeRandomBank (SRB)"
 	const iban = genIban.iban(countryCode[countryIndex]);
 	let bic;
