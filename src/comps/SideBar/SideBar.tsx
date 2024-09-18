@@ -25,7 +25,7 @@ export function SideBar({ routesHook }: SideBarProps): React.JSX.Element {
 
 	return (
 		<>
-			<div
+			<aside
 				className="sideBar"
 				style={{
 					width: sideBarWidth,
@@ -121,7 +121,6 @@ export function SideBar({ routesHook }: SideBarProps): React.JSX.Element {
 						textOverride={general.language === 'deutsch' ? 'Vorlagen' : 'Templates'}
 					/>
 					<div className="divider" />
-					<p>{general.language === 'deutsch' ? 'Datenbanken' : 'Databases'}</p>
 					{Object.entries(database.databases).map(([key, val]) => {
 						if (val !== null) {
 							return (
@@ -234,7 +233,7 @@ export function SideBar({ routesHook }: SideBarProps): React.JSX.Element {
 						active={routesHook.showSettings}
 					/>
 				</div>
-			</div>
+			</aside>
 		</>
 	);
 }
