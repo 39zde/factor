@@ -11,11 +11,7 @@ export const ColumnSetter = forwardRef<HTMLSelectElement, ColumnSetterProps>(fun
 					{props.name}
 					{props.name === 'Customers ID' ? <sup>*</sup> : ''}:
 				</span>
-				<select
-					ref={ref}
-					onInput={props.onInput}
-					required={props.name === 'Customers ID' ? true : false}
-					defaultValue={props.columns[props.defaultIndex]}>
+				<select ref={ref} onInput={props.onInput} required={props.name === 'Customers ID' ? true : false}>
 					{props.columns.map((item) => {
 						return (
 							<>
