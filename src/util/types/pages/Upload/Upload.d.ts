@@ -28,3 +28,11 @@ export type CustomerSorterInputGroupUnderling = {
 	refGroup: React.MutableRefObject<React.RefObject<HTMLSelectElement>[]>;
 	fieldKeys: string[];
 };
+
+export type ColumnSetterProps = {
+	checkBoxRef?: React.MutableRefObject<HTMLInputElement | null>;
+	columns: string[];
+	name: string;
+	onInput: React.FormEventHandler<HTMLSelectElement>;
+	defaultIndex: number;
+};
