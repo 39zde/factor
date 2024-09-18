@@ -6,6 +6,7 @@ import type { CustomerSortingMap, SorterProps, CustomerSorterInputGroup, Custome
 
 export function CustomerSorter({ columns, hook }: SorterProps): React.JSX.Element {
 	const { general } = useAppContext();
+	const counter = useRef<number>(-1);
 	const [sortingMap, setSortingMap] = useState<CustomerSortingMap>({
 		addresses: {},
 		banks: {},
@@ -232,6 +233,8 @@ export function CustomerSorter({ columns, hook }: SorterProps): React.JSX.Elemen
 		}
 	};
 
+	counter.current = -1;
+
 	return (
 		<>
 			<div className="customerOptions">
@@ -247,10 +250,12 @@ export function CustomerSorter({ columns, hook }: SorterProps): React.JSX.Elemen
 											{subject.fields.map((field, index) => {
 												const fieldRef = useRef<HTMLSelectElement>(null);
 												subject.refGroup.current[index] = fieldRef;
+												counter.current += 1
 												return (
 													<>
 														<div className="dataRowWrapper" key={group.head + subject.name + field + 'div'}>
 															<ColumnSetter
+																defaultIndex={counter.current}
 																columns={columns}
 																name={field}
 																onInput={() => {
