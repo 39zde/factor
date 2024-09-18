@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, useCallback } from 'react';
 // non-lib imports
 import { ColumnSetter } from './ColumnSetter';
 import { useAppContext } from '@app';
@@ -7,7 +7,7 @@ import type { CustomerSortingMap, SorterProps, CustomerSorterInputGroup, Custome
 export function CustomerSorter({ columns, hook }: SorterProps): React.JSX.Element {
 	const { general } = useAppContext();
 	const counter = useRef<number>(-1);
-	const [sortingMap, setSortingMap] = useState<CustomerSortingMap>({
+	const sortingMap = useRef<CustomerSortingMap>({
 		addresses: {},
 		banks: {},
 		company: {},
@@ -198,11 +198,11 @@ export function CustomerSorter({ columns, hook }: SorterProps): React.JSX.Elemen
 	];
 
 	useEffect(() => {
-		hook.setMap(sortingMap);
-	}, [sortingMap]);
+		hook.setMap(sortingMap.current);
+	}, [sortingMap.current]);
 
 	const inputHandler = (group: CustomerSorterInputGroup, subject: CustomerSorterInputGroupUnderling, index: number) => {
-		const currentMap: CustomerSortingMap = sortingMap;
+		const currentMap: CustomerSortingMap = sortingMap.current;
 		if (group.mapKey !== 'row') {
 			if (subject.mapKey !== undefined) {
 				// @ts-expect-error everything will match because of descendance
@@ -229,9 +229,44 @@ export function CustomerSorter({ columns, hook }: SorterProps): React.JSX.Elemen
 					value: subject.refGroup.current[index].current?.value ?? undefined,
 				});
 			}
-			setSortingMap(currentMap);
+			sortingMap.current = currentMap;
 		}
 	};
+
+	const layoutHandler = useCallback(
+		(group: CustomerSorterInputGroup, subject: CustomerSorterInputGroupUnderling, index: number, value: string) => {
+			const currentMap: CustomerSortingMap = sortingMap.current;
+			if (group.mapKey !== 'row') {
+				if (subject.mapKey !== undefined) {
+					// @ts-expect-error everything will match because of descendance
+					if (currentMap[group.mapKey][subject.mapKey] === undefined) {
+						Object.defineProperty(currentMap[group.mapKey], subject.mapKey, {
+							configurable: true,
+							enumerable: true,
+							writable: true,
+							value: {},
+						});
+					}
+					// @ts-expect-error everything will match because of descendance
+					Object.defineProperty(currentMap[group.mapKey][subject.mapKey], subject.fieldKeys[index], {
+						configurable: true,
+						enumerable: true,
+						writable: true,
+						value: value,
+					});
+				} else {
+					Object.defineProperty(currentMap[group.mapKey], subject.fieldKeys[index], {
+						enumerable: true,
+						configurable: true,
+						writable: true,
+						value: value,
+					});
+				}
+				sortingMap.current = currentMap;
+			}
+		},
+		[sortingMap]
+	);
 
 	counter.current = -1;
 
@@ -250,7 +285,8 @@ export function CustomerSorter({ columns, hook }: SorterProps): React.JSX.Elemen
 											{subject.fields.map((field, index) => {
 												const fieldRef = useRef<HTMLSelectElement>(null);
 												subject.refGroup.current[index] = fieldRef;
-												counter.current += 1
+												counter.current += 1;
+												layoutHandler(group, subject, index, columns[counter.current + 1]);
 												return (
 													<>
 														<div className="dataRowWrapper" key={group.head + subject.name + field + 'div'}>
