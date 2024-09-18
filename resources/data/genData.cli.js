@@ -2513,7 +2513,7 @@ function genBank() {
 		"NL",
 	]
 	crypto.getRandomValues(rand)
-	const countryIndex = Math.round((rand[0] * (countryCode.length -1)) / 255)
+	const countryIndex = Math.round((rand[0] * (countryCode.length - 1)) / 255)
 	const bankName = "SomeRandomBank (SRB)"
 	const iban = genIban.iban(countryCode[countryIndex]);
 	let bic;
@@ -2550,9 +2550,6 @@ async function main() {
 		if (isNaN(rows) || rows === undefined) {
 			rows = 1000
 		}
-
-
-
 		const writeStream = fs.createWriteStream(`./customers-${rows}.csv`);
 		const encoder = new TextEncoder();
 		writeStream.on("ready", () => {
@@ -2584,10 +2581,10 @@ async function main() {
 	} catch (e) {
 		console.error(e)
 		rl.close()
-	}finally{
+	} finally {
 		let end = new Date()
 		let diff = end.getTime() - start.getTime()
-		console.log('Done. Generating took %d ms (%ds)\n finishing...',diff, diff/1000)
+		console.log('Done. Generating took %d ms (%ds)\n finishing...', diff, diff / 1000)
 	}
 }
 
