@@ -95,7 +95,7 @@ export function ExportPage(): React.JSX.Element {
 	return (
 		<>
 			<div className="exportPage">
-				<ul className="toolbar">
+				<menu className="toolbar">
 					<li>
 						<div className="fileExportFormatSelectWrapper">
 							<p>{context.general.language === 'deutsch' ? 'Dateiformat:' : 'File Format:'}</p>
@@ -120,7 +120,7 @@ export function ExportPage(): React.JSX.Element {
 							</select>
 						</div>
 					</li> */}
-				</ul>
+				</menu>
 				<div className="exportDatabases">
 					{Object.entries(context.database.databases).map(([key, value]) => {
 						const oStores = value as string[];

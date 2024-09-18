@@ -208,7 +208,7 @@ export function Upload(): React.JSX.Element {
 		<>
 			<div className="uploadPage page" style={{ overflow: 'hidden' }}>
 				<div className="tableInfoWrapper">
-					<ul className="toolbar">
+					<menu className="toolbar">
 						<li className="fileSelector">
 							<div className="uploader">
 								<input
@@ -278,7 +278,7 @@ export function Upload(): React.JSX.Element {
 						) : (
 							<></>
 						)}
-					</ul>
+					</menu>
 				</div>
 				<div className="uploadTableWrapper" ref={tableWrapperRef}>
 					{showTable ? (
@@ -303,7 +303,7 @@ export function Upload(): React.JSX.Element {
 					{showTable ? (
 						<>
 							<h2>{general.language === 'english' ? 'Sort and Assign Data' : 'Daten Sortieren und Einordnen'}</h2>
-							<ul className="toolbar">
+							<menu className="toolbar">
 								<li>
 									<select onInput={tableImportModeHandler} ref={tableImportModeInputRef} defaultValue={undefined}>
 										<option value={undefined}>-</option>
@@ -317,7 +317,7 @@ export function Upload(): React.JSX.Element {
 										{general.language === 'deutsch' ? 'Tabelle erstellen/erneuern' : 'Create/Update Table'}
 									</button>
 								</li>
-							</ul>
+							</menu>
 						</>
 					) : (
 						<></>
