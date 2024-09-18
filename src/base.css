@@ -248,3 +248,7 @@ dialog {
 		background-color: var(--color-dark-1-t);
 	}
 }
+
+address{
+	font-style: normal;
+}

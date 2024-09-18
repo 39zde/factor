@@ -74,7 +74,7 @@ function PersonTableCell({ data }: { data: PersonType[] }): React.JSX.Element {
 function AddressTableCell({ data }: { data: AddressType[] }): React.JSX.Element {
 	return (
 		<>
-			<span className="nestedCell">
+			<address className="nestedCell">
 				{data !== undefined ? (
 					data.map((item) => {
 						let textRow1 = '';
@@ -105,7 +105,7 @@ function AddressTableCell({ data }: { data: AddressType[] }): React.JSX.Element 
 				) : (
 					<></>
 				)}
-			</span>
+			</address>
 		</>
 	);
 }
@@ -113,7 +113,7 @@ function AddressTableCell({ data }: { data: AddressType[] }): React.JSX.Element 
 function EmailTableCell({ data }: { data: EmailType[] }): React.JSX.Element {
 	return (
 		<>
-			<span className="nestedCell">
+			<address className="nestedCell">
 				{data !== undefined ? (
 					data.map((item) => {
 						let text1 = '';
@@ -131,7 +131,7 @@ function EmailTableCell({ data }: { data: EmailType[] }): React.JSX.Element {
 				) : (
 					<></>
 				)}
-			</span>
+			</address>
 		</>
 	);
 }
@@ -139,7 +139,7 @@ function EmailTableCell({ data }: { data: EmailType[] }): React.JSX.Element {
 function PhoneTableCell({ data }: { data: PhoneNumberType[] }): React.JSX.Element {
 	return (
 		<>
-			<span className="nestedCell">
+			<address className="nestedCell">
 				{data.map((item) => {
 					let text1 = '';
 					if (item?.phone !== undefined) {
@@ -153,7 +153,7 @@ function PhoneTableCell({ data }: { data: PhoneNumberType[] }): React.JSX.Elemen
 						</>
 					);
 				})}
-			</span>
+			</address>
 		</>
 	);
 }
@@ -201,11 +201,11 @@ function WebsiteTableCell({ data }: { data: string }): React.JSX.Element {
 	};
 	return (
 		<>
-			<span className="nestedCell">
+			<address className="nestedCell">
 				<a tabIndex={-1} href={data} onClick={clickHandler}>
 					{data.replace('https://', '')}
 				</a>
-			</span>
+			</address>
 		</>
 	);
 }
@@ -216,7 +216,19 @@ function BankTableCell({ data }: { data: BankType[] }): React.JSX.Element {
 			{data !== undefined ? (
 				data.map((item, index) => {
 					const line1 = item.name;
-					const item2 = item.iban;
+					let item2;
+					if (item.name !== undefined) {
+						item2 = Array.from(item.iban as string).map((v, i) => {
+
+							if (i > 2) {
+								if (i % 4 === 0) {
+									return  ' ' +v;
+								}
+							}
+
+							return v;
+						}).join("");
+					}
 					// const item3 = item.notes;
 
 					return (
