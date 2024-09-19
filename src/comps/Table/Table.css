@@ -60,13 +60,9 @@
 
  tfoot>tr,
  thead>tr {
- 	/* border-color: light-dark(var(--color-dark-3-t), var(--color-dark-3));
- 	border-width: 1px 0 3px 0;
- 	border-style: solid;
- 	background: none; */
+	background: light-dark(var(--color-light-2), var(--color-dark-2));
 
  	&>th {
- 		background: light-dark(var(--color-light-2), var(--color-dark-2));
  		padding: 1px 5px;
  		resize: horizontal;
  		overflow: visible;
