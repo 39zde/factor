@@ -56,7 +56,7 @@ export function Table({
 	update,
 	nativeColumnNames,
 }: TableProps): React.JSX.Element {
-	const rowColumnWidth = 30;
+	const rowColumnWidth = 40;
 	const scrollBarHeight = 5;
 	const { database, appearances, worker, general } = useAppContext();
 	const notify = useChangeContext();
@@ -712,6 +712,7 @@ export function Table({
 											columns={tableState.columns}
 											nativeColumnNames={tableState.nativeColumnNames}
 											rowHeight={appearances.rowHeight}
+											columnWidths={tableState.columnWidths}
 										/>
 									</>
 								) : (

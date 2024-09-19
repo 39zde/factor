@@ -10,6 +10,7 @@ export const TableFoot = memo(function TableFoot({
 	tableName,
 	footerRowFirstElementRef,
 	nativeColumnNames,
+	columnWidths,
 }: {
 	rowHeight: number;
 	columns: string[];
@@ -17,6 +18,7 @@ export const TableFoot = memo(function TableFoot({
 	tableName: string;
 	footerRowFirstElementRef: React.RefObject<HTMLTableCellElement> | null;
 	nativeColumnNames: boolean;
+	columnWidths: number[];
 }): React.JSX.Element {
 	return (
 		<>
@@ -32,8 +34,6 @@ export const TableFoot = memo(function TableFoot({
 						maxHeight: rowHeight,
 						height: '100%',
 						borderBottom: 'none',
-						borderLeft: 'none',
-						borderRight: 'none',
 					}}>
 					{allColumns.map((item, index) => {
 						if (columns.includes(item)) {
@@ -41,7 +41,12 @@ export const TableFoot = memo(function TableFoot({
 								<>
 									<th
 										style={{
+											height: rowHeight,
 											maxHeight: rowHeight,
+											minHeight: rowHeight,
+											minWidth: columnWidths[index],
+											maxWidth: columnWidths[index],
+											width: columnWidths[index],
 										}}
 										key={`tfoot-${index}-${item}`}
 										ref={index === 0 ? footerRowFirstElementRef : undefined}>
