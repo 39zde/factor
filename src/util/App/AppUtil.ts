@@ -149,11 +149,11 @@ export function appReducer(appState: AppContextType, action: AppAction): AppCont
 						}
 					}
 				}
-				if(action.change.database !== undefined){
-					if(action.change.database.databases !== undefined){
-						for(const [key,val] of Object.entries(action.change.database.databases)){
-							if(val === null){
-								indexedDB.deleteDatabase(key)
+				if (action.change.database !== undefined) {
+					if (action.change.database.databases !== undefined) {
+						for (const [key, val] of Object.entries(action.change.database.databases)) {
+							if (val === null) {
+								indexedDB.deleteDatabase(key);
 							}
 						}
 					}

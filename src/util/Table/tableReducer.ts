@@ -20,7 +20,7 @@ export function tableReducer(tableState: TableContextType, action: TableDispatch
 				if (action.name === 'columns' && tableState.nativeColumnNames === false) {
 					localStorage.setItem(`${tableState.tableName}-columns`, (action.newVal as string[]).join(','));
 				}
-				if (action.name === 'allColumns'&& tableState.nativeColumnNames === false) {
+				if (action.name === 'allColumns' && tableState.nativeColumnNames === false) {
 					localStorage.setItem(`${tableState.tableName}-allColumns`, (action.newVal as string[]).join(','));
 				}
 				if (action.name === 'columnWidths' && tableState.nativeColumnNames === false) {
@@ -68,7 +68,7 @@ export function tableReducer(tableState: TableContextType, action: TableDispatch
 				const newWidth = Math.abs(Math.abs(b - a));
 				if (!isNaN(newWidth)) {
 					const newColWidths = tableState.columnWidths.map((value, index) => (index === tableState.activeCol ? newWidth : value));
-					if(tableState.nativeColumnNames === false){
+					if (tableState.nativeColumnNames === false) {
 						localStorage.setItem(`${tableState.tableName}-columnWidths`, newColWidths.join(','));
 					}
 					return {
