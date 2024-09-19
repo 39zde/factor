@@ -15,8 +15,6 @@ export interface SorterProps {
 	};
 }
 
-export type UploadMode = 'article_db' | 'customer_db' | 'document_db';
-
 export type CustomerSorterInputGroup = {
 	head: string;
 	mapKey: CustomerSortingMapProps;
@@ -29,4 +27,12 @@ export type CustomerSorterInputGroupUnderling = {
 	fields: string[];
 	refGroup: React.MutableRefObject<React.RefObject<HTMLSelectElement>[]>;
 	fieldKeys: string[];
+};
+
+export type ColumnSetterProps = {
+	checkBoxRef?: React.MutableRefObject<HTMLInputElement | null>;
+	columns: string[];
+	name: string;
+	onInput: React.FormEventHandler<HTMLSelectElement>;
+	defaultIndex: number;
 };

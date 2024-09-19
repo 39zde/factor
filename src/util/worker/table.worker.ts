@@ -91,7 +91,7 @@ function getStartingRows(
 ) {
 	const dbRequest = indexedDB.open(dataBaseName, dbVersion);
 
-	dbRequest.onblocked = () => {
+	dbRequest.onblocked = function startingDBblocked() {
 		if (callback !== undefined) {
 			callback(undefined);
 		} else {
@@ -102,7 +102,7 @@ function getStartingRows(
 		}
 	};
 
-	dbRequest.onerror = () => {
+	dbRequest.onerror = function startingDBerror() {
 		if (callback !== undefined) {
 			callback(undefined);
 		} else {
@@ -113,7 +113,7 @@ function getStartingRows(
 		}
 	};
 
-	dbRequest.onsuccess = () => {
+	dbRequest.onsuccess = function startingDBsuccess() {
 		let received: number = 0;
 		let counter: number = 0;
 		const done: DoneHandler = {
@@ -148,7 +148,7 @@ function getStartingRows(
 			const oStore = transaction.objectStore(storeName);
 			const cursorRequest = oStore.openCursor(null, 'nextunique');
 			const doneHandler = new Proxy(done, doneListener);
-			cursorRequest.onsuccess = () => {
+			cursorRequest.onsuccess = function startingCursorSuccess() {
 				const cursor: IDBCursorWithValue | null = cursorRequest.result;
 				if (cursor) {
 					if (counter < scope) {
@@ -164,7 +164,7 @@ function getStartingRows(
 
 function getColumns(dataBaseName: string, dbVersion: number, storeName: string, callback?: (cols: string[] | undefined) => void) {
 	const dbRequest = indexedDB.open(dataBaseName, dbVersion);
-	dbRequest.onsuccess = () => {
+	dbRequest.onsuccess = function getColumnDBsuccess() {
 		const db = dbRequest.result;
 		if (!db.objectStoreNames.contains(storeName)) {
 			if (callback !== undefined) {
@@ -179,7 +179,7 @@ function getColumns(dataBaseName: string, dbVersion: number, storeName: string, 
 			const columnTransaction = db.transaction(storeName, 'readonly', { durability: 'strict' });
 			const oStore = columnTransaction.objectStore(storeName);
 			const cursorRequest = oStore.openCursor(null);
-			cursorRequest.onsuccess = () => {
+			cursorRequest.onsuccess = function getColumnsCursorSuccess() {
 				let cursor = cursorRequest.result ?? false;
 				if (cursor) {
 					if (callback !== undefined) {
@@ -194,7 +194,7 @@ function getColumns(dataBaseName: string, dbVersion: number, storeName: string, 
 				}
 			};
 
-			cursorRequest.onerror = () => {
+			cursorRequest.onerror = function getColumnsCursorError() {
 				if (callback !== undefined) {
 					callback(undefined);
 				} else {
@@ -205,7 +205,7 @@ function getColumns(dataBaseName: string, dbVersion: number, storeName: string, 
 				}
 			};
 		}
-		dbRequest.onerror = () => {
+		dbRequest.onerror = function getColumnDBerror() {
 			if (callback !== undefined) {
 				callback(undefined);
 			} else {
@@ -219,7 +219,7 @@ function getColumns(dataBaseName: string, dbVersion: number, storeName: string, 
 }
 function getCount(dataBaseName: string, dbVersion: number, storeName: string, callback?: (count: number | undefined) => void) {
 	const dbRequest = indexedDB.open(dataBaseName, dbVersion);
-	dbRequest.onsuccess = () => {
+	dbRequest.onsuccess = function getCountDBrequest() {
 		const db = dbRequest.result;
 		if (!db.objectStoreNames.contains(storeName)) {
 			if (callback !== undefined) {
@@ -234,7 +234,7 @@ function getCount(dataBaseName: string, dbVersion: number, storeName: string, ca
 			const countTransaction = db.transaction(storeName, 'readonly', { durability: 'strict' });
 			const oStore = countTransaction.objectStore(storeName);
 			const countRequest = oStore.count();
-			countRequest.onsuccess = () => {
+			countRequest.onsuccess = function getCountCursorSuccess() {
 				if (callback !== undefined) {
 					callback(countRequest.result);
 				} else {
@@ -242,7 +242,7 @@ function getCount(dataBaseName: string, dbVersion: number, storeName: string, ca
 				}
 			};
 
-			countRequest.onerror = () => {
+			countRequest.onerror = function getCountCursorError() {
 				if (callback !== undefined) {
 					callback(undefined);
 				} else {
@@ -255,7 +255,7 @@ function getCount(dataBaseName: string, dbVersion: number, storeName: string, ca
 		}
 	};
 
-	dbRequest.onerror = () => {
+	dbRequest.onerror = function getCountDBError() {
 		if (callback !== undefined) {
 			callback(undefined);
 		} else {
@@ -302,12 +302,13 @@ function fillReferences(dataBase: IDBDatabase, row: TableRow, actionType?: Table
 		if (value instanceof ArrayBuffer) {
 			//in row $copy.row : $key is of type ArrayBuffer
 			// increase $targetCunt by $increment
-			const increment = new DataView(value).byteLength / 2;
-			targetCount += increment;
+			const byteLength = new DataView(value).byteLength;
+			const elementCount = byteLength / 2;
+			targetCount += elementCount;
 
 			// replace the ArrayBuffer with an regular array in our copy
-			copy[key] = new Array(increment);
-			for (let i = 0; i < increment; i++) {
+			copy[key] = new Array(elementCount);
+			for (let i = 0; i < byteLength; i += 2) {
 				const location = new DataView(value).getInt16(i);
 				// the ArrayBuffer has stored $location at $i
 
@@ -317,14 +318,14 @@ function fillReferences(dataBase: IDBDatabase, row: TableRow, actionType?: Table
 					const oStore = transaction.objectStore(key);
 					const only = IDBKeyRange.only(location);
 					const request = oStore.get(only);
-					request.onsuccess = () => {
+					request.onsuccess = function fillReferencesRequestSuccess() {
 						// insert the requested item into our copy
 						// @ts-expect-error we know we are writing to an array
-						copy[key][i] = request.result;
+						copy[key][i / 2] = request.result;
 						// increase the counter
 						proxy.count += 1;
 					};
-					request.onerror = () => {
+					request.onerror = function fillReferencesRequestError() {
 						proxy.count += 1;
 					};
 				}
@@ -364,7 +365,7 @@ function postStream(oStoreItem: DerefRow, actionType: TableWorkerRequestMessageA
 
 function stream(eventData: TableWorkerRequestMessage) {
 	const dbRequest = indexedDB.open(eventData.dataBaseName, eventData.dbVersion);
-	dbRequest.onsuccess = () => {
+	dbRequest.onsuccess = function streamDBsuccess() {
 		const streamDB = dbRequest.result;
 		if (streamDB.objectStoreNames.contains(eventData.storeName)) {
 			const transaction = streamDB.transaction(eventData.storeName, 'readwrite');
@@ -377,7 +378,7 @@ function stream(eventData: TableWorkerRequestMessage) {
 			}
 			const only = IDBKeyRange.only(eventData.action.pos);
 			const req = oStore.get(only);
-			req.onsuccess = () => {
+			req.onsuccess = function streamRequestSuccess() {
 				if (eventData.action === undefined) {
 					return postMessage({
 						type: 'error',
@@ -389,7 +390,7 @@ function stream(eventData: TableWorkerRequestMessage) {
 					fillReferences(streamDB, row, eventData.action.type);
 				}
 			};
-			req.onerror = () => {
+			req.onerror = function streamRequestError() {
 				if (eventData.action === undefined) {
 					return postMessage({
 						type: 'error',
@@ -405,4 +406,5 @@ function stream(eventData: TableWorkerRequestMessage) {
 			};
 		}
 	};
+	dbRequest.onerror = function streamDBerror() {};
 }

@@ -2,6 +2,7 @@ import React, { useRef, useState } from 'react';
 // non-lib imports
 import Comps from '@comps';
 import type { CustomerDBObjectStores } from '@typings';
+import { CustomerTableNames } from './CustomerTableNames';
 import './Customers.css';
 
 export function Customers(): React.JSX.Element {
@@ -25,15 +26,15 @@ export function Customers(): React.JSX.Element {
 		<>
 			<div ref={tableWrapperRef} className="customersWrapper">
 				<div className="toolBarWrapper">
-					<ul className="toolbar">
+					<menu className="toolbar">
 						{customerTables.map((item) => (
 							<li key={`${item}-switcher`}>
 								<button className={tableName === item ? 'tableActive' : ''} onClick={() => tableSwitchHandler(item)}>
-									{item}
+									<CustomerTableNames tableName={item} />
 								</button>
 							</li>
 						))}
-					</ul>
+					</menu>
 				</div>
 				<Comps.Table dataBaseName="customer_db" tableName={tableName} uniqueKey="row" updateHook={updateHook} update={update} />
 			</div>

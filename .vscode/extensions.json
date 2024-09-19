@@ -6,6 +6,7 @@
         "formulahendry.auto-rename-tag",
         "aaron-bond.better-comments",
         "ms-vscode.vscode-typescript-next",
-        "esbenp.prettier-vscode"
+        "esbenp.prettier-vscode",
+        "vadimcn.vscode-lldb"
     ]
 }

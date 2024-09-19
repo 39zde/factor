@@ -1,7 +1,9 @@
-import { useCallback, useRef, useState } from 'react';
-import './Settings.css';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Save } from 'lucide-react';
+// non-lib imports
+import { useAppContext, useChangeContext, solids } from '@app';
+import { getDataBaseDisplayName } from '@util';
 import Comps from '@comps';
-import { useAppContext, useChangeContext, solids } from '../../App';
 import {
 	ColorThemeSetting,
 	AppSettingsChange,
@@ -10,8 +12,9 @@ import {
 	AppSettingsAppearance,
 	AppSettingsGeneral,
 	AppSettingsDatabase,
+	DataBaseNames,
 } from '@typings';
-import { Save } from 'lucide-react';
+import './Settings.css';
 export function Settings() {
 	const context = useAppContext();
 	const dispatch = useChangeContext();
@@ -22,6 +25,7 @@ export function Settings() {
 	const decimalSeparatorInputRef = useRef<HTMLSelectElement>(null);
 	const sideBarWidthInputRef = useRef<HTMLInputElement>(null);
 	const scrollSpeedRef = useRef<HTMLInputElement>(null);
+	const notificationInputRef = useRef<HTMLInputElement>(null);
 	const [changed, setChanged] = useState<AppSettingsChange>({});
 	const [colorTheme, setColorTheme] = useState<ColorThemeSetting>(context.appearances.colorTheme);
 	const [rowHeight, setRowHeight] = useState<number>(context.appearances.rowHeight);
@@ -30,6 +34,20 @@ export function Settings() {
 	const [decimalSeparator, setDecimalSeparator] = useState<DecimalSeparatorSetting>(context.general.decimalSeparator);
 	const [sideBarWidth, setSideBarWidth] = useState<number>(context.appearances.sideBarWidth + 26);
 	const [scrollSpeed, setScrollSpeed] = useState<number>(context.general.scrollSpeed);
+	const [allowNotifications, setAllowNotifications] = useState<boolean>(context.general.notifications);
+	const dialogRef = useRef<HTMLDialogElement>(null);
+	const dbDeletionRefs = useRef<React.RefObject<HTMLInputElement>[]>([]);
+	const [dbDeletion, setDBDeletion] = useState<boolean[]>([false, false, false]);
+	const [modalDatabaseIndex, setModalDatabaseIndex] = useState<number>(100);
+	const dataBaseArray: DataBaseNames[] = useMemo(() => {
+		return Object.entries(context.database.databases).map(([key, _val]) => key as DataBaseNames);
+	}, []);
+
+	useEffect(() => {
+		if (notificationInputRef.current !== undefined) {
+			notificationInputRef.current?.setAttribute('checked', allowNotifications.toString());
+		}
+	}, [allowNotifications]);
 
 	const themeInputHandler = () => {
 		if (themeInputRef.current !== null) {
@@ -127,6 +145,20 @@ export function Settings() {
 		}
 	};
 
+	const notificationInputHandler = () => {
+		if (notificationInputRef.current !== null) {
+			if (notificationInputRef.current.checked !== undefined) {
+				if (notificationInputRef.current.checked) {
+					setAllowNotifications(true);
+					updateChanged({ general: { notifications: true } });
+				} else {
+					setAllowNotifications(false);
+					updateChanged({ general: { notifications: false } });
+				}
+			}
+		}
+	};
+
 	const updateChanged = useCallback(
 		(change: AppSettingsChange) => {
 			const copy = changed;
@@ -152,21 +184,91 @@ export function Settings() {
 		[changed]
 	);
 
+	const dbDeletionHandler = (index: number) => {
+		if (dbDeletionRefs.current[index] !== null) {
+			if (dbDeletionRefs.current[index].current !== null) {
+				if (dbDeletionRefs.current[index].current.checked !== undefined) {
+					if (dialogRef.current !== null) {
+						if (dbDeletion[index]) {
+							setDBDeletion(dbDeletion.map((v, i) => (i === index ? !v : v)));
+						} else {
+							setModalDatabaseIndex(index);
+							dialogRef.current.showModal();
+						}
+					}
+				}
+			}
+		}
+	};
+
+	const removeDataBases = useCallback(() => {
+		for (const [index, shouldDelete] of dbDeletion.entries()) {
+			if (shouldDelete) {
+				const dbName = dataBaseArray[index];
+				if (dbName === 'article_db') {
+					dispatch({
+						type: 'set',
+						change: {
+							database: {
+								//@ts-expect-error fix postponed
+								databases: {
+									article_db: null,
+								},
+							},
+						},
+					});
+					setDBDeletion(dbDeletion.map((v, i) => (i === index ? false : v)));
+				}
+				if (dbName === 'customer_db') {
+					dispatch({
+						type: 'set',
+						change: {
+							database: {
+								//@ts-expect-error fix postponed
+								databases: {
+									customer_db: null,
+								},
+							},
+						},
+					});
+					setDBDeletion(dbDeletion.map((v, i) => (i === index ? false : v)));
+				}
+
+				if (dbName === 'document_db') {
+					dispatch({
+						type: 'set',
+						change: {
+							database: {
+								//@ts-expect-error fix postponed
+								databases: {
+									document_db: null,
+								},
+							},
+						},
+					});
+					setDBDeletion(dbDeletion.map((v, i) => (i === index ? false : v)));
+				}
+			}
+		}
+	}, [dbDeletion, dataBaseArray, context]);
+
 	const saveSettings = useCallback(() => {
+		removeDataBases();
+
 		if (Object.keys(changed).length !== 0) {
 			dispatch({
 				type: 'set',
 				change: changed,
 			});
 		}
-	}, [changed, context]);
+	}, [changed, context, removeDataBases]);
 
 	return (
 		<>
 			<div className="settingsPage appRoute helper">
 				<div className="settingsList">
 					<div className="settingOptions">
-						<h2>{context.general.language === 'english' ? 'Appearances' : 'Aussehen'}</h2>
+						<h2>{context.general.language === 'deutsch' ? 'Aussehen' : 'Appearances'}</h2>
 						<div className="settingsOption">
 							<p>{context.general.language === 'english' ? 'Color Theme' : 'Farbschema'}</p>
 							<select className="settingsSelect" ref={themeInputRef} onInput={themeInputHandler} defaultValue={colorTheme}>
@@ -204,7 +306,7 @@ export function Settings() {
 								value={sideBarWidth}
 							/>
 						</div>
-						<h2>{context.general.language === 'english' ? 'General' : 'Allgemein'}</h2>
+						<h2>{context.general.language === 'deutsch' ? 'Allgemein' : 'General'}</h2>
 						<div className="settingsOption">
 							<p>{context.general.language === 'english' ? 'Language' : 'Sprache'}</p>
 							<select className="settingsSelect" ref={langInputRef} onInput={langInputHandler} defaultValue={language}>
@@ -226,6 +328,43 @@ export function Settings() {
 							</p>
 							<input onInput={scrollSpeedInputHandler} ref={scrollSpeedRef} type="number" min={1} max={150} step={1} value={scrollSpeed} />
 						</div>
+						<div className="settingsOption">
+							<div className="settingsOptionChild">
+								<p>{context.general.language === 'deutsch' ? 'Benachrichtigungen ' : 'Notifications '}</p>
+								<div
+									onClick={() => {
+										dispatch({ type: 'notify', notification: { title: 'test', body: 'test' } });
+									}}>
+									<small className="notificationTester">
+										{context.general.language === 'deutsch' ? 'Benachrichtigungen testen' : 'Test Notifications'}
+									</small>
+								</div>
+							</div>
+							<input onChange={notificationInputHandler} ref={notificationInputRef} type="checkbox" />
+						</div>
+						<h2>{context.general.language === 'deutsch' ? 'Datenbank' : 'Database'}</h2>
+						<div className="dangerZone">
+							<div />
+							<em>{context.general.language === 'deutsch' ? 'Gefahrenzone!' : 'Danger Zone!'}</em>
+							<div />
+						</div>
+						{Object.entries(context.database.databases).map(([key, _value], index) => {
+							const deletionRef = useRef<HTMLInputElement>(null);
+							dbDeletionRefs.current[index] = deletionRef;
+							return (
+								<>
+									<div className="settingsOption">
+										<p>{getDataBaseDisplayName(context.general.language, key as DataBaseNames)}</p>
+										<div className="settingsOptionChild">
+											<small className="deletionNote">
+												{context.general.language === 'deutsch' ? 'Datenbank nach dem Speichern löschen' : 'Delete on Save'}
+											</small>
+											<input type="checkbox" ref={deletionRef} checked={dbDeletion[index]} onChange={() => dbDeletionHandler(index)} />
+										</div>
+									</div>
+								</>
+							);
+						})}
 					</div>
 
 					<div className="saveSection">
@@ -246,6 +385,47 @@ export function Settings() {
 				<div className="versionsWrapper">
 					<Comps.Versions />
 				</div>
+				<dialog ref={dialogRef}>
+					<div
+						className="dataBaseDeletionModal"
+						style={{
+							height: dialogRef.current !== null ? dialogRef.current.getBoundingClientRect().height - 64 : 'auto',
+						}}>
+						<h3>{context.general.language === 'deutsch' ? 'Haben Sie ein Backup gemacht?' : 'Have you done a backup?'}</h3>
+						<p>
+							{context.general.language === 'deutsch'
+								? `Sie sind im Begriff '${getDataBaseDisplayName(context.general.language, dataBaseArray[modalDatabaseIndex])}' zu löschen.`
+								: `You are about to delete '${getDataBaseDisplayName(context.general.language, dataBaseArray[modalDatabaseIndex])}'.`}
+						</p>
+						<div className="dataBaseDeletionButtons">
+							<button
+								onClick={() => {
+									if (dialogRef.current !== null) {
+										dialogRef.current.close();
+									}
+								}}>
+								{context.general.language === 'deutsch' ? 'Noch nicht' : 'Not yet'}
+							</button>
+							<button
+								onClick={() => {
+									setDBDeletion(
+										dbDeletion.map((val, index) => {
+											if (index === modalDatabaseIndex) {
+												return true;
+											} else {
+												return val;
+											}
+										})
+									);
+									if (dialogRef.current !== null) {
+										dialogRef.current.close();
+									}
+								}}>
+								{context.general.language === 'deutsch' ? 'Ja, Datenbank löschen' : 'Yes, delete Database'}
+							</button>
+						</div>
+					</div>
+				</dialog>
 			</div>
 		</>
 	);

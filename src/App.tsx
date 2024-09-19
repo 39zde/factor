@@ -1,9 +1,10 @@
 import React, { useState, createContext, useMemo, useCallback, useEffect, useReducer, useContext } from 'react';
+import { requestPermission } from '@tauri-apps/plugin-notification';
 // non-lib imports
 import { Pages } from './pages/Pages';
 import Comps from '@comps';
-import { getSettings, getDatabases, writeSettings, disableMenu } from '@util';
-import type { AppSettingsAppearance, RouteType, AppContextType, AppSettingsChange, AppAction, AppSolidsType } from '@typings';
+import { getSettings, getDatabases, appReducer, disableMenu, defaultSettings } from '@util';
+import type { RouteType, AppContextType, AppSettingsChange, AppAction, AppSolidsType } from '@typings';
 import './App.css';
 
 disableMenu();
@@ -51,169 +52,13 @@ export const solids: AppSolidsType = {
 };
 
 const defaultContext: AppContextType = {
-	appearances: {
-		colorTheme: 'light dark',
-		rowHeight: 38,
-		columnWidth: 160,
-		sideBarWidth: 170,
-		height: 1000,
-		width: 1000,
-	},
-	database: {
-		dbVersion: 1,
-		databases: {
-			article_db: null,
-			customer_db: null,
-			document_db: null,
-		},
-	},
-	general: {
-		decimalSeparator: '.',
-		language: 'english',
-		scrollSpeed: 2,
-	},
+	...defaultSettings,
 	worker: {
 		ImportWorker: ImportWorker,
 		TableWorker: TableWorker,
 		ExportWorker: ExportWorker,
 	},
 };
-
-function appReducer(appState: AppContextType, action: AppAction): AppContextType {
-	switch (action.type) {
-		case 'set': {
-			if (action.change.appearances !== undefined) {
-				const appearanceChanges = action.change.appearances as AppSettingsAppearance;
-				if (appearanceChanges.colorTheme !== undefined) {
-					const themeTag = document.getElementById('theme');
-					if (themeTag !== null) {
-						themeTag.innerText = `:root{ color-scheme: ${appearanceChanges.colorTheme} ; }`;
-					}
-				}
-			}
-			const stagedSettings = {
-				appearances: {
-					colorTheme:
-						action.change?.appearances?.colorTheme !== undefined ? action.change.appearances.colorTheme : appState.appearances.colorTheme,
-					columnWidth:
-						action.change?.appearances?.columnWidth !== undefined ? action.change.appearances.columnWidth : appState.appearances.columnWidth,
-					height: appState.appearances.height,
-					rowHeight: action.change?.appearances?.rowHeight !== undefined ? action.change.appearances.rowHeight : appState.appearances.rowHeight,
-					sideBarWidth:
-						action.change?.appearances?.sideBarWidth !== undefined ? action.change.appearances.sideBarWidth : appState.appearances.sideBarWidth,
-					width: appState.appearances.width,
-				},
-				database: {
-					dbVersion: action.change?.database?.dbVersion !== undefined ? action.change.database.dbVersion : appState.database.dbVersion,
-					databases: {
-						customer_db:
-							action.change?.database?.databases?.customer_db !== undefined
-								? action.change.database.databases.customer_db
-								: appState.database.databases.customer_db,
-						article_db:
-							action.change?.database?.databases?.article_db !== undefined
-								? action.change.database.databases.article_db
-								: appState.database.databases.article_db,
-						document_db:
-							action.change?.database?.databases?.document_db !== undefined
-								? action.change.database.databases.document_db
-								: appState.database.databases.document_db,
-					},
-				},
-				general: {
-					decimalSeparator:
-						action.change?.general?.decimalSeparator !== undefined ? action.change.general.decimalSeparator : appState.general.decimalSeparator,
-					language: action.change?.general?.language !== undefined ? action.change.general.language : appState.general.language,
-					scrollSpeed: action.change?.general?.scrollSpeed !== undefined ? action.change.general.scrollSpeed : appState.general.scrollSpeed,
-				},
-			};
-			writeSettings(stagedSettings).then((result) => {
-				if (!result) {
-					new Notification('An error occurred', {
-						body: 'settings could not be saved',
-					});
-				}
-			});
-			return {
-				appearances: {
-					colorTheme:
-						action.change?.appearances?.colorTheme !== undefined ? action.change.appearances.colorTheme : appState.appearances.colorTheme,
-					columnWidth:
-						action.change?.appearances?.columnWidth !== undefined ? action.change.appearances.columnWidth : appState.appearances.columnWidth,
-					height: appState.appearances.height,
-					rowHeight: action.change?.appearances?.rowHeight !== undefined ? action.change.appearances.rowHeight : appState.appearances.rowHeight,
-					sideBarWidth:
-						action.change?.appearances?.sideBarWidth !== undefined ? action.change.appearances.sideBarWidth : appState.appearances.sideBarWidth,
-					width: appState.appearances.width,
-				},
-				database: {
-					dbVersion: action.change?.database?.dbVersion !== undefined ? action.change.database.dbVersion : appState.database.dbVersion,
-					databases: {
-						customer_db:
-							action.change?.database?.databases?.customer_db !== undefined
-								? action.change.database.databases.customer_db
-								: appState.database.databases.customer_db,
-						article_db:
-							action.change?.database?.databases?.article_db !== undefined
-								? action.change.database.databases.article_db
-								: appState.database.databases.article_db,
-						document_db:
-							action.change?.database?.databases?.document_db !== undefined
-								? action.change.database.databases.document_db
-								: appState.database.databases.document_db,
-					},
-				},
-				general: {
-					decimalSeparator:
-						action.change?.general?.decimalSeparator !== undefined ? action.change.general.decimalSeparator : appState.general.decimalSeparator,
-					language: action.change?.general?.language !== undefined ? action.change.general.language : appState.general.language,
-					scrollSpeed: action.change?.general?.scrollSpeed !== undefined ? action.change.general.scrollSpeed : appState.general.scrollSpeed,
-				},
-				worker: {
-					ImportWorker: appState.worker.ImportWorker,
-					TableWorker: appState.worker.TableWorker,
-					ExportWorker: appState.worker.ExportWorker,
-				},
-			};
-		}
-		case 'setHW': {
-			return {
-				appearances: {
-					colorTheme: appState.appearances.colorTheme,
-					columnWidth: appState.appearances.columnWidth,
-					height: action.change.appearances?.height !== undefined ? action.change.appearances.height : appState.appearances.height,
-					rowHeight: appState.appearances.rowHeight,
-					sideBarWidth: appState.appearances.sideBarWidth,
-					width: action.change.appearances?.width !== undefined ? action.change.appearances.width : appState.appearances.width,
-				},
-				database: {
-					dbVersion: appState.database.dbVersion,
-					databases: {
-						customer_db: appState.database.databases.customer_db,
-						article_db: appState.database.databases.article_db,
-						document_db: appState.database.databases.document_db,
-					},
-				},
-				general: {
-					decimalSeparator: appState.general.decimalSeparator,
-					language: appState.general.language,
-					scrollSpeed: appState.general.scrollSpeed,
-				},
-				worker: {
-					ImportWorker: appState.worker.ImportWorker,
-					TableWorker: appState.worker.TableWorker,
-					ExportWorker: appState.worker.ExportWorker,
-				},
-			};
-		}
-
-		default:
-			new Notification('An Error occurred', {
-				body: 'performed unknown action on app context',
-			});
-			return appState;
-	}
-}
 
 const AppContext = createContext<AppContextType>(defaultContext);
 //@ts-expect-error reducer error
@@ -272,6 +117,7 @@ function App(): JSX.Element {
 			.finally(() => {
 				resizeHandler();
 			});
+		requestPermission();
 	}, []);
 
 	useMemo(() => {

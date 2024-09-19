@@ -1,15 +1,9 @@
-import React, { useId, forwardRef } from 'react';
+import React, { forwardRef } from 'react';
 // non-lib imports
+import { ColumnSetterProps } from '@typings';
 import './ColumnSetter.css';
 
-type columnSetterProps = {
-	checkBoxRef?: React.MutableRefObject<HTMLInputElement | null>;
-	columns: string[];
-	name: string;
-	onInput: React.FormEventHandler<HTMLSelectElement>;
-};
-
-export const ColumnSetter = forwardRef<HTMLSelectElement, columnSetterProps>(function ColumnSetter(props, ref): React.JSX.Element {
+export const ColumnSetter = forwardRef<HTMLSelectElement, ColumnSetterProps>(function ColumnSetter(props, ref): React.JSX.Element {
 	return (
 		<>
 			<div className="dataRow">
@@ -18,12 +12,21 @@ export const ColumnSetter = forwardRef<HTMLSelectElement, columnSetterProps>(fun
 					{props.name === 'Customers ID' ? <sup>*</sup> : ''}:
 				</span>
 				<select ref={ref} onInput={props.onInput} required={props.name === 'Customers ID' ? true : false}>
-					<option defaultChecked value={undefined}>
+					<option value={undefined} selected={props.defaultIndex === -1 ? true : false}>
 						-
 					</option>
-					{props.columns.map((item) => (
-						<option key={useId()}>{item}</option>
-					))}
+					{props.columns.map((item) => {
+						return (
+							<>
+								<option
+									selected={props.defaultIndex !== -1 ? (item === props.columns[props.defaultIndex + 1] ? true : false) : undefined}
+									key={props.name + item + (Math.random() * 1000).toFixed(0)}
+									value={item}>
+									{item}
+								</option>
+							</>
+						);
+					})}
 				</select>
 			</div>
 		</>

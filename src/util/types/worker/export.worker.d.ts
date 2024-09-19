@@ -1,4 +1,4 @@
-export type CompressionTypes = 'br' | 'zz' | 'gz';
+export type CompressionTypes = 'deflate' | 'gzip';
 export type ExportWorkerRequest = {
 	type: 'db' | 'oStore' | 'all';
 	dataBaseName: string;
@@ -10,10 +10,9 @@ export type ExportWorkerRequest = {
 };
 
 export type ExportWorkerResponse = {
-	type: 'init' | 'finish' | 'stream';
-	fileName: string;
-	compression?: CompressionTypes;
-	data?: Uint8Array;
+	type: 'create' | 'data' | 'close';
+	data: Uint8Array | string;
+	scope?: 'db' | 'oStore' | 'all';
 };
 
 export type ExportFileStreamer = {

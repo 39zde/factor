@@ -1,7 +1,15 @@
+import { app, core, dpi, event, image, menu, mocks, path, tray, webview, webviewWindow, window } from '@tauri-apps/api';
+
 export type { SideBarProps, RouterButtonProps, LowerButtonProps } from './comps/SideBar/SideBarProps';
 export type { RouteType } from './comps/SideBar/routes';
 
-export type { ImportModuleProps, SorterProps, UploadMode, CustomerSorterInputGroup, CustomerSorterInputGroupUnderling } from './pages/Upload/Upload';
+export type {
+	ImportModuleProps,
+	SorterProps,
+	CustomerSorterInputGroup,
+	CustomerSorterInputGroupUnderling,
+	ColumnSetterProps,
+} from './pages/Upload/Upload';
 
 export type {
 	Customer,
@@ -43,7 +51,16 @@ export type {
 
 export type { AddDataArgs, DateInput } from './worker/import.worker';
 
-export type { TableRow, DerefRow, CustomerKeys, CustomerReferences, BaseRow, UploadRow, TableRowCounter } from './database/DataBaseData';
+export type {
+	TableRow,
+	DerefRow,
+	CustomerKeys,
+	CustomerReferences,
+	BaseRow,
+	UploadRow,
+	TableRowCounter,
+	DataBaseNames,
+} from './database/DataBaseData';
 
 export type { ContextMenuProps, MenuItem } from './comps/ContextMenu/ContextMenu';
 
@@ -67,3 +84,29 @@ export type {
 	AppSettingsGeneral,
 	AppSettingsDatabaseDatabases,
 } from './App';
+
+declare global {
+	interface Window {
+		__TAURI__: {
+			app: typeof app;
+			core: typeof core;
+			dpi: typeof dpi;
+			event: typeof event;
+			image: typeof image;
+			menu: typeof menu;
+			mocks: typeof mocks;
+			path: typeof path;
+			tray: typeof tray;
+			webview: typeof webview;
+			webviewWindow: typeof webviewWindow;
+			window: typeof window;
+		};
+		__FACTOR_VERSION__: string;
+		navigator: {
+			userAgentData: {
+				mobile: boolean;
+				platform: string;
+			};
+		};
+	}
+}

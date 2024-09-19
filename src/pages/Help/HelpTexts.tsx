@@ -69,10 +69,18 @@ export const HelpTextDE: HelpTexts = {
 		title: '3. Feedback',
 		items: [
 			{
-				title: 'Wünsche ',
+				title: 'Wünsche',
 				item: (
 					<div className="helpItem">
-						<p>Wenn Sie wünsche habe, wie sich diese Anwendung in Zukunft weiterentwickeln soll...</p>
+						<p>Wenn Sie Wünsche haben, wie sich diese Anwendung in Zukunft weiterentwickeln soll können Sie uns diese gerne mitteilen.</p>
+						<p>
+							Entweder per Email an <a href="mailto:feature-request@39z.de">feature-request@39z.de</a>. Nennen Sie im Betreff{' '}
+							<code>factor</code>. Falls Sie einen GitHub account haben sollten können Sie auch eine{' '}
+							<a href="https://github.com/39zde/factor/issues/new">
+								<code>Feature Request Issue</code>
+							</a>{' '}
+							erstellen.
+						</p>
 					</div>
 				),
 			},
@@ -152,6 +160,14 @@ export const HelpTextEN: HelpTexts = {
 				item: (
 					<div className="helpItem">
 						<p> Do you have a feature Request?</p>
+						<p>
+							Mail them to <a href="mailto:feature-request@39z.de">feature-request@39z.de</a>. Mention <code>factor</code> in the subject. If
+							you have a GitHub account you can open a
+							<a href="https://github.com/39zde/factor/issues/new">
+								<code>Feature Request Issue</code>
+							</a>{' '}
+							instead.
+						</p>
 					</div>
 				),
 			},

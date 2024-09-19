@@ -44,7 +44,6 @@
  	box-sizing: border-box;
  	border-collapse: collapse;
 
-
  	&>* {
  		box-sizing: content-box;
  	}
@@ -59,64 +58,47 @@
  	border: none;
  }
 
+ tfoot>tr,
  thead>tr {
- 	border-color: light-dark(var(--color-dark-3-t), var(--color-dark-3));
- 	border-width: 0 0 3px 0;
- 	border-style: solid;
- 	background: none;
+	background: light-dark(var(--color-light-2), var(--color-dark-2));
 
  	&>th {
- 		background: light-dark(var(--color-light-2), var(--color-dark-2));
  		padding: 1px 5px;
  		resize: horizontal;
  		overflow: visible;
  		position: relative;
  		text-align: left;
+ 		border-width: 1px;
+ 		border-color: light-dark(var(--color-dark-3-t), var(--color-dark-3));
+ 		border-style: solid;
 
- 		&:not(:first-of-type) {
- 			border-color: light-dark(var(--color-dark-3-t), var(--color-dark-3));
- 			border-style: solid;
- 			border-width: 1px 1px 0 1px;
- 		}
-
- 		&:nth-of-type(2) {
- 			border-left: 0;
+ 		&:first-child {
+ 			display: inherit;
  		}
 
  		&:first-of-type {
  			padding: 0;
- 			border-radius: 16px 0 0 0;
+ 			border: 0;
+ 			display: flex;
+ 			justify-content: center;
+ 			align-items: center;
  		}
  	}
  }
 
  tfoot>tr {
  	border-color: light-dark(var(--color-dark-3-t), var(--color-dark-3));
- 	border-width: 3px 0 0 0;
+ 	border-width: 3px 0 0 1px;
  	border-style: solid;
-
- 	&>th {
- 		background: light-dark(var(--color-light-2), var(--color-dark-2));
- 		padding: 1px 5px;
- 		resize: horizontal;
- 		overflow: visible;
- 		position: relative;
- 		text-align: left;
- 		border-width: 0 1px 0 1px;
- 		border-color: light-dark(var(--color-dark-3-t), var(--color-dark-3));
- 		border-style: solid;
-
-
- 		&:first-of-type {
- 			padding: 0;
- 		}
- 	}
  }
 
-
+ thead>tr {
+ 	border-color: light-dark(var(--color-dark-3-t), var(--color-dark-3));
+ 	border-width: 1px 0 3px 1px;
+ 	border-style: solid;
+ }
 
  tbody>tr {
-
 
  	&>td {
  		border-width: 1px;
@@ -136,13 +118,6 @@
 
  		}
  	}
-
- 	&:first-of-type {
- 		&:first-child {
- 			border-top: 0;
- 		}
- 	}
-
  }
 
  td,
@@ -196,7 +171,13 @@
  	z-index: 2;
  	box-shadow: none;
  	height: 100%;
+ 	border-radius: 0;
+ 	border: 0;
  	width: 100%;
+ }
+
+ .rowNavigator:focus {
+ 	outline: none;
  }
 
  .rowNavigatorTop:hover,
@@ -205,14 +186,6 @@
  	box-shadow: none;
  	border: none;
  	transform: none;
-
- }
-
- .rowNavigatorTop {
- 	border-radius: 16px 0 0 0;
- 	outline-color: light-dark(var(--color-dark-3-t), var(--color-dark-3));
- 	outline-style: solid;
- 	outline-width: 1px;
 
  }
 

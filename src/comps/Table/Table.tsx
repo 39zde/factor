@@ -13,13 +13,14 @@ import React, {
 } from 'react';
 import { ChevronRight } from 'lucide-react';
 // non-lib imports
-import { TableHeadDisplay } from './TableHeadDisplay';
+import { TableHead } from './TableHead';
 import { TableBodyDisplay } from './TableBodyDisplay';
-import { TableFootDisplay } from './TableFootDisplay';
+import { TableFoot } from './TableFoot';
 import { ColumnCheckBox } from './ColumnCheckBox';
 import { ContextMenu } from '../ContextMenu/ContextMenu';
 import { ColumnOrderer } from './ColumnOrderer';
-import { solids, useAppContext } from '@app';
+import { solids, useAppContext, useChangeContext } from '@app';
+import { tableReducer, updateSizing, PlaceHolderTableContext } from '@util';
 import type {
 	TableProps,
 	TableContextType,
@@ -29,7 +30,6 @@ import type {
 	StarterPackageResponse,
 	MenuItem,
 } from '@typings';
-import { tableReducer, updateSizing, PlaceHolderTableContext } from '@util';
 import './Table.css';
 
 const TableContext = createContext<TableContextType>(PlaceHolderTableContext);
@@ -46,10 +46,20 @@ export function useTableDispatch() {
 	return useContext(TableDispatchContext);
 }
 
-export function Table({ dataBaseName, tableName, colsHook, entriesHook, updateHook, uniqueKey, update }: TableProps): React.JSX.Element {
-	const rowColumnWidth = 30;
+export function Table({
+	dataBaseName,
+	tableName,
+	colsHook,
+	entriesHook,
+	updateHook,
+	uniqueKey,
+	update,
+	nativeColumnNames,
+}: TableProps): React.JSX.Element {
+	const rowColumnWidth = 40;
 	const scrollBarHeight = 5;
 	const { database, appearances, worker, general } = useAppContext();
+	const notify = useChangeContext();
 	const tableBodyRef = useRef<HTMLTableSectionElement>(null);
 	const wrapperRef = useRef<HTMLDivElement>(null);
 	const [menuActive, setMenuActive] = useState<boolean>(false);
@@ -132,6 +142,19 @@ export function Table({ dataBaseName, tableName, colsHook, entriesHook, updateHo
 				appearances.rowHeight,
 				worker.TableWorker
 			);
+		}
+		if (nativeColumnNames !== undefined) {
+			dispatch({
+				type: 'set',
+				name: 'nativeColumnNames',
+				newVal: nativeColumnNames,
+			});
+		} else {
+			dispatch({
+				type: 'set',
+				name: 'nativeColumnNames',
+				newVal: false,
+			});
 		}
 	}, [tableName, dataBaseName, uniqueKey, database.dbVersion]);
 
@@ -365,7 +388,7 @@ export function Table({ dataBaseName, tableName, colsHook, entriesHook, updateHo
 				]);
 				// first check for saved columns older
 				const savedAllColumns = localStorage.getItem(`${tableName}-allColumns`);
-				if (savedAllColumns !== null) {
+				if (savedAllColumns !== null && nativeColumnNames) {
 					// use them if they are there
 					dispatch({
 						type: 'set',
@@ -489,14 +512,22 @@ export function Table({ dataBaseName, tableName, colsHook, entriesHook, updateHo
 				}
 				break;
 			case 'error':
-				new Notification(general.language === 'deutsch' ? 'Ein Fehler ist aufgetreten' : 'An error occurred', {
-					body: eventData.data as string,
+				notify({
+					type: 'notify',
+					notification: {
+						title: general.language === 'deutsch' ? 'Ein Fehler ist aufgetreten' : 'An error occurred',
+						body: eventData.data as string,
+					},
 				});
 				break;
 			case 'success':
-				new Notification(general.language === 'deutsch' ? 'Action erfolgreich' : 'Action successful', {
-					body: eventData.data as string,
-					silent: true,
+				notify({
+					type: 'notify',
+					notification: {
+						title: general.language === 'deutsch' ? 'Action erfolgreich' : 'Action successful',
+						body: eventData.data as string,
+						silent: true,
+					},
 				});
 				break;
 			default:
@@ -655,9 +686,38 @@ export function Table({ dataBaseName, tableName, colsHook, entriesHook, updateHo
 							onMouseMove={mouseMoveHandler}
 							onMouseUp={mouseUpHandler}>
 							<table style={tableStyle}>
-								<TableHeadDisplay />
+								{!tableState.update ? (
+									<>
+										<TableHead
+											tableName={tableState.tableName}
+											allColumns={tableState.allColumns}
+											colsRef={tableState.colsRef}
+											columnWidths={tableState.columnWidths}
+											columns={tableState.columns}
+											isMouseDown={tableState.isMouseDown}
+											nativeColumnNames={tableState.nativeColumnNames}
+											rowHeight={appearances.rowHeight}
+										/>
+									</>
+								) : (
+									<></>
+								)}
 								<TableBodyDisplay ref={tableBodyRef} />
-								<TableFootDisplay />
+								{!tableState.update ? (
+									<>
+										<TableFoot
+											tableName={tableState.tableName}
+											allColumns={tableState.allColumns}
+											footerRowFirstElementRef={tableState.footerRowFirstElementRef}
+											columns={tableState.columns}
+											nativeColumnNames={tableState.nativeColumnNames}
+											rowHeight={appearances.rowHeight}
+											columnWidths={tableState.columnWidths}
+										/>
+									</>
+								) : (
+									<></>
+								)}
 							</table>
 						</div>
 					</div>

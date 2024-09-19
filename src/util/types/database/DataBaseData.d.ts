@@ -23,3 +23,5 @@ export type DerefRow = {
 export type CustomerKeys = 'row' | 'id' | 'altIDs' | 'description' | 'firstContact' | 'latestContact' | 'created' | 'notes' | CustomerReferences;
 
 export type CustomerReferences = 'company' | 'persons' | 'addresses' | 'banks';
+
+export type DataBaseNames = 'article_db' | 'customer_db' | 'document_db';

@@ -1,4 +1,4 @@
-import React, { useId, useState, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 // non-lib imports
 import { useAppContext } from '@app';
 
@@ -76,7 +76,7 @@ export function RowShifter({ cols }: { cols: string[] }): React.JSX.Element {
 						{cols.length !== 0 ? (
 							<>
 								{cols.map((col) => (
-									<option key={useId()}>{col}</option>
+									<option key={col + (Math.random() * 1000).toFixed(1)}>{col}</option>
 								))}
 							</>
 						) : (

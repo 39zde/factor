@@ -1,41 +1,56 @@
-import React from 'react';
+import React, { memo } from 'react';
 // non-lib imports
-import { useTableContext } from './Table';
 import { ColumnTitle } from './ColumnTitle';
-import { useAppContext } from '@app';
 
 /** mostly  a copy of table head without the ability to  resize */
-export function TableFoot(): React.JSX.Element {
-	const tableState = useTableContext();
-	const { appearances } = useAppContext();
+export const TableFoot = memo(function TableFoot({
+	rowHeight,
+	columns,
+	allColumns,
+	tableName,
+	footerRowFirstElementRef,
+	nativeColumnNames,
+	columnWidths,
+}: {
+	rowHeight: number;
+	columns: string[];
+	allColumns: string[];
+	tableName: string;
+	footerRowFirstElementRef: React.RefObject<HTMLTableCellElement> | null;
+	nativeColumnNames: boolean;
+	columnWidths: number[];
+}): React.JSX.Element {
 	return (
 		<>
 			<tfoot
 				style={{
-					height: appearances.rowHeight,
-					maxHeight: appearances.rowHeight,
-					minHeight: appearances.rowHeight,
+					height: rowHeight,
+					maxHeight: rowHeight,
+					minHeight: rowHeight,
 				}}>
 				<tr
-					key={`tableFootRow-${tableState.tableName}`}
+					key={`tableFootRow-${tableName}`}
 					style={{
-						maxHeight: appearances.rowHeight,
+						maxHeight: rowHeight,
 						height: '100%',
 						borderBottom: 'none',
-						borderLeft: 'none',
-						borderRight: 'none',
 					}}>
-					{tableState.allColumns.map((item, index) => {
-						if (tableState.columns.includes(item)) {
+					{allColumns.map((item, index) => {
+						if (columns.includes(item)) {
 							return (
 								<>
 									<th
 										style={{
-											maxHeight: appearances.rowHeight,
+											height: rowHeight,
+											maxHeight: rowHeight,
+											minHeight: rowHeight,
+											minWidth: columnWidths[index],
+											maxWidth: columnWidths[index],
+											width: columnWidths[index],
 										}}
 										key={`tfoot-${index}-${item}`}
-										ref={index === 0 ? tableState.footerRowFirstElementRef : undefined}>
-										<span className="guts">{index !== 0 ? <ColumnTitle column={item} /> : ''}</span>
+										ref={index === 0 ? footerRowFirstElementRef : undefined}>
+										<span className="guts">{index !== 0 ? nativeColumnNames ? <>{item}</> : <ColumnTitle column={item} /> : ''}</span>
 									</th>
 								</>
 							);
@@ -45,4 +60,4 @@ export function TableFoot(): React.JSX.Element {
 			</tfoot>
 		</>
 	);
-}
+});

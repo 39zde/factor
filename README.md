@@ -1,6 +1,6 @@
 # Factor
 
-![Logo](./src-tauri/icons/Wide310x150Logo.png)
+![Logo](./resources/img/social-preview.png)
 
 An invoicing application built with TypeScript:React on top of IndexDB packaged with Tauri v2[^1]
 

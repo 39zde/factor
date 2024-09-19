@@ -90,6 +90,7 @@
 .helpItem {
 	&>h4 {
 		text-decoration: underline;
+		text-align: start;
 	}
 }
 

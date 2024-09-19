@@ -7,7 +7,7 @@ import { ColRemover } from './ColRemover';
 import { ImportModule } from './ImportModule';
 import { useAppContext, solids, useChangeContext } from '@app';
 import Comps from '@comps';
-import type { CustomerSortingMap, ArticleSortingMap, UploadMode, DocumentSortingMap } from '@typings';
+import type { CustomerSortingMap, ArticleSortingMap, DataBaseNames, DocumentSortingMap } from '@typings';
 import './Upload.css';
 
 export function Upload(): React.JSX.Element {
@@ -25,6 +25,8 @@ export function Upload(): React.JSX.Element {
 	const tableImportModeInputRef = useRef<HTMLSelectElement>(null);
 	const tableWrapperRef = useRef<HTMLDivElement>(null);
 	const importButtonRef = useRef<HTMLButtonElement>(null);
+	const [isBackup, setIsBackup] = useState<boolean>(false);
+	const restoreBackupRef = useRef<HTMLInputElement>(null);
 	const [map, setMap] = useState<CustomerSortingMap | ArticleSortingMap | DocumentSortingMap>({
 		row: 'row',
 		customers: {
@@ -35,7 +37,7 @@ export function Upload(): React.JSX.Element {
 		banks: {},
 		company: {},
 	});
-	const [tableImportMode, setTableImportMode] = useState<UploadMode | undefined>(undefined);
+	const [tableImportMode, setTableImportMode] = useState<DataBaseNames | undefined>(undefined);
 	const tableImportModeHandler = (): void => {
 		if (tableImportModeInputRef.current === null) {
 			return;
@@ -55,8 +57,12 @@ export function Upload(): React.JSX.Element {
 					setFileName(files[0].name);
 					setShowFile(true);
 				} catch {
-					new Notification(general.language === 'deutsch' ? 'Ein Fehler ist aufgetreten' : 'An error occurred', {
-						body: 'Failed to convert file to text',
+					dispatch({
+						type: 'notify',
+						notification: {
+							title: general.language === 'deutsch' ? 'Ein Fehler ist aufgetreten' : 'An error occurred',
+							body: 'Failed to convert file to text',
+						},
 					});
 				}
 			}
@@ -110,8 +116,12 @@ export function Upload(): React.JSX.Element {
 		if (tableImportMode === 'customer_db' && map !== undefined) {
 			//@ts-expect-error this needs work
 			if (map['customers']['id'] === undefined) {
-				new Notification(general.language === 'deutsch' ? 'Ein Fehler ist aufgetreten' : 'An error occurred', {
-					body: "'Customers ID is a requirement'",
+				dispatch({
+					type: 'notify',
+					notification: {
+						title: general.language === 'deutsch' ? 'Ein Fehler ist aufgetreten' : 'An error occurred',
+						body: general.language === 'deutsch' ? 'Kundennummer fehlt' : 'Customers ID is a requirement',
+					},
 				});
 			} else {
 				worker.ImportWorker.postMessage({
@@ -142,27 +152,33 @@ export function Upload(): React.JSX.Element {
 					}
 					break;
 				case 'success':
+					// sessionStorage.clear();
+
 					if (importButtonRef.current !== null) {
 						importButtonRef.current.innerText = general.language === 'deutsch' ? 'Tabelle erstellen/erneuern' : 'Create/Update Table';
 					}
 					if (tableImportModeInputRef.current !== null) {
 						switch (tableImportModeInputRef.current.value) {
-							case 'customers':
+							case 'customer_db':
 								dispatch({
 									type: 'set',
 									change: {
 										database: {
+											// @ts-expect-error we don't need to list all databases since it is only a change
 											databases: {
 												customer_db: ['customers', 'persons', 'emails', 'phones', 'addresses', 'banks', 'company'],
-												article_db: database.databases.article_db,
-												document_db: database.databases.document_db,
 											},
 										},
 									},
 								});
-						}
-					}
 
+								break;
+							default:
+								console.error('import db default');
+						}
+						setFileName('');
+						setShowFile(false);
+					}
 					break;
 				case 'error':
 				default:
@@ -173,16 +189,33 @@ export function Upload(): React.JSX.Element {
 		}
 	};
 
+	const restoreBackupHandler = () => {
+		if (restoreBackupRef.current !== null) {
+			if (restoreBackupRef.current.checked !== undefined) {
+				if (restoreBackupRef.current.checked) {
+					setIsBackup(true);
+				} else {
+					setIsBackup(false);
+				}
+			}
+		}
+	};
+
 	const actionHandler = (): void => {
-		const file = sessionStorage.getItem('fileUpload');
-		if (file !== undefined) {
+		if (isBackup) {
+			// worker.ImportWorker.postMessage({
+			// 	type: "restoreBackup",
+			// 	data: file,
+			// })
+		} else {
 			worker.ImportWorker.postMessage({
 				type: 'import',
-				data: file,
+				data: sessionStorage.getItem('fileUpload'),
 				dbVersion: database.dbVersion,
 				dataBaseName: 'factor_db',
 			});
 		}
+
 		worker.ImportWorker.onmessage = (e) => {
 			if (e.data.type === 'imported') {
 				colsHook.setCols(e.data.data[1]);
@@ -200,7 +233,7 @@ export function Upload(): React.JSX.Element {
 		<>
 			<div className="uploadPage page" style={{ overflow: 'hidden' }}>
 				<div className="tableInfoWrapper">
-					<ul className="toolbar">
+					<menu className="toolbar">
 						<li className="fileSelector">
 							<div className="uploader">
 								<input
@@ -211,7 +244,7 @@ export function Upload(): React.JSX.Element {
 									ref={fileSelector}
 									type="file"
 									id="table_file_upload"
-									accept="text/csv"
+									accept="text/csv,application/json"
 									// accept="text/csv,application/vnd.oasis.opendocument.spreadsheet,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 									className="fileInput"
 									onInput={fileHandler}
@@ -237,6 +270,14 @@ export function Upload(): React.JSX.Element {
 										strokeWidth={solids.icon.strokeWidth.regular}
 									/>
 									{fileName}
+								</div>
+								<div
+									className="restoreBackup"
+									style={{
+										display: 'none',
+									}}>
+									<span>{general.language === 'deutsch' ? 'Backup wiederherstellen:' : 'Restore Backup:'}</span>
+									<input id="restoreBackup" type="checkbox" ref={restoreBackupRef} onChange={restoreBackupHandler} />
 								</div>
 								<button
 									style={{
@@ -270,7 +311,7 @@ export function Upload(): React.JSX.Element {
 						) : (
 							<></>
 						)}
-					</ul>
+					</menu>
 				</div>
 				<div className="uploadTableWrapper" ref={tableWrapperRef}>
 					{showTable ? (
@@ -283,6 +324,7 @@ export function Upload(): React.JSX.Element {
 								colsHook={colsHook}
 								entriesHook={entriesHook}
 								updateHook={updateHook}
+								nativeColumnNames={true}
 							/>
 						</>
 					) : (
@@ -295,7 +337,7 @@ export function Upload(): React.JSX.Element {
 					{showTable ? (
 						<>
 							<h2>{general.language === 'english' ? 'Sort and Assign Data' : 'Daten Sortieren und Einordnen'}</h2>
-							<ul className="toolbar">
+							<menu className="toolbar">
 								<li>
 									<select onInput={tableImportModeHandler} ref={tableImportModeInputRef} defaultValue={undefined}>
 										<option value={undefined}>-</option>
@@ -309,7 +351,16 @@ export function Upload(): React.JSX.Element {
 										{general.language === 'deutsch' ? 'Tabelle erstellen/erneuern' : 'Create/Update Table'}
 									</button>
 								</li>
-							</ul>
+								<li>
+									<button
+										onClick={() => {
+											const channel = new BroadcastChannel('reset-column-selection');
+											channel.postMessage('reset');
+										}}>
+										{general.language === 'deutsch' ? 'Auswahl zurücksetzen' : 'Reset selection'}
+									</button>
+								</li>
+							</menu>
 						</>
 					) : (
 						<></>

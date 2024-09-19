@@ -1,7 +1,9 @@
+import type { Options } from '@tauri-apps/plugin-notification';
 // import type { CustomerDBObjectStores, ArticleDBObjectStores, DocumentDBObjectStores } from './database/DataBaseData';
 import type { CustomerDBObjectStores } from './database/CustomerTypes';
 import type { ArticleDBObjectStores } from './database/ArticleTypes';
 import type { DocumentDBObjectStores } from './database/DocumentTypes';
+
 export interface AppContextType extends AppSettingsType {
 	worker: {
 		/**
@@ -45,6 +47,7 @@ export interface AppSettingsType {
 		 * how many rows to change on on scroll event
 		 */
 		scrollSpeed: number;
+		notifications: boolean;
 	};
 }
 export type AppSettingsDatabaseDatabases = {
@@ -80,6 +83,7 @@ export type AppSettingsGeneral = {
 	 * how many rows to change on on scroll event
 	 */
 	scrollSpeed: number;
+	notifications: boolean;
 };
 
 export type AppSettingsChange = {
@@ -95,8 +99,9 @@ export type DecimalSeparatorSetting = '.' | ',';
 export type ColorThemeSetting = 'light' | 'dark' | 'light dark';
 
 export type AppAction = {
-	type: 'set' | 'setHW';
-	change: AppSettingsChange;
+	type: 'set' | 'setHW' | 'notify';
+	change?: AppSettingsChange;
+	notification?: Options;
 };
 
 /** Some value to be used all over, to be consistent with styling,sizing... , easy controllable */

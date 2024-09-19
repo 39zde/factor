@@ -1,6 +1,6 @@
 {
     "name": "factor",
-    "version": "v2.0.0",
+    "version": "v2.1.0",
     "description": "An invoicing application built with TypeScript:React on top of IndexDB packaged with Tauri",
     "author": "39zde",
     "type": "module",
@@ -19,36 +19,38 @@
     },
     "dependencies": {
         "@react-pdf/renderer": "^3.4.4",
-        "@tauri-apps/api": "^1.6.0",
+        "@tauri-apps/api": "^2.0.0-rc.4",
         "@tauri-apps/plugin-fs": "^2.0.0-rc.2",
+        "@tauri-apps/plugin-notification": "^2.0.0-rc.1",
+        "@tauri-apps/plugin-shell": "^2.0.0-rc.1",
         "@tauri-apps/plugin-window-state": "^2.0.0-rc.1",
         "lucide-react": "^0.439.0",
         "react": "^18.3.1",
         "react-dom": "^18.3.1"
     },
     "devDependencies": {
-        "@eslint/js": "^9.9.1",
+        "@eslint/js": "^9.10.0",
         "@tauri-apps/cli": "^2.0.0-rc.12",
         "@types/eslint__js": "^8.42.3",
         "@types/node": "^20.16.5",
         "@types/react": "^18.3.5",
         "@types/react-dom": "^18.3.0",
-        "@typescript-eslint/eslint-plugin": "^8.2.0",
-        "@typescript-eslint/parser": "^8.2.0",
+        "@typescript-eslint/eslint-plugin": "^8.5.0",
+        "@typescript-eslint/parser": "^8.5.0",
         "@vitejs/plugin-react": "^4.3.1",
-        "eslint": "^8.57.0",
-        "eslint-plugin-react": "^7.35.0",
+        "eslint": "^9.10.0",
+        "eslint-plugin-react": "^7.36.0",
         "globals": "^15.9.0",
         "prettier": "^3.3.3",
         "react-devtools": "^5.3.1",
-        "typescript": "^5.5.4",
-        "typescript-eslint": "^8.2.0",
-        "vite": "^5.4.3",
+        "typescript": "^5.6.2",
+        "typescript-eslint": "^8.5.0",
+        "vite": "^5.4.4",
         "vite-plugin-mkcert": "^1.17.6"
     },
     "packageManager": "yarn@4.1.1+sha512.ec40d0639bb307441b945d9467139cbb88d14394baac760b52eca038b330d16542d66fef61574271534ace5a200518dabf3b53a85f1f9e4bfa37141b538a9590",
     "engines": {
-        "node": "v20.16.0"
+        "node": "v20.17.0"
     },
     "readme": "./README.md"
 }
