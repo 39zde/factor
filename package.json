@@ -1,6 +1,6 @@
 {
     "name": "factor",
-    "version": "v2.0.0",
+    "version": "v2.1.0",
     "description": "An invoicing application built with TypeScript:React on top of IndexDB packaged with Tauri",
     "author": "39zde",
     "type": "module",
