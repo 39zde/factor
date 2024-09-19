@@ -766,21 +766,17 @@ function parseCustomerData(
 					addressIndexRequest.onsuccess = () => {
 						if (addressIndexRequest.result !== undefined) {
 							// address exist already
-							const addressRow = addressIndexRequest.result as AddressType;
+							const preexistingAddressRow = addressIndexRequest.result as AddressType;
 							if (data.notes !== undefined) {
-								if (addressRow.notes !== undefined) {
-									addressRow.notes = [...addressRow.notes, ...data.notes];
-								} else {
-									addressRow.notes = data.notes;
-								}
+								preexistingAddressRow.notes = mergeArray(preexistingAddressRow.notes, data.notes);
 							}
 							if (data.country !== undefined) {
-								addressRow.country = data.country;
+								preexistingAddressRow.country = data.country;
 							}
 							if (data.type !== undefined) {
-								addressRow.type = data.type;
+								preexistingAddressRow.type = data.type;
 							}
-							const putRequest = oStoreAddresses.put(addressRow);
+							const putRequest = oStoreAddresses.put(preexistingAddressRow);
 							putRequest.onsuccess = () => {
 								addressesTransaction.commit();
 								callback(putRequest.result as number);
@@ -1772,9 +1768,8 @@ function sortData(
 							proxy.add = new Promise<number | null>((resolve) => {
 								parseCustomerData('customer_db', dbVersion, sortingMap as CustomerSortingMap, cursor.value, (result) => {
 									// console.log('done with: ', result);
-									update()
+									update();
 									resolve(result);
-
 								});
 							});
 							cursor.continue();
