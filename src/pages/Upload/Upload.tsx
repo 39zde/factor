@@ -25,6 +25,8 @@ export function Upload(): React.JSX.Element {
 	const tableImportModeInputRef = useRef<HTMLSelectElement>(null);
 	const tableWrapperRef = useRef<HTMLDivElement>(null);
 	const importButtonRef = useRef<HTMLButtonElement>(null);
+	const [isBackup, setIsBackup] = useState<boolean>(false);
+	const restoreBackupRef = useRef<HTMLInputElement>(null);
 	const [map, setMap] = useState<CustomerSortingMap | ArticleSortingMap | DocumentSortingMap>({
 		row: 'row',
 		customers: {
@@ -150,27 +152,33 @@ export function Upload(): React.JSX.Element {
 					}
 					break;
 				case 'success':
+					// sessionStorage.clear();
+
 					if (importButtonRef.current !== null) {
 						importButtonRef.current.innerText = general.language === 'deutsch' ? 'Tabelle erstellen/erneuern' : 'Create/Update Table';
 					}
 					if (tableImportModeInputRef.current !== null) {
 						switch (tableImportModeInputRef.current.value) {
-							case 'customers':
+							case 'customer_db':
 								dispatch({
 									type: 'set',
 									change: {
 										database: {
+											//@ts-ignore
 											databases: {
 												customer_db: ['customers', 'persons', 'emails', 'phones', 'addresses', 'banks', 'company'],
-												article_db: database.databases.article_db,
-												document_db: database.databases.document_db,
 											},
 										},
 									},
 								});
+
+								break;
+							default:
+								console.error('import db default');
 						}
+						setFileName('');
+						setShowFile(false);
 					}
-					console.log(database.databases);
 					break;
 				case 'error':
 				default:
@@ -181,16 +189,33 @@ export function Upload(): React.JSX.Element {
 		}
 	};
 
+	const restoreBackupHandler = () => {
+		if (restoreBackupRef.current !== null) {
+			if (restoreBackupRef.current.checked !== undefined) {
+				if (restoreBackupRef.current.checked) {
+					setIsBackup(true);
+				} else {
+					setIsBackup(false);
+				}
+			}
+		}
+	};
+
 	const actionHandler = (): void => {
-		const file = sessionStorage.getItem('fileUpload');
-		if (file !== undefined) {
+		if (isBackup) {
+			// worker.ImportWorker.postMessage({
+			// 	type: "restoreBackup",
+			// 	data: file,
+			// })
+		} else {
 			worker.ImportWorker.postMessage({
 				type: 'import',
-				data: file,
+				data: sessionStorage.getItem('fileUpload'),
 				dbVersion: database.dbVersion,
 				dataBaseName: 'factor_db',
 			});
 		}
+
 		worker.ImportWorker.onmessage = (e) => {
 			if (e.data.type === 'imported') {
 				colsHook.setCols(e.data.data[1]);
@@ -246,6 +271,14 @@ export function Upload(): React.JSX.Element {
 									/>
 									{fileName}
 								</div>
+								<div
+									className="restoreBackup"
+									style={{
+										display: 'none',
+									}}>
+									<span>{general.language === 'deutsch' ? 'Backup wiederherstellen:' : 'Restore Backup:'}</span>
+									<input id="restoreBackup" type="checkbox" ref={restoreBackupRef} onChange={restoreBackupHandler} />
+								</div>
 								<button
 									style={{
 										display: showFile ? (showTable ? 'none' : 'flex') : 'none',
@@ -291,6 +324,7 @@ export function Upload(): React.JSX.Element {
 								colsHook={colsHook}
 								entriesHook={entriesHook}
 								updateHook={updateHook}
+								nativeColumnNames={true}
 							/>
 						</>
 					) : (
@@ -315,6 +349,15 @@ export function Upload(): React.JSX.Element {
 								<li>
 									<button ref={importButtonRef} onClick={importHandler}>
 										{general.language === 'deutsch' ? 'Tabelle erstellen/erneuern' : 'Create/Update Table'}
+									</button>
+								</li>
+								<li>
+									<button
+										onClick={() => {
+											let channel = new BroadcastChannel('reset-column-selection');
+											channel.postMessage('reset');
+										}}>
+										{general.language === 'deutsch' ? 'Auswahl zurücksetzen' : 'Reset selection'}
 									</button>
 								</li>
 							</menu>

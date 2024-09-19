@@ -423,3 +423,19 @@ li {
 	min-height: 45vh;
 	width: 100%;
 }
+
+.restoreBackup{
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	position: relative;
+	flex-direction: row;
+	gap: 12px;
+	height: 100%;
+	width:200px;
+}
+
+.restoreBackup>span{
+	text-align: center;
+	font-size: small;
+}
