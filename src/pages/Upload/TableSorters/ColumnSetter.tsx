@@ -12,12 +12,14 @@ export const ColumnSetter = forwardRef<HTMLSelectElement, ColumnSetterProps>(fun
 					{props.name === 'Customers ID' ? <sup>*</sup> : ''}:
 				</span>
 				<select ref={ref} onInput={props.onInput} required={props.name === 'Customers ID' ? true : false}>
-					<option value={undefined}>-</option>	
+					<option value={undefined} selected={props.defaultIndex === -1 ? true : false}>
+						-
+					</option>
 					{props.columns.map((item) => {
 						return (
 							<>
 								<option
-									selected={item === props.columns[props.defaultIndex + 1] ? true : false}
+									selected={props.defaultIndex !== -1 ? (item === props.columns[props.defaultIndex + 1] ? true : false) : undefined}
 									key={props.name + item + (Math.random() * 1000).toFixed(0)}
 									value={item}>
 									{item}

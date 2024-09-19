@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect, useCallback } from 'react';
+import React, { useRef, useMemo, useEffect, useCallback, useState } from 'react';
 // non-lib imports
 import { ColumnSetter } from './ColumnSetter';
 import { useAppContext } from '@app';
@@ -7,6 +7,10 @@ import type { CustomerSortingMap, SorterProps, CustomerSorterInputGroup, Custome
 export function CustomerSorter({ columns, hook }: SorterProps): React.JSX.Element {
 	const { general } = useAppContext();
 	const counter = useRef<number>(-1);
+	const channel = useMemo(() => {
+		return new BroadcastChannel('reset-column-selection');
+	}, []);
+	const [selectionMode, setSelectionMode] = useState<'none' | 'consecutive'>('consecutive');
 	const sortingMap = useRef<CustomerSortingMap>({
 		addresses: {},
 		banks: {},
@@ -270,6 +274,20 @@ export function CustomerSorter({ columns, hook }: SorterProps): React.JSX.Elemen
 
 	counter.current = -1;
 
+	channel.onmessage = (e) => {
+		if (e.data === 'reset') {
+			setSelectionMode('none');
+			sortingMap.current = {
+				addresses: {},
+				banks: {},
+				company: {},
+				customers: { id: '' },
+				persons: {},
+				row: 'row',
+			};
+		}
+	};
+
 	return (
 		<>
 			<div className="customerOptions">
@@ -291,7 +309,7 @@ export function CustomerSorter({ columns, hook }: SorterProps): React.JSX.Elemen
 													<>
 														<div className="dataRowWrapper" key={group.head + subject.name + field + 'div'}>
 															<ColumnSetter
-																defaultIndex={counter.current}
+																defaultIndex={selectionMode === 'consecutive' ? counter.current : -1}
 																columns={columns}
 																name={field}
 																onInput={() => {
