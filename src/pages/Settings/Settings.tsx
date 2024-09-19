@@ -264,10 +264,6 @@ export function Settings() {
 		}
 	}, [changed, context, removeDataBases]);
 
-	useEffect(() => {
-		console.log('effect: ', dbDeletion);
-	}, [dbDeletion]);
-
 	return (
 		<>
 			<div className="settingsPage appRoute helper">
