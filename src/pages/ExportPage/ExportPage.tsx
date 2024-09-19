@@ -12,15 +12,20 @@ export function ExportPage(): React.JSX.Element {
 	const [useCompression, setUseCompression] = useState<CompressionTypes | undefined>(undefined);
 	const [fileHandle, setFileHandle] = useState<FileHandle | undefined>(undefined);
 	const formatRef = useRef<HTMLSelectElement>(null);
-	// const compressionRef = useRef<HTMLSelectElement>(null);
+	const compressionRef = useRef<HTMLSelectElement>(null);
 
-	const exportHandler = (type: 'db' | 'oStore' | 'all', dataBaseName: string, oStoreName: string | undefined) => {
+	const exportHandler = (
+		type: 'db' | 'oStore' | 'all',
+		dataBaseName: string,
+		oStoreName: string | undefined,
+		compression: CompressionTypes | undefined
+	) => {
 		console.log({
 			type: type,
 			dataBaseName: dataBaseName,
 			oStoreName: oStoreName,
 			format: format,
-			compression: useCompression,
+			compression: compression,
 		});
 		setFileHandle(undefined);
 
@@ -29,7 +34,7 @@ export function ExportPage(): React.JSX.Element {
 			dataBaseName: dataBaseName,
 			oStoreName: oStoreName,
 			format: format,
-			compression: useCompression,
+			compression: compression,
 		});
 		// }
 	};
@@ -43,11 +48,11 @@ export function ExportPage(): React.JSX.Element {
 		}
 	};
 
-	// const compressionHandler = () => {
-	// 	if (compressionRef.current !== null) {
-	// 		setUseCompression(compressionRef.current.value as CompressionTypes);
-	// 	}
-	// };
+	const compressionHandler = () => {
+		if (compressionRef.current !== null) {
+			setUseCompression(compressionRef.current.value as CompressionTypes);
+		}
+	};
 
 	context.worker.ExportWorker.onmessage = (e) => {
 		const eventData = e.data as ExportWorkerResponse;
@@ -107,19 +112,22 @@ export function ExportPage(): React.JSX.Element {
 							</select>
 						</div>
 					</li>
-					{/* <li>
-						<div className="fileExportCompressionSelectWrapper">
+					<li>
+						<div
+							className="fileExportCompressionSelectWrapper"
+							style={{
+								display: 'none',
+							}}>
 							<p>{context.general.language === 'deutsch' ? 'Kompressionsverfahren:' : 'Compression Type:'}</p>
 							<select ref={compressionRef} onInput={compressionHandler}>
 								<option value={undefined} defaultChecked>
 									{context.general.language === 'deutsch' ? 'Keines' : 'None'}
 								</option>
-								<option value={'br'}>Brotli</option>
-								<option value={'gz'}>Gzip</option>
-								<option value={'zz'}>Deflate</option>
+								<option value={'gzip'}>Gzip</option>
+								<option value={'deflate'}>Deflate</option>
 							</select>
 						</div>
-					</li> */}
+					</li>
 				</menu>
 				<div className="exportDatabases">
 					{Object.entries(context.database.databases).map(([key, value]) => {
@@ -135,7 +143,7 @@ export function ExportPage(): React.JSX.Element {
 										<button
 											onClick={() => {
 												if (fileHandle === undefined) {
-													exportHandler('db', dbName, undefined);
+													exportHandler('db', dbName, undefined, useCompression);
 												}
 											}}
 											style={{
@@ -157,7 +165,7 @@ export function ExportPage(): React.JSX.Element {
 														<button
 															onClick={() => {
 																if (fileHandle == undefined) {
-																	exportHandler('oStore', dbName, oStore);
+																	exportHandler('oStore', dbName, oStore, useCompression);
 																}
 															}}
 															style={{

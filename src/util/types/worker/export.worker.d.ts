@@ -1,4 +1,4 @@
-export type CompressionTypes = 'br' | 'zz' | 'gz';
+export type CompressionTypes = 'deflate' | 'gzip';
 export type ExportWorkerRequest = {
 	type: 'db' | 'oStore' | 'all';
 	dataBaseName: string;

@@ -5,11 +5,11 @@ self.onmessage = (event: MessageEvent) => {
 	switch (eventData.type) {
 		case 'oStore':
 			if (eventData.oStoreName !== undefined) {
-				exportOStore(eventData.dataBaseName, eventData.dbVersion, eventData.oStoreName, eventData.format, false, () => {});
+				exportOStore(eventData.dataBaseName, eventData.dbVersion, eventData.oStoreName, eventData.format, false, () => {}, eventData.compression);
 			}
 			break;
 		case 'db':
-			exportIDBDatabase(eventData.dataBaseName, eventData.dbVersion, eventData.format);
+			exportIDBDatabase(eventData.dataBaseName, eventData.dbVersion, eventData.format, eventData.compression);
 			break;
 		case 'all':
 			break;
@@ -21,13 +21,40 @@ function exportIDBDatabase(dataBaseName: string, dbVersion: number, format: 'jso
 		let channel = new BroadcastChannel('file-callbacks');
 		const today = new Date();
 		let fileName = dataBaseName + '.' + today.getFullYear() + '.' + today.getMonth() + '.' + today.getDate() + '.' + format;
+		if (compression !== undefined) {
+			if (compression === 'deflate') {
+				fileName += '.zip';
+			} else {
+				fileName += '.' + compression;
+			}
+		}
 		// create the combined file
 		postMessage({ type: 'create', data: fileName, scope: 'db' });
 		channel.onmessage = (e) => {
 			// wait for the signal, that a file Handle is active
 			if (e.data.name === fileName && format === 'json' && e.data.type === 'create' && e.data.scope === 'db') {
 				// write the primer for the oStores
-				postMessage({ type: 'data', data: new TextEncoder().encode(`{"${dataBaseName}":{`) });
+				let writeStream = new TextEncoderStream();
+				let writer = writeStream.writable.getWriter();
+				writer.write(`{"${dataBaseName}":{`);
+				if (compression !== undefined) {
+					let compressed = writeStream.readable.pipeThrough(new CompressionStream(compression));
+					let compressedReader = compressed.getReader();
+					compressedReader.read().then(function writeCompressed(value: ReadableStreamReadResult<Uint8Array>) {
+						if (value.value !== undefined) {
+							postMessage({ type: 'data', data: value.value });
+							compressedReader.read().then(writeCompressed);
+						}
+					});
+				} else {
+					let reader = writeStream.readable.getReader();
+					reader.read().then(function writeUnCompressed(value: ReadableStreamReadResult<Uint8Array>) {
+						if (value.value !== undefined) {
+							postMessage({ type: 'data', data: value.value });
+							reader.read().then(writeUnCompressed);
+						}
+					});
+				}
 				// loop the oStores
 				startExporting(fileName);
 			}
@@ -53,9 +80,17 @@ function exportIDBDatabase(dataBaseName: string, dbVersion: number, format: 'jso
 						// yield a promise, which resolves, once the oStore has finished exporting
 						yield new Promise<string>((resolve) => {
 							// since writing to a combined json file make sure isChild=true
-							exportOStore(dataBaseName, dbVersion, stores[index], 'json', true, () => {
-								resolve(stores[index]);
-							});
+							exportOStore(
+								dataBaseName,
+								dbVersion,
+								stores[index],
+								'json',
+								true,
+								() => {
+									resolve(stores[index]);
+								},
+								compression
+							);
 						});
 					}
 
@@ -63,9 +98,17 @@ function exportIDBDatabase(dataBaseName: string, dbVersion: number, format: 'jso
 						// yield a promise, which resolves, once the oStore has finished exporting
 						yield new Promise<string>((resolve) => {
 							// csv file, so isChild=false
-							exportOStore(dataBaseName, dbVersion, stores[index], 'csv', false, () => {
-								resolve(stores[index]);
-							});
+							exportOStore(
+								dataBaseName,
+								dbVersion,
+								stores[index],
+								'csv',
+								false,
+								() => {
+									resolve(stores[index]);
+								},
+								compression
+							);
 						});
 					}
 				}
@@ -82,9 +125,28 @@ function exportIDBDatabase(dataBaseName: string, dbVersion: number, format: 'jso
 					});
 				} else {
 					if (format === 'json' && fileName !== undefined) {
+						let writeStream = new TextEncoderStream();
+						let writer = writeStream.writable.getWriter();
 						// if this is a combined file close the "${databaseName}" and the json bracket
-						postMessage({ type: 'data', data: new TextEncoder().encode('}}') });
-						// close the file
+						writer.write(`}}`);
+						if (compression !== undefined) {
+							let compressed = writeStream.readable.pipeThrough(new CompressionStream(compression));
+							let compressedReader = compressed.getReader();
+							compressedReader.read().then(function writeCompressed(value: ReadableStreamReadResult<Uint8Array>) {
+								if (value.value !== undefined) {
+									postMessage({ type: 'data', data: value.value });
+									compressedReader.read().then(writeCompressed);
+								}
+							});
+						} else {
+							let reader = writeStream.readable.getReader();
+							reader.read().then(function writeUnCompressed(value: ReadableStreamReadResult<Uint8Array>) {
+								if (value.value !== undefined) {
+									postMessage({ type: 'data', data: value.value });
+									reader.read().then(writeUnCompressed);
+								}
+							});
+						}
 						postMessage({ type: 'close', data: fileName, scope: 'db' });
 						// csv files get closed before reaching this point
 					}
@@ -112,7 +174,11 @@ function exportOStore(
 	const today = new Date();
 	let fileName = dataBaseName + '.' + oStoreName + '.' + today.getFullYear() + '.' + today.getMonth() + '.' + today.getDate() + '.' + format;
 	if (compression !== undefined) {
-		fileName = fileName + '.' + compression;
+		if (compression === 'deflate') {
+			fileName += '.zip';
+		} else {
+			fileName += '.' + compression;
+		}
 	}
 	if (!isChild) {
 		// we are not part of a database to json export
@@ -137,7 +203,13 @@ function exportOStore(
 			// create a encoder stream
 			const encoder = new TextEncoderStream();
 			const encoderWriter = encoder.writable.getWriter();
-			const encoderReader = encoder.readable.getReader();
+			let reader;
+			if (compression !== undefined) {
+				let readable = encoder.readable.pipeThrough(new CompressionStream(compression));
+				reader = readable.getReader();
+			} else {
+				reader = encoder.readable.getReader();
+			}
 			// create a fuse fuse for determining if it is the fist call of the writeable stream
 			fuse.set(encoder, true);
 			let weak = new WeakMap();
@@ -192,30 +264,88 @@ function exportOStore(
 			const sourceWriter = sourceStream.getWriter();
 
 			// read the stream recursively
-			encoderReader.read().then(function postStream(value: ReadableStreamReadResult<Uint8Array>) {
+			reader.read().then(function postStream(value: ReadableStreamReadResult<Uint8Array>) {
 				let ch = new BroadcastChannel('file-callbacks');
 				if (value.value) {
 					// if the value is defined
 					// send the data to the front
 					postMessage({ type: 'data', data: value.value });
 					// then do read further
-					encoderReader.read().then(postStream);
+					reader.read().then(postStream);
 				} else {
 					// the stream has ended
 					if (format === 'json') {
 						if (isChild) {
 							// closing brackets for this OStore
-							postMessage({ type: 'data', data: new TextEncoder().encode('],') });
-							// end it with a callback
-							return callback();
+							let endingJsonChildStream = new TextEncoderStream();
+							endingJsonChildStream.writable.getWriter().write('],');
+							if (compression !== undefined) {
+								let endJsonCompressedChildStreamReader = endingJsonChildStream.readable
+									.pipeThrough(new CompressionStream(compression))
+									.getReader();
+								endJsonCompressedChildStreamReader.read().then(function compressedJsonChildEndReader(va) {
+									if (va.value !== undefined) {
+										postMessage({ type: 'data', data: va.value });
+										endJsonCompressedChildStreamReader.read().then(compressedJsonChildEndReader);
+										if (va.done) {
+											callback();
+										}
+									} else {
+										callback();
+									}
+									callback();
+								});
+							} else {
+								let endJsonChildStreamReader = endingJsonChildStream.readable.getReader();
+								endJsonChildStreamReader.read().then(function uncompressedJsonChildEndReader(va) {
+									if (va.value !== undefined) {
+										postMessage({ type: 'data', data: va.value });
+										endJsonChildStreamReader.read().then(uncompressedJsonChildEndReader);
+										if (va.done) {
+											callback();
+										}
+									} else {
+										callback();
+									}
+									callback();
+								});
+							}
 						} else {
 							// closing brackets for the file
-							postMessage({ type: 'data', data: new TextEncoder().encode(']}}') });
 							//no  callback fall trough
+							let endingJsonStream = new TextEncoderStream();
+							endingJsonStream.writable.getWriter().write(']}}');
+							if (compression !== undefined) {
+								let endJsonCompressedStreamReader = endingJsonStream.readable.pipeThrough(new CompressionStream(compression)).getReader();
+								endJsonCompressedStreamReader.read().then(function compressedJsonEndReader(va) {
+									if (va.value !== undefined) {
+										postMessage({ type: 'data', data: va.value });
+										endJsonCompressedStreamReader.read().then(compressedJsonEndReader);
+										if (va.done) {
+											postMessage({ type: 'close', data: fileName, scope: 'oStore' });
+										}
+									} else {
+										postMessage({ type: 'close', data: fileName, scope: 'oStore' });
+									}
+									postMessage({ type: 'close', data: fileName, scope: 'oStore' });
+								});
+							} else {
+								let endJsonStreamReader = endingJsonStream.readable.getReader();
+								endJsonStreamReader.read().then(function uncompressedJsonEndReader(va) {
+									if (va.value !== undefined) {
+										postMessage({ type: 'data', data: va.value });
+										endJsonStreamReader.read().then(uncompressedJsonEndReader);
+										if (va.done) {
+											postMessage({ type: 'close', data: fileName, scope: 'oStore' });
+										}
+									} else {
+										postMessage({ type: 'close', data: fileName, scope: 'oStore' });
+									}
+									postMessage({ type: 'close', data: fileName, scope: 'oStore' });
+								});
+							}
 						}
-					}
-					if (!isChild) {
-						// send the signal to close the file, wait for callback on channel
+					} else {
 						postMessage({ type: 'close', data: fileName, scope: 'oStore' });
 					}
 				}
@@ -280,4 +410,8 @@ function turnObjectToCSVRow(input: TableRow): string {
 		}
 	}
 	return out;
+}
+
+export function encodeToBase64(buf: ArrayBuffer): string {
+	return btoa(String.fromCharCode(...new Uint8Array(buf)));
 }
