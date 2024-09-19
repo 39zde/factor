@@ -2572,7 +2572,7 @@ async function main() {
 				const website = genWebsite(company);
 				const { bankName, iban, bic } = genBank()
 				const { taxID, taxNumber, vatID } = genTax()
-				writeStream.write(encoder.encode(`${i.toString()};;${i.toString()}-Description;${past};${now};${i.toString()}-notes;${website};${customerEmail};${customerEmailType};${customerEmail}-note;${customerPhone};${customerPhoneType};${customerPhone}-note;${title};${firstName};${lastName};;${firstName} ${lastName} notes;${email};${emailType};${email}-note;${phone};${phoneType};${phone}-note;${company};;${company}-note;${taxID};${taxNumber};${vatID};${addressType};${street};${zip};${city};${country};;${bankName};${iban};${bic};;${bankName}-notes\n`))
+				writeStream.write(encoder.encode(`${i.toString()};;${i.toString()}-Description;${past};${now};${i.toString()}-notes;${website};${customerEmail};${customerEmailType};${customerEmail}-note;${customerPhone};${customerPhoneType};${customerPhone}-note;${title};${firstName};${lastName};;${firstName} ${lastName}-notes;${email};${emailType};${email}-note;${phone};${phoneType};${phone}-note;${company};;${company}-note;${taxID};${taxNumber};${vatID};${addressType};${street};${zip};${city};${country};${street}-note;${bankName};${iban};${bic};;${bankName}-notes\n`))
 			}
 			writeStream.close()
 			rl.close()
