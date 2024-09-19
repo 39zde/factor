@@ -13,9 +13,9 @@ import React, {
 } from 'react';
 import { ChevronRight } from 'lucide-react';
 // non-lib imports
-import { TableHeadDisplay } from './TableHeadDisplay';
+import { TableHead } from './TableHead';
 import { TableBodyDisplay } from './TableBodyDisplay';
-import { TableFootDisplay } from './TableFootDisplay';
+import { TableFoot } from './TableFoot';
 import { ColumnCheckBox } from './ColumnCheckBox';
 import { ContextMenu } from '../ContextMenu/ContextMenu';
 import { ColumnOrderer } from './ColumnOrderer';
@@ -686,9 +686,37 @@ export function Table({
 							onMouseMove={mouseMoveHandler}
 							onMouseUp={mouseUpHandler}>
 							<table style={tableStyle}>
-								<TableHeadDisplay />
+								{!tableState.update ? (
+									<>
+										<TableHead
+											tableName={tableState.tableName}
+											allColumns={tableState.allColumns}
+											colsRef={tableState.colsRef}
+											columnWidths={tableState.columnWidths}
+											columns={tableState.columns}
+											isMouseDown={tableState.isMouseDown}
+											nativeColumnNames={tableState.nativeColumnNames}
+											rowHeight={appearances.rowHeight}
+										/>
+									</>
+								) : (
+									<></>
+								)}
 								<TableBodyDisplay ref={tableBodyRef} />
-								<TableFootDisplay />
+								{!tableState.update ? (
+									<>
+										<TableFoot
+											tableName={tableState.tableName}
+											allColumns={tableState.allColumns}
+											footerRowFirstElementRef={tableState.footerRowFirstElementRef}
+											columns={tableState.columns}
+											nativeColumnNames={tableState.nativeColumnNames}
+											rowHeight={appearances.rowHeight}
+										/>
+									</>
+								) : (
+									<></>
+								)}
 							</table>
 						</div>
 					</div>
