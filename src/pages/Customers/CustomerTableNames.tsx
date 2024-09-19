@@ -9,7 +9,7 @@ export function CustomerTableNames({ tableName }: { tableName: CustomerDBObjectS
 		case 'addresses':
 			return <>{general.language === 'deutsch' ? 'Adressen' : 'Addresses'}</>;
 		case 'banks':
-			return <>{general.language === 'deutsch' ? 'Banken' : 'Banks'}</>;
+			return <>{general.language === 'deutsch' ? 'Bankkonten' : 'Bank-Accounts'}</>;
 		case 'company':
 			return <>{general.language === 'deutsch' ? 'Firmen' : 'Companies'}</>;
 		case 'customers':
