@@ -18,7 +18,7 @@ self.onmessage = (event: MessageEvent) => {
 
 function exportIDBDatabase(dataBaseName: string, dbVersion: number, format: 'json' | 'csv', compression?: CompressionTypes) {
 	if (format === 'json') {
-		let channel = new BroadcastChannel('file-callbacks');
+		const channel = new BroadcastChannel('file-callbacks');
 		const today = new Date();
 		let fileName = dataBaseName + '.' + today.getFullYear() + '.' + today.getMonth() + '.' + today.getDate() + '.' + format;
 		if (compression !== undefined) {
@@ -34,12 +34,12 @@ function exportIDBDatabase(dataBaseName: string, dbVersion: number, format: 'jso
 			// wait for the signal, that a file Handle is active
 			if (e.data.name === fileName && format === 'json' && e.data.type === 'create' && e.data.scope === 'db') {
 				// write the primer for the oStores
-				let writeStream = new TextEncoderStream();
-				let writer = writeStream.writable.getWriter();
+				const writeStream = new TextEncoderStream();
+				const writer = writeStream.writable.getWriter();
 				writer.write(`{"${dataBaseName}":{`);
 				if (compression !== undefined) {
-					let compressed = writeStream.readable.pipeThrough(new CompressionStream(compression));
-					let compressedReader = compressed.getReader();
+					const compressed = writeStream.readable.pipeThrough(new CompressionStream(compression));
+					const compressedReader = compressed.getReader();
 					compressedReader.read().then(function writeCompressed(value: ReadableStreamReadResult<Uint8Array>) {
 						if (value.value !== undefined) {
 							postMessage({ type: 'data', data: value.value });
@@ -47,7 +47,7 @@ function exportIDBDatabase(dataBaseName: string, dbVersion: number, format: 'jso
 						}
 					});
 				} else {
-					let reader = writeStream.readable.getReader();
+					const reader = writeStream.readable.getReader();
 					reader.read().then(function writeUnCompressed(value: ReadableStreamReadResult<Uint8Array>) {
 						if (value.value !== undefined) {
 							postMessage({ type: 'data', data: value.value });
@@ -118,20 +118,20 @@ function exportIDBDatabase(dataBaseName: string, dbVersion: number, format: 'jso
 
 			// call next on the iterator, once the promise resolves, therefore exporting the next oStore
 			function callIter(iter: Generator<Promise<string>, void, unknown>) {
-				let value = iter.next();
+				const value = iter.next();
 				if (!value.done) {
 					Promise.resolve(value.value).then(() => {
 						callIter(iter);
 					});
 				} else {
 					if (format === 'json' && fileName !== undefined) {
-						let writeStream = new TextEncoderStream();
-						let writer = writeStream.writable.getWriter();
+						const writeStream = new TextEncoderStream();
+						const writer = writeStream.writable.getWriter();
 						// if this is a combined file close the "${databaseName}" and the json bracket
 						writer.write(`}}`);
 						if (compression !== undefined) {
-							let compressed = writeStream.readable.pipeThrough(new CompressionStream(compression));
-							let compressedReader = compressed.getReader();
+							const compressed = writeStream.readable.pipeThrough(new CompressionStream(compression));
+							const compressedReader = compressed.getReader();
 							compressedReader.read().then(function writeCompressed(value: ReadableStreamReadResult<Uint8Array>) {
 								if (value.value !== undefined) {
 									postMessage({ type: 'data', data: value.value });
@@ -139,7 +139,7 @@ function exportIDBDatabase(dataBaseName: string, dbVersion: number, format: 'jso
 								}
 							});
 						} else {
-							let reader = writeStream.readable.getReader();
+							const reader = writeStream.readable.getReader();
 							reader.read().then(function writeUnCompressed(value: ReadableStreamReadResult<Uint8Array>) {
 								if (value.value !== undefined) {
 									postMessage({ type: 'data', data: value.value });
@@ -168,8 +168,8 @@ function exportOStore(
 	callback: () => void,
 	compression?: CompressionTypes
 ) {
-	let fuse = new WeakMap();
-	let channel = new BroadcastChannel('file-callbacks');
+	const fuse = new WeakMap();
+	const channel = new BroadcastChannel('file-callbacks');
 	// create file name
 	const today = new Date();
 	let fileName = dataBaseName + '.' + oStoreName + '.' + today.getFullYear() + '.' + today.getMonth() + '.' + today.getDate() + '.' + format;
@@ -205,14 +205,14 @@ function exportOStore(
 			const encoderWriter = encoder.writable.getWriter();
 			let reader;
 			if (compression !== undefined) {
-				let readable = encoder.readable.pipeThrough(new CompressionStream(compression));
+				const readable = encoder.readable.pipeThrough(new CompressionStream(compression));
 				reader = readable.getReader();
 			} else {
 				reader = encoder.readable.getReader();
 			}
 			// create a fuse fuse for determining if it is the fist call of the writeable stream
 			fuse.set(encoder, true);
-			let weak = new WeakMap();
+			const weak = new WeakMap();
 
 			// create the writeStream
 			const sourceStream = new WritableStream({
@@ -265,7 +265,7 @@ function exportOStore(
 
 			// read the stream recursively
 			reader.read().then(function postStream(value: ReadableStreamReadResult<Uint8Array>) {
-				let ch = new BroadcastChannel('file-callbacks');
+				const ch = new BroadcastChannel('file-callbacks');
 				if (value.value) {
 					// if the value is defined
 					// send the data to the front
@@ -277,10 +277,10 @@ function exportOStore(
 					if (format === 'json') {
 						if (isChild) {
 							// closing brackets for this OStore
-							let endingJsonChildStream = new TextEncoderStream();
+							const endingJsonChildStream = new TextEncoderStream();
 							endingJsonChildStream.writable.getWriter().write('],');
 							if (compression !== undefined) {
-								let endJsonCompressedChildStreamReader = endingJsonChildStream.readable
+								const endJsonCompressedChildStreamReader = endingJsonChildStream.readable
 									.pipeThrough(new CompressionStream(compression))
 									.getReader();
 								endJsonCompressedChildStreamReader.read().then(function compressedJsonChildEndReader(va) {
@@ -296,7 +296,7 @@ function exportOStore(
 									callback();
 								});
 							} else {
-								let endJsonChildStreamReader = endingJsonChildStream.readable.getReader();
+								const endJsonChildStreamReader = endingJsonChildStream.readable.getReader();
 								endJsonChildStreamReader.read().then(function uncompressedJsonChildEndReader(va) {
 									if (va.value !== undefined) {
 										postMessage({ type: 'data', data: va.value });
@@ -313,10 +313,10 @@ function exportOStore(
 						} else {
 							// closing brackets for the file
 							//no  callback fall trough
-							let endingJsonStream = new TextEncoderStream();
+							const endingJsonStream = new TextEncoderStream();
 							endingJsonStream.writable.getWriter().write(']}}');
 							if (compression !== undefined) {
-								let endJsonCompressedStreamReader = endingJsonStream.readable.pipeThrough(new CompressionStream(compression)).getReader();
+								const endJsonCompressedStreamReader = endingJsonStream.readable.pipeThrough(new CompressionStream(compression)).getReader();
 								endJsonCompressedStreamReader.read().then(function compressedJsonEndReader(va) {
 									if (va.value !== undefined) {
 										postMessage({ type: 'data', data: va.value });
@@ -330,7 +330,7 @@ function exportOStore(
 									postMessage({ type: 'close', data: fileName, scope: 'oStore' });
 								});
 							} else {
-								let endJsonStreamReader = endingJsonStream.readable.getReader();
+								const endJsonStreamReader = endingJsonStream.readable.getReader();
 								endJsonStreamReader.read().then(function uncompressedJsonEndReader(va) {
 									if (va.value !== undefined) {
 										postMessage({ type: 'data', data: va.value });
@@ -397,7 +397,7 @@ function turnObjectToCSVRow(input: TableRow): string {
 	let out = '';
 	const keys: string[] = Object.keys(input);
 	for (let i = 0; i < keys.length; i++) {
-		let value = input[keys[i]];
+		const value = input[keys[i]];
 		if (value === undefined) {
 			out += '';
 		} else {

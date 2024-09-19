@@ -58,7 +58,7 @@ export async function writeSettings(settings: AppSettingsType): Promise<boolean>
 		await writeFile('settings.json', new TextEncoder().encode(JSON.stringify(settings)), { baseDir: BaseDirectory.AppConfig });
 		return true;
 	} catch (e) {
-		console.warn('failed to save settings');
+		console.warn('failed to save settings', e);
 		return false;
 	}
 }
@@ -252,7 +252,7 @@ export function appReducer(appState: AppContextType, action: AppAction): AppCont
 // defaultContext.constructor.prototype.notify = notify;
 async function notify(options: Options, context: AppContextType): Promise<string> {
 	try {
-		let permissionGranted = await isPermissionGranted();
+		const permissionGranted = await isPermissionGranted();
 		if (!permissionGranted) {
 			if (context.general.notifications) {
 				await requestPermission();

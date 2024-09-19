@@ -58,8 +58,8 @@ export function ExportPage(): React.JSX.Element {
 		const eventData = e.data as ExportWorkerResponse;
 		switch (eventData.type) {
 			case 'create':
-				let channel = new BroadcastChannel('file-callbacks');
-				let fileName = eventData.data as string;
+				const channel = new BroadcastChannel('file-callbacks');
+				const fileName = eventData.data as string;
 				create(fileName, { baseDir: BaseDirectory.Download }).then((handle) => {
 					setFileHandle(handle);
 					if (eventData.scope !== undefined) {
@@ -82,7 +82,7 @@ export function ExportPage(): React.JSX.Element {
 					// let fileName = eventData.data as string;
 					fileHandle.close().then(() => {
 						setFileHandle(undefined);
-						let channel = new BroadcastChannel('file-callbacks');
+						const channel = new BroadcastChannel('file-callbacks');
 						channel.postMessage({ type: 'close', name: eventData.data, scope: eventData.scope });
 						return dispatch({
 							type: 'notify',

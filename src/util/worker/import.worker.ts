@@ -632,7 +632,7 @@ function parseCustomerData(
 		// these need to be done in the customerDB request scope to 'function' properly
 		function insertEmail(data: EmailType, callback: (result: number | null) => void): void {
 			if (oStores.contains('emails')) {
-				let emailData = data;
+				const emailData = data;
 				emailData.email = emailData.email.toLowerCase();
 				const emailTransaction = customerDB.transaction('emails', 'readwrite', { durability: 'strict' });
 				const oStoreEmail = emailTransaction.objectStore('emails');
@@ -1143,7 +1143,7 @@ function parseCustomerData(
 				reffedPersons[i] = refPerson;
 
 				if (emailHolder.has(data[i]) && emailHolder.get(data[i]) !== undefined) {
-					let emailArray = emailHolder.get(data[i]) as EmailType[];
+					const emailArray = emailHolder.get(data[i]) as EmailType[];
 					for (let j = 0; j < emailArray.length; j++) {
 						tracker.total += 1;
 						insertEmail(emailHolder.get(data[i])[j], (result: number | null) => {
@@ -1156,7 +1156,7 @@ function parseCustomerData(
 				}
 
 				if (phoneHolder.has(data[i]) && phoneHolder.get(data[i]) !== undefined) {
-					let phoneArray = phoneHolder.get(data[i]) as PhoneNumberType[];
+					const phoneArray = phoneHolder.get(data[i]) as PhoneNumberType[];
 					for (let j = 0; j < phoneArray.length; j++) {
 						tracker.total += 1;
 						insertPhone(phoneHolder.get(data[i])[j], (result: number | null) => {

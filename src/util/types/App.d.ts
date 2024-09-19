@@ -4,7 +4,7 @@ import type { CustomerDBObjectStores } from './database/CustomerTypes';
 import type { ArticleDBObjectStores } from './database/ArticleTypes';
 import type { DocumentDBObjectStores } from './database/DocumentTypes';
 
-export interface AppContextType extends AppSettingsType, Object {
+export interface AppContextType extends AppSettingsType {
 	worker: {
 		/**
 		 * stores and cleans uploaded data and assigns the date to various tables

@@ -164,7 +164,7 @@ export function Upload(): React.JSX.Element {
 									type: 'set',
 									change: {
 										database: {
-											//@ts-ignore
+											// @ts-expect-error we don't need to list all databases since it is only a change
 											databases: {
 												customer_db: ['customers', 'persons', 'emails', 'phones', 'addresses', 'banks', 'company'],
 											},
@@ -354,7 +354,7 @@ export function Upload(): React.JSX.Element {
 								<li>
 									<button
 										onClick={() => {
-											let channel = new BroadcastChannel('reset-column-selection');
+											const channel = new BroadcastChannel('reset-column-selection');
 											channel.postMessage('reset');
 										}}>
 										{general.language === 'deutsch' ? 'Auswahl zurücksetzen' : 'Reset selection'}

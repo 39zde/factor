@@ -184,7 +184,7 @@ export function Settings() {
 		[changed]
 	);
 
-	const dbDeletionHandler = (index: number, key: DataBaseNames) => {
+	const dbDeletionHandler = (index: number) => {
 		if (dbDeletionRefs.current[index] !== null) {
 			if (dbDeletionRefs.current[index].current !== null) {
 				if (dbDeletionRefs.current[index].current.checked !== undefined) {
@@ -196,7 +196,6 @@ export function Settings() {
 							dialogRef.current.showModal();
 						}
 					}
-					// setDBDeletion(dbDeletion.map((v,i)=>i === index ? !v: v))
 				}
 			}
 		}
@@ -205,7 +204,7 @@ export function Settings() {
 	const removeDataBases = useCallback(() => {
 		for (const [index, shouldDelete] of dbDeletion.entries()) {
 			if (shouldDelete) {
-				let dbName = dataBaseArray[index];
+				const dbName = dataBaseArray[index];
 				if (dbName === 'article_db') {
 					dispatch({
 						type: 'set',
@@ -349,7 +348,7 @@ export function Settings() {
 							<em>{context.general.language === 'deutsch' ? 'Gefahrenzone!' : 'Danger Zone!'}</em>
 							<div />
 						</div>
-						{Object.entries(context.database.databases).map(([key, value], index) => {
+						{Object.entries(context.database.databases).map(([key, _value], index) => {
 							const deletionRef = useRef<HTMLInputElement>(null);
 							dbDeletionRefs.current[index] = deletionRef;
 							return (
@@ -360,12 +359,7 @@ export function Settings() {
 											<small className="deletionNote">
 												{context.general.language === 'deutsch' ? 'Datenbank nach dem Speichern löschen' : 'Delete on Save'}
 											</small>
-											<input
-												type="checkbox"
-												ref={deletionRef}
-												checked={dbDeletion[index]}
-												onChange={() => dbDeletionHandler(index, key as DataBaseNames)}
-											/>
+											<input type="checkbox" ref={deletionRef} checked={dbDeletion[index]} onChange={() => dbDeletionHandler(index)} />
 										</div>
 									</div>
 								</>
