@@ -5,6 +5,7 @@
 - [ ] remember table start position
 - [ ] add search
 - [ ] add sorting
+- [ ] add scroll bar
 - [x] open urls in default browser
 
 ## Long Term

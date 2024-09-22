@@ -1,173 +1,173 @@
 {
-  "productName": "Factor",
-  "version": "2.1.0",
-  "identifier": "factor",
-  "build": {
-    "frontendDist": "../bundle",
-    "beforeBuildCommand": "yarn bundle"
-  },
-  "app": {
-    "windows": [
-      {
-        "title": "Factor",
-        "resizable": true,
-        "fullscreen": false,
-		  "center": true,
-		  "zoomHotkeysEnabled": false
-      }
-    ],
-    "security": {
-		"capabilities": [
-			{
-				"$schema": "./gen/schemas/desktop-schema.json",
-				"identifier": "default",
-				"description": "enables the default permissions",
-				"windows": [
-				  "main"
-				],
-				"permissions": [
-				 "core:app:allow-tauri-version",
-				 "core:app:allow-app-hide",
-				 "core:app:allow-app-show",
-				 "core:app:allow-default-window-icon",
-				 "core:app:allow-name",
-				 "core:app:allow-version",
-				 "core:event:deny-emit",
-				 "core:event:deny-emit-to",
-				 "core:event:deny-listen",
-				 "core:event:deny-unlisten",
-				 "core:image:deny-from-bytes",
-				 "core:image:deny-from-path",
-				 "core:image:deny-new",
-				 "core:image:deny-rgba",
-				 "core:image:deny-size",
-				 "core:menu:deny-create-default",
-				 "core:menu:deny-popup",
-				 "core:menu:deny-insert",
-				 "core:menu:deny-new",
-				 "core:menu:deny-append",
-				 "core:menu:deny-get",
-				 "core:menu:deny-is-checked",
-				 "core:menu:deny-is-enabled",
-				 "core:menu:deny-items",
-				 "core:menu:deny-remove",
-				 "core:menu:deny-prepend",
-				 "core:menu:deny-remove-at",
-				 "core:menu:deny-set-accelerator",
-				 "core:menu:deny-set-as-app-menu",
-				 "core:menu:deny-set-as-window-menu",
-				 "core:menu:deny-set-icon",
-				 "core:menu:deny-set-as-help-menu-for-nsapp",
-				 "core:menu:deny-set-checked",
-				 "core:menu:deny-set-as-windows-menu-for-nsapp",
-				 "core:menu:deny-set-enabled",
-				 "core:menu:deny-set-text",
-				 "core:menu:deny-text",
-				 "core:path:default",
-				 "core:resources:default",
-				 "core:tray:default",
-				 "core:webview:deny-print",
-				 "core:webview:deny-set-webview-zoom",
-				 "core:webview:allow-internal-toggle-devtools",
-				 "fs:allow-download-write",
-				 "fs:allow-download-read",
-				 "fs:allow-appconfig-read",
-				 "fs:allow-appconfig-write",
-				 "notification:allow-request-permission",
-				 "notification:allow-check-permissions",
-				 "notification:allow-is-permission-granted",
-				 "notification:allow-notify",
-				 "notification:allow-show",
-				 "notification:allow-permission-state",
-				 "notification:default",
-				 "shell:allow-open",
-				 "shell:allow-execute",
-				 "shell:default"
-			 ]
+	"productName": "Factor",
+	"version": "2.1.0",
+	"identifier": "factor",
+	"build": {
+	  "frontendDist": "../bundle-dev",
+	  "devUrl": "https://localhost:5173",
+	  "beforeDevCommand": "yarn dev:vite",
+	  "beforeBuildCommand": "yarn bundle:dev"
+	},
+	"app": {
+	  "windows": [
+		 {
+			"title": "Factor",
+			"resizable": true,
+			"fullscreen": false,
+			"center": true,
+			"zoomHotkeysEnabled": false
+		 }
+	  ],
+	  "security": {
+		 "capabilities": [
+			 {
+				 "$schema": "./gen/schemas/desktop-schema.json",
+				 "identifier": "default",
+				 "description": "enables the default permissions",
+				 "windows": [
+					"main"
+				 ],
+				 "permissions": [
+				  "core:app:allow-tauri-version",
+				  "core:app:allow-app-hide",
+				  "core:app:allow-app-show",
+				  "core:app:allow-default-window-icon",
+				  "core:app:allow-name",
+				  "core:app:allow-version",
+				  "core:event:deny-emit",
+				  "core:event:deny-emit-to",
+				  "core:event:deny-listen",
+				  "core:event:deny-unlisten",
+				  "core:image:deny-from-bytes",
+				  "core:image:deny-from-path",
+				  "core:image:deny-new",
+				  "core:image:deny-rgba",
+				  "core:image:deny-size",
+				  "core:menu:deny-create-default",
+				  "core:menu:deny-popup",
+				  "core:menu:deny-insert",
+				  "core:menu:deny-new",
+				  "core:menu:deny-append",
+				  "core:menu:deny-get",
+				  "core:menu:deny-is-checked",
+				  "core:menu:deny-is-enabled",
+				  "core:menu:deny-items",
+				  "core:menu:deny-remove",
+				  "core:menu:deny-prepend",
+				  "core:menu:deny-remove-at",
+				  "core:menu:deny-set-accelerator",
+				  "core:menu:deny-set-as-app-menu",
+				  "core:menu:deny-set-as-window-menu",
+				  "core:menu:deny-set-icon",
+				  "core:menu:deny-set-as-help-menu-for-nsapp",
+				  "core:menu:deny-set-checked",
+				  "core:menu:deny-set-as-windows-menu-for-nsapp",
+				  "core:menu:deny-set-enabled",
+				  "core:menu:deny-set-text",
+				  "core:menu:deny-text",
+				  "core:path:default",
+				  "core:resources:default",
+				  "core:tray:default",
+				  "core:webview:deny-print",
+				  "core:webview:deny-set-webview-zoom",
+				  "core:webview:allow-internal-toggle-devtools",
+				  "fs:allow-download-write",
+				  "fs:allow-download-read",
+				  "fs:allow-appconfig-read",
+				  "fs:allow-appconfig-write",
+				  "notification:allow-request-permission",
+				  "notification:allow-check-permissions",
+				  "notification:allow-is-permission-granted",
+				  "notification:allow-notify",
+				  "notification:allow-show",
+				  "notification:allow-permission-state",
+				  "notification:default",
+				  "shell:allow-open",
+				  "shell:allow-execute",
+				  "shell:default"
+			  ]
+			  }
+		 ],
+		 "assetProtocol": {
+			 "enable": false,
+			 "scope": []
+		 },
+		 "pattern": {
+			 "use": "brownfield"
+		 },
+		 "dangerousDisableAssetCspModification": false,
+		 "freezePrototype": false
+	  },
+	  "withGlobalTauri": true
+	},
+	"bundle": {
+	 "linux": {
+		 "appimage": {
+			 "bundleMediaFramework": false,
+			 "files": {}
+		 },
+		 "deb": {
+			 "files": {}
+		 },
+		 "rpm": {
+			 "epoch": 0,
+			 "files": {},
+			 "release": "1"
+		 }
+	 },
+	 "macOS": {
+		 "dmg": {
+			 "appPosition": {
+				 "x": 180,
+				 "y": 170
+			 },
+			 "applicationFolderPosition": {
+				 "x": 480,
+				 "y": 170
+			 },
+			 "windowSize": {
+				 "height": 400,
+				 "width": 660
 			 }
-		],
-      "csp": "default-src 'self'; script-src 'self'; connect-src 'self'; worker-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:",
-		"devCsp": "default-src 'self'",
-		"assetProtocol": {
-			"enable": false,
-			"scope": []
-		},
-		"pattern": {
-			"use": "brownfield"
-		},
-		"dangerousDisableAssetCspModification": false,
-		"freezePrototype": false
-    },
-	 "withGlobalTauri": true
-  },
-  "bundle": {
-	"linux": {
-		"appimage": {
-			"bundleMediaFramework": false,
-			"files": {}
-		},
-		"deb": {
-			"files": {}
-		},
-		"rpm": {
-			"epoch": 0,
-			"files": {},
-			"release": "1"
-		}
-	},
-	"macOS": {
-		"dmg": {
-			"appPosition": {
-				"x": 180,
-				"y": 170
-			},
-			"applicationFolderPosition": {
-				"x": 480,
-				"y": 170
-			},
-			"windowSize": {
-				"height": 400,
-				"width": 660
-			}
-		},
-		"files": {},
-		"hardenedRuntime": true,
-		"minimumSystemVersion": "10.13"
-	},
-	"windows": {
-		"allowDowngrades": true,
-		"certificateThumbprint": null,
-		"digestAlgorithm": null,
-		"nsis": null,
-		"signCommand": null,
-		"timestampUrl": null,
-		"tsp": false,
-		"webviewInstallMode": {
-			"silent": true,
-			"type": "downloadBootstrapper"
-		},
-		"wix": null
-	},
-    "active": true,
-    "targets": "all",
-    "icon": [
-      "./icons/32x32.png",
-      "./icons/128x128.png",
-      "./icons/128x128@2x.png",
-      "./icons/icon.icns",
-      "./icons/icon.ico"
-    ],
-	 "category": "Utility",
-	 "licenseFile": "../LICENSE",
-	 "homepage": "https://github.com/39zde/factor"
+		 },
+		 "files": {},
+		 "hardenedRuntime": true,
+		 "minimumSystemVersion": "10.13"
+	 },
+	 "windows": {
+		 "allowDowngrades": true,
+		 "certificateThumbprint": null,
+		 "digestAlgorithm": null,
+		 "nsis": null,
+		 "signCommand": null,
+		 "timestampUrl": null,
+		 "tsp": false,
+		 "webviewInstallMode": {
+			 "silent": true,
+			 "type": "downloadBootstrapper"
+		 },
+		 "wix": null
+	 },
+	  "active": true,
+	  "targets": "all",
+	  "icon": [
+		 "./icons/32x32.png",
+		 "./icons/128x128.png",
+		 "./icons/128x128@2x.png",
+		 "./icons/icon.icns",
+		 "./icons/icon.ico"
+	  ],
+	  "category": "Utility",
+	  "licenseFile": "../LICENSE",
+	  "homepage": "https://github.com/39zde/factor"
 
-  },
-  "plugins": {
-	"deep-link":{
-		"desktop":{
-			"schemes":["https"]
-		}
-	}
-  },
-  "$schema": "../node_modules/@tauri-apps/cli/config.schema.json"
-}
+	},
+	"plugins": {
+	 "deep-link":{
+		 "desktop":{
+			 "schemes":["https"]
+		 }
+	 }
+	},
+	"$schema": "../node_modules/@tauri-apps/cli/config.schema.json"
+ }

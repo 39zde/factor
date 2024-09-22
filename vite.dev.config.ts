@@ -12,7 +12,7 @@ export default defineConfig({
 		minify: 'esbuild',
 		outDir: 'bundle-dev',
 		rollupOptions: {
-			input: 'index-dev.html',
+			input: './index.html',
 			output: {
 				generatedCode: 'es2015',
 				interop: 'auto',

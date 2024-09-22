@@ -12,12 +12,13 @@
         "lint": "eslint ./src -c ./eslint.config.mjs  --fix",
         "dev:vite": "vite -c ./vite.dev.config.ts",
         "bundle:dev": "vite build -c ./vite.dev.config.ts",
-        "bundle:demo": "vite build -c ./vite.demo.config.ts && node ./resources/includeFiles.mjs ",
+        "bundle:demo": "vite build -c ./vite.demo.config.ts && node ./scripts/includeFiles.mjs ",
+        "bundle:prod": "tsc && vite build",
         "devtools": "react-devtools",
-        "bundle": "tsc && vite build",
         "preview": "vite preview",
         "build": "tauri build",
-        "dev": "tauri dev --config ./src-tauri/tauri.dev.conf.json"
+        "dev:tauri": "tauri dev",
+		  "gen": "node ./scripts/genData.cli.js"
     },
     "dependencies": {
         "@react-pdf/renderer": "^3.4.4",

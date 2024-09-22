@@ -25,7 +25,7 @@ export default defineConfig({
 		rollupOptions: {
 			cache: false,
 			logLevel: 'warn',
-			input: 'index-demo.html',
+			input: './index.html',
 			output: {
 				hashCharacters: 'base36',
 				sanitizeFileName: false,

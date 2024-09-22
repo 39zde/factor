@@ -88,8 +88,6 @@
 			  ]
 			  }
 		 ],
-		 "csp": "default-src 'self'; script-src 'self'; connect-src 'self'; worker-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:",
-		 "devCsp": "default-src 'self'",
 		 "assetProtocol": {
 			 "enable": false,
 			 "scope": []
