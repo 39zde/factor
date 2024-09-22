@@ -1,11 +1,9 @@
 {
   "productName": "Factor",
-  "version": "v2.1.0",
+  "version": "2.1.0",
   "identifier": "factor",
   "build": {
     "frontendDist": "../bundle",
-    "devUrl": "https://localhost:5173",
-    "beforeDevCommand": "yarn dev:web",
     "beforeBuildCommand": "yarn bundle"
   },
   "app": {
@@ -89,6 +87,7 @@
 			 }
 		],
       "csp": "default-src 'self'; script-src 'self'; connect-src 'self'; worker-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:",
+		"devCsp": "default-src 'self'",
 		"assetProtocol": {
 			"enable": false,
 			"scope": []

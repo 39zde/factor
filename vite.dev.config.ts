@@ -10,9 +10,9 @@ export default defineConfig({
 	build: {
 		reportCompressedSize: true,
 		minify: 'esbuild',
-		outDir: 'bundle',
+		outDir: 'bundle-dev',
 		rollupOptions: {
-			input: 'index.html',
+			input: 'index-dev.html',
 			output: {
 				generatedCode: 'es2015',
 				interop: 'auto',
