@@ -24,6 +24,7 @@
 }
 
 .fileInput {
+	appearance: none;
 	height: 42px;
 	padding: 12px;
 	width: 300px;
@@ -57,6 +58,7 @@
 	left: 0;
 	position: absolute;
 	background: light-dark(var(--color-light-2), var(--color-dark-2));
+	z-index: 2;
 
 }
 
