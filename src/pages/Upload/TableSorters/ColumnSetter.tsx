@@ -15,17 +15,17 @@ export const ColumnSetter = forwardRef<HTMLSelectElement, ColumnSetterProps>(fun
 					<option value={undefined} selected={props.defaultIndex === -1 ? true : false}>
 						-
 					</option>
-					{props.columns.map((item) => {
-						return (
-							<>
+					{props.columns.map((item, index) => {
+						if (index !== 0) {
+							return (
 								<option
 									selected={props.defaultIndex !== -1 ? (item === props.columns[props.defaultIndex + 1] ? true : false) : undefined}
-									key={props.name + item + (Math.random() * 1000).toFixed(0)}
+									key={props.name + item}
 									value={item}>
 									{item}
 								</option>
-							</>
-						);
+							);
+						}
 					})}
 				</select>
 			</div>

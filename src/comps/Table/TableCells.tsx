@@ -1,11 +1,11 @@
-import React, { MouseEvent } from 'react';
+import React, { Fragment, MouseEvent } from 'react';
 import { open } from '@tauri-apps/plugin-shell';
 // non-lib imports
 import { useTableContext } from './Table';
 import { useAppContext } from '@app';
 import { AddressType, BankType, CompanyType, EmailType, PersonType, PhoneNumberType, TableRowItemProps } from '@typings';
 
-export function RowItems({ items, uniqueParentKey }: TableRowItemProps): React.JSX.Element {
+export function TableCells({ items, uniqueParentKey }: TableRowItemProps): React.JSX.Element {
 	const { appearances } = useAppContext();
 	const tableState = useTableContext();
 	return (
@@ -13,21 +13,20 @@ export function RowItems({ items, uniqueParentKey }: TableRowItemProps): React.J
 			{tableState.allColumns.map((columnName, index) => {
 				if (tableState.columns.includes(columnName)) {
 					return (
-						<>
-							<td
-								style={{
-									maxHeight: appearances.rowHeight,
-									height: appearances.rowHeight,
-									minHeight: appearances.rowHeight,
-								}}>
-								<span className="guts">
-									<TableCell parentKey={`col${index}${uniqueParentKey}`} contents={items[columnName]} columnName={columnName} />
-								</span>
-							</td>
-						</>
+						<td
+							key={`cell${uniqueParentKey}${columnName}`}
+							style={{
+								maxHeight: appearances.rowHeight,
+								height: appearances.rowHeight,
+								minHeight: appearances.rowHeight,
+							}}>
+							<span className="guts">
+								<TableCell parentKey={`col${index}${uniqueParentKey}`} contents={items[columnName]} columnName={columnName} />
+							</span>
+						</td>
 					);
 				} else {
-					return <></>;
+					return <Fragment key={`cell${uniqueParentKey}${columnName}`} />;
 				}
 			})}
 		</>
@@ -117,11 +116,7 @@ function PersonTableCell({ data }: { data: PersonType[] }): React.JSX.Element {
 							text += item.lastName;
 						}
 
-						return (
-							<>
-								<p key={text}>{text}</p>
-							</>
-						);
+						return <p key={text}>{text}</p>;
 					})
 				) : (
 					<></>
@@ -257,7 +252,11 @@ function CompanyTableCell({ data }: { data: CompanyType[] }): React.JSX.Element 
 function WebsiteTableCell({ data }: { data: string }): React.JSX.Element {
 	const clickHandler = (e: MouseEvent) => {
 		e.preventDefault();
-		open(data);
+		if(window.__USE_TAURI__){
+			open(data);
+		}else{
+			window.open(data,'_blank')
+		}
 	};
 	return (
 		<>

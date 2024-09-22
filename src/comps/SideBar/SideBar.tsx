@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { CogIcon, HomeIcon, UploadIcon, UserRoundIcon, ArrowRightFromLineIcon, CuboidIcon, ReceiptTextIcon, HelpCircle, File } from 'lucide-react';
 // non-lib imports
 import { RouterButton } from './RouterButton';
@@ -124,9 +124,9 @@ export function SideBar({ routesHook }: SideBarProps): React.JSX.Element {
 					{Object.entries(database.databases).map(([key, val]) => {
 						if (val !== null) {
 							return (
-								<>
+								<Fragment key={key}>
 									<RouterButton
-										key={key}
+										// key={key}
 										active={!routesHook.showHelp && !routesHook.showSettings}
 										handler={routeHandler}
 										icon={
@@ -196,7 +196,7 @@ export function SideBar({ routesHook }: SideBarProps): React.JSX.Element {
 										routeName={getDataBaseDisplayName('english', key as DataBaseNames) as RouteType}
 										textOverride={getDataBaseDisplayName(general.language, key as DataBaseNames)}
 									/>
-								</>
+								</Fragment>
 							);
 						}
 					})}
