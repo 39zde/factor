@@ -9,7 +9,6 @@ import type {
 	BankType,
 	CompanyType,
 	Customer,
-	AddDataArgs,
 	DateInput,
 	UploadRow,
 	DerefPersonType,
@@ -23,58 +22,52 @@ import type {
 	PreInsertCustomer,
 	TableRow,
 	TableRowCounter,
+	ImportWorkerMessage,
+	AlignVariables,
+	RemoveVariables,
+	DataBaseNames,
+	RemoveCondition,
 } from '@typings';
 import { getAddressHash } from '@util';
 
 self.onmessage = (e: MessageEvent): void => {
-	if (e.data.dataBaseName === undefined) {
-		return;
+	const eventData = Array.isArray(e.data) ? (e.data[0] as ImportWorkerMessage) : (e.data as ImportWorkerMessage);
+	if (eventData.dataBaseName === undefined) {
+		return postMessage({
+			type: 'error',
+			data: `undefined Database name`,
+		});
 	}
-	switch (e.data.type) {
+
+	switch (eventData.type) {
 		case 'import':
-			if (typeof e.data.data !== 'string') {
-				return postMessage({
-					type: 'error',
-					data: 'invalid input: data is not of type string',
-				});
-			}
-			importData(e.data.dataBaseName, e.data.dbVersion, e.data.data);
+			importData(eventData.dataBaseName, eventData.dbVersion, eventData.data as 'json' | 'csv', e.data[1] as ReadableStream);
 			break;
 		case 'align':
-			alignData(e.data.dataBaseName, e.data.dbVersion, e.data.data);
+			alignData(eventData.dataBaseName, eventData.dbVersion, eventData.data as AlignVariables);
 			break;
 		case 'rankColsByCondition':
-			let condition = e.data.data.condition;
-			switch (condition) {
-				case 'empty text':
-					condition = '';
-					break;
-				case 'undefined':
-					condition = undefined;
-					break;
-				case 'null':
-					condition = null;
-					break;
-				case '0':
-					condition = 0;
-					break;
-				case 'custom text':
-					condition = e.data.data.custom.string;
-					break;
-				case 'custom number':
-					condition = e.data.data.custom.number;
-					break;
-				default:
-					condition = '';
-			}
-			rankColsByCondition(condition, e.data.dataBaseName, e.data.dbVersion);
+			rankColsByCondition(eventData.dataBaseName, eventData.dbVersion, eventData.data as RemoveVariables);
 			break;
 		case 'deleteCol':
-			deleteCol(e.data.data);
+			deleteCol(eventData.data as string);
 			break;
 		case 'sort':
+			console.log('sort');
 			self.navigator.locks.request('sorting-lock', () => {
-				sortData(e.data.dataBaseName, e.data.dbVersion, e.data.targetDBName, e.data.data);
+				if (eventData.targetDBName !== undefined) {
+					sortData(
+						eventData.dataBaseName,
+						eventData.dbVersion,
+						eventData.targetDBName,
+						eventData.data as ArticleSortingMap | CustomerSortingMap | DocumentSortingMap
+					);
+				} else {
+					return postMessage({
+						type: 'error',
+						data: `target data base name is undefined`,
+					});
+				}
 			});
 			break;
 		default:
@@ -207,66 +200,114 @@ const updateManager = (total: number) => {
 	return update;
 };
 
-function importData(dataBaseName: string, dbVersion: number, data: string) {
-	function getKeys(row: string) {
-		const keys = row.split(';');
-		return keys;
-	}
-	let rows: string[] = data.split('\n');
-	const line: string = rows[0];
-	if (line.endsWith('\r')) {
-		rows = data.split('\r\n');
-	}
-	if (rows[rows.length - 1].length === 0) {
-		rows.pop();
-	}
-	const keys = getKeys(rows[0]);
+function importData(dataBaseName: string, dbVersion: number, fileType: 'json' | 'csv', data: ReadableStream) {
 	const request = indexedDB.open(dataBaseName, dbVersion);
+	const readable = data.pipeThrough(new TextDecoderStream('utf-8'));
+	const reader = readable.getReader();
+	let fuse = true;
+	let lineEnd = '\n';
+	let columns: string[] = [];
+	let pos = 0;
+	let tail: string | undefined = undefined;
+	let nextTail: string | undefined = undefined;
+
+	function genDBRow(columns: string[], values: string[], rowNumber: number) {
+		let out = {
+			row: rowNumber,
+		};
+		for (const [index, col] of columns.entries()) {
+			Object.defineProperty(out, col, {
+				configurable: true,
+				enumerable: true,
+				writable: true,
+				value: values[index],
+			});
+		}
+		return out;
+	}
 
 	request.onupgradeneeded = () => {
 		const db = request.result;
 		db.createObjectStore('data_upload', { keyPath: 'row' });
-		// console.log('created oStore data_upload');
 	};
 
 	request.onsuccess = () => {
 		const db = request.result;
-		if (db.objectStoreNames.contains('data_upload')) {
-			// console.log('db contains data_upload');
-			function deleteData(db: IDBDatabase) {
-				const transaction = db.transaction('data_upload', 'readwrite', { durability: 'strict' });
-				const objectStore = transaction.objectStore('data_upload');
-				objectStore.clear();
-				transaction.commit();
-			}
-			function addData({ keys, rows, db }: AddDataArgs) {
-				const transaction = db.transaction('data_upload', 'readwrite', { durability: 'strict' });
-				const objectStore = transaction.objectStore('data_upload');
-				let i = 1;
-				while (i < rows.length) {
-					const columns = rows[i].split(';');
-					const out = {
-						row: 0,
-					} as TableRow;
-					out['row'] = i;
-					for (let j = 0; j < keys.length; j++) {
-						out[keys[j]] = columns[j];
+		const transaction = db.transaction('data_upload', 'readwrite', { durability: 'strict' });
+		const oStore = transaction.objectStore('data_upload');
+		const clearRequest = oStore.clear();
+		clearRequest.onsuccess = () => {
+			reader.read().then(function readDataUpload(value) {
+				if (!value.done) {
+					if (fileType === 'csv') {
+						let rows = value.value.split(lineEnd);
+						if (value.value.endsWith(lineEnd)) {
+							rows.pop();
+						} else {
+							nextTail = rows.pop();
+						}
+						if (fuse) {
+							if (rows[0].endsWith('\r')) {
+								lineEnd = '\r\n';
+								rows = value.value.split('\r\n');
+								if (value.value.endsWith('\r\n')) {
+									rows.pop();
+								} else {
+									nextTail = rows.pop();
+								}
+							}
+							if (!rows[0].includes(';')) {
+								return postMessage({
+									type: 'error',
+									data: 'This csv file is not separated by semicolons (;)',
+								});
+							}
+							let cols = rows.splice(0, 1);
+							cols[0].split(';').forEach((v) => {
+								columns.push(v);
+							});
+							fuse = false;
+						}
+						for (const [index, row] of rows.entries()) {
+							let dbRow;
+							if (index === 0 && tail !== undefined) {
+								dbRow = genDBRow(columns, (tail + row).split(';'), pos + 1);
+								tail = undefined;
+							} else {
+								dbRow = genDBRow(columns, row.split(';'), pos + 1);
+							}
+							oStore.add(dbRow);
+							pos += 1;
+						}
+						tail = nextTail;
+						nextTail = undefined;
 					}
-					objectStore.add(out);
-					i++;
+					reader.read().then(readDataUpload);
+				} else {
+					transaction.commit();
 				}
-				transaction.commit();
-			}
-			deleteData(db);
-			addData({ keys, rows, db });
-			const copy = [...keys];
-			copy.splice(0, 0, 'row');
-			return postMessage({
-				type: 'imported',
-				data: [rows.length, copy],
 			});
-		}
+			transaction.oncomplete = () => {
+				db.close();
+				console.log('completed');
+				return postMessage({
+					type: 'imported',
+					data: [pos, columns],
+				});
+			};
+			transaction.onerror = (ev) => {
+				console.log(ev);
+				return postMessage({
+					type: 'error',
+					data: 'Database transaction failed',
+				});
+			};
+		};
+		clearRequest.onerror = () => {
+			console.log('clear error');
+		};
 	};
+
 	request.onerror = () => {
 		return postMessage({
 			type: 'error',
@@ -275,16 +316,7 @@ function importData(dataBaseName: string, dbVersion: number, data: string) {
 	};
 }
 
-function alignData(
-	dataBaseName: string,
-	dbVersion: number,
-	alignVariables: {
-		col: string; // column name
-		value: string; // the value of the outlier
-		offset: number; // the shift amount
-		direction: 'Left' | 'Right'; // the direction to shift to
-	}
-) {
+function alignData(dataBaseName: string, dbVersion: number, alignVariables: AlignVariables) {
 	function performShift(to: number, item: TableRow) {
 		const out = item;
 		const copy = structuredClone(item);
@@ -358,54 +390,55 @@ function alignData(
 	};
 }
 
-function rankColsByCondition(dataBaseName: string, dbVersion: number, condition: string | null | number | undefined) {
-	function compareItemToCondition(condition: string | null | number | undefined, value: string | number): boolean {
-		switch (typeof condition) {
-			case undefined:
-				if (value === undefined && value !== null) {
-					return true;
-				}
-				return false;
-			case null:
-				if (value !== undefined && value === null) {
-					return true;
-				}
-				return false;
-			case 'number':
-				if (typeof value === 'number' || typeof value === 'bigint') {
-					if (value === condition) {
-						return true;
-					}
-				} else {
-					if (condition) {
-						if (value === condition.toString()) {
-							return true;
-						}
-					}
-				}
-				return false;
-			case 'string':
-				if (typeof condition === 'string') {
-					if (condition.length === 0) {
-						if (typeof value === 'string') {
-							if (value.trim().length === 0) {
-								return true;
-							}
-						} else {
-							if (typeof value === 'undefined' || typeof value === null) {
-							}
-						}
-					} else {
-						if (value === condition) {
-							return true;
-						}
-					}
-					return false;
-				}
-				return false;
-			default:
-				return false;
-		}
+function rankColsByCondition(dataBaseName: string, dbVersion: number, condition: RemoveVariables) {
+	function compareItemToCondition(condition: RemoveCondition, value: string | number): boolean {
+		// switch (typeof condition) {
+		// 	case undefined:
+		// 		if (value === undefined && value !== null) {
+		// 			return true;
+		// 		}
+		// 		return false;
+		// 	case null:
+		// 		if (value !== undefined && value === null) {
+		// 			return true;
+		// 		}
+		// 		return false;
+		// 	case 'number':
+		// 		if (typeof value === 'number' || typeof value === 'bigint') {
+		// 			if (value === condition) {
+		// 				return true;
+		// 			}
+		// 		} else {
+		// 			if (condition) {
+		// 				if (value === condition.toString()) {
+		// 					return true;
+		// 				}
+		// 			}
+		// 		}
+		// 		return false;
+		// 	case 'string':
+		// 		if (typeof condition === 'string') {
+		// 			if (condition.length === 0) {
+		// 				if (typeof value === 'string') {
+		// 					if (value.trim().length === 0) {
+		// 						return true;
+		// 					}
+		// 				} else {
+		// 					if (typeof value === 'undefined' || typeof value === null) {
+		// 					}
+		// 				}
+		// 			} else {
+		// 				if (value === condition) {
+		// 					return true;
+		// 				}
+		// 			}
+		// 			return false;
+		// 		}
+		// 		return false;
+		// 	default:
+		// 		return false;
+		// }
+		return false;
 	}
 
 	const dbRequest = indexedDB.open(dataBaseName, dbVersion);
@@ -434,7 +467,7 @@ function rankColsByCondition(dataBaseName: string, dbVersion: number, condition:
 						for (const key of keys) {
 							update();
 							const value = cursor.value[key];
-							const test = compareItemToCondition(condition, value);
+							const test = compareItemToCondition(condition.condition, value);
 							if (test) {
 								counter[key] = counter[key] + 1;
 							}
@@ -1709,17 +1742,22 @@ function parseDocumentData(dataBaseName: string, dataBaseVersion: number, map: D
 function sortData(
 	dataBaseName: string,
 	dbVersion: number,
-	targetDBName: 'article_db' | 'customer_db' | 'document_db',
+	targetDBName: DataBaseNames,
 	sortingMap: CustomerSortingMap | ArticleSortingMap | DocumentSortingMap
 ) {
+	console.log('sort2');
+
 	const request = indexedDB.open(dataBaseName, dbVersion);
 	request.onsuccess = () => {
+		console.log('sort3');
 		const sourceDB = request.result;
 		const dbTransaction = sourceDB.transaction('data_upload', 'readonly');
 		const dataUpload = dbTransaction.objectStore('data_upload');
 		const dataUploadCountRequest = dataUpload.count();
 
 		dataUploadCountRequest.onsuccess = () => {
+			console.log('sort4');
+
 			const dataCount = dataUploadCountRequest.result;
 			const update = updateManager(dataCount);
 			const cursorRequest = dataUpload.openCursor(null, 'next');
@@ -1781,6 +1819,8 @@ function sortData(
 							break;
 					}
 				} else {
+					console.log('sort5');
+
 					// don't return, because this will stop all running functions to abort
 				}
 			};
@@ -1798,10 +1838,10 @@ function sortData(
 		};
 
 		dbTransaction.oncomplete = () => {
-			// postMessage({
-			// 	type: 'success',
-			// 	data: 'customers',
-			// });
+			postMessage({
+				type: 'success',
+				data: 'customer_db',
+			});
 		};
 	};
 }

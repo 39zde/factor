@@ -49,7 +49,7 @@ export type {
 	StarterPackageResponse,
 } from './worker/table.worker';
 
-export type { AddDataArgs, DateInput } from './worker/import.worker';
+export type { AddDataArgs, DateInput, ImportWorkerMessage, AlignVariables, RemoveCondition, RemoveVariables } from './worker/import.worker';
 
 export type {
 	TableRow,

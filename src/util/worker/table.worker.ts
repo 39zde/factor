@@ -152,7 +152,7 @@ function getStartingRows(
 				const cursor: IDBCursorWithValue | null = cursorRequest.result;
 				if (cursor) {
 					if (counter < scope) {
-						fillReferences(db, cursor.value, undefined, doneHandler);
+						fillReferences(db, cursor.value, undefined, undefined, doneHandler);
 						counter += 1;
 						cursor.continue();
 					}
@@ -267,7 +267,13 @@ function getCount(dataBaseName: string, dbVersion: number, storeName: string, ca
 	};
 }
 
-function fillReferences(dataBase: IDBDatabase, row: TableRow, actionType?: TableWorkerRequestMessageActionType, doneHandler?: DoneHandler): void {
+function fillReferences(
+	dataBase: IDBDatabase,
+	row: TableRow,
+	callback?: () => void,
+	actionType?: TableWorkerRequestMessageActionType,
+	doneHandler?: DoneHandler
+): void {
 	const copy = structuredClone(row);
 	let targetCount = 0;
 	type CounterType = {
@@ -286,7 +292,7 @@ function fillReferences(dataBase: IDBDatabase, row: TableRow, actionType?: Table
 				// if we are on the last result finally send the back the response
 				// this is a very neat way of handling things
 				if (actionType !== undefined) {
-					postStream(copy, actionType, row.row);
+					postStream(copy, actionType, row.row, callback);
 				}
 
 				if (doneHandler !== undefined) {
@@ -334,7 +340,7 @@ function fillReferences(dataBase: IDBDatabase, row: TableRow, actionType?: Table
 	}
 	if (targetCount === 0) {
 		if (actionType !== undefined) {
-			postStream(copy, actionType, copy.row);
+			postStream(copy, actionType, copy.row,callback);
 		}
 		if (doneHandler !== undefined) {
 			doneHandler.add = copy;
@@ -342,7 +348,7 @@ function fillReferences(dataBase: IDBDatabase, row: TableRow, actionType?: Table
 	}
 }
 
-function postStream(oStoreItem: DerefRow, actionType: TableWorkerRequestMessageActionType, position: number): void {
+function postStream(oStoreItem: DerefRow, actionType: TableWorkerRequestMessageActionType, position: number, callback?: () => void): void {
 	if (Object.keys(oStoreItem).includes('row') && typeof oStoreItem.row === 'number') {
 		// what if there is a row property
 		postMessage({
@@ -361,6 +367,9 @@ function postStream(oStoreItem: DerefRow, actionType: TableWorkerRequestMessageA
 			index: position,
 		});
 	}
+	if (callback !== undefined) {
+		callback();
+	}
 }
 
 function stream(eventData: TableWorkerRequestMessage) {
@@ -371,6 +380,7 @@ function stream(eventData: TableWorkerRequestMessage) {
 			const transaction = streamDB.transaction(eventData.storeName, 'readwrite');
 			const oStore = transaction.objectStore(eventData.storeName);
 			if (eventData.action === undefined) {
+				transaction.abort();
 				return postMessage({
 					type: 'error',
 					data: 'undefined action',
@@ -380,6 +390,7 @@ function stream(eventData: TableWorkerRequestMessage) {
 			const req = oStore.get(only);
 			req.onsuccess = function streamRequestSuccess() {
 				if (eventData.action === undefined) {
+					transaction.abort();
 					return postMessage({
 						type: 'error',
 						data: 'undefined action',
@@ -387,10 +398,18 @@ function stream(eventData: TableWorkerRequestMessage) {
 				}
 				if (req.result) {
 					const row = req.result as TableRow;
-					fillReferences(streamDB, row, eventData.action.type);
+					fillReferences(
+						streamDB,
+						row,
+						() => {
+							transaction.commit();
+						},
+						eventData.action.type
+					);
 				}
 			};
 			req.onerror = function streamRequestError() {
+				transaction.abort();
 				if (eventData.action === undefined) {
 					return postMessage({
 						type: 'error',
