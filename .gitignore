@@ -1,6 +1,8 @@
 node_modules/
 dist/
 bundle/
+bundle-demo/
+bundle-dev/
 .DS_Store
 *.log*
 .yarn
