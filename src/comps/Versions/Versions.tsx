@@ -14,7 +14,6 @@ export function Versions(): React.JSX.Element {
 		async function getVersions() {
 			try {
 				const storage = navigator.storage.estimate();
-				const tVersion = window.__TAURI__.app.getTauriVersion();
 
 				const plat = window.navigator.platform.toLowerCase();
 				if (plat.includes('win')) {
@@ -33,11 +32,14 @@ export function Versions(): React.JSX.Element {
 					setFree(((storageResult.quota ?? 0) / (Math.pow(1024, 2) * 1000)).toFixed(1));
 				}
 
-				const tVersionResult = await tVersion;
-				if (tVersionResult !== '') {
-					setTauriVersion(tVersionResult);
-				} else {
-					setTauriVersion('error');
+				if(window.__USE_TAURI__){
+					const tVersion = window.__TAURI__.app.getTauriVersion();
+					const tVersionResult = await tVersion;
+					if (tVersionResult !== '') {
+						setTauriVersion(tVersionResult);
+					} else {
+						setTauriVersion('error');
+					}
 				}
 			} catch (e) {
 				setTauriVersion('error');

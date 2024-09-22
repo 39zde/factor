@@ -102,6 +102,7 @@ declare global {
 			window: typeof window;
 		};
 		__FACTOR_VERSION__: string;
+		__USE_TAURI__:boolean;
 		navigator: {
 			userAgentData: {
 				mobile: boolean;

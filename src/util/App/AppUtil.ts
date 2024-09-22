@@ -34,16 +34,25 @@ export const defaultSettings: AppSettingsType = {
 
 export async function getSettings(): Promise<AppSettingsType> {
 	try {
-		const settingsExist = await exists('settings.json', { baseDir: BaseDirectory.AppConfig });
 		let settings: AppSettingsType;
-		if (!settingsExist) {
-			const settingsFile = await create('settings.json', { baseDir: BaseDirectory.AppConfig });
-			await settingsFile.write(new TextEncoder().encode(JSON.stringify(defaultSettings)));
-			await settingsFile.close();
-			settings = defaultSettings;
-		} else {
-			const existingSettingsFile = await readFile('settings.json', { baseDir: BaseDirectory.AppConfig });
-			settings = JSON.parse(new TextDecoder().decode(existingSettingsFile));
+		if(window.__USE_TAURI__){
+			const settingsExist = await exists('settings.json', { baseDir: BaseDirectory.AppConfig });
+			if (!settingsExist) {
+				const settingsFile = await create('settings.json', { baseDir: BaseDirectory.AppConfig });
+				await settingsFile.write(new TextEncoder().encode(JSON.stringify(defaultSettings)));
+				await settingsFile.close();
+				settings = defaultSettings;
+			} else {
+				const existingSettingsFile = await readFile('settings.json', { baseDir: BaseDirectory.AppConfig });
+				settings = JSON.parse(new TextDecoder().decode(existingSettingsFile));
+			}
+		}else{
+			let localSettings = localStorage.getItem("settings");
+			if(localSettings === null){
+				localStorage.setItem("settings",JSON.stringify(defaultSettings))
+				localSettings = JSON.stringify(defaultSettings)
+			}
+			settings = JSON.parse(localSettings)
 		}
 		return settings;
 	} catch (e) {
@@ -55,7 +64,9 @@ export async function getSettings(): Promise<AppSettingsType> {
 
 export async function writeSettings(settings: AppSettingsType): Promise<boolean> {
 	try {
-		await writeFile('settings.json', new TextEncoder().encode(JSON.stringify(settings)), { baseDir: BaseDirectory.AppConfig });
+		if(window.__USE_TAURI__){
+			await writeFile('settings.json', new TextEncoder().encode(JSON.stringify(settings)), { baseDir: BaseDirectory.AppConfig });
+		}
 		return true;
 	} catch (e) {
 		console.warn('failed to save settings', e);
@@ -251,7 +262,11 @@ export function appReducer(appState: AppContextType, action: AppAction): AppCont
 
 // defaultContext.constructor.prototype.notify = notify;
 async function notify(options: Options, context: AppContextType): Promise<string> {
+
 	try {
+		if(window.__TAURI__){
+
+
 		const permissionGranted = await isPermissionGranted();
 		if (!permissionGranted) {
 			if (context.general.notifications) {
@@ -265,6 +280,10 @@ async function notify(options: Options, context: AppContextType): Promise<string
 			return 'success';
 		} else {
 			return 'disallowed';
+		}}
+		else{
+			new Notification(options.title,{...options})
+			return "success"
 		}
 	} catch (e) {
 		console.error(e);

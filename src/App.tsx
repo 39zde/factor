@@ -117,7 +117,9 @@ function App(): JSX.Element {
 			.finally(() => {
 				resizeHandler();
 			});
-		requestPermission();
+		if(window.__USE_TAURI__){
+			requestPermission();
+		}
 	}, []);
 
 	useMemo(() => {
