@@ -54,13 +54,14 @@ To use yarn the official way [corepack](https://nodejs.org/api/corepack.html) mu
 
 Run
 ```bash
+npm install -g react-devtools
 yarn devtools
 ```
 and uncomment
 ```html
 <script src="http://localhost:8097"></script>
 ```
-in [index.html](./src/renderer/index.html)
+in [index.html](./index.html)
 
 ## Theming
 
