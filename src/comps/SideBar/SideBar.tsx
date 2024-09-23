@@ -76,28 +76,34 @@ export function SideBar({ routesHook }: SideBarProps): React.JSX.Element {
 						routeName="Upload"
 						textOverride={general.language === 'deutsch' ? 'Hochladen' : 'Upload'}
 					/>
-					<RouterButton
-						handler={routeHandler}
-						active={!routesHook.showHelp && !routesHook.showSettings}
-						icon={
-							<ArrowRightFromLineIcon
-								size={solids.icon.size.regular}
-								strokeWidth={
-									routesHook.route === 'ExportPage' && !routesHook.showHelp && !routesHook.showSettings
-										? solids.icon.strokeWidth.large
-										: solids.icon.strokeWidth.regular
+					{window.__USE_TAURI__ ? (
+						<>
+							<RouterButton
+								handler={routeHandler}
+								active={!routesHook.showHelp && !routesHook.showSettings}
+								icon={
+									<ArrowRightFromLineIcon
+										size={solids.icon.size.regular}
+										strokeWidth={
+											routesHook.route === 'ExportPage' && !routesHook.showHelp && !routesHook.showSettings
+												? solids.icon.strokeWidth.large
+												: solids.icon.strokeWidth.regular
+										}
+										color={
+											routesHook.route === 'ExportPage' && !routesHook.showHelp && !routesHook.showSettings
+												? 'var(--color-primary)'
+												: 'light-dark(var(--color-dark-1),var(--color-light-1))'
+										}
+									/>
 								}
-								color={
-									routesHook.route === 'ExportPage' && !routesHook.showHelp && !routesHook.showSettings
-										? 'var(--color-primary)'
-										: 'light-dark(var(--color-dark-1),var(--color-light-1))'
-								}
+								route={routesHook.route}
+								routeName="ExportPage"
+								textOverride={general.language === 'deutsch' ? 'Exportieren' : 'Export'}
 							/>
-						}
-						route={routesHook.route}
-						routeName="ExportPage"
-						textOverride={general.language === 'deutsch' ? 'Exportieren' : 'Export'}
-					/>
+						</>
+					) : (
+						<></>
+					)}
 					<RouterButton
 						handler={routeHandler}
 						active={!routesHook.showHelp && !routesHook.showSettings}

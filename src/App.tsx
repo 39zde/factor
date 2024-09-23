@@ -117,7 +117,7 @@ function App(): JSX.Element {
 			.finally(() => {
 				resizeHandler();
 			});
-		if(window.__USE_TAURI__){
+		if (window.__USE_TAURI__) {
 			requestPermission();
 		}
 	}, []);
