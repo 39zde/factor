@@ -17,7 +17,7 @@
         "devtools": "react-devtools",
         "preview": "vite preview",
         "build": "tauri build",
-        "dev:tauri": "tauri dev",
+        "dev:tauri": "node ./scripts/preTauriDev.mjs && tauri dev",
 		  "gen": "node ./scripts/genData.cli.js"
     },
     "dependencies": {
