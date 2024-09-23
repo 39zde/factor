@@ -12,12 +12,66 @@ export type AddDataArgs = {
 export type DateInput = 'YYYYMMDD' | 'YYYY-MM-DD hh:mm:ss';
 
 export type ImportWorkerMessage = {
-	type: 'import' | 'align' | 'rankColsByCondition' | 'deleteCol' | 'sort';
+	type: 'import' | 'align' | 'rankColsByCondition' | 'delete-col' | 'sort' | 'delete-rank';
 	dbVersion: number;
 	dataBaseName: 'factor_db';
 	targetDBName?: DataBaseNames;
-	data: null | AlignVariable | RemoveVariables | string | CustomerSortingMap | ArticleSortingMap | DocumentSortingMap;
+	data: null | AlignVariable | RemoveVariables | string | CustomerSortingMap | ArticleSortingMap | DocumentSortingMap | RankedDeletion;
 };
+export type RankedDeletion = {
+	columnName: string;
+	columnIndex: number;
+};
+export type UpdateMessage = {
+	type: 'import-progress'
+		| 'align-progress'
+		| 'sort-progress'
+		| 'delete-col-progress'
+		| 'delete-rank-progress'
+		| 'rank-progress',
+	data: string;
+	addons?: (object|string| number)[]
+}
+
+export type ImportWorkerMessageResponse = {
+	type:
+		| 'import-progress'
+		| 'import-done'
+		| 'align-progress'
+		| 'align-done'
+		| 'sort-progress'
+		| 'sort-done'
+		| 'delete-col-progress'
+		| 'delete-col-done'
+		| 'delete-rank-progress'
+		| 'delete-rank-done'
+		| 'rank-progress'
+		| 'rank-done'
+		| 'error';
+	data: string | ImportDoneData | RankDoneData | DeleteRankProgress | number;
+	addons?: (object|string| number)[];
+};
+export type DeleteRankProgress ={
+	index: number;
+	progress: string;
+}
+
+/**
+ * [entries, columnNames[]]
+ */
+export type ImportDoneData = [number, string[]];
+/**
+ * @description [
+ *
+ * 	[columnName1, numberConditionFails],
+ *
+ * 	[columnName2, numberConditionFails],
+ *
+ * 	...
+ *
+ * ]
+ */
+export type RankDoneData = [string, number][];
 
 export type AlignVariables = {
 	col: string; // column name
@@ -35,4 +89,4 @@ export type RemoveVariables = {
 	};
 };
 
-export type RemoveCondition = 'empty text' | 'undefined' | 'null' | '0' | 'custom string' | 'custom number' | '-' | 'column';
+export type RemoveCondition = 'empty text' | 'undefined' | 'null' | '0' | 'custom string' | 'custom number' | '-';

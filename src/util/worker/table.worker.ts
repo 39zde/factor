@@ -402,7 +402,7 @@ function stream(eventData: TableWorkerRequestMessage) {
 						streamDB,
 						row,
 						() => {
-							transaction.commit();
+							// transaction.commit();
 						},
 						eventData.action.type
 					);

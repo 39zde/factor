@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState, useId } from 'react';
-import { ImportIcon, FileIcon, XIcon } from 'lucide-react';
+import { ImportIcon, FileIcon, XIcon, ReplaceIcon } from 'lucide-react';
 
 // non-lib imports
 import { RowShifter } from './RowShifter';
@@ -7,7 +7,7 @@ import { ColRemover } from './ColRemover';
 import { ImportModule } from './ImportModule';
 import { useAppContext, solids, useChangeContext } from '@app';
 import Comps from '@comps';
-import type { CustomerSortingMap, ArticleSortingMap, DataBaseNames, DocumentSortingMap } from '@typings';
+import type { CustomerSortingMap, ArticleSortingMap, DataBaseNames, DocumentSortingMap, ImportWorkerMessageResponse, RankDoneData } from '@typings';
 import './Upload.css';
 
 export function Upload(): React.JSX.Element {
@@ -18,15 +18,25 @@ export function Upload(): React.JSX.Element {
 	const [showFile, setShowFile] = useState<boolean>(false);
 	const [fileName, setFileName] = useState<string>('');
 	const [isRed, setIsRed] = useState<boolean>(false);
+	const [isRedModal, setIsRedModal] = useState<boolean>(false);
 	const [cols, setCols] = useState<string[]>([]);
 	const [, setAllCols] = useState<string[]>([]);
 	const [entries, setEntries] = useState<number>(0);
 	const [update, setUpdate] = useState<boolean>(false); // stop rendering while updating
 	const tableImportModeInputRef = useRef<HTMLSelectElement>(null);
 	const tableWrapperRef = useRef<HTMLDivElement>(null);
-	const importButtonRef = useRef<HTMLButtonElement>(null);
-	const [isBackup, setIsBackup] = useState<boolean>(false);
-	const restoreBackupRef = useRef<HTMLInputElement>(null);
+	const [importButtonText, setImportButtonText] = useState<string>(general.language === 'deutsch' ? 'Importieren' : 'Import');
+	const [createButtonText, setCreateButtonText] = useState<string>(
+		general.language === 'deutsch' ? 'Tabelle erstellen/erneuern' : 'Create/Update Table'
+	);
+	const [showShiftOptions, setShowShiftOptions] = useState<boolean>(false);
+	const [shiftProgress, setShiftProgress] = useState<string>('Go!');
+	const [deleteProgress, setDeleteProgress] = useState<string>('Go!');
+	const [showDeleteOptions, setShowDeleteOptions] = useState<boolean>(false);
+	const [fileUploadHandle, setFileUploadHandle] = useState<File>();
+	const rankedDeletionRef = useRef<HTMLDialogElement>(null);
+	const [rankedDeletionColumns, setRankedDeletionColumns] = useState<RankDoneData | undefined>();
+	const [rankedDeletionProgress, setRankedDeletionProgress] = useState<(string | null)[]>([]);
 	const [map, setMap] = useState<CustomerSortingMap | ArticleSortingMap | DocumentSortingMap>({
 		row: 'row',
 		customers: {
@@ -38,6 +48,23 @@ export function Upload(): React.JSX.Element {
 		company: {},
 	});
 	const [tableImportMode, setTableImportMode] = useState<DataBaseNames | undefined>(undefined);
+
+	const showShiftOptionsHook = {
+		text: shiftProgress,
+		value: showShiftOptions,
+		setValue: (newVal: boolean) => {
+			setShowShiftOptions(newVal);
+		},
+	};
+
+	const showDeleteOptionsHook = {
+		text: deleteProgress,
+		value: showDeleteOptions,
+		setValue: (newVal: boolean) => {
+			setShowDeleteOptions(newVal);
+		},
+	};
+
 	const tableImportModeHandler = (): void => {
 		if (tableImportModeInputRef.current === null) {
 			return;
@@ -46,14 +73,15 @@ export function Upload(): React.JSX.Element {
 		setTableImportMode(tableImportModeInputRef.current.value);
 	};
 
-	const fileHandler = async (): Promise<void> => {
+	const fileHandler = function handleFiles() {
+		removeFileHandler();
 		const files = fileSelector.current?.files;
-		if (files !== undefined) {
-			if (files?.length === 1) {
+		console.log(files);
+		if (files) {
+			if (files.length === 1) {
 				try {
-					const data = await files[0].text();
+					setFileUploadHandle(files[0]);
 					sessionStorage.setItem('fileName', files[0].name);
-					sessionStorage.setItem('fileUpload', data);
 					setFileName(files[0].name);
 					setShowFile(true);
 				} catch {
@@ -65,20 +93,35 @@ export function Upload(): React.JSX.Element {
 						},
 					});
 				}
+			} else {
+				dispatch({
+					type: 'notify',
+					notification: {
+						title: general.language === 'deutsch' ? 'Ein Fehler ist aufgetreten' : 'An error occurred',
+						body: 'More than one file was selected',
+					},
+				});
 			}
+		} else {
+			dispatch({
+				type: 'notify',
+				notification: {
+					title: general.language === 'deutsch' ? 'Ein Fehler ist aufgetreten' : 'An error occurred',
+					body: 'Could not get this file',
+				},
+			});
 		}
 	};
 
 	useEffect((): void => {
 		const name = sessionStorage.getItem('fileName');
-		if (name !== null && sessionStorage.getItem('fileUpload') !== null) {
+		if (name) {
 			setFileName(name);
-			setShowFile(true);
 		}
 	}, []);
 
 	const removeFileHandler = (): void => {
-		sessionStorage.removeItem('fileUpload');
+		setFileUploadHandle(undefined);
 		sessionStorage.removeItem('fileName');
 		setShowFile(false);
 		setShowTable(false);
@@ -112,8 +155,9 @@ export function Upload(): React.JSX.Element {
 		},
 	};
 
-	const importHandler = () => {
+	const createHandler = () => {
 		if (tableImportMode === 'customer_db' && map !== undefined) {
+			console.log('test');
 			//@ts-expect-error this needs work
 			if (map['customers']['id'] === undefined) {
 				dispatch({
@@ -125,6 +169,7 @@ export function Upload(): React.JSX.Element {
 				});
 			} else {
 				worker.ImportWorker.postMessage({
+					channelName: 'import-sorter',
 					type: 'sort',
 					data: map,
 					targetDBName: tableImportMode,
@@ -134,6 +179,7 @@ export function Upload(): React.JSX.Element {
 			}
 		} else {
 			worker.ImportWorker.postMessage({
+				channelName: 'import-sorter',
 				type: 'sort',
 				data: map,
 				targetDBName: tableImportMode,
@@ -143,90 +189,119 @@ export function Upload(): React.JSX.Element {
 		}
 	};
 
-	worker.ImportWorker.onmessage = (e) => {
-		if (e.data !== undefined) {
-			switch (e.data.type) {
-				case 'progress':
-					if (importButtonRef.current !== null) {
-						importButtonRef.current.innerText = e.data.data;
-					}
-					break;
-				case 'success':
-					// sessionStorage.clear();
-
-					if (importButtonRef.current !== null) {
-						importButtonRef.current.innerText = general.language === 'deutsch' ? 'Tabelle erstellen/erneuern' : 'Create/Update Table';
-					}
-					if (tableImportModeInputRef.current !== null) {
-						switch (tableImportModeInputRef.current.value) {
-							case 'customer_db':
-								dispatch({
-									type: 'set',
-									change: {
-										database: {
-											// @ts-expect-error we don't need to list all databases since it is only a change
-											databases: {
-												customer_db: ['customers', 'persons', 'emails', 'phones', 'addresses', 'banks', 'company'],
-											},
-										},
-									},
-								});
-
-								break;
-							default:
-								console.error('import db default');
-						}
-						setFileName('');
-						setShowFile(false);
-					}
-					break;
-				case 'error':
-				default:
-					new Notification(general.language === 'deutsch' ? 'Ein Fehler ist aufgetreten' : 'An error occurred', {
-						body: 'Import Error: \n' + e.data?.data,
-					});
-			}
-		}
-	};
-
-	const restoreBackupHandler = () => {
-		if (restoreBackupRef.current !== null) {
-			if (restoreBackupRef.current.checked !== undefined) {
-				if (restoreBackupRef.current.checked) {
-					setIsBackup(true);
-				} else {
-					setIsBackup(false);
-				}
-			}
-		}
-	};
+	const restoreBackupHandler = () => {};
 
 	const actionHandler = (): void => {
-		if (isBackup) {
-			// worker.ImportWorker.postMessage({
-			// 	type: "restoreBackup",
-			// 	data: file,
-			// })
-		} else {
-			worker.ImportWorker.postMessage({
+		if (fileUploadHandle) {
+			const transfer = {
 				type: 'import',
-				data: sessionStorage.getItem('fileUpload'),
 				dbVersion: database.dbVersion,
 				dataBaseName: 'factor_db',
-			});
+				data: fileUploadHandle.type.split('/')[1],
+			};
+			const transferStream = fileUploadHandle.stream();
+			worker.ImportWorker.postMessage([transfer, transferStream], { transfer: [transferStream] });
 		}
+	};
 
-		worker.ImportWorker.onmessage = (e) => {
-			if (e.data.type === 'imported') {
+	const rankedDeletionHandler = (name: string, index: number) => {
+		worker.ImportWorker.postMessage({
+			type: 'delete-rank',
+			dataBaseName: 'factor_db',
+			dbVersion: database.dbVersion,
+			data: {
+				columnName: name,
+				columnIndex: index,
+			},
+		});
+	};
+
+	worker.ImportWorker.onmessage = (e) => {
+		const eventData = e.data as ImportWorkerMessageResponse;
+		switch (eventData.type) {
+			case 'import-progress':
+				setImportButtonText(eventData.data as string);
+				break;
+			case 'import-done':
+				setImportButtonText(general.language === 'deutsch' ? 'Importieren' : 'Import');
 				colsHook.setCols(e.data.data[1]);
 				entriesHook(e.data.data[0]);
-
-				// sessionStorage.removeItem('fileUpload')
-				// sessionStorage.removeItem('fileName')
 				setShowTable(true);
-				// ImportWorker.terminate()
-			}
-		};
+				break;
+			case 'rank-progress':
+				setDeleteProgress(eventData.data as string);
+				break;
+			case 'rank-done':
+				setDeleteProgress('Go!');
+				showDeleteOptionsHook.setValue(false);
+				setRankedDeletionColumns(eventData.data as RankDoneData);
+				setRankedDeletionProgress(
+					(eventData.data as RankDoneData).map(() => (general.language === 'deutsch' ? 'Spalte löschen' : 'Delete Column'))
+				);
+				if (rankedDeletionRef.current !== null) {
+					rankedDeletionRef.current.showModal();
+				}
+				break;
+			case 'align-progress':
+				setShiftProgress(eventData.data as string);
+				break;
+			case 'align-done':
+				setShiftProgress('Go!');
+				showShiftOptionsHook.setValue(false);
+				updateHook.setUpdate(false);
+				break;
+			case 'delete-col-progress':
+				setDeleteProgress(eventData.data as string);
+				break;
+			case 'delete-col-done':
+				setDeleteProgress('Go!');
+				showDeleteOptionsHook.setValue(false);
+				updateHook.setUpdate(false);
+				break;
+			case 'delete-rank-progress':
+				if (eventData.addons !== undefined) {
+					setRankedDeletionProgress(
+						//@ts-expect-error low prio operation, no need to further complicate things
+						rankedDeletionProgress.map((v, i) => (i === (eventData.addons[0] as number) ? (eventData.data as string) : v))
+					);
+				}
+				break;
+			case 'delete-rank-done':
+				if (eventData.data !== undefined && rankedDeletionColumns) {
+					colsHook.setCols(colsHook.cols.toSpliced(colsHook.cols.indexOf(rankedDeletionColumns[eventData.data as number][0]), 1));
+					setRankedDeletionProgress(rankedDeletionProgress.map((v, i) => (i === (eventData.data as number) ? null : v)));
+				}
+				break;
+			case 'sort-progress':
+				setCreateButtonText(eventData.data as string);
+				break;
+			case 'sort-done':
+				switch (eventData.data) {
+					case 'customer_db':
+						dispatch({
+							type: 'set',
+							change: {
+								database: {
+									// @ts-expect-error we don't need to list all databases since it is only a change
+									databases: {
+										customer_db: ['customers', 'persons', 'emails', 'phones', 'addresses', 'banks', 'company'],
+									},
+								},
+							},
+						});
+						break;
+					default:
+						console.error('import db default');
+				}
+				setCreateButtonText(general.language === 'deutsch' ? 'Tabelle erstellen/erneuern' : 'Create/Update Table');
+				setFileName('');
+				setShowFile(false);
+				break;
+			case 'error':
+				console.error(eventData.data as string);
+			default:
+				break;
+		}
 	};
 
 	return (
@@ -247,6 +322,7 @@ export function Upload(): React.JSX.Element {
 									accept="text/csv,application/json"
 									// accept="text/csv,application/vnd.oasis.opendocument.spreadsheet,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 									className="fileInput"
+									onChange={fileHandler}
 									onInput={fileHandler}
 									multiple={false}
 								/>
@@ -255,10 +331,12 @@ export function Upload(): React.JSX.Element {
 									style={{
 										display: showFile ? 'flex' : 'none',
 									}}>
-									<button onClick={removeFileHandler} className="removeFile">
+									<button
+										onClick={removeFileHandler}
+										className="removeFile"
+										onMouseEnter={() => setIsRed(true)}
+										onMouseLeave={() => setIsRed(false)}>
 										<XIcon
-											onMouseEnter={() => setIsRed(true)}
-											onMouseLeave={() => setIsRed(false)}
 											color={isRed ? 'var(--color-primary)' : 'light-dark(var(--color-dark-2),var(--color-light-2))'}
 											size={solids.icon.size.regular}
 											strokeWidth={solids.icon.strokeWidth.regular}
@@ -271,14 +349,6 @@ export function Upload(): React.JSX.Element {
 									/>
 									{fileName}
 								</div>
-								<div
-									className="restoreBackup"
-									style={{
-										display: 'none',
-									}}>
-									<span>{general.language === 'deutsch' ? 'Backup wiederherstellen:' : 'Restore Backup:'}</span>
-									<input id="restoreBackup" type="checkbox" ref={restoreBackupRef} onChange={restoreBackupHandler} />
-								</div>
 								<button
 									style={{
 										display: showFile ? (showTable ? 'none' : 'flex') : 'none',
@@ -289,7 +359,20 @@ export function Upload(): React.JSX.Element {
 										size={solids.icon.size.regular}
 										strokeWidth={solids.icon.strokeWidth.regular}
 									/>
-									{general.language === 'deutsch' ? 'Importieren' : 'Import'}
+									{importButtonText}
+								</button>
+								{showFile ? (showTable ? '' : general.language === 'deutsch' ? 'oder' : 'or') : ''}
+								<button
+									style={{
+										display: showFile ? (showTable ? 'none' : 'flex') : 'none',
+									}}
+									onClick={restoreBackupHandler}>
+									<ReplaceIcon
+										color="light-dark(var(--color-dark-1),var(--color-light-1))"
+										size={solids.icon.size.regular}
+										strokeWidth={solids.icon.strokeWidth.regular}
+									/>
+									{general.language === 'deutsch' ? 'Backup Wiederherstellen' : 'Restore Backup'}
 								</button>
 							</div>
 						</li>
@@ -302,10 +385,10 @@ export function Upload(): React.JSX.Element {
 									{general.language === 'deutsch' ? 'Spalten' : 'Columns'}: {cols.length ?? '-'}
 								</li>
 								<li key={'tableInfo3'}>
-									<RowShifter cols={cols} />
+									<RowShifter cols={cols} showOptionsHook={showShiftOptionsHook} updateHook={updateHook} />
 								</li>
 								<li key={'tableInfo4'}>
-									<ColRemover updateHook={updateHook} count={entries} worker={worker.ImportWorker} />
+									<ColRemover updateHook={updateHook} showOptionsHook={showDeleteOptionsHook} colsHook={colsHook} />
 								</li>
 							</>
 						) : (
@@ -347,9 +430,7 @@ export function Upload(): React.JSX.Element {
 									</select>
 								</li>
 								<li>
-									<button ref={importButtonRef} onClick={importHandler}>
-										{general.language === 'deutsch' ? 'Tabelle erstellen/erneuern' : 'Create/Update Table'}
-									</button>
+									<button onClick={createHandler}>{createButtonText}</button>
 								</li>
 								<li>
 									<button
@@ -375,6 +456,57 @@ export function Upload(): React.JSX.Element {
 						)}
 					</div>
 				</div>
+				<dialog ref={rankedDeletionRef}>
+					<button onMouseEnter={() => setIsRedModal(true)} onMouseLeave={() => setIsRedModal(false)} className='closeRankedDel' onClick={()=>{
+						if(rankedDeletionRef.current !== null){
+							rankedDeletionRef.current.close()
+						}
+					}}>
+						<XIcon
+							onMouseEnter={() => setIsRed(true)}
+							onMouseLeave={() => setIsRed(false)}
+							color={isRedModal ? 'var(--color-primary)' : 'light-dark(var(--color-dark-2),var(--color-light-2))'}
+							size={solids.icon.size.regular}
+							strokeWidth={solids.icon.strokeWidth.regular}
+						/>
+					</button>
+					{rankedDeletionColumns ? (
+						<>
+							<div className="columnRanking">
+								<div className="rankedColumn">
+									<div>
+										<p>{general.language === 'deutsch' ? 'Spaltenname' : 'Column name'}</p>
+									</div>
+									<div>
+										<p>{general.language === 'deutsch' ? 'Trefferrate' : 'Match rate'}</p>
+									</div>
+									<div>
+										<p>{general.language === 'deutsch' ? 'Aktion' : 'Action'}</p>
+									</div>
+								</div>
+								{rankedDeletionColumns.map((rank, index) => {
+									if (index !== 0 && rankedDeletionProgress[index] !== null) {
+										return (
+											<div key={`ranked-${rank[0]}`} className="rankedColumn">
+												<div>
+													<p>{rank[0]}</p>
+												</div>
+												<div>
+													<p>{((rank[1] / entries) * 100).toFixed(2)} %</p>
+												</div>
+												<div>
+													<button onClick={() => rankedDeletionHandler(rank[0], index)}>{rankedDeletionProgress[index]}</button>
+												</div>
+											</div>
+										);
+									}
+								})}
+							</div>
+						</>
+					) : (
+						<></>
+					)}
+				</dialog>
 			</div>
 		</>
 	);

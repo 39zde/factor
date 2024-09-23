@@ -49,7 +49,18 @@ export type {
 	StarterPackageResponse,
 } from './worker/table.worker';
 
-export type { AddDataArgs, DateInput, ImportWorkerMessage, AlignVariables, RemoveCondition, RemoveVariables } from './worker/import.worker';
+export type {
+	AddDataArgs,
+	DateInput,
+	ImportWorkerMessage,
+	AlignVariables,
+	RemoveCondition,
+	RemoveVariables,
+	ImportWorkerMessageResponse,
+	RankDoneData,
+	RankedDeletion,
+	UpdateMessage,
+} from './worker/import.worker';
 
 export type {
 	TableRow,
@@ -102,7 +113,7 @@ declare global {
 			window: typeof window;
 		};
 		__FACTOR_VERSION__: string;
-		__USE_TAURI__:boolean;
+		__USE_TAURI__: boolean;
 		navigator: {
 			userAgentData: {
 				mobile: boolean;

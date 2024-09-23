@@ -27,6 +27,8 @@ import type {
 	RemoveVariables,
 	DataBaseNames,
 	RemoveCondition,
+	RankedDeletion,
+	UpdateMessage,
 } from '@typings';
 import { getAddressHash } from '@util';
 
@@ -41,7 +43,7 @@ self.onmessage = (e: MessageEvent): void => {
 
 	switch (eventData.type) {
 		case 'import':
-			importData(eventData.dataBaseName, eventData.dbVersion, eventData.data as 'json' | 'csv', e.data[1] as ReadableStream);
+			importData(eventData.dataBaseName, eventData.dbVersion, 'data_upload', eventData.data as 'json' | 'csv', e.data[1] as ReadableStream);
 			break;
 		case 'align':
 			alignData(eventData.dataBaseName, eventData.dbVersion, eventData.data as AlignVariables);
@@ -49,11 +51,13 @@ self.onmessage = (e: MessageEvent): void => {
 		case 'rankColsByCondition':
 			rankColsByCondition(eventData.dataBaseName, eventData.dbVersion, eventData.data as RemoveVariables);
 			break;
-		case 'deleteCol':
-			deleteCol(eventData.data as string);
+		case 'delete-col':
+			deleteCol(eventData.data as string, eventData.type);
+			break;
+		case 'delete-rank':
+			deleteCol((eventData.data as RankedDeletion).columnName, eventData.type, (eventData.data as RankedDeletion).columnIndex);
 			break;
 		case 'sort':
-			console.log('sort');
 			self.navigator.locks.request('sorting-lock', () => {
 				if (eventData.targetDBName !== undefined) {
 					sortData(
@@ -169,16 +173,24 @@ function parseDate(input: string, type: DateInput): Date {
 	}
 }
 
-const updateManager = (total: number) => {
+const updateManager = (
+	task: 'import' | 'align' | 'sort' | 'delete-rank' | 'rank' | 'delete-col',
+	total: number,
+	addons?: (object | string | number)[]
+) => {
 	const increment = 0.1;
 	let ratchet = 0.1;
 	let counter = 0;
 	let progress = 0;
 	function postUpdate(msg: string): void {
-		postMessage({
-			type: 'progress',
+		let updateMessage: UpdateMessage = {
+			type: `${task}-progress`,
 			data: msg,
-		});
+		};
+		if (addons !== undefined) {
+			updateMessage.addons = addons;
+		}
+		postMessage(updateMessage);
 	}
 
 	function update(): void {
@@ -188,9 +200,6 @@ const updateManager = (total: number) => {
 			ratchet += increment;
 			postUpdate(`${(progress * 100).toFixed(0)}%`);
 			if (progress === 1) {
-				postMessage({
-					type: 'success',
-				});
 				ratchet = 0.1;
 				counter = 0;
 				progress = 0;
@@ -200,10 +209,11 @@ const updateManager = (total: number) => {
 	return update;
 };
 
-function importData(dataBaseName: string, dbVersion: number, fileType: 'json' | 'csv', data: ReadableStream) {
+function importData(dataBaseName: string, dbVersion: number, oStore: string, fileType: 'json' | 'csv', data: ReadableStream) {
 	const request = indexedDB.open(dataBaseName, dbVersion);
 	const readable = data.pipeThrough(new TextDecoderStream('utf-8'));
 	const reader = readable.getReader();
+	const update = updateManager('import', 3);
 	let fuse = true;
 	let lineEnd = '\n';
 	let columns: string[] = [];
@@ -233,10 +243,12 @@ function importData(dataBaseName: string, dbVersion: number, fileType: 'json' | 
 
 	request.onsuccess = () => {
 		const db = request.result;
+		update();
 		const transaction = db.transaction('data_upload', 'readwrite', { durability: 'strict' });
 		const oStore = transaction.objectStore('data_upload');
 		const clearRequest = oStore.clear();
 		clearRequest.onsuccess = () => {
+			update();
 			reader.read().then(function readDataUpload(value) {
 				if (!value.done) {
 					if (fileType === 'csv') {
@@ -268,6 +280,7 @@ function importData(dataBaseName: string, dbVersion: number, fileType: 'json' | 
 							});
 							fuse = false;
 						}
+						let promises: Promise<number | null>[] = [];
 						for (const [index, row] of rows.entries()) {
 							let dbRow;
 							if (index === 0 && tail !== undefined) {
@@ -276,32 +289,40 @@ function importData(dataBaseName: string, dbVersion: number, fileType: 'json' | 
 							} else {
 								dbRow = genDBRow(columns, row.split(';'), pos + 1);
 							}
-							oStore.add(dbRow);
+							promises.push(addRowPromise(dataBaseName, dbVersion, 'data_upload', dbRow));
 							pos += 1;
 						}
 						tail = nextTail;
+						console.log('pos:', pos);
 						nextTail = undefined;
+						Promise.all(promises).then(() => {
+							console.log('promises released');
+							reader.read().then(readDataUpload);
+						});
 					}
-					reader.read().then(readDataUpload);
 				} else {
-					transaction.commit();
+					update();
+					return postMessage({
+						type: 'import-done',
+						data: [pos, columns],
+					});
 				}
 			});
-			transaction.oncomplete = () => {
-				db.close();
-				console.log('completed');
-				return postMessage({
-					type: 'imported',
-					data: [pos, columns],
-				});
-			};
-			transaction.onerror = (ev) => {
-				console.log(ev);
-				return postMessage({
-					type: 'error',
-					data: 'Database transaction failed',
-				});
-			};
+		};
+		transaction.oncomplete = () => {
+			db.close();
+			console.log('completed');
+			// return postMessage({
+			// 	type: 'imported',
+			// 	data: [pos, columns],
+			// });
+		};
+		transaction.onerror = (ev) => {
+			console.log(ev);
+			return postMessage({
+				type: 'error',
+				data: 'Database transaction failed',
+			});
 		};
 		clearRequest.onerror = () => {
 			console.log('clear error');
@@ -316,12 +337,51 @@ function importData(dataBaseName: string, dbVersion: number, fileType: 'json' | 
 	};
 }
 
+function addRowPromise(dataBaseName: string, dbVersion: number, oStoreName: string, row: TableRow): Promise<number | null> {
+	return new Promise((resolve, reject) => {
+		addRow(dataBaseName, dbVersion, oStoreName, row, (result: number | null) => {
+			if (result !== null) {
+				resolve(result);
+			} else {
+				reject(null);
+			}
+		});
+	});
+}
+
+function addRow(dataBaseName: string, dbVersion: number, oStoreName: string, row: TableRow, callback: (result: number | null) => void) {
+	const dbRequest = indexedDB.open(dataBaseName, dbVersion);
+	dbRequest.onsuccess = () => {
+		const db = dbRequest.result;
+		const transaction = db.transaction(oStoreName, 'readwrite', { durability: 'strict' });
+		const oStore = transaction.objectStore(oStoreName);
+		let addRequest = oStore.add(row);
+		addRequest.onsuccess = () => {
+			transaction.commit();
+			callback(row.row);
+		};
+		addRequest.onerror = () => {
+			transaction.abort();
+			callback(null);
+		};
+	};
+	dbRequest.onblocked = () => {
+		callback(null);
+	};
+
+	dbRequest.onerror = () => {
+		callback(null);
+	};
+}
+
 function alignData(dataBaseName: string, dbVersion: number, alignVariables: AlignVariables) {
+	console.log(alignVariables);
 	function performShift(to: number, item: TableRow) {
 		const out = item;
 		const copy = structuredClone(item);
 		const keys = Object.keys(item);
 		if (to > 0) {
+			// ignore the first key (row key)
 			for (let i = 1; i < keys.length; i++) {
 				const key = keys[i];
 				if (i <= Math.abs(to)) {
@@ -358,87 +418,102 @@ function alignData(dataBaseName: string, dbVersion: number, alignVariables: Alig
 		const db = request.result;
 		const transaction = db.transaction(['data_upload'], 'readwrite');
 		const objectStore = transaction.objectStore('data_upload');
-		let count: number;
 		const countRequest = objectStore.count();
 		countRequest.onsuccess = () => {
-			count = countRequest.result;
-			return (objectStore.openCursor(null, 'next').onsuccess = (ev) => {
-				//@ts-expect-error the event of a IDB request always has a target prop
-				const cursor: IDBCursorWithValue | null = ev.target.result;
-				if (cursor !== null) {
-					if (cursor.value[alignVariables.col] == undefined) {
+			const count = countRequest.result;
+			const update = updateManager('align', count);
+			const cursorRequest = objectStore.openCursor(null, 'next');
+			cursorRequest.onsuccess = () => {
+				const cursor = cursorRequest.result;
+				if (cursor) {
+					const row = cursor.value as TableRow;
+					if (row[alignVariables.col] === undefined) {
 						cursor.continue();
 					}
-
-					if (cursor.value[alignVariables.col] === alignVariables.value) {
-						performShift(shiftAmount, cursor.value);
-					}
-
-					if (parseInt(cursor.key.toString()) < count) {
-						cursor.continue();
+					if (row[alignVariables.col] === alignVariables.value) {
+						let result = performShift(shiftAmount, cursor.value);
+						let updateRequest = cursor.update(result);
+						updateRequest.onsuccess = () => {
+							update();
+							cursor.continue();
+						};
+						updateRequest.onerror = () => {
+							console.error('failed to shift row ', cursor.value.row);
+							update();
+							cursor.continue();
+						};
 					} else {
-						return postMessage({
-							type: 'success',
-							data: 'aligned values',
-						});
+						update();
+						cursor.continue();
 					}
 				} else {
-					// return postMessage({ type: 'error', data: 'invalid cursor' })
+					postMessage({
+						type: 'align-done',
+						data: 'aligned values',
+					});
 				}
-			});
+			};
 		};
 	};
 }
 
 function rankColsByCondition(dataBaseName: string, dbVersion: number, condition: RemoveVariables) {
-	function compareItemToCondition(condition: RemoveCondition, value: string | number): boolean {
-		// switch (typeof condition) {
-		// 	case undefined:
-		// 		if (value === undefined && value !== null) {
-		// 			return true;
-		// 		}
-		// 		return false;
-		// 	case null:
-		// 		if (value !== undefined && value === null) {
-		// 			return true;
-		// 		}
-		// 		return false;
-		// 	case 'number':
-		// 		if (typeof value === 'number' || typeof value === 'bigint') {
-		// 			if (value === condition) {
-		// 				return true;
-		// 			}
-		// 		} else {
-		// 			if (condition) {
-		// 				if (value === condition.toString()) {
-		// 					return true;
-		// 				}
-		// 			}
-		// 		}
-		// 		return false;
-		// 	case 'string':
-		// 		if (typeof condition === 'string') {
-		// 			if (condition.length === 0) {
-		// 				if (typeof value === 'string') {
-		// 					if (value.trim().length === 0) {
-		// 						return true;
-		// 					}
-		// 				} else {
-		// 					if (typeof value === 'undefined' || typeof value === null) {
-		// 					}
-		// 				}
-		// 			} else {
-		// 				if (value === condition) {
-		// 					return true;
-		// 				}
-		// 			}
-		// 			return false;
-		// 		}
-		// 		return false;
-		// 	default:
-		// 		return false;
-		// }
-		return false;
+	function compareItemToCondition(compareCondition: RemoveCondition, value: string | number): boolean {
+		switch (compareCondition) {
+			case "undefined":
+				if (value === undefined && value !== null) {
+					return true;
+				}
+				return false;
+			case "null":
+				if (value !== undefined && value === null) {
+					return true;
+				}
+				return false;
+			case 'custom number':
+				if (typeof value === 'number' || typeof value === 'bigint') {
+					if (value.toFixed(2) === parseFloat(condition.custom.number).toFixed(2)) {
+						return true;
+					}
+				} else {
+					if (condition) {
+						if (value === condition.toString()) {
+							return true;
+						}
+					}
+				}
+				return false;
+			case 'custom string':
+				if (typeof value === 'string') {
+					if(value.trim() ===  condition.custom.string.trim()){
+						return true
+					}
+					return false;
+				}
+				return false;
+			case "0":
+				let testVar;
+				if(typeof value === "number"){
+					testVar = value.toFixed(2)
+				}else{
+					testVar = value
+				}
+				if(testVar === "0.00"){
+					return true
+				}
+				return false
+			case "empty text":
+				if(typeof value !== "string"){
+					return false
+				}
+				if(value.trim() === ""){
+					return true
+				}
+				return false
+			case "-":
+			default:
+				return false;
+		}
 	}
 
 	const dbRequest = indexedDB.open(dataBaseName, dbVersion);
@@ -455,7 +530,7 @@ function rankColsByCondition(dataBaseName: string, dbVersion: number, condition:
 				const keys = Object.keys(firstRow);
 				keys.splice(keys.indexOf('row'), 1);
 				const counter = firstRow as TableRowCounter;
-				const update = updateManager(count * keys.length);
+				const update = updateManager('rank', count * keys.length);
 				for (const [k] of Object.entries(counter)) {
 					counter[k] = 0;
 				}
@@ -479,7 +554,7 @@ function rankColsByCondition(dataBaseName: string, dbVersion: number, condition:
 						} else {
 							const ranking = Object.entries(counter);
 							ranking.sort((a, b) => b[1] - a[1]);
-							postMessage({ type: 'ranking', data: ranking });
+							postMessage({ type: 'rank-done', data: ranking });
 						}
 					} else {
 						return postMessage({
@@ -493,7 +568,7 @@ function rankColsByCondition(dataBaseName: string, dbVersion: number, condition:
 	};
 }
 
-function deleteCol(col: string) {
+function deleteCol(col: string, responseType: 'delete-rank' | 'delete-col', rankedIndex?: number) {
 	const dbRequest = indexedDB.open('factor_db');
 	dbRequest.onsuccess = () => {
 		const db = dbRequest.result;
@@ -504,22 +579,21 @@ function deleteCol(col: string) {
 		const countRequest = objStore.count();
 		countRequest.onsuccess = () => {
 			const count = countRequest.result;
+			const update = updateManager(responseType, count, rankedIndex ? [rankedIndex] : undefined);
 			const cursorRequest = objStore.openCursor(null, 'next');
 			cursorRequest.onsuccess = () => {
-				const cursor: IDBCursorWithValue | null = cursorRequest.result;
+				const cursor = cursorRequest.result;
 				if (cursor) {
 					const newValue = cursor.value;
 					delete newValue[col];
 					cursor.update(newValue);
-
-					if (parseInt(cursor.key.toString()) < count) {
-						cursor.continue();
-					} else {
-						postMessage({
-							type: 'colDeletion',
-							data: `deleted col: ${col}`,
-						});
-					}
+					update();
+					cursor.continue();
+				} else {
+					postMessage({
+						type: `${responseType}-done`,
+						data: rankedIndex,
+					});
 				}
 			};
 		};
@@ -1121,7 +1195,6 @@ function parseCustomerData(
 					for (let i = 0; i < result.length; i++) {
 						insertCustomer(result[i], (rowNumber: number | null) => {
 							if (rowNumber !== null) {
-								// console.log('done with customer in row : ' + rowNumber[0]);
 								doneCallback(rowNumber);
 							} else {
 								doneCallback(null);
@@ -1745,21 +1818,16 @@ function sortData(
 	targetDBName: DataBaseNames,
 	sortingMap: CustomerSortingMap | ArticleSortingMap | DocumentSortingMap
 ) {
-	console.log('sort2');
-
 	const request = indexedDB.open(dataBaseName, dbVersion);
 	request.onsuccess = () => {
-		console.log('sort3');
 		const sourceDB = request.result;
 		const dbTransaction = sourceDB.transaction('data_upload', 'readonly');
 		const dataUpload = dbTransaction.objectStore('data_upload');
 		const dataUploadCountRequest = dataUpload.count();
 
 		dataUploadCountRequest.onsuccess = () => {
-			console.log('sort4');
-
 			const dataCount = dataUploadCountRequest.result;
-			const update = updateManager(dataCount);
+			const update = updateManager('sort', dataCount);
 			const cursorRequest = dataUpload.openCursor(null, 'next');
 			type PromiseCounterType = {
 				promises: Promise<number | null>[];
@@ -1776,10 +1844,12 @@ function sortData(
 					if (prop === 'add') {
 						if (typeof value !== 'number') {
 							target['promises'].push(value);
+							console.log(target['promises'].length / target['total']);
 							if (target['promises'].length === target['total']) {
-								Promise.all(target['promises']).then(() => {
-									postMessage({
-										type: 'success',
+								Promise.all(target['promises']).then((results) => {
+									console.log('all promises resolved');
+									self.postMessage({
+										type: 'sort-done',
 										data: targetDBName,
 									});
 								});
@@ -1805,11 +1875,10 @@ function sortData(
 							// console.log('starting with: ', cursor.value.row);
 							proxy.add = new Promise<number | null>((resolve) => {
 								parseCustomerData('customer_db', dbVersion, sortingMap as CustomerSortingMap, cursor.value, (result) => {
-									// console.log('done with: ', result);
-									update();
 									resolve(result);
 								});
 							});
+							update();
 							cursor.continue();
 							break;
 						case 'document_db':
@@ -1819,8 +1888,6 @@ function sortData(
 							break;
 					}
 				} else {
-					console.log('sort5');
-
 					// don't return, because this will stop all running functions to abort
 				}
 			};
@@ -1838,10 +1905,10 @@ function sortData(
 		};
 
 		dbTransaction.oncomplete = () => {
-			postMessage({
-				type: 'success',
-				data: 'customer_db',
-			});
+			// postMessage({
+			// 	type: 'success',
+			// 	data: 'customer_db',
+			// });
 		};
 	};
 }
