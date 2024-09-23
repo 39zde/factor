@@ -12,7 +12,7 @@
         "lint": "eslint ./src -c ./eslint.config.mjs  --fix",
         "dev:vite": "vite -c ./vite.dev.config.ts",
         "bundle:dev": "vite build -c ./vite.dev.config.ts",
-        "bundle:demo": "vite build -c ./vite.demo.config.ts && node ./scripts/includeFiles.mjs ",
+        "bundle:demo": "node ./scripts/preDemoBundle.mjs && vite build -c ./vite.demo.config.ts && node ./scripts/includeFiles.mjs ",
         "bundle:prod": "tsc && vite build",
         "devtools": "react-devtools",
         "preview": "vite preview",
