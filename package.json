@@ -8,17 +8,17 @@
     "repository": "https://github.com/39zde/factor",
     "license": "Apache-2.0",
     "scripts": {
-        "format": "prettier --write .",
-        "lint": "eslint ./src -c ./eslint.config.mjs  --fix",
-        "dev:vite": "vite -c ./vite.dev.config.ts",
+        "build": "node ./scripts/preTauriBuild.mjs && tauri build",
         "bundle:dev": "vite build -c ./vite.dev.config.ts",
         "bundle:demo": "node ./scripts/preDemoBundle.mjs && vite build -c ./vite.demo.config.ts && node ./scripts/includeFiles.mjs ",
         "bundle:prod": "tsc && vite build",
-        "devtools": "react-devtools",
-        "preview": "vite preview",
-        "build": "node ./scripts/preTauriBuild.mjs && tauri build",
+        "dev:vite": "vite -c ./vite.dev.config.ts",
         "dev:tauri": "node ./scripts/preTauriDev.mjs && tauri dev",
-		  "gen": "node ./scripts/genData.cli.js"
+        "devtools": "react-devtools",
+        "format": "prettier --write .",
+        "gen:sample-customers": "node ./scripts/genData.cli.js",
+        "lint": "eslint ./src -c ./eslint.config.mjs  --fix",
+        "preview": "vite preview"
     },
     "dependencies": {
         "@react-pdf/renderer": "^3.4.4",
