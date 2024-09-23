@@ -168,27 +168,38 @@ export function Table({
 	// listen for any updates
 	useEffect(() => {
 		setMenuActive(false);
-		if (update !== undefined) {
-			if (tableState.update !== update) {
+		let newUpdate = update || updateHook?.update;
+		if (newUpdate !== undefined) {
+			if (tableState.update !== newUpdate) {
 				dispatch({
 					type: 'set',
 					name: 'update',
-					newVal: update,
+					newVal: newUpdate,
 				});
-				if (update) {
+				if (newUpdate) {
 					initTableState();
 				}
 			}
 		}
-	}, [update]);
+	}, [update, updateHook?.update]);
 
 	// if we register a change from out side the table component execute it
-	useCallback(() => {
+	useEffect(() => {
 		if (colsHook !== undefined) {
+			dispatch({
+				type: 'set',
+				name: 'update',
+				newVal: true,
+			});
 			dispatch({
 				type: 'set',
 				name: 'columns',
 				newVal: colsHook.cols,
+			});
+			dispatch({
+				type: 'set',
+				name: 'update',
+				newVal: false,
 			});
 		}
 	}, [colsHook?.cols]);
