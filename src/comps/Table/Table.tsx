@@ -160,7 +160,7 @@ export function Table({ dataBaseName, tableName, colsHook, entriesHook, updateHo
 	// listen for any updates
 	useEffect(() => {
 		setMenuActive(false);
-		let newUpdate = updateHook?.update;
+		const newUpdate = updateHook?.update;
 		if (newUpdate !== undefined) {
 			if (tableState.update !== newUpdate) {
 				dispatch({

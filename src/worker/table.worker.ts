@@ -285,7 +285,7 @@ function fillReferences(
 		// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy/Proxy/set#parameters
 		set(target: CounterType, prop: keyof CounterType, value: number) {
 			target[prop] = value;
-			let currentTargetCount = targetCounter.get(row);
+			const currentTargetCount = targetCounter.get(row);
 			if (currentTargetCount !== undefined) {
 				if (value === currentTargetCount) {
 					// if we are on the last result finally send the back the response
@@ -311,7 +311,7 @@ function fillReferences(
 			// increase $targetCunt by $increment
 			const byteLength = new DataView(value).byteLength;
 			const elementCount = byteLength / 2;
-			let targetCount = targetCounter.get(row);
+			const targetCount = targetCounter.get(row);
 			if (targetCount !== undefined) {
 				targetCounter.set(row, targetCount + elementCount);
 			}
@@ -344,7 +344,7 @@ function fillReferences(
 		}
 	}
 
-	let targeted = targetCounter.get(row);
+	const targeted = targetCounter.get(row);
 	if (targeted !== undefined) {
 		if (targeted === 0) {
 			if (actionType !== undefined) {

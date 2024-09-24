@@ -186,7 +186,7 @@ const updateManager = (
 	let counter = 0;
 	let progress = 0;
 	function postUpdate(msg: string): void {
-		let updateMessage: UpdateMessage = {
+		const updateMessage: UpdateMessage = {
 			type: `${task}-progress`,
 			data: msg,
 		};
@@ -219,13 +219,13 @@ function importData(dataBaseName: string, dbVersion: number, oStore: string, fil
 	const update = updateManager('import', 3);
 	let fuse = true;
 	let lineEnd = '\n';
-	let columns: string[] = [];
+	const columns: string[] = [];
 	let pos = 0;
 	let tail: string | undefined = undefined;
 	let nextTail: string | undefined = undefined;
 
 	function genDBRow(columns: string[], values: string[], rowNumber: number) {
-		let out = {
+		const out = {
 			row: rowNumber,
 		};
 		for (const [index, col] of columns.entries()) {
@@ -277,13 +277,13 @@ function importData(dataBaseName: string, dbVersion: number, oStore: string, fil
 									data: 'This csv file is not separated by semicolons (;)',
 								});
 							}
-							let cols = rows.splice(0, 1);
+							const cols = rows.splice(0, 1);
 							cols[0].split(';').forEach((v) => {
 								columns.push(v);
 							});
 							fuse = false;
 						}
-						let promises: Promise<number | null>[] = [];
+						const promises: Promise<number | null>[] = [];
 						for (const [index, row] of rows.entries()) {
 							let dbRow;
 							if (index === 0 && tail !== undefined) {
@@ -358,7 +358,7 @@ function addRow(dataBaseName: string, dbVersion: number, oStoreName: string, row
 		const db = dbRequest.result;
 		const transaction = db.transaction(oStoreName, 'readwrite', { durability: 'strict' });
 		const oStore = transaction.objectStore(oStoreName);
-		let addRequest = oStore.add(row);
+		const addRequest = oStore.add(row);
 		addRequest.onsuccess = () => {
 			transaction.commit();
 			callback(row.row);
@@ -410,7 +410,7 @@ function putRow(dataBaseName: string, dbVersion: number, oStoreName: string, row
 		} else {
 			const transaction = db.transaction(oStoreName, 'readwrite', { durability: 'strict' });
 			const oStore = transaction.objectStore(oStoreName);
-			let putRequest = oStore.put(row);
+			const putRequest = oStore.put(row);
 			putRequest.onsuccess = () => {
 				transaction.commit();
 				callback(row.row);
@@ -487,8 +487,8 @@ function alignData(dataBaseName: string, dbVersion: number, alignVariables: Alig
 						cursor.continue();
 					}
 					if (row[alignVariables.col] === alignVariables.value) {
-						let result = performShift(shiftAmount, cursor.value);
-						let updateRequest = cursor.update(result);
+						const result = performShift(shiftAmount, cursor.value);
+						const updateRequest = cursor.update(result);
 						updateRequest.onsuccess = () => {
 							update();
 							cursor.continue();
@@ -667,18 +667,18 @@ function restoreBackup(dbVersion: number, data: ReadableStream) {
 	let fuse = true;
 	const dbRegex = /(?<=(^{[\s]?\"))[\w]+_db(?=(\"[\s]?\:[\s]?\{))/gm;
 	const oStoreRegex = /(?<=(^{[\s]?\"[\w]+?_db\"\s?\:\s?\{\s?\"))\w+(?=(\"\s?\:\[))/gm;
-	let promises: Promise<number | null>[] = [];
+	const promises: Promise<number | null>[] = [];
 	reader.read().then(function readBackup(value) {
 		if (!value.done) {
-			let oStoreData = value.value.split(/(?<=\}[\s]{0,}?\,?[\s]{0,}?\][\s]{0,}?\s?)\,(?=[\s]{0,}?\"[\w]+\"[\s]{0,}?\:[\s]{0,}?\[)/gm);
+			const oStoreData = value.value.split(/(?<=\}[\s]{0,}?\,?[\s]{0,}?\][\s]{0,}?\s?)\,(?=[\s]{0,}?\"[\w]+\"[\s]{0,}?\:[\s]{0,}?\[)/gm);
 			for (const store of oStoreData) {
-				let rows = store.split(/(?<=\}[\s]{0,}?)\,(?=[\s]{0,}?\{)/gm);
+				const rows = store.split(/(?<=\}[\s]{0,}?)\,(?=[\s]{0,}?\{)/gm);
 				if (fuse) {
-					let dataBaseNameSearch = dbRegex.exec(store);
+					const dataBaseNameSearch = dbRegex.exec(store);
 					if (dataBaseNameSearch !== null) {
 						dataBaseName = dataBaseNameSearch[0];
 					}
-					let oStoreSearch = oStoreRegex.exec(store);
+					const oStoreSearch = oStoreRegex.exec(store);
 					if (oStoreSearch !== null) {
 						oStore = oStoreSearch[0];
 						console.log(oStore);
@@ -686,7 +686,7 @@ function restoreBackup(dbVersion: number, data: ReadableStream) {
 					rows[0] = rows[0].substring(rows[0].lastIndexOf('{'), rows[0].length);
 					fuse = false;
 				} else {
-					let oStoreNameSearch = rows[0].match(/(?<=^\")[\w]+(?=\")/gm);
+					const oStoreNameSearch = rows[0].match(/(?<=^\")[\w]+(?=\")/gm);
 					if (oStoreNameSearch !== null) {
 						console.log(oStoreNameSearch);
 						console.log(rows[0]);
@@ -712,7 +712,7 @@ function restoreBackup(dbVersion: number, data: ReadableStream) {
 							prevTail = undefined;
 						}
 					}
-					let parsedRow = JSON.parse(currentRow.trim(), (_key, value) => {
+					const parsedRow = JSON.parse(currentRow.trim(), (_key, value) => {
 						if (Array.isArray(value)) {
 							// when making changes to this keep the fillReferences function of the table worker in mind
 							if (value.length !== 0) {
@@ -2159,8 +2159,8 @@ function mergeArray(base: string[] | undefined, addition: string[] | string): st
 
 function createArrayBuffer(numbers: number[]): ArrayBuffer {
 	// @ts-expect-error no ts implementation (or at least I wasn't able find the correct way)
-	let buffer = new ArrayBuffer(numbers.length * 2, { maxByteLength: 128 });
-	let view = new DataView(buffer);
+	const buffer = new ArrayBuffer(numbers.length * 2, { maxByteLength: 128 });
+	const view = new DataView(buffer);
 	for (let i = 0; i < numbers.length * 2; i += 2) {
 		view.setInt16(i, numbers[i / 2]);
 	}
