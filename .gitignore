@@ -10,3 +10,5 @@ bundle-dev/
 src-tauri/target/
 src-tauri/gen/schemas
 *.csv
+!resources/data/*.sample.csv
+ 
