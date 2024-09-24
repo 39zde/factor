@@ -149,12 +149,12 @@ function AddressTableCell({ data }: { data: AddressType[] }): React.JSX.Element 
 						}
 
 						return (
-							<>
+							<Fragment key={item.hash}>
 								<p key={textRow1}>{textRow1}</p>
 								<p key={textRow2}>
 									{textRow2}({textRow3})
 								</p>
-							</>
+							</Fragment>
 						);
 					})
 				) : (
@@ -176,11 +176,9 @@ function EmailTableCell({ data }: { data: EmailType[] }): React.JSX.Element {
 							text1 += item.email;
 						}
 						return (
-							<>
-								<a key={text1} tabIndex={-1} href={`mailto:${text1}`}>
-									{text1}
-								</a>
-							</>
+							<a key={text1} tabIndex={-1} href={`mailto:${text1}`}>
+								{text1}
+							</a>
 						);
 					})
 				) : (
@@ -201,11 +199,9 @@ function PhoneTableCell({ data }: { data: PhoneNumberType[] }): React.JSX.Elemen
 						text1 += item.phone;
 					}
 					return (
-						<>
-							<a key={text1} tabIndex={-1} href={`tel:${text1}`}>
-								{text1}
-							</a>
-						</>
+						<a key={text1} tabIndex={-1} href={`tel:${text1}`}>
+							{text1}
+						</a>
 					);
 				})}
 			</address>
@@ -219,9 +215,9 @@ function NotesTableCell({ data }: { data: string[] }): React.JSX.Element {
 			<span className="nestedCell">
 				{data.map((item) => {
 					return (
-						<>
-							<p spellCheck={true}>{item}</p>
-						</>
+						<p spellCheck={true} key={item}>
+							{item}
+						</p>
 					);
 				})}
 			</span>
@@ -252,10 +248,10 @@ function CompanyTableCell({ data }: { data: CompanyType[] }): React.JSX.Element 
 function WebsiteTableCell({ data }: { data: string }): React.JSX.Element {
 	const clickHandler = (e: MouseEvent) => {
 		e.preventDefault();
-		if(window.__USE_TAURI__){
+		if (window.__USE_TAURI__) {
 			open(data);
-		}else{
-			window.open(data,'_blank')
+		} else {
+			window.open(data, '_blank');
 		}
 	};
 	return (

@@ -23,38 +23,32 @@ self.onmessage = function requestHandler(e: MessageEvent) {
 			};
 			const starterHandler = {
 				set(target: StarterPackage, prop: keyof StarterPackage, value: number | string[] | DerefRow[]) {
-					let undefinedCount = 0;
 					// @ts-expect-error the values will match the prop
 					target[prop] = value;
-					for (const key of Object.keys(target)) {
-						// @ts-expect-error the values will match the prop
-						if (target[key] === undefined) {
-							undefinedCount += 1;
-						}
-					}
-					if (undefinedCount === 0) {
+					if (target['starterRows'] && target['startingColumns'] && target['startingCount']) {
 						postMessage({
 							type: 'startingPackage',
 							data: target,
 						});
-					} else {
-						undefinedCount = 0;
 					}
 					return true;
 				},
 			};
 			const proxy = new Proxy(starterPackage, starterHandler);
 			getCount(eventData.dataBaseName, eventData.dbVersion, eventData.storeName, (count: number | undefined) => {
+				// console.log('count: ', count);
 				if (count !== undefined) {
 					proxy.startingCount = count;
 				}
 			});
 			getColumns(eventData.dataBaseName, eventData.dbVersion, eventData.storeName, (cols: string[] | undefined) => {
+				// console.log('columns: ', cols);
 				if (cols !== undefined) {
 					proxy.startingColumns = cols;
 				}
 			});
 			getStartingRows(eventData.dataBaseName, eventData.dbVersion, eventData.storeName, eventData.scope, (rows: DerefRow[] | undefined) => {
+				// console.log('row: ', rows);
 				if (rows !== undefined) {
 					proxy.starterRows = rows;
 				}
@@ -92,6 +86,7 @@ function getStartingRows(
 	const dbRequest = indexedDB.open(dataBaseName, dbVersion);
 
 	dbRequest.onblocked = function startingDBblocked() {
+		// console.error('starting Rows db blocked');
 		if (callback !== undefined) {
 			callback(undefined);
 		} else {
@@ -103,6 +98,7 @@ function getStartingRows(
 	};
 
 	dbRequest.onerror = function startingDBerror() {
+		// console.error('starting Rows db error');
 		if (callback !== undefined) {
 			callback(undefined);
 		} else {
@@ -114,40 +110,36 @@ function getStartingRows(
 	};
 
 	dbRequest.onsuccess = function startingDBsuccess() {
-		let received: number = 0;
-		let counter: number = 0;
-		const done: DoneHandler = {
-			data: [],
-			add: { row: 0 },
-		};
-
-		const doneListener = {
-			set(target: DoneHandler, prop: keyof DoneHandler, value: boolean | DerefRow) {
-				if (prop === 'add' && typeof value === 'object') {
-					const data = target['data'];
-					data.push(value);
-					Reflect.set(target, 'data', data);
-					received += 1;
-					if (received === scope) {
-						if (callback !== undefined) {
-							callback(data);
-						} else {
-							postMessage({ type: 'startingRows', data: target.data });
-						}
-					}
-					return Reflect.set(target, prop, value);
-				} else {
-					return Reflect.set(target, prop, value);
-				}
-			},
-		};
-
 		const db = dbRequest.result;
 		if (db.objectStoreNames.contains(storeName)) {
 			const transaction = db.transaction(storeName, 'readonly');
 			const oStore = transaction.objectStore(storeName);
-			const cursorRequest = oStore.openCursor(null, 'nextunique');
+			let received: number = 0;
+			let counter: number = 0;
+			const done: DoneHandler = {
+				data: [],
+				add: { row: 0 },
+			};
+
+			const doneListener = {
+				set(target: DoneHandler, prop: keyof DoneHandler, value: boolean | DerefRow) {
+					if (prop === 'add' && typeof value === 'object') {
+						target['data'].push(value);
+						received += 1;
+					}
+					if (received === scope) {
+						if (callback !== undefined) {
+							callback(target['data']);
+						} else {
+							postMessage({ type: 'startingRows', data: target['data'] });
+						}
+					}
+					return true;
+				},
+			};
 			const doneHandler = new Proxy(done, doneListener);
+			// console.log('db does contain oStore');
+			const cursorRequest = oStore.openCursor(null, 'nextunique');
 			cursorRequest.onsuccess = function startingCursorSuccess() {
 				const cursor: IDBCursorWithValue | null = cursorRequest.result;
 				if (cursor) {
@@ -158,6 +150,11 @@ function getStartingRows(
 					}
 				}
 			};
+		} else {
+			if (callback !== undefined) {
+				console.error('oStore does not exist on db');
+				callback(undefined);
+			}
 		}
 	};
 }
@@ -275,7 +272,8 @@ function fillReferences(
 	doneHandler?: DoneHandler
 ): void {
 	const copy = structuredClone(row);
-	let targetCount = 0;
+	const targetCounter = new WeakMap<TableRow, number>();
+	targetCounter.set(row, 0);
 	type CounterType = {
 		count: number;
 	};
@@ -285,21 +283,24 @@ function fillReferences(
 	// this handler acts as a sort of event listener
 	const handler = {
 		// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy/Proxy/set#parameters
-		set(target: CounterType, prop: string, value: number) {
-			if (prop !== 'count') return Reflect.set(target, prop, value);
-			// every time we increase the counter we check if it was the last request
-			if (value === targetCount) {
-				// if we are on the last result finally send the back the response
-				// this is a very neat way of handling things
-				if (actionType !== undefined) {
-					postStream(copy, actionType, row.row, callback);
-				}
+		set(target: CounterType, prop: keyof CounterType, value: number) {
+			target[prop] = value;
+			let currentTargetCount = targetCounter.get(row);
+			if (currentTargetCount !== undefined) {
+				if (value === currentTargetCount) {
+					// if we are on the last result finally send the back the response
+					// this is a very neat way of handling things
+					if (actionType !== undefined) {
+						postStream(copy, actionType, row.row, callback);
+					}
 
-				if (doneHandler !== undefined) {
-					doneHandler.add = copy;
+					if (doneHandler !== undefined) {
+						doneHandler.add = copy;
+					}
 				}
 			}
-			return Reflect.set(target, prop, value);
+			// every time we increase the counter we check if it was the last request
+			return true;
 		},
 	};
 
@@ -310,7 +311,10 @@ function fillReferences(
 			// increase $targetCunt by $increment
 			const byteLength = new DataView(value).byteLength;
 			const elementCount = byteLength / 2;
-			targetCount += elementCount;
+			let targetCount = targetCounter.get(row);
+			if (targetCount !== undefined) {
+				targetCounter.set(row, targetCount + elementCount);
+			}
 
 			// replace the ArrayBuffer with an regular array in our copy
 			copy[key] = new Array(elementCount);
@@ -332,18 +336,23 @@ function fillReferences(
 						proxy.count += 1;
 					};
 					request.onerror = function fillReferencesRequestError() {
+						console.log('referencing error');
 						proxy.count += 1;
 					};
 				}
 			}
 		}
 	}
-	if (targetCount === 0) {
-		if (actionType !== undefined) {
-			postStream(copy, actionType, copy.row,callback);
-		}
-		if (doneHandler !== undefined) {
-			doneHandler.add = copy;
+
+	let targeted = targetCounter.get(row);
+	if (targeted !== undefined) {
+		if (targeted === 0) {
+			if (actionType !== undefined) {
+				postStream(copy, actionType, copy.row, callback);
+			}
+			if (doneHandler !== undefined) {
+				doneHandler.add = copy;
+			}
 		}
 	}
 }
