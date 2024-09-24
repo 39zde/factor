@@ -20,6 +20,9 @@
 ## Long Long Term
 - [ ] use CanvasAPI for performance
 
+## Chores
+- [ ] Create Proper Picture for the Table Data Flow
+
 
 # History
 - [x] add nested cols
