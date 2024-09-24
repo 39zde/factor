@@ -4,7 +4,7 @@ import { requestPermission } from '@tauri-apps/plugin-notification';
 import { Pages } from './pages/Pages';
 import Comps from '@comps';
 import { getSettings, getDatabases, appReducer, disableMenu, defaultSettings } from '@util';
-import type { RouteType, AppContextType, AppSettingsChange, AppAction, AppSolidsType } from '@typings';
+import type { RouteType, AppContextType, AppSettingsChange, AppAction, AppSolidsType } from '@type';
 import './App.css';
 
 disableMenu();
@@ -152,7 +152,7 @@ function App(): JSX.Element {
 				<ChangeContext.Provider value={dispatch}>
 					<link
 						rel="stylesheet"
-						href={new URL(`./util/theme/scrollbarColor-${appState.appearances.colorTheme.split(' ').join('')}.css`, import.meta.url).href}
+						href={new URL(`./scrollbarColor-${appState.appearances.colorTheme.split(' ').join('')}.css`, import.meta.url).href}
 						type="text/css"
 					/>
 					<div

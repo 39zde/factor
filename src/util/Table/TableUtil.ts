@@ -1,6 +1,5 @@
 import type { Dispatch } from 'react';
-import type { TableDispatchAction, TableContextType } from '../types/comps/Table/Table';
-import type { DerefRow } from '../types/database/DataBaseData';
+import type { DerefRow, TableDispatchAction, TableContextType } from '@type';
 
 /**
  * calculate the scope from rowHeight and Table height

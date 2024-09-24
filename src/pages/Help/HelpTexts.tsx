@@ -1,4 +1,4 @@
-import type { HelpTexts } from '@typings';
+import type { HelpTexts } from '@type';
 export const HelpTextDE: HelpTexts = {
 	usage: {
 		title: '1. Nutzung',

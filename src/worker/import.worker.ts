@@ -29,7 +29,7 @@ import type {
 	RemoveCondition,
 	RankedDeletion,
 	UpdateMessage,
-} from '@typings';
+} from '@type';
 import { getAddressHash } from '@util';
 
 self.onmessage = (e: MessageEvent): void => {

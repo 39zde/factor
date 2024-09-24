@@ -7,7 +7,7 @@ import { ColRemover } from './ColRemover';
 import { ImportModule } from './ImportModule';
 import { useAppContext, solids, useChangeContext } from '@app';
 import Comps from '@comps';
-import type { CustomerSortingMap, ArticleSortingMap, DataBaseNames, DocumentSortingMap, ImportWorkerMessageResponse, RankDoneData } from '@typings';
+import type { CustomerSortingMap, ArticleSortingMap, DataBaseNames, DocumentSortingMap, ImportWorkerMessageResponse, RankDoneData } from '@type';
 import './Upload.css';
 
 export function Upload(): React.JSX.Element {

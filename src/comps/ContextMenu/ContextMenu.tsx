@@ -1,7 +1,7 @@
 import React, { MouseEvent, useEffect, useState, useRef, forwardRef } from 'react';
 // non-lib imports
 import { useAppContext, solids } from '@app';
-import type { ContextMenuProps, MenuItem } from '@typings';
+import type { ContextMenuProps, MenuItem } from '@type';
 import './ContextMenu.css';
 
 /** This works, but it not to my liking. consider this a work in progress */

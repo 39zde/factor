@@ -2,7 +2,7 @@ import React, { Fragment, useRef, useState } from 'react';
 import { FileHandle, create, BaseDirectory } from '@tauri-apps/plugin-fs';
 // non-lib imports
 import { useAppContext, useChangeContext } from '@app';
-import type { CompressionTypes, ExportWorkerResponse } from '@typings';
+import type { CompressionTypes, ExportWorkerResponse } from '@type';
 import './ExportPage.css';
 
 export function ExportPage(): React.JSX.Element {

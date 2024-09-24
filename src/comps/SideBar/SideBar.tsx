@@ -5,7 +5,7 @@ import { RouterButton } from './RouterButton';
 import { LowerButton } from './LowerButton';
 import { useAppContext, solids } from '@app';
 import { getDataBaseDisplayName } from '@util';
-import { RouteType, SideBarProps, DataBaseNames } from '@typings';
+import { RouteType, SideBarProps, DataBaseNames } from '@type';
 import './SideBar.css';
 
 export function SideBar({ routesHook }: SideBarProps): React.JSX.Element {

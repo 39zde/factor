@@ -13,7 +13,7 @@ import {
 	AppSettingsGeneral,
 	AppSettingsDatabase,
 	DataBaseNames,
-} from '@typings';
+} from '@type';
 import './Settings.css';
 export function Settings() {
 	const context = useAppContext();

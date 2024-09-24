@@ -1,4 +1,4 @@
-import type { ExportWorkerRequest, CompressionTypes, TableRow } from '@typings';
+import type { ExportWorkerRequest, CompressionTypes, TableRow } from '@type';
 
 self.onmessage = (event: MessageEvent) => {
 	const eventData = event.data as ExportWorkerRequest;

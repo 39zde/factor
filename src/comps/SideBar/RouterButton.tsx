@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 // non-lib imports
-import type { RouterButtonProps } from '@typings';
+import type { RouterButtonProps } from '@type';
 import './SideBar.css';
 
 export function RouterButton({ route, handler, routeName, icon, textOverride, active }: RouterButtonProps): React.JSX.Element {

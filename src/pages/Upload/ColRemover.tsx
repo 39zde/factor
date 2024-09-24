@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 // non-lib imports
 import { useAppContext } from '@app';
-import type { RemoveCondition } from '@typings';
+import type { RemoveCondition } from '@type';
 
 export function ColRemover({
 	showOptionsHook,

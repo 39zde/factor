@@ -1,4 +1,4 @@
-import type { TableContextType, TableDispatchAction } from '../types/comps/Table/Table';
+import type { TableContextType, TableDispatchAction } from '@type';
 
 /** dispatch function for the TableContext */
 export function tableReducer(tableState: TableContextType, action: TableDispatchAction): TableContextType {

@@ -1,6 +1,6 @@
 import React, { forwardRef } from 'react';
 // non-lib imports
-import { ColumnSetterProps } from '@typings';
+import { ColumnSetterProps } from '@type';
 import './ColumnSetter.css';
 
 export const ColumnSetter = forwardRef<HTMLSelectElement, ColumnSetterProps>(function ColumnSetter(props, ref): React.JSX.Element {

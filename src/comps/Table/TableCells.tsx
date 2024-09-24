@@ -3,7 +3,7 @@ import { open } from '@tauri-apps/plugin-shell';
 // non-lib imports
 import { useTableContext } from './Table';
 import { useAppContext } from '@app';
-import { AddressType, BankType, CompanyType, EmailType, PersonType, PhoneNumberType, TableRowItemProps } from '@typings';
+import { AddressType, BankType, CompanyType, EmailType, PersonType, PhoneNumberType, TableRowItemProps } from '@type';
 
 export function TableCells({ items, uniqueParentKey }: TableRowItemProps): React.JSX.Element {
 	const { appearances } = useAppContext();

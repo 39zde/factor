@@ -2,10 +2,16 @@ import { BaseDirectory, readFile, exists, create, writeFile } from '@tauri-apps/
 import { isPermissionGranted, sendNotification, requestPermission } from '@tauri-apps/plugin-notification';
 import type { Options } from '@tauri-apps/plugin-notification';
 // non-lib imports
-import type { AppSettingsType, AppSettingsDatabaseDatabases, AppContextType, AppAction, AppSettingsAppearance } from '../types/App';
-import type { CustomerDBObjectStores } from '../types/database/CustomerTypes';
-import type { ArticleDBObjectStores } from '../types/database/ArticleTypes';
-import type { DocumentDBObjectStores } from '../types/database/DocumentTypes';
+import type {
+	AppSettingsType,
+	AppSettingsDatabaseDatabases,
+	AppContextType,
+	AppAction,
+	AppSettingsAppearance,
+	CustomerDBObjectStores,
+	ArticleDBObjectStores,
+	DocumentDBObjectStores,
+} from '@type';
 
 export const defaultSettings: AppSettingsType = {
 	appearances: {
@@ -35,7 +41,7 @@ export const defaultSettings: AppSettingsType = {
 export async function getSettings(): Promise<AppSettingsType> {
 	try {
 		let settings: AppSettingsType;
-		if(window.__USE_TAURI__){
+		if (window.__USE_TAURI__) {
 			const settingsExist = await exists('settings.json', { baseDir: BaseDirectory.AppConfig });
 			if (!settingsExist) {
 				const settingsFile = await create('settings.json', { baseDir: BaseDirectory.AppConfig });
@@ -46,13 +52,13 @@ export async function getSettings(): Promise<AppSettingsType> {
 				const existingSettingsFile = await readFile('settings.json', { baseDir: BaseDirectory.AppConfig });
 				settings = JSON.parse(new TextDecoder().decode(existingSettingsFile));
 			}
-		}else{
-			let localSettings = localStorage.getItem("settings");
-			if(localSettings === null){
-				localStorage.setItem("settings",JSON.stringify(defaultSettings))
-				localSettings = JSON.stringify(defaultSettings)
+		} else {
+			let localSettings = localStorage.getItem('settings');
+			if (localSettings === null) {
+				localStorage.setItem('settings', JSON.stringify(defaultSettings));
+				localSettings = JSON.stringify(defaultSettings);
 			}
-			settings = JSON.parse(localSettings)
+			settings = JSON.parse(localSettings);
 		}
 		return settings;
 	} catch (e) {
@@ -64,7 +70,7 @@ export async function getSettings(): Promise<AppSettingsType> {
 
 export async function writeSettings(settings: AppSettingsType): Promise<boolean> {
 	try {
-		if(window.__USE_TAURI__){
+		if (window.__USE_TAURI__) {
 			await writeFile('settings.json', new TextEncoder().encode(JSON.stringify(settings)), { baseDir: BaseDirectory.AppConfig });
 		}
 		return true;
@@ -262,28 +268,25 @@ export function appReducer(appState: AppContextType, action: AppAction): AppCont
 
 // defaultContext.constructor.prototype.notify = notify;
 async function notify(options: Options, context: AppContextType): Promise<string> {
-
 	try {
-		if(window.__TAURI__){
-
-
-		const permissionGranted = await isPermissionGranted();
-		if (!permissionGranted) {
-			if (context.general.notifications) {
-				await requestPermission();
+		if (window.__TAURI__) {
+			const permissionGranted = await isPermissionGranted();
+			if (!permissionGranted) {
+				if (context.general.notifications) {
+					await requestPermission();
+				}
 			}
-		}
-		if (permissionGranted && context.general.notifications) {
-			sendNotification({
-				...options,
-			});
-			return 'success';
+			if (permissionGranted && context.general.notifications) {
+				sendNotification({
+					...options,
+				});
+				return 'success';
+			} else {
+				return 'disallowed';
+			}
 		} else {
-			return 'disallowed';
-		}}
-		else{
-			new Notification(options.title,{...options})
-			return "success"
+			new Notification(options.title, { ...options });
+			return 'success';
 		}
 	} catch (e) {
 		console.error(e);

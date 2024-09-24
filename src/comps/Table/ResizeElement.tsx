@@ -1,7 +1,7 @@
 import React from 'react';
 // non-lib imports
 import { useTableContext } from './Table';
-import type { ResizeElementProps } from '@typings';
+import type { ResizeElementProps } from '@type';
 
 export function ResizeElement({ index, ...props }: ResizeElementProps): React.JSX.Element {
 	const tableState = useTableContext();

@@ -29,7 +29,7 @@ import type {
 	DerefRow,
 	StarterPackageResponse,
 	MenuItem,
-} from '@typings';
+} from '@type';
 import './Table.css';
 
 const TableContext = createContext<TableContextType>(PlaceHolderTableContext);

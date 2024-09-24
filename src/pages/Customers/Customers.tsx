@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 // non-lib imports
 import Comps from '@comps';
-import type { CustomerDBObjectStores } from '@typings';
+import type { CustomerDBObjectStores } from '@type';
 import { CustomerTableNames } from './CustomerTableNames';
 import './Customers.css';
 

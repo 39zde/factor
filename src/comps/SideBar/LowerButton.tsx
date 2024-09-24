@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import type { LowerButtonProps } from '@typings';
+import type { LowerButtonProps } from '@type';
 import './SideBar.css';
 
 export function LowerButton({ handler, icon, text, active }: LowerButtonProps): React.JSX.Element {

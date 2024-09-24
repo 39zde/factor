@@ -20,7 +20,7 @@
 	  "noUnusedParameters": true,
 	  "noFallthroughCasesInSwitch": false,
 	  "paths": {
-		"@typings":["./src/util/types/types.d.ts"],
+		"@type":["./src/types/types.d.ts"],
       "@util":["./src/util/util.ts"],
       "@comps":["./src/comps/Comps.ts"],
 		"@app":["./src/App.tsx"],

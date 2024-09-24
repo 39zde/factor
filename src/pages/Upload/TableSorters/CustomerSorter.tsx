@@ -2,7 +2,7 @@ import React, { useRef, useMemo, useEffect, useCallback, useState, Fragment } fr
 // non-lib imports
 import { ColumnSetter } from './ColumnSetter';
 import { useAppContext } from '@app';
-import type { CustomerSortingMap, SorterProps, CustomerSorterInputGroup, CustomerSorterInputGroupUnderling } from '@typings';
+import type { CustomerSortingMap, SorterProps, CustomerSorterInputGroup, CustomerSorterInputGroupUnderling } from '@type';
 
 export function CustomerSorter({ columns, hook }: SorterProps): React.JSX.Element {
 	const { general } = useAppContext();

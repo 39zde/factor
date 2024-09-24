@@ -55,7 +55,7 @@ export default defineConfig({
 	resolve: {
 		extensions: ['.tsx', '.ts', '.d.ts'],
 		alias: {
-			'@typings': resolve('./src/util/types/types.d.ts'),
+			'@type': resolve('./src/util/types/types.d.ts'),
 			'@util': resolve('./src/util/util.ts'),
 			'@comps': resolve('./src/comps/Comps.ts'),
 			'@app': resolve('./src/App.tsx'),

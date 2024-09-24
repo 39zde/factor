@@ -1,4 +1,4 @@
-import type { LanguageSetting, DataBaseNames } from '@typings';
+import type { LanguageSetting, DataBaseNames } from '@type';
 export function getDataBaseDisplayName(lang: LanguageSetting, dataBaseName: DataBaseNames | undefined): string {
 	switch (dataBaseName) {
 		case 'article_db':

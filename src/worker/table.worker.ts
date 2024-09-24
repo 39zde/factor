@@ -1,4 +1,4 @@
-import type { TableWorkerRequestMessage, TableRow, TableWorkerRequestMessageActionType, DerefRow, DoneHandler, StarterPackage } from '@typings';
+import type { TableWorkerRequestMessage, TableRow, TableWorkerRequestMessageActionType, DerefRow, DoneHandler, StarterPackage } from '@type';
 
 self.onmessage = function requestHandler(e: MessageEvent) {
 	const eventData = e.data as TableWorkerRequestMessage;

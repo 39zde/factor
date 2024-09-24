@@ -2,7 +2,7 @@ import React from 'react';
 // non-lib imports
 import { HelpTextDE, HelpTextEN } from './HelpTexts';
 import { useAppContext } from '@app';
-import type { HelpTexts } from '@typings';
+import type { HelpTexts } from '@type';
 import './Help.css';
 
 export function Help(): React.JSX.Element {
