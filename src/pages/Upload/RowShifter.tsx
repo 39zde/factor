@@ -60,7 +60,7 @@ export function RowShifter({
 				body: 'offset cannot be zero and must be an integer below the number of columns',
 			});
 		}
-		updateHook.setUpdate(true)
+		updateHook.setUpdate(true);
 		console.log({
 			col: colInput,
 			value: valInput,

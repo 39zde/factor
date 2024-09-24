@@ -32,7 +32,7 @@ export function Versions(): React.JSX.Element {
 					setFree(((storageResult.quota ?? 0) / (Math.pow(1024, 2) * 1000)).toFixed(1));
 				}
 
-				if(window.__USE_TAURI__){
+				if (window.__USE_TAURI__) {
 					const tVersion = window.__TAURI__.app.getTauriVersion();
 					const tVersionResult = await tVersion;
 					if (tVersionResult !== '') {

@@ -6,10 +6,10 @@ const devHtmlTargetPath = './index.html';
 
 async function main() {
 	try {
-		await copyFile(devHtmlPath, devHtmlTargetPath)
+		await copyFile(devHtmlPath, devHtmlTargetPath);
 	} catch (e) {
 		console.error(e);
 	}
 }
 
-main()
+main();

@@ -689,7 +689,7 @@ function restoreBackup(dbVersion: number, data: ReadableStream) {
 					let oStoreNameSearch = rows[0].match(/(?<=^\")[\w]+(?=\")/gm);
 					if (oStoreNameSearch !== null) {
 						console.log(oStoreNameSearch);
-						console.log(rows[0])
+						console.log(rows[0]);
 						oStore = oStoreNameSearch[0];
 						rows[0] = rows[0].replace(/^\"[\w]+\"[\s]{0,}\:\[[\s]{0,}/gm, '');
 					}
@@ -715,14 +715,14 @@ function restoreBackup(dbVersion: number, data: ReadableStream) {
 					let parsedRow = JSON.parse(currentRow.trim(), (_key, value) => {
 						if (Array.isArray(value)) {
 							// when making changes to this keep the fillReferences function of the table worker in mind
-							if(value.length !== 0){
-								if(typeof value[0] === "number"){
+							if (value.length !== 0) {
+								if (typeof value[0] === 'number') {
 									return createArrayBuffer(value);
-								}else{
-									return value
+								} else {
+									return value;
 								}
-							}else{
-								return undefined
+							} else {
+								return undefined;
 							}
 						}
 						return value;

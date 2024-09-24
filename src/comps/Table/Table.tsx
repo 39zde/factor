@@ -731,5 +731,3 @@ export function Table({ dataBaseName, tableName, colsHook, entriesHook, updateHo
 		</>
 	);
 }
-
-

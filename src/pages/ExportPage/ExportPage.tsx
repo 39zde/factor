@@ -60,7 +60,7 @@ export function ExportPage(): React.JSX.Element {
 			case 'create':
 				const channel = new BroadcastChannel('file-callbacks');
 				const fileName = eventData.data as string;
-				if(window.__USE_TAURI__){
+				if (window.__USE_TAURI__) {
 					create(fileName, { baseDir: BaseDirectory.Download }).then((handle) => {
 						setFileHandle(handle);
 						if (eventData.scope !== undefined) {
@@ -72,7 +72,7 @@ export function ExportPage(): React.JSX.Element {
 
 				break;
 			case 'data':
-				if(window.__USE_TAURI__){
+				if (window.__USE_TAURI__) {
 					if (fileHandle !== undefined) {
 						fileHandle.write(eventData.data as Uint8Array);
 					} else {
@@ -82,7 +82,7 @@ export function ExportPage(): React.JSX.Element {
 				}
 				break;
 			case 'close':
-				if(window.__USE_TAURI__){
+				if (window.__USE_TAURI__) {
 					if (fileHandle !== undefined) {
 						// let fileName = eventData.data as string;
 						fileHandle.close().then(() => {

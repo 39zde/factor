@@ -23,15 +23,10 @@ export type RankedDeletion = {
 	columnIndex: number;
 };
 export type UpdateMessage = {
-	type: 'import-progress'
-		| 'align-progress'
-		| 'sort-progress'
-		| 'delete-col-progress'
-		| 'delete-rank-progress'
-		| 'rank-progress',
+	type: 'import-progress' | 'align-progress' | 'sort-progress' | 'delete-col-progress' | 'delete-rank-progress' | 'rank-progress';
 	data: string;
-	addons?: (object|string| number)[]
-}
+	addons?: (object | string | number)[];
+};
 
 export type ImportWorkerMessageResponse = {
 	type:
@@ -51,12 +46,12 @@ export type ImportWorkerMessageResponse = {
 		| 'restore-done'
 		| 'error';
 	data: string | ImportDoneData | RankDoneData | DeleteRankProgress | number;
-	addons?: (object|string| number)[];
+	addons?: (object | string | number)[];
 };
-export type DeleteRankProgress ={
+export type DeleteRankProgress = {
 	index: number;
 	progress: string;
-}
+};
 
 /**
  * [entries, columnNames[]]
