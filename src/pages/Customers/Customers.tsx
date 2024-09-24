@@ -18,8 +18,9 @@ export function Customers(): React.JSX.Element {
 	};
 
 	const tableSwitchHandler = (tableName: CustomerDBObjectStores) => {
-		setUpdate(true);
 		setTableName(tableName);
+		setUpdate(true);
+		// update will be set to false by the table itself
 	};
 
 	return (
@@ -36,7 +37,7 @@ export function Customers(): React.JSX.Element {
 						))}
 					</menu>
 				</div>
-				<Comps.Table dataBaseName="customer_db" tableName={tableName} uniqueKey="row" updateHook={updateHook} update={update} />
+				<Comps.Table dataBaseName="customer_db" tableName={tableName} uniqueKey="row" updateHook={updateHook} />
 			</div>
 		</>
 	);
