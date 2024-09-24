@@ -76,7 +76,6 @@ export function Upload(): React.JSX.Element {
 	const fileHandler = function handleFiles() {
 		removeFileHandler();
 		const files = fileSelector.current?.files;
-		console.log(files);
 		if (files) {
 			if (files.length === 1) {
 				try {
@@ -189,7 +188,18 @@ export function Upload(): React.JSX.Element {
 		}
 	};
 
-	const restoreBackupHandler = () => {};
+	const restoreBackupHandler = () => {
+		if (fileUploadHandle) {
+			const transfer = {
+				type: 'restore',
+				dataBaseName: '',
+				dbVersion: database.dbVersion,
+				data: 'json',
+			};
+			const transferStream = fileUploadHandle.stream();
+			worker.ImportWorker.postMessage([transfer, transferStream], { transfer: [transferStream] });
+		}
+	};
 
 	const actionHandler = (): void => {
 		if (fileUploadHandle) {
@@ -297,6 +307,27 @@ export function Upload(): React.JSX.Element {
 				setFileName('');
 				setShowFile(false);
 				break;
+			case 'restore-progress':
+				break;
+			case 'restore-done':
+				switch (eventData.data) {
+					case 'customer_db':
+						dispatch({
+							type: 'set',
+							change: {
+								database: {
+									// @ts-expect-error we don't need to list all databases since it is only a change
+									databases: {
+										customer_db: ['customers', 'persons', 'emails', 'phones', 'addresses', 'banks', 'company'],
+									},
+								},
+							},
+						});
+						break;
+					default:
+						console.error('import db default');
+				}
+				break;
 			case 'error':
 				console.error(eventData.data as string);
 			default:
@@ -326,54 +357,63 @@ export function Upload(): React.JSX.Element {
 									onInput={fileHandler}
 									multiple={false}
 								/>
-								<div
-									className="fileDisplay"
-									style={{
-										display: showFile ? 'flex' : 'none',
-									}}>
-									<button
-										onClick={removeFileHandler}
-										className="removeFile"
-										onMouseEnter={() => setIsRed(true)}
-										onMouseLeave={() => setIsRed(false)}>
-										<XIcon
-											color={isRed ? 'var(--color-primary)' : 'light-dark(var(--color-dark-2),var(--color-light-2))'}
-											size={solids.icon.size.regular}
-											strokeWidth={solids.icon.strokeWidth.regular}
-										/>
-									</button>
-									<FileIcon
-										color="light-dark(var(--color-dark-1),var(--color-light-1))"
-										size={solids.icon.size.regular}
-										strokeWidth={solids.icon.strokeWidth.regular}
-									/>
-									{fileName}
-								</div>
-								<button
-									style={{
-										display: showFile ? (showTable ? 'none' : 'flex') : 'none',
-									}}
-									onClick={actionHandler}>
-									<ImportIcon
-										color="light-dark(var(--color-dark-1),var(--color-light-1))"
-										size={solids.icon.size.regular}
-										strokeWidth={solids.icon.strokeWidth.regular}
-									/>
-									{importButtonText}
-								</button>
-								{showFile ? (showTable ? '' : general.language === 'deutsch' ? 'oder' : 'or') : ''}
-								<button
-									style={{
-										display: showFile ? (showTable ? 'none' : 'flex') : 'none',
-									}}
-									onClick={restoreBackupHandler}>
-									<ReplaceIcon
-										color="light-dark(var(--color-dark-1),var(--color-light-1))"
-										size={solids.icon.size.regular}
-										strokeWidth={solids.icon.strokeWidth.regular}
-									/>
-									{general.language === 'deutsch' ? 'Backup Wiederherstellen' : 'Restore Backup'}
-								</button>
+								{showFile ? (
+									<>
+										<div className="fileDisplay">
+											<button
+												onClick={removeFileHandler}
+												className="removeFile"
+												onMouseEnter={() => setIsRed(true)}
+												onMouseLeave={() => setIsRed(false)}>
+												<XIcon
+													color={isRed ? 'var(--color-primary)' : 'light-dark(var(--color-dark-2),var(--color-light-2))'}
+													size={solids.icon.size.regular}
+													strokeWidth={solids.icon.strokeWidth.regular}
+												/>
+											</button>
+											<FileIcon
+												color="light-dark(var(--color-dark-1),var(--color-light-1))"
+												size={solids.icon.size.regular}
+												strokeWidth={solids.icon.strokeWidth.regular}
+											/>
+											{fileName}
+										</div>
+
+										{fileUploadHandle && fileUploadHandle.type === 'application/json' ? (
+											<>
+												<button
+													style={{
+														display: showFile ? (showTable ? 'none' : 'flex') : 'none',
+													}}
+													onClick={restoreBackupHandler}>
+													<ReplaceIcon
+														color="light-dark(var(--color-dark-1),var(--color-light-1))"
+														size={solids.icon.size.regular}
+														strokeWidth={solids.icon.strokeWidth.regular}
+													/>
+													{general.language === 'deutsch' ? 'Backup Wiederherstellen' : 'Restore Backup'}
+												</button>
+											</>
+										) : (
+											<>
+												<button
+													style={{
+														display: showTable ? 'none' : 'flex',
+													}}
+													onClick={actionHandler}>
+													<ImportIcon
+														color="light-dark(var(--color-dark-1),var(--color-light-1))"
+														size={solids.icon.size.regular}
+														strokeWidth={solids.icon.strokeWidth.regular}
+													/>
+													{importButtonText}
+												</button>
+											</>
+										)}
+									</>
+								) : (
+									<></>
+								)}
 							</div>
 						</li>
 						{showTable && cols.length !== 0 ? (
@@ -457,11 +497,15 @@ export function Upload(): React.JSX.Element {
 					</div>
 				</div>
 				<dialog ref={rankedDeletionRef}>
-					<button onMouseEnter={() => setIsRedModal(true)} onMouseLeave={() => setIsRedModal(false)} className='closeRankedDel' onClick={()=>{
-						if(rankedDeletionRef.current !== null){
-							rankedDeletionRef.current.close()
-						}
-					}}>
+					<button
+						onMouseEnter={() => setIsRedModal(true)}
+						onMouseLeave={() => setIsRedModal(false)}
+						className="closeRankedDel"
+						onClick={() => {
+							if (rankedDeletionRef.current !== null) {
+								rankedDeletionRef.current.close();
+							}
+						}}>
 						<XIcon
 							onMouseEnter={() => setIsRed(true)}
 							onMouseLeave={() => setIsRed(false)}

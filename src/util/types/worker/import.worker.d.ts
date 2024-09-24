@@ -12,7 +12,7 @@ export type AddDataArgs = {
 export type DateInput = 'YYYYMMDD' | 'YYYY-MM-DD hh:mm:ss';
 
 export type ImportWorkerMessage = {
-	type: 'import' | 'align' | 'rankColsByCondition' | 'delete-col' | 'sort' | 'delete-rank';
+	type: 'import' | 'align' | 'rankColsByCondition' | 'delete-col' | 'sort' | 'delete-rank' | 'restore';
 	dbVersion: number;
 	dataBaseName: 'factor_db';
 	targetDBName?: DataBaseNames;
@@ -47,6 +47,8 @@ export type ImportWorkerMessageResponse = {
 		| 'delete-rank-done'
 		| 'rank-progress'
 		| 'rank-done'
+		| 'restore-progress'
+		| 'restore-done'
 		| 'error';
 	data: string | ImportDoneData | RankDoneData | DeleteRankProgress | number;
 	addons?: (object|string| number)[];
