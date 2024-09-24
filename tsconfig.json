@@ -24,7 +24,8 @@
       "@util":["./src/util/util.ts"],
       "@comps":["./src/comps/Comps.ts"],
 		"@app":["./src/App.tsx"],
-		"@worker":["./src/util/worker"]
+		"@worker":["./src/util/worker"],
+		"@base":["./src/base.css"]
 	  }
 	},
 	"include": ["src"],

@@ -60,6 +60,7 @@ export default defineConfig({
 			'@comps': resolve('./src/comps/Comps.ts'),
 			'@app': resolve('./src/App.tsx'),
 			'@worker': resolve('./src/util/worker'),
+			'@base': resolve('./src/base.css'),
 		},
 	},
 	define: {

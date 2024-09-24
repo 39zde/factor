@@ -33,6 +33,7 @@ export default defineConfig({
 			'@comps': resolve('./src/comps/Comps.ts'),
 			'@app': resolve('./src/App.tsx'),
 			'@worker': resolve('./src/util/worker'),
+			'@base': resolve('./src/base.css'),
 		},
 	},
 	// Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
