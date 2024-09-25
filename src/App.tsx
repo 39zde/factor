@@ -12,13 +12,18 @@ disableMenu();
 const ImportWorker = (() => {
 	const work = new Worker(new URL('@worker/import.worker.ts', import.meta.url), {
 		type: 'module',
+		name: "import.worker.ts"
 	});
+	work.onerror = (e) =>{
+		console.error("ImportWorkerError: ",e)
+	}
 	return work;
 })();
 
 const ExportWorker = (() => {
 	const work = new Worker(new URL('@worker/export.worker.ts', import.meta.url), {
 		type: 'module',
+		name: "export.worker.ts"
 	});
 	return work;
 })();
@@ -26,6 +31,7 @@ const ExportWorker = (() => {
 const TableWorker = (() => {
 	const work = new Worker(new URL('@worker/table.worker.ts', import.meta.url), {
 		type: 'module',
+		name: "table.worker.ts"
 	});
 	return work;
 })();
@@ -119,6 +125,28 @@ function App(): JSX.Element {
 			});
 		if (window.__USE_TAURI__) {
 			requestPermission();
+		}else{
+			// preset local storage for demo
+			localStorage.setItem("addresses-allColumns","row,type,street,zip,city,country,notes,hash");
+			localStorage.setItem("addresses-columnWidths","40,156,200,88.5,173.5,58,191,391")
+			localStorage.setItem("addresses-columns","row,city,country,street,zip,notes,type");
+			localStorage.setItem("banks-allColumns","row,name,bic,iban,notes,code");
+			localStorage.setItem("banks-columnWidths","40,164.5,124,295.5,373,326");
+			localStorage.setItem("banks-columns","row,name,bankCode,bic,iban,notes");
+			localStorage.setItem("company-allColumns","row,alias,name,notes,taxID,taxNumber,vatID")
+			localStorage.setItem("company-columns","row,name,notes,taxID,taxNumber,vatID");
+			localStorage.setItem("customers-allColumns","row,id,addresses,persons,banks,company,emails,phones,description,firstContact,latestContact,created,website,notes")
+			localStorage.setItem("customers-columnWidths","40,96.5,179,184,282,281,368,150,149,202.5,160,160,290,117,252")
+			localStorage.setItem("customers-columns","row,id,addresses,persons,banks,company,emails,phones,description,website,notes")
+			localStorage.setItem("emails-allColumns","row,notes,type,email");
+			localStorage.setItem("emails-columnWidths","40,404.5,160,285.5");
+			localStorage.setItem("emails-columns","row,type,email");
+			localStorage.setItem("persons-allColumns","row,firstName,lastName,emails,phones,title,alias,notes");
+			localStorage.setItem("persons-columnWidths","40,59,95.5,147,246,198,104,426")
+			localStorage.setItem("persons-columns","row,firstName,lastName,emails,phones,title,notes");
+			localStorage.setItem("phones-allColumns", "row,phone,type,notes");
+			localStorage.setItem("phones-columnWidths","40,160,111.5,199.5");
+			localStorage.setItem("phones-columns","row,notes,type,phone")
 		}
 	}, []);
 
