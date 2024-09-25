@@ -18,6 +18,7 @@ interface PreRenderedChunk {
 export default defineConfig({
 	plugins: [react(), mkcert()],
 	appType: 'spa',
+	base: '/factor/',
 	build: {
 		reportCompressedSize: true,
 		minify: 'esbuild',
