@@ -661,102 +661,129 @@ function restoreBackup(dbVersion: number, data: ReadableStream) {
 	const source = data.pipeThrough(readable);
 	const reader = source.getReader();
 	let dataBaseName: string | undefined = undefined;
-	let oStore: string | undefined = undefined;
+	let oStoreName: string | undefined = undefined;
 	let tail: string | undefined = undefined;
 	let prevTail: string | undefined = undefined;
 	let fuse = true;
 	const promises: Promise<number | null>[] = [];
 	reader.read().then(function readBackup(value) {
-
 		if (!value.done) {
 			// if there is data we can process
-			const oStoreData = value.value.split(rx.importExportRx.oStoreSplitter);
-
-			if (rx.importExportRx.tailTester.test(oStoreData[oStoreData.length -1])) {
+			let oStoreData = value.value.split(rx.importExportRx.oStoreSplitter);
+			if (oStoreData.length > 1 && !rx.importExportRx.tailTester.test(oStoreData[oStoreData.length - 1])) {
+				// if there are more than 1 oStores in this run and the last oStore does not end with `]`
+				// store the last oStore in the tail an remove it from the oStores
+				// in the next run we will add it again
 				tail = oStoreData.pop();
+			} else {
+				tail === undefined;
 			}
 
-			for (let [index, store] of oStoreData.entries()) {
-
+			for (const [index, store] of oStoreData.entries()) {
+				// iterate the oStores
+				let currentStore = store;
 				if (index === 0 && prevTail !== undefined) {
-					store = prevTail + store;
+					// if it is the first oStore and we have something stored from the previous run
+					// add it in front of the current oStore
+					currentStore = prevTail + currentStore;
+					// discard once used
 					prevTail = undefined;
 				}
-				const rows = store.split(rx.importExportRx.rowSplitter);
 				if (fuse) {
+					// runs once at the beginning of the stream
 					// get the name of the database
-					const dataBaseNameSearch = rx.importExportRx.dbNameSelector.exec(store);
-					if (dataBaseNameSearch !== null) {
-						if (typeof dataBaseNameSearch[0] !== 'string') {
-							dataBaseName = dataBaseNameSearch[0];
+					let dbNameSearch = rx.importExportRx.dbNameSelector.exec(currentStore);
+					if (dbNameSearch !== null) {
+						if (typeof dbNameSearch[0] === 'string') {
+							dataBaseName = dbNameSearch[0];
+							currentStore = currentStore.replace(rx.importExportRx.dbNameRemover, '');
 						} else {
-							console.error('failed to match dbName');
+							console.error('failed to match dataBaseName');
 						}
 					} else {
-						console.error('failed to match dbName');
+						console.error('failed to match dataBaseName');
 					}
-					// get the name of the first oStore
-					const oStoreSearch = rx.importExportRx.firstOStoreSelector.exec(store);
-					if (oStoreSearch !== null) {
-						if (typeof oStoreSearch[0] !== 'string') {
-							oStore = oStoreSearch[0];
-							postMessage({
-								type: 'restore-progress',
-								data: `restoring ${oStore}...`,
-							});
-						} else {
-							console.error('failed to match first oStore');
-						}
-					} else {
-						console.error('failed to match first oStore');
-					}
-					// trim to the fist Row
-					rows[0] = rows[0].substring(rows[0].lastIndexOf('{'), rows[0].length);
+					// burn the fuse
 					fuse = false;
-				} else {
-					const oStoreNameSearch = rows[0].match(/(?<=^\")[\w]+(?=\")/gm);
-					if (oStoreNameSearch !== null) {
-						oStore = oStoreNameSearch[0];
+				}
+				if (currentStore.trimStart().startsWith(`"`)) {
+					// get oStoreName
+					if (/^[\s]{0,}\"\w+\"/gm.test(currentStore)) {
+						let testedOStore = currentStore.slice(currentStore.indexOf(`"`) + 1, currentStore.indexOf(':') - 1);
+						testedOStore.replaceAll(`"`, '');
+						oStoreName = testedOStore;
+						currentStore = currentStore.replace(rx.importExportRx.oStoreNameRemover, '');
+						// inform user about it
 						postMessage({
 							type: 'restore-progress',
-							data: `restoring ${oStore}...`,
+							data: `restoring ${testedOStore}...`,
 						});
-						rows[0] = rows[0].replace(/^\"[\w]+\"[\s]{0,}\:\[[\s]{0,}/gm, '');
 					}
 				}
-				for (let row of rows) {
-					if (row.endsWith(']')) {
-						row = row.slice(0, row.lastIndexOf(']'));
+				// split oStore data into rows
+				const rows = currentStore.split(rx.importExportRx.rowSplitter);
+				for (const [rowIndex, row] of rows.entries()) {
+					let currentRow = row;
+					if (currentRow.endsWith('}]')) {
+						// if its the end of an oStore remove the square brackets
+						currentRow = currentRow.slice(0, currentRow.length - 1);
 					}
-					try {
-						const parsedRow = JSON.parse(row, (_key, value) => {
-							if (Array.isArray(value)) {
-								// when making changes to this keep the fillReferences function of the table worker in mind
-								if (value.length !== 0) {
-									if (typeof value[0] === 'number') {
-										return createArrayBuffer(value);
-									} else {
-										return value;
-									}
-								} else {
-									return undefined;
-								}
+					if (currentRow.endsWith('}]}}')) {
+						// if it is the end of the backup remove `]}}`
+						currentRow = currentRow.slice(0, currentRow.length - 3);
+					}
+
+					if (!currentRow.startsWith('{') || !currentRow.endsWith('}')) {
+						// if the row is cut somewhere
+						if (rowIndex === rows.length - 1) {
+							// and it is the last item of rows
+							// add the data to the tail
+							if (tail === undefined) {
+								tail = currentRow;
+							} else {
+								tail += currentRow;
 							}
-							return value;
-						});
-						if (parsedRow && dataBaseName && oStore) {
-							promises.push(putRowPromise(dataBaseName, dbVersion, oStore, parsedRow));
 						}
-					} catch {
-						console.error('failed to parse json');
+					} else {
+						// if the row is cut nowhere
+						try {
+							// parse the row as json
+							const parsedRow = JSON.parse(currentRow, (_key, value) => {
+								if (Array.isArray(value)) {
+									// when making changes to this keep the fillReferences function of the table worker in mind
+									if (value.length !== 0) {
+										if (typeof value[0] === 'number') {
+											return createArrayBuffer(value);
+										} else {
+											return value;
+										}
+									} else {
+										return undefined;
+									}
+								}
+								return value;
+							});
+							if (parsedRow && dataBaseName && oStoreName) {
+								// if successfully parsed, put the row into place
+								// add the promise to our task list
+								promises.push(putRowPromise(dataBaseName, dbVersion, oStoreName, parsedRow));
+							}
+						} catch (e) {
+							console.error('failed to parse json',e);
+						}
 					}
 				}
 			}
+			// tail now becomes the previous tail
 			prevTail = tail;
 			tail = undefined;
+			// proceed to the next chuck
 			reader.read().then(readBackup);
 		} else {
+			// if there is no more data
+			// resolve all promises
 			Promise.all(promises).then(() => {
+				// then inform the user we are done here
 				console.log('restore done');
 				console.log('all promises resolved');
 				postMessage({
