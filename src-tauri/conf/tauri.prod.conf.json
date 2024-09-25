@@ -1,6 +1,6 @@
 {
   "productName": "Factor",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "identifier": "factor",
   "build": {
     "frontendDist": "../bundle-prod",

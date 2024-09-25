@@ -105,11 +105,6 @@ Ratings:
    Hold the data of created Documents across different oStores.<br>
    _Rating: High_
 
- ### Session Storage
- ---
-  Holds uploaded files as plain text before importing to factor_db.<br>
-  _Rating: Medium_
-
  ### Local Storage
  ---
 

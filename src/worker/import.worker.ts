@@ -332,6 +332,7 @@ function importData(dataBaseName: string, dbVersion: number, oStore: string, fil
 	};
 
 	request.onerror = () => {
+		console.log(oStore);
 		return postMessage({
 			type: 'error',
 			data: 'failed to open database',
@@ -668,7 +669,7 @@ function restoreBackup(dbVersion: number, data: ReadableStream) {
 	reader.read().then(function readBackup(value) {
 		if (!value.done) {
 			// if there is data we can process
-			let oStoreData = value.value.split(rx.importExportRx.oStoreSplitter);
+			const oStoreData = value.value.split(rx.importExportRx.oStoreSplitter);
 			if (oStoreData.length > 1 && !rx.importExportRx.tailTester.test(oStoreData[oStoreData.length - 1])) {
 				// if there are more than 1 oStores in this run and the last oStore does not end with `]`
 				// store the last oStore in the tail an remove it from the oStores
@@ -691,7 +692,7 @@ function restoreBackup(dbVersion: number, data: ReadableStream) {
 				if (fuse) {
 					// runs once at the beginning of the stream
 					// get the name of the database
-					let dbNameSearch = rx.importExportRx.dbNameSelector.exec(currentStore);
+					const dbNameSearch = rx.importExportRx.dbNameSelector.exec(currentStore);
 					if (dbNameSearch !== null) {
 						if (typeof dbNameSearch[0] === 'string') {
 							dataBaseName = dbNameSearch[0];
@@ -708,7 +709,7 @@ function restoreBackup(dbVersion: number, data: ReadableStream) {
 				if (currentStore.trimStart().startsWith(`"`)) {
 					// get oStoreName
 					if (/^[\s]{0,}\"\w+\"/gm.test(currentStore)) {
-						let testedOStore = currentStore.slice(currentStore.indexOf(`"`) + 1, currentStore.indexOf(':') - 1);
+						const testedOStore = currentStore.slice(currentStore.indexOf(`"`) + 1, currentStore.indexOf(':') - 1);
 						testedOStore.replaceAll(`"`, '');
 						oStoreName = testedOStore;
 						currentStore = currentStore.replace(rx.importExportRx.oStoreNameRemover, '');
@@ -767,7 +768,7 @@ function restoreBackup(dbVersion: number, data: ReadableStream) {
 								// add the promise to our task list
 								promises.push(putRowPromise(dataBaseName, dbVersion, oStoreName, parsedRow));
 							}
-						} catch (e) {
+						} catch {
 							console.error('failed to parse json', currentRow);
 						}
 					}

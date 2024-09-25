@@ -14,7 +14,7 @@
         "build": "node ./scripts/preTauriBuild.mjs && tauri build",
         "bundle:dev": "vite build -c ./vite.dev.config.ts",
         "bundle:demo": "node ./scripts/preDemoBundle.mjs && vite build -c ./vite.demo.config.ts && node ./scripts/includeFiles.mjs ",
-        "bundle:prod": "tsc && vite build",
+        "bundle:prod": "tsc && vite build -c ./vite.prod.config.ts",
         "dev:vite": "vite -c ./vite.dev.config.ts",
 		  "dev:demo": "node ./scripts/preDemoBundle.mjs && vite -c ./vite.demo.config.ts",
         "dev:tauri": "node ./scripts/preTauriDev.mjs && tauri dev",

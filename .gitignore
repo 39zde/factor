@@ -1,6 +1,6 @@
 node_modules/
 dist/
-bundle/
+bundle-prod/
 bundle-demo/
 bundle-dev/
 .DS_Store
@@ -11,4 +11,3 @@ src-tauri/target/
 src-tauri/gen/schemas
 *.csv
 !resources/data/*.sample.csv
- 

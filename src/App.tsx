@@ -10,7 +10,7 @@ import './App.css';
 disableMenu();
 
 const ImportWorker = (() => {
-	const work = new Worker(new URL('@worker/import.worker.ts', import.meta.url), {
+	const work = new Worker(new URL('./worker/import.worker.ts', import.meta.url), {
 		type: 'module',
 		name: 'import.worker.ts',
 	});
@@ -18,7 +18,7 @@ const ImportWorker = (() => {
 })();
 
 const ExportWorker = (() => {
-	const work = new Worker(new URL('@worker/export.worker.ts', import.meta.url), {
+	const work = new Worker(new URL('./worker/export.worker.ts', import.meta.url), {
 		type: 'module',
 		name: 'export.worker.ts',
 	});
@@ -26,7 +26,7 @@ const ExportWorker = (() => {
 })();
 
 const TableWorker = (() => {
-	const work = new Worker(new URL('@worker/table.worker.ts', import.meta.url), {
+	const work = new Worker(new URL('./worker/table.worker.ts', import.meta.url), {
 		type: 'module',
 		name: 'table.worker.ts',
 	});
