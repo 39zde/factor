@@ -37,6 +37,7 @@ export function Upload(): React.JSX.Element {
 	const rankedDeletionRef = useRef<HTMLDialogElement>(null);
 	const [rankedDeletionColumns, setRankedDeletionColumns] = useState<RankDoneData | undefined>();
 	const [rankedDeletionProgress, setRankedDeletionProgress] = useState<(string | null)[]>([]);
+	const [backupProgress, setBackupProgress] = useState<string>(general.language === 'deutsch' ? 'Backup Wiederherstellen' : 'Restore Backup');
 	const [map, setMap] = useState<CustomerSortingMap | ArticleSortingMap | DocumentSortingMap>({
 		row: 'row',
 		customers: {
@@ -156,7 +157,6 @@ export function Upload(): React.JSX.Element {
 
 	const createHandler = () => {
 		if (tableImportMode === 'customer_db' && map !== undefined) {
-			console.log('test');
 			//@ts-expect-error this needs work
 			if (map['customers']['id'] === undefined) {
 				dispatch({
@@ -283,7 +283,9 @@ export function Upload(): React.JSX.Element {
 				}
 				break;
 			case 'sort-progress':
-				setCreateButtonText(eventData.data as string);
+				if(createButtonText !== "processing..."){
+					setCreateButtonText(eventData.data as string);
+				}
 				break;
 			case 'sort-done':
 				switch (eventData.data) {
@@ -308,6 +310,8 @@ export function Upload(): React.JSX.Element {
 				setShowFile(false);
 				break;
 			case 'restore-progress':
+
+				setBackupProgress(eventData.data as string);
 				break;
 			case 'restore-done':
 				switch (eventData.data) {
@@ -327,6 +331,7 @@ export function Upload(): React.JSX.Element {
 					default:
 						console.error('import db default');
 				}
+				setBackupProgress(general.language === 'deutsch' ? 'Backup Wiederherstellen' : 'Restore Backup');
 				break;
 			case 'error':
 				console.error(eventData.data as string);
@@ -391,7 +396,7 @@ export function Upload(): React.JSX.Element {
 														size={solids.icon.size.regular}
 														strokeWidth={solids.icon.strokeWidth.regular}
 													/>
-													{general.language === 'deutsch' ? 'Backup Wiederherstellen' : 'Restore Backup'}
+													{backupProgress}
 												</button>
 											</>
 										) : (
