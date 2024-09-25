@@ -216,14 +216,14 @@ function importData(dataBaseName: string, dbVersion: number, oStore: string, fil
 	const request = indexedDB.open(dataBaseName, dbVersion);
 	const readable = data.pipeThrough(new TextDecoderStream('utf-8'));
 	const reader = readable.getReader();
-	const update = updateManager('import', 3);
+	const update = updateManager('import', 4);
 	let fuse = true;
 	let lineEnd = '\n';
 	const columns: string[] = [];
 	let pos = 0;
 	let tail: string | undefined = undefined;
 	let nextTail: string | undefined = undefined;
-
+	update()
 	function genDBRow(columns: string[], values: string[], rowNumber: number) {
 		const out = {
 			row: rowNumber,
@@ -296,7 +296,6 @@ function importData(dataBaseName: string, dbVersion: number, oStore: string, fil
 							pos += 1;
 						}
 						tail = nextTail;
-						console.log('pos:', pos);
 						nextTail = undefined;
 						Promise.all(promises).then(() => {
 							console.log('promises released');
@@ -769,7 +768,7 @@ function restoreBackup(dbVersion: number, data: ReadableStream) {
 								promises.push(putRowPromise(dataBaseName, dbVersion, oStoreName, parsedRow));
 							}
 						} catch (e) {
-							console.error('failed to parse json',e);
+							console.error('failed to parse json',currentRow);
 						}
 					}
 				}
@@ -1937,15 +1936,26 @@ function sortData(
 					if (prop === 'add') {
 						if (typeof value !== 'number') {
 							target['promises'].push(value);
-							console.log(target['promises'].length / target['total']);
+							// console.log(target['promises'].length / target['total']);
 							if (target['promises'].length === target['total']) {
+								postMessage({
+									type: "sort-progress",
+									data: "processing..."
+								})
+
 								Promise.all(target['promises']).then((results) => {
-									console.log('all promises resolved');
-									self.postMessage({
+									if(results.includes(null)){
+										console.error("not all items imported")
+									}
+									postMessage({
 										type: 'sort-done',
 										data: targetDBName,
 									});
 								});
+								postMessage({
+									type: "sort-progress",
+									data: "processing..."
+								})
 							}
 						}
 					}
