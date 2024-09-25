@@ -100,32 +100,32 @@ export function SideBar({ routesHook }: SideBarProps): React.JSX.Element {
 								routeName="ExportPage"
 								textOverride={general.language === 'deutsch' ? 'Exportieren' : 'Export'}
 							/>
+						<RouterButton
+							handler={routeHandler}
+							active={!routesHook.showHelp && !routesHook.showSettings}
+							icon={
+								<File
+									size={solids.icon.size.regular}
+									strokeWidth={
+										routesHook.route === 'Templates' && !routesHook.showHelp && !routesHook.showSettings
+											? solids.icon.strokeWidth.large
+											: solids.icon.strokeWidth.regular
+									}
+									color={
+										routesHook.route === 'Templates' && !routesHook.showHelp && !routesHook.showSettings
+											? 'var(--color-primary)'
+											: 'light-dark(var(--color-dark-1),var(--color-light-1))'
+									}
+								/>
+							}
+							route={routesHook.route}
+							routeName="Templates"
+							textOverride={general.language === 'deutsch' ? 'Vorlagen' : 'Templates'}
+						/>
 						</>
 					) : (
 						<></>
 					)}
-					<RouterButton
-						handler={routeHandler}
-						active={!routesHook.showHelp && !routesHook.showSettings}
-						icon={
-							<File
-								size={solids.icon.size.regular}
-								strokeWidth={
-									routesHook.route === 'Templates' && !routesHook.showHelp && !routesHook.showSettings
-										? solids.icon.strokeWidth.large
-										: solids.icon.strokeWidth.regular
-								}
-								color={
-									routesHook.route === 'Templates' && !routesHook.showHelp && !routesHook.showSettings
-										? 'var(--color-primary)'
-										: 'light-dark(var(--color-dark-1),var(--color-light-1))'
-								}
-							/>
-						}
-						route={routesHook.route}
-						routeName="Templates"
-						textOverride={general.language === 'deutsch' ? 'Vorlagen' : 'Templates'}
-					/>
 					<div className="divider" />
 					{Object.entries(database.databases).map(([key, val]) => {
 						if (val !== null) {
