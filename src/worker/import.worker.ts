@@ -30,7 +30,7 @@ import type {
 	RankedDeletion,
 	UpdateMessage,
 } from '@type';
-import { getAddressHash } from '@util';
+import { getAddressHash, rx } from '@util';
 
 self.onmessage = (e: MessageEvent): void => {
 	const eventData = Array.isArray(e.data) ? (e.data[0] as ImportWorkerMessage) : (e.data as ImportWorkerMessage);
@@ -665,70 +665,90 @@ function restoreBackup(dbVersion: number, data: ReadableStream) {
 	let tail: string | undefined = undefined;
 	let prevTail: string | undefined = undefined;
 	let fuse = true;
-	const dbRegex = /(?<=(^{[\s]?\"))[\w]+_db(?=(\"[\s]?\:[\s]?\{))/gm;
-	const oStoreRegex = /(?<=(^{[\s]?\"[\w]+?_db\"\s?\:\s?\{\s?\"))\w+(?=(\"\s?\:\[))/gm;
 	const promises: Promise<number | null>[] = [];
 	reader.read().then(function readBackup(value) {
+
 		if (!value.done) {
-			const oStoreData = value.value.split(/(?<=\}[\s]{0,}?\,?[\s]{0,}?\][\s]{0,}?\s?)\,(?=[\s]{0,}?\"[\w]+\"[\s]{0,}?\:[\s]{0,}?\[)/gm);
-			for (const store of oStoreData) {
-				const rows = store.split(/(?<=\}[\s]{0,}?)\,(?=[\s]{0,}?\{)/gm);
+			// if there is data we can process
+			const oStoreData = value.value.split(rx.importExportRx.oStoreSplitter);
+
+			if (rx.importExportRx.tailTester.test(oStoreData[oStoreData.length -1])) {
+				tail = oStoreData.pop();
+			}
+
+			for (let [index, store] of oStoreData.entries()) {
+
+				if (index === 0 && prevTail !== undefined) {
+					store = prevTail + store;
+					prevTail = undefined;
+				}
+				const rows = store.split(rx.importExportRx.rowSplitter);
 				if (fuse) {
-					const dataBaseNameSearch = dbRegex.exec(store);
+					// get the name of the database
+					const dataBaseNameSearch = rx.importExportRx.dbNameSelector.exec(store);
 					if (dataBaseNameSearch !== null) {
-						dataBaseName = dataBaseNameSearch[0];
+						if (typeof dataBaseNameSearch[0] !== 'string') {
+							dataBaseName = dataBaseNameSearch[0];
+						} else {
+							console.error('failed to match dbName');
+						}
+					} else {
+						console.error('failed to match dbName');
 					}
-					const oStoreSearch = oStoreRegex.exec(store);
+					// get the name of the first oStore
+					const oStoreSearch = rx.importExportRx.firstOStoreSelector.exec(store);
 					if (oStoreSearch !== null) {
-						oStore = oStoreSearch[0];
-						console.log(oStore);
+						if (typeof oStoreSearch[0] !== 'string') {
+							oStore = oStoreSearch[0];
+							postMessage({
+								type: 'restore-progress',
+								data: `restoring ${oStore}...`,
+							});
+						} else {
+							console.error('failed to match first oStore');
+						}
+					} else {
+						console.error('failed to match first oStore');
 					}
+					// trim to the fist Row
 					rows[0] = rows[0].substring(rows[0].lastIndexOf('{'), rows[0].length);
 					fuse = false;
 				} else {
 					const oStoreNameSearch = rows[0].match(/(?<=^\")[\w]+(?=\")/gm);
 					if (oStoreNameSearch !== null) {
-						console.log(oStoreNameSearch);
-						console.log(rows[0]);
 						oStore = oStoreNameSearch[0];
+						postMessage({
+							type: 'restore-progress',
+							data: `restoring ${oStore}...`,
+						});
 						rows[0] = rows[0].replace(/^\"[\w]+\"[\s]{0,}\:\[[\s]{0,}/gm, '');
 					}
 				}
-				if (!rows[rows.length - 1].trim().endsWith(']')) {
-					tail = rows[rows.length - 1];
-					// console.log(tail)
-					rows.pop();
-				} else {
-					rows[rows.length - 1] = rows[rows.length - 1].replace(/\,?\]$/gm, '');
-				}
-				for (const [index, row] of rows.entries()) {
-					let currentRow = row;
-					if (index === 0) {
-						// console.log("first Row: ",currentRow)
-						// console.log("prevTail: ", prevTail)
-						if (prevTail !== undefined) {
-							currentRow = prevTail + currentRow;
-							// console.log("stiched: ", currentRow)
-							prevTail = undefined;
-						}
+				for (let row of rows) {
+					if (row.endsWith(']')) {
+						row = row.slice(0, row.lastIndexOf(']'));
 					}
-					const parsedRow = JSON.parse(currentRow.trim(), (_key, value) => {
-						if (Array.isArray(value)) {
-							// when making changes to this keep the fillReferences function of the table worker in mind
-							if (value.length !== 0) {
-								if (typeof value[0] === 'number') {
-									return createArrayBuffer(value);
+					try {
+						const parsedRow = JSON.parse(row, (_key, value) => {
+							if (Array.isArray(value)) {
+								// when making changes to this keep the fillReferences function of the table worker in mind
+								if (value.length !== 0) {
+									if (typeof value[0] === 'number') {
+										return createArrayBuffer(value);
+									} else {
+										return value;
+									}
 								} else {
-									return value;
+									return undefined;
 								}
-							} else {
-								return undefined;
 							}
+							return value;
+						});
+						if (parsedRow && dataBaseName && oStore) {
+							promises.push(putRowPromise(dataBaseName, dbVersion, oStore, parsedRow));
 						}
-						return value;
-					});
-					if (parsedRow && dataBaseName && oStore) {
-						promises.push(putRowPromise(dataBaseName, dbVersion, oStore, parsedRow));
+					} catch {
+						console.error('failed to parse json');
 					}
 				}
 			}
