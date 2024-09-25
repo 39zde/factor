@@ -25,7 +25,7 @@ export function SideBar({ routesHook }: SideBarProps): React.JSX.Element {
 
 	return (
 		<>
-			<aside
+			<nav
 				className="sideBar"
 				style={{
 					width: sideBarWidth,
@@ -239,7 +239,7 @@ export function SideBar({ routesHook }: SideBarProps): React.JSX.Element {
 						active={routesHook.showSettings}
 					/>
 				</div>
-			</aside>
+			</nav>
 		</>
 	);
 }
