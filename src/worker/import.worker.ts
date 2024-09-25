@@ -250,6 +250,8 @@ function importData(dataBaseName: string, dbVersion: number, oStore: string, fil
 		const transaction = db.transaction('data_upload', 'readwrite', { durability: 'strict' });
 		const oStore = transaction.objectStore('data_upload');
 		const clearRequest = oStore.clear();
+		const promises: Promise<number | null>[] = [];
+
 		clearRequest.onsuccess = () => {
 			update();
 			reader.read().then(function readDataUpload(value) {
@@ -283,7 +285,6 @@ function importData(dataBaseName: string, dbVersion: number, oStore: string, fil
 							});
 							fuse = false;
 						}
-						const promises: Promise<number | null>[] = [];
 						for (const [index, row] of rows.entries()) {
 							let dbRow;
 							if (index === 0 && tail !== undefined) {
@@ -297,23 +298,25 @@ function importData(dataBaseName: string, dbVersion: number, oStore: string, fil
 						}
 						tail = nextTail;
 						nextTail = undefined;
-						Promise.all(promises).then(() => {
-							console.log('promises released');
-							reader.read().then(readDataUpload);
-						});
+						console.log("read agaion")
+						reader.read().then(readDataUpload);
 					}
 				} else {
-					update();
-					return postMessage({
-						type: 'import-done',
-						data: [pos, columns],
+					console.log("steam end, resolve promises")
+					Promise.all(promises).then(() => {
+						update();
+						console.log('promises released');
+						postMessage({
+							type: 'import-done',
+							data: [pos, columns],
+						});
 					});
 				}
 			});
 		};
 		transaction.oncomplete = () => {
-			db.close();
-			console.log('completed');
+			// db.close();
+			// console.log('completed');
 			// return postMessage({
 			// 	type: 'imported',
 			// 	data: [pos, columns],
