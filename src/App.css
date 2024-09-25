@@ -76,3 +76,15 @@ menu.toolbar {
 		margin: 12px 0;
 	}
 }
+
+.alert{
+	position: static;
+	top: 0;
+	left: 0;
+	width: 100%;
+	text-align: center;
+	height: fit-content;
+	background: var(--color-secondary-light)!important;
+	color: var(--color-dark-1);
+	z-index:10;
+}
