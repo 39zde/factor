@@ -35,8 +35,8 @@ export default defineConfig({
 					'/*\nThis is a demo build, made to be functional as a website. Not all features will be enabled.\nThe full version of the Tauri App can be found on this github page: https://github.com/39zde/factor\n- 39zde*/',
 				name: 'Factor-Demo',
 				chunkFileNames: '[name].js',
-				assetFileNames: 'assets/[name][extname]',
-				entryFileNames: 'assets/[name].js',
+				assetFileNames: 'src/[name][extname]',
+				entryFileNames: 'src/[name].js',
 				intro: `window.__FACTOR_VERSION__= ${JSON.stringify(process.env.npm_package_version)}; window.__USE_TAURI__ = false;`,
 				generatedCode: 'es2015',
 				interop: 'auto',
@@ -48,18 +48,18 @@ export default defineConfig({
 		format: 'es',
 		rollupOptions: {
 			output: {
-				entryFileNames: 'assets/[name].js',
+				entryFileNames: 'src/[name].js',
 			},
 		},
 	},
 	resolve: {
 		extensions: ['.tsx', '.ts', '.d.ts'],
 		alias: {
-			'@type': resolve('./src/util/types/types.d.ts'),
+			'@type': resolve('./src/types/types.d.ts'),
 			'@util': resolve('./src/util/util.ts'),
 			'@comps': resolve('./src/comps/Comps.ts'),
 			'@app': resolve('./src/App.tsx'),
-			'@worker': resolve('./src/util/worker'),
+			'@worker': resolve('./src/worker'),
 			'@base': resolve('./src/base.css'),
 		},
 	},

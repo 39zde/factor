@@ -2,8 +2,8 @@ import { copyFile, mkdir } from 'fs/promises';
 
 async function main() {
 	// relative to root
-	const outDir = './bundle-demo/assets/';
-	const manifestPath = './resources/build-files/manifest.json';
+	const outDir = './bundle-demo/src/';
+	const manifestPath = './src/manifest.json';
 	const iconsPath = './src-tauri/icons/';
 	try {
 		let actions = [];

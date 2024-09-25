@@ -28,11 +28,11 @@ export default defineConfig({
 	resolve: {
 		extensions: ['.tsx', '.ts', '.d.ts'],
 		alias: {
-			'@type': resolve('./src/util/types/types.d.ts'),
+			'@type': resolve('./src/types/types.d.ts'),
 			'@util': resolve('./src/util/util.ts'),
 			'@comps': resolve('./src/comps/Comps.ts'),
 			'@app': resolve('./src/App.tsx'),
-			'@worker': resolve('./src/util/worker'),
+			'@worker': resolve('./src/worker'),
 			'@base': resolve('./src/base.css'),
 		},
 	},
