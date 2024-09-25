@@ -20,6 +20,7 @@ I have not run any benchmarks yet, but scrolling in a Table with:
  - 5 dereferencing operations per row
  - in dev mode (2x the number of hooks are beeing called)
  - on old hardware
+ - Memory usage at 3MB
 
 works without problems. WebWorkers[^4] do most of the heavy lifting. Certainly more performant, than using `useLiveQuery` from Dexie.js[^5]. That being said there is much more performance to be gained at various places. Looking at what already is accomplished, this approach looks very promising. With this in mind, if the only goal was performance, React would not be the best choice. To my understanding the purpose of React is to make the development easy and comprehensible, not to archive the best possible performance.
 

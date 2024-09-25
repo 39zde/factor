@@ -10,11 +10,14 @@ export interface TableProps {
 	};
 	/** read only table row count  */
 	entriesHook?: (newVal: number) => void;
-	/**  when update is true, the table stops to render,  */
+	/**  when update is true, the table stops to render.
+	 *   if update is set to true it will init the table state again.
+	 *   updating the props: tableName, dataBaseName, uniqueKey require setting update=true afterwards, to take effect
+	 *   also, update does not be to be set to false, the table does it itself
+	 */
 	updateHook?: { update: boolean; setUpdate: (newVal: boolean) => void };
 	/** what unique key to use */
 	uniqueKey: string;
 	key?: string;
-	update?: boolean;
 	nativeColumnNames?: boolean;
 }

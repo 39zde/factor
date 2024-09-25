@@ -1,29 +1,38 @@
 import React, { useState, useRef } from 'react';
 // non-lib imports
 import { useAppContext } from '@app';
+import type { RemoveCondition } from '@type';
 
 export function ColRemover({
-	worker,
-	count,
+	showOptionsHook,
 	updateHook,
+	colsHook,
 }: {
-	worker: Worker;
-	count: number;
+	showOptionsHook: {
+		text: string;
+		value: boolean;
+		setValue: (newVal: boolean) => void;
+	};
 	updateHook: { update: boolean; setUpdate: (newVal: boolean) => void };
+	colsHook: {
+		cols: string[];
+		setCols: (newCols: string[]) => void;
+		setAllCols: (newVal: string[]) => void;
+	};
 }): React.JSX.Element {
-	const { general, database } = useAppContext();
+	const { general, database, worker } = useAppContext();
 	const [showOptions, setShowOptions] = useState<boolean>(false);
 	const conditionRef = useRef<HTMLSelectElement>(null);
 	const stringRef = useRef<HTMLInputElement>(null);
 	const numberRef = useRef<HTMLInputElement>(null);
+	const colRef = useRef<HTMLSelectElement>(null);
 	const [stringInput, setStringInput] = useState<string>('');
 	const [numberInput, setNumberInput] = useState<string>('');
-	const [conditionValue, setConditionValue] = useState<'empty text' | 'undefined' | 'null' | '0' | 'custom string' | 'custom number' | '-'>(
-		'empty text'
-	);
+	const [colInput, setColInput] = useState<string | undefined>();
+	const [conditionValue, setConditionValue] = useState<RemoveCondition>('empty text');
 	const [showTextInput, setShowTextInput] = useState<boolean>(false);
 	const [showNumberInput, setShowNumberInput] = useState<boolean>(false);
-	const [progress, setProgress] = useState<string>('Go!');
+	const [showColInput, setShowColInput] = useState<boolean>(false);
 	const conditionHandler = () => {
 		if (conditionRef.current?.value !== undefined) {
 			//@ts-expect-error ..current.value is of type UploadMode, because of the hardcoded <options values={...}> in side the select element. TS does not know that
@@ -31,12 +40,19 @@ export function ColRemover({
 			if (conditionRef.current.value === 'custom text') {
 				setShowTextInput(true);
 				setShowNumberInput(false);
+				setShowColInput(false);
 			} else if (conditionRef.current.value === 'custom number') {
 				setShowTextInput(false);
 				setShowNumberInput(true);
+				setShowColInput(false);
+			} else if (conditionRef.current.value === 'column') {
+				setShowTextInput(false);
+				setShowNumberInput(false);
+				setShowColInput(true);
 			} else {
 				setShowTextInput(false);
 				setShowNumberInput(false);
+				setShowColInput(false);
 			}
 		}
 	};
@@ -53,51 +69,38 @@ export function ColRemover({
 		}
 	};
 
-	const goHandler = () => {
-		worker.postMessage({
-			type: 'rankColsByCondition',
-			dbVersion: database.dbVersion,
-			dataBaseName: 'factor_db',
-			message: {
-				condition: conditionValue,
-				custom: {
-					string: stringInput,
-					number: numberInput,
-				},
-			},
-		});
-
-		worker.onmessage = (e) => {
-			//   setShowOptions(false)
-			switch (e.data.type) {
-				case 'progress':
-					setProgress(e.data.message);
-					if (e.data.message === '100.00%') {
-						setProgress('Go!');
-						setShowOptions(false);
-					}
-					break;
-				case 'ranking':
-					const ranking = e.data.message;
-					for (const [column, conditionSuccessCount] of ranking) {
-						if (conditionSuccessCount === count) {
-							updateHook.setUpdate(true);
-							worker.postMessage({
-								type: 'deleteCol',
-								message: column,
-								dbVersion: database.dbVersion,
-								dataBaseName: 'factor_db',
-							});
-						}
-					}
-					break;
-				case 'colDeletion':
-					updateHook.setUpdate(false);
-					break;
-				default:
-					break;
+	const colInputHandler = () => {
+		if (colRef.current !== null) {
+			if (colRef.current.value !== undefined) {
+				setColInput(colRef.current.value);
 			}
-		};
+		}
+	};
+
+	const goHandler = () => {
+		if (showColInput) {
+			updateHook.setUpdate(true);
+			worker.ImportWorker.postMessage({
+				type: 'delete-col',
+				data: colInput,
+			});
+		} else {
+			updateHook.setUpdate(true);
+			worker.ImportWorker.postMessage({
+				channelName: 'import-col-remover',
+				type: 'rankColsByCondition',
+				dbVersion: database.dbVersion,
+				dataBaseName: 'factor_db',
+				data: {
+					condition: conditionValue,
+					custom: {
+						string: stringInput,
+						number: numberInput,
+						column: colInput,
+					},
+				},
+			});
+		}
 	};
 
 	return (
@@ -114,15 +117,18 @@ export function ColRemover({
 					</p>
 					<select ref={conditionRef} id="colInput" onInput={conditionHandler}>
 						<option defaultChecked>-</option>
-						<optgroup>
+						<optgroup label={general.language === 'deutsch' ? 'Inhaltsbasiert' : 'Value based'}>
 							<option value={'empty text'}>{general.language === 'deutsch' ? 'leerer Text' : 'empty text'}</option>
 							<option value={'undefined'}>{general.language === 'deutsch' ? 'nicht ausgefüllt (undefined value)' : 'undefined value'}</option>
 							<option value={'null'}>{general.language === 'deutsch' ? 'leer (null value)' : 'empty (null value)'}</option>
 							<option value={'0'}>0</option>
 						</optgroup>
-						<optgroup>
+						<optgroup label={general.language === 'deutsch' ? 'Selbst definiert' : 'custom defined'}>
 							<option value={'custom text'}>{general.language === 'deutsch' ? 'eigener text' : 'custom text'}</option>
 							<option value={'custom number'}>{general.language === 'deutsch' ? 'eigene Zahl' : 'custom number'}</option>
+						</optgroup>
+						<optgroup label={general.language === 'deutsch' ? 'Spaltenbasiert' : 'column based'}>
+							<option value={'column'}>{general.language === 'deutsch' ? 'Ausgewählte Spalte' : 'Selected Column'}</option>
 						</optgroup>
 					</select>
 					{showNumberInput ? (
@@ -139,10 +145,27 @@ export function ColRemover({
 					) : (
 						<></>
 					)}
+					{showColInput ? (
+						<>
+							<select ref={colRef} onInput={colInputHandler}>
+								{colsHook.cols.map((column, index) => {
+									if (index !== 0) {
+										return (
+											<option key={`colRemover-${column}`} value={column}>
+												{column}
+											</option>
+										);
+									}
+								})}
+							</select>
+						</>
+					) : (
+						<></>
+					)}
 					<div className="divider" />
 					<div className="removerActions">
 						<button onClick={() => setShowOptions(false)}>{general.language === 'deutsch' ? 'Abbrechen' : 'Cancel'}</button>
-						<button onClick={goHandler}>{progress}</button>
+						<button onClick={goHandler}>{showOptionsHook.text}</button>
 					</div>
 				</div>
 			</div>

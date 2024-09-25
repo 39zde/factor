@@ -1,0 +1,16 @@
+@import url('@base');
+
+
+@supports (scrollbar-color: white black) {
+	@media screen and (prefers-color-scheme: dark) {
+		:root {
+			scrollbar-color: var(--color-light-3) var(--color-dark-1);
+		}
+	}
+
+	@media screen and (prefers-color-scheme: light) {
+		:root {
+			scrollbar-color: var(--color-dark-3) var(--color-light-1);
+		}
+	}
+}

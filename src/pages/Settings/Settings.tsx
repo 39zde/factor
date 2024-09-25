@@ -13,7 +13,7 @@ import {
 	AppSettingsGeneral,
 	AppSettingsDatabase,
 	DataBaseNames,
-} from '@typings';
+} from '@type';
 import './Settings.css';
 export function Settings() {
 	const context = useAppContext();
@@ -352,17 +352,15 @@ export function Settings() {
 							const deletionRef = useRef<HTMLInputElement>(null);
 							dbDeletionRefs.current[index] = deletionRef;
 							return (
-								<>
-									<div className="settingsOption">
-										<p>{getDataBaseDisplayName(context.general.language, key as DataBaseNames)}</p>
-										<div className="settingsOptionChild">
-											<small className="deletionNote">
-												{context.general.language === 'deutsch' ? 'Datenbank nach dem Speichern löschen' : 'Delete on Save'}
-											</small>
-											<input type="checkbox" ref={deletionRef} checked={dbDeletion[index]} onChange={() => dbDeletionHandler(index)} />
-										</div>
+								<div className="settingsOption" key={key + 'deletion'}>
+									<p>{getDataBaseDisplayName(context.general.language, key as DataBaseNames)}</p>
+									<div className="settingsOptionChild">
+										<small className="deletionNote">
+											{context.general.language === 'deutsch' ? 'Datenbank nach dem Speichern löschen' : 'Delete on Save'}
+										</small>
+										<input type="checkbox" ref={deletionRef} checked={dbDeletion[index]} onChange={() => dbDeletionHandler(index)} />
 									</div>
-								</>
+								</div>
 							);
 						})}
 					</div>

@@ -38,21 +38,19 @@ export const TableFoot = memo(function TableFoot({
 					{allColumns.map((item, index) => {
 						if (columns.includes(item)) {
 							return (
-								<>
-									<th
-										style={{
-											height: rowHeight,
-											maxHeight: rowHeight,
-											minHeight: rowHeight,
-											minWidth: columnWidths[index],
-											maxWidth: columnWidths[index],
-											width: columnWidths[index],
-										}}
-										key={`tfoot-${index}-${item}`}
-										ref={index === 0 ? footerRowFirstElementRef : undefined}>
-										<span className="guts">{index !== 0 ? nativeColumnNames ? <>{item}</> : <ColumnTitle column={item} /> : ''}</span>
-									</th>
-								</>
+								<th
+									style={{
+										height: rowHeight,
+										maxHeight: rowHeight,
+										minHeight: rowHeight,
+										minWidth: columnWidths[index],
+										maxWidth: columnWidths[index],
+										width: columnWidths[index],
+									}}
+									key={`tfoot-${index}-${item}`}
+									ref={index === 0 ? footerRowFirstElementRef : undefined}>
+									<span className="guts">{index !== 0 ? nativeColumnNames ? <>{item}</> : <ColumnTitle column={item} /> : ''}</span>
+								</th>
 							);
 						}
 					})}

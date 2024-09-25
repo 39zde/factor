@@ -10,7 +10,17 @@ export default defineConfig({
 	build: {
 		reportCompressedSize: true,
 		minify: 'esbuild',
-		outDir: 'bundle',
+		outDir: 'bundle-dev',
+		rollupOptions: {
+			input: './index.html',
+			output: {
+				generatedCode: 'es2015',
+				interop: 'auto',
+				format: 'es',
+				intro: `window.__FACTOR_VERSION__= ${JSON.stringify(process.env.npm_package_version)}; window.__USE_TAURI__ = true;`,
+			},
+			logLevel: 'silent',
+		},
 	},
 	worker: {
 		format: 'es',
@@ -18,11 +28,12 @@ export default defineConfig({
 	resolve: {
 		extensions: ['.tsx', '.ts', '.d.ts'],
 		alias: {
-			'@typings': resolve('./src/util/types/types.d.ts'),
+			'@type': resolve('./src/types/types.d.ts'),
 			'@util': resolve('./src/util/util.ts'),
 			'@comps': resolve('./src/comps/Comps.ts'),
 			'@app': resolve('./src/App.tsx'),
-			'@worker': resolve('./src/util/worker'),
+			'@worker': resolve('./src/worker'),
+			'@base': resolve('./src/base.css'),
 		},
 	},
 	// Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
@@ -40,6 +51,7 @@ export default defineConfig({
 	},
 	define: {
 		__FACTOR_VERSION__: JSON.stringify(process.env.npm_package_version),
+		__USE_TAURI__: true,
 	},
 	// to access the Tauri environment variables set by the CLI with information about the current target
 	envPrefix: [

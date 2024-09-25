@@ -1,4 +1,5 @@
 import { Home } from './Home/Home';
+import { HomeDemo } from './Home/HomeDemo';
 import { Upload } from './Upload/Upload';
 import { Settings } from './Settings/Settings';
 import { Customers } from './Customers/Customers';
@@ -11,7 +12,7 @@ import { ExportPage } from './ExportPage/ExportPage';
 import { Help } from './Help/Help';
 import { Templates } from './Templates/Templates';
 export const Pages = {
-	Home,
+	Home: window.__USE_TAURI__ ? Home : HomeDemo,
 	Upload,
 	Settings,
 	Customers,

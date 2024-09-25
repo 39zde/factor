@@ -1,7 +1,7 @@
 import React, { MouseEvent, useEffect, useState, useRef, forwardRef } from 'react';
 // non-lib imports
 import { useAppContext, solids } from '@app';
-import type { ContextMenuProps, MenuItem } from '@typings';
+import type { ContextMenuProps, MenuItem } from '@type';
 import './ContextMenu.css';
 
 /** This works, but it not to my liking. consider this a work in progress */
@@ -111,41 +111,40 @@ export const ContextMenu = forwardRef<HTMLDivElement, ContextMenuProps>(function
 					{items !== undefined ? (
 						items.map((item, index) => {
 							return (
-								<>
-									<li
-										aria-modal="true"
-										key={tree.join('-') + '-' + index.toString()}
-										onClick={() => {
-											if (item.action !== undefined && item.subMenu === undefined) {
-												item.action();
-											}
-										}}
-										onMouseDown={(e: MouseEvent) => {
-											if (item.subMenu !== undefined) {
-												setNestedActive(!nestedActive);
-												setNestedItems(item.subMenu);
-												setNestedY(
-													// @ts-expect-error ts does not know about this dom element
-													e.target.getBoundingClientRect().y
-												);
-												if (tree.length === 1) {
-													if (area === 1 || area === 3) {
-														setNestedX(ownX - solids.contextMenu.width);
-													} else {
-														setNestedX(ownX + solids.contextMenu.width);
-													}
+								<li
+									key={tree.join('-') + '-' + index.toString()}
+									aria-modal="true"
+									// key={tree.join('-') + '-' + index.toString()}
+									onClick={() => {
+										if (item.action !== undefined && item.subMenu === undefined) {
+											item.action();
+										}
+									}}
+									onMouseDown={(e: MouseEvent) => {
+										if (item.subMenu !== undefined) {
+											setNestedActive(!nestedActive);
+											setNestedItems(item.subMenu);
+											setNestedY(
+												// @ts-expect-error ts does not know about this dom element
+												e.target.getBoundingClientRect().y
+											);
+											if (tree.length === 1) {
+												if (area === 1 || area === 3) {
+													setNestedX(ownX - solids.contextMenu.width);
 												} else {
-													if (tree[tree.length - 1] === 'left') {
-														setNestedX(ownX - solids.contextMenu.width);
-													} else if (tree[tree.length - 1] === 'right') {
-														setNestedX(ownX + solids.contextMenu.width);
-													}
+													setNestedX(ownX + solids.contextMenu.width);
+												}
+											} else {
+												if (tree[tree.length - 1] === 'left') {
+													setNestedX(ownX - solids.contextMenu.width);
+												} else if (tree[tree.length - 1] === 'right') {
+													setNestedX(ownX + solids.contextMenu.width);
 												}
 											}
-										}}>
-										{item.component}
-									</li>
-								</>
+										}
+									}}>
+									{item.component}
+								</li>
 							);
 						})
 					) : (
@@ -277,41 +276,39 @@ export const ContextMenu2 = forwardRef<HTMLDivElement, ContextMenuProps>(functio
 					{items !== undefined ? (
 						items.map((item, index) => {
 							return (
-								<>
-									<li
-										aria-modal="true"
-										key={tree.join('-') + '-' + index.toString()}
-										onClick={() => {
-											if (item.action !== undefined && item.subMenu === undefined) {
-												item.action();
-											}
-										}}
-										onMouseDown={(e: MouseEvent) => {
-											if (item.subMenu !== undefined) {
-												setNestedActive(!nestedActive);
-												setNestedItems(item.subMenu);
-												setNestedY(
-													// @ts-expect-error ts does not know about this dom element
-													e.target.getBoundingClientRect().y
-												);
-												if (tree.length === 1) {
-													if (area === 1 || area === 3) {
-														setNestedX(ownX - solids.contextMenu.width);
-													} else {
-														setNestedX(ownX + solids.contextMenu.width);
-													}
+								<li
+									aria-modal="true"
+									key={tree.join('-') + '-' + index.toString()}
+									onClick={() => {
+										if (item.action !== undefined && item.subMenu === undefined) {
+											item.action();
+										}
+									}}
+									onMouseDown={(e: MouseEvent) => {
+										if (item.subMenu !== undefined) {
+											setNestedActive(!nestedActive);
+											setNestedItems(item.subMenu);
+											setNestedY(
+												// @ts-expect-error ts does not know about this dom element
+												e.target.getBoundingClientRect().y
+											);
+											if (tree.length === 1) {
+												if (area === 1 || area === 3) {
+													setNestedX(ownX - solids.contextMenu.width);
 												} else {
-													if (tree[tree.length - 1] === 'left') {
-														setNestedX(ownX - solids.contextMenu.width);
-													} else if (tree[tree.length - 1] === 'right') {
-														setNestedX(ownX + solids.contextMenu.width);
-													}
+													setNestedX(ownX + solids.contextMenu.width);
+												}
+											} else {
+												if (tree[tree.length - 1] === 'left') {
+													setNestedX(ownX - solids.contextMenu.width);
+												} else if (tree[tree.length - 1] === 'right') {
+													setNestedX(ownX + solids.contextMenu.width);
 												}
 											}
-										}}>
-										{item.component}
-									</li>
-								</>
+										}
+									}}>
+									{item.component}
+								</li>
 							);
 						})
 					) : (

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, Fragment } from 'react';
 // non-lib imports
 import { useTableContext, useTableDispatch } from './Table';
 import { ColumnTitleString } from './ColumnTitle';
@@ -93,14 +93,14 @@ export function ColumnOrderer(): React.JSX.Element {
 				{allColumns.map((item, index) => {
 					if (index !== 0) {
 						return (
-							<>
+							<Fragment key={`column-orderer-${index}`}>
 								{dragIndicatorIndex === index && useUpper ? (
 									<>
-										<div aria-modal="true" key={`upper-Indicator-${item}`} className="dragIndicator" />
+										<div aria-modal="true" className="dragIndicator" />
 									</>
 								) : (
 									<>
-										<div aria-modal="true" key={`upper-Indicator-${item}`} className="dargIndicatorPlaceholder" />
+										<div aria-modal="true" className="dargIndicatorPlaceholder" />
 									</>
 								)}
 								<div
@@ -114,8 +114,7 @@ export function ColumnOrderer(): React.JSX.Element {
 										background: draggedElementIndex === index ? 'light-dark(var(--color-light-3),var(--color-dark-3))' : 'none',
 										height: solids.contextMenu.normalItemHeight,
 										borderRadius: solids.contextMenu.normalItemHeight / 2,
-									}}
-									key={`column-orderer-${index}`}>
+									}}>
 									<p
 										aria-modal="true"
 										style={{
@@ -127,14 +126,14 @@ export function ColumnOrderer(): React.JSX.Element {
 								</div>
 								{dragIndicatorIndex === index + 1 && !useUpper ? (
 									<>
-										<div aria-modal="true" key={`lower-Indicator-${item}`} className="dragIndicator" />
+										<div aria-modal="true" className="dragIndicator" />
 									</>
 								) : (
 									<>
-										<div aria-modal="true" key={`lower-Indicator-${item}`} className="dargIndicatorPlaceholder" />
+										<div aria-modal="true" className="dargIndicatorPlaceholder" />
 									</>
 								)}
-							</>
+							</Fragment>
 						);
 					}
 				})}

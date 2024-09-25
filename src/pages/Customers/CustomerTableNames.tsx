@@ -1,7 +1,7 @@
 import React from 'react';
 // non-lib imports
 import { useAppContext } from '@app';
-import type { CustomerDBObjectStores } from '@typings';
+import type { CustomerDBObjectStores } from '@type';
 
 export function CustomerTableNames({ tableName }: { tableName: CustomerDBObjectStores }): React.JSX.Element {
 	const { general } = useAppContext();

@@ -1,8 +1,8 @@
-import React, { useRef, useState } from 'react';
+import React, { Fragment, useRef, useState } from 'react';
 import { FileHandle, create, BaseDirectory } from '@tauri-apps/plugin-fs';
 // non-lib imports
 import { useAppContext, useChangeContext } from '@app';
-import type { CompressionTypes, ExportWorkerResponse } from '@typings';
+import type { CompressionTypes, ExportWorkerResponse } from '@type';
 import './ExportPage.css';
 
 export function ExportPage(): React.JSX.Element {
@@ -60,38 +60,44 @@ export function ExportPage(): React.JSX.Element {
 			case 'create':
 				const channel = new BroadcastChannel('file-callbacks');
 				const fileName = eventData.data as string;
-				create(fileName, { baseDir: BaseDirectory.Download }).then((handle) => {
-					setFileHandle(handle);
-					if (eventData.scope !== undefined) {
-						console.log('create');
-						channel.postMessage({ type: 'create', name: fileName, scope: eventData.scope });
-					}
-				});
+				if (window.__USE_TAURI__) {
+					create(fileName, { baseDir: BaseDirectory.Download }).then((handle) => {
+						setFileHandle(handle);
+						if (eventData.scope !== undefined) {
+							console.log('create');
+							channel.postMessage({ type: 'create', name: fileName, scope: eventData.scope });
+						}
+					});
+				}
 
 				break;
 			case 'data':
-				if (fileHandle !== undefined) {
-					fileHandle.write(eventData.data as Uint8Array);
-				} else {
-					// context.notify({ title: 'some content failed to write', body: new TextDecoder().decode(eventData.data as Uint8Array) });
-					console.error('failed to write ', new TextDecoder().decode(eventData.data as Uint8Array));
+				if (window.__USE_TAURI__) {
+					if (fileHandle !== undefined) {
+						fileHandle.write(eventData.data as Uint8Array);
+					} else {
+						// context.notify({ title: 'some content failed to write', body: new TextDecoder().decode(eventData.data as Uint8Array) });
+						console.error('failed to write ', new TextDecoder().decode(eventData.data as Uint8Array));
+					}
 				}
 				break;
 			case 'close':
-				if (fileHandle !== undefined) {
-					// let fileName = eventData.data as string;
-					fileHandle.close().then(() => {
-						setFileHandle(undefined);
-						const channel = new BroadcastChannel('file-callbacks');
-						channel.postMessage({ type: 'close', name: eventData.data, scope: eventData.scope });
-						return dispatch({
-							type: 'notify',
-							notification: {
-								title: context.general.language === 'deutsch' ? 'Export abgeschlossen' : 'Exported data',
-								body: `${context.general.language === 'deutsch' ? 'Datei ' : 'File '}${eventData.data} ${context.general.language === 'deutsch' ? 'wurde im Download-Ordner abgelegt' : 'was written to the download folder'}`,
-							},
+				if (window.__USE_TAURI__) {
+					if (fileHandle !== undefined) {
+						// let fileName = eventData.data as string;
+						fileHandle.close().then(() => {
+							setFileHandle(undefined);
+							const channel = new BroadcastChannel('file-callbacks');
+							channel.postMessage({ type: 'close', name: eventData.data, scope: eventData.scope });
+							return dispatch({
+								type: 'notify',
+								notification: {
+									title: context.general.language === 'deutsch' ? 'Export abgeschlossen' : 'Exported data',
+									body: `${context.general.language === 'deutsch' ? 'Datei ' : 'File '}${eventData.data} ${context.general.language === 'deutsch' ? 'wurde im Download-Ordner abgelegt' : 'was written to the download folder'}`,
+								},
+							});
 						});
-					});
+					}
 				}
 				break;
 		}
@@ -99,6 +105,8 @@ export function ExportPage(): React.JSX.Element {
 
 	return (
 		<>
+			<div className="alert">unstable</div>
+
 			<div className="exportPage">
 				<menu className="toolbar">
 					<li>
@@ -157,34 +165,31 @@ export function ExportPage(): React.JSX.Element {
 									<div className="exportOStores">
 										{oStores.map((oStore, index) => {
 											return (
-												<>
-													<div key={`${oStore}-${key}-exportOStores-${index}`} className="exportOStore">
-														<p>
-															{context.general.language === 'deutsch' ? 'Tabelle' : 'Table'}: <em>{oStore}</em>
-														</p>
-														<button
-															onClick={() => {
-																if (fileHandle == undefined) {
-																	exportHandler('oStore', dbName, oStore, useCompression);
-																}
-															}}
-															style={{
-																cursor: fileHandle !== undefined ? 'no-drop' : 'initial',
-																border:
-																	fileHandle !== undefined ? '2px solid light-dark(var(--color-dark-3),var(--color-dark-3))' : '',
-																background: fileHandle !== undefined ? 'none' : '',
-															}}>
-															{context.general.language === 'deutsch' ? 'Tabelle exportieren' : 'Export Table'}
-														</button>
-													</div>
-												</>
+												<div key={`${oStore}-${key}-exportOStores-${index}`} className="exportOStore">
+													<p>
+														{context.general.language === 'deutsch' ? 'Tabelle' : 'Table'}: <em>{oStore}</em>
+													</p>
+													<button
+														onClick={() => {
+															if (fileHandle == undefined) {
+																exportHandler('oStore', dbName, oStore, useCompression);
+															}
+														}}
+														style={{
+															cursor: fileHandle !== undefined ? 'no-drop' : 'initial',
+															border: fileHandle !== undefined ? '2px solid light-dark(var(--color-dark-3),var(--color-dark-3))' : '',
+															background: fileHandle !== undefined ? 'none' : '',
+														}}>
+														{context.general.language === 'deutsch' ? 'Tabelle exportieren' : 'Export Table'}
+													</button>
+												</div>
 											);
 										})}
 									</div>
 								</div>
 							);
 						} else {
-							return <></>;
+							return <Fragment key={key} />;
 						}
 					})}
 				</div>

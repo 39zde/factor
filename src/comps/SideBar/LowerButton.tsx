@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import type { LowerButtonProps } from '@typings';
+import type { LowerButtonProps } from '@type';
 import './SideBar.css';
 
 export function LowerButton({ handler, icon, text, active }: LowerButtonProps): React.JSX.Element {
@@ -18,7 +18,7 @@ export function LowerButton({ handler, icon, text, active }: LowerButtonProps): 
 						: active
 							? 'light-dark(var(--color-light-1),var(--color-dark-1))'
 							: 'light-dark(var(--color-light-2),var(--color-dark-2))',
-					color: active ? 'var(--color-primary)' : 'initial',
+					color: active ? 'var(--color-primary)' : 'inherit',
 					fontWeight: active ? 'bold' : 'initial',
 				}}
 				className="sideBarButton">

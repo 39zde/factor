@@ -5,7 +5,9 @@
 - [ ] remember table start position
 - [ ] add search
 - [ ] add sorting
+- [ ] add scroll bar
 - [x] open urls in default browser
+- [ ] add Tests
 
 ## Long Term
 - [ ] add articles table
@@ -17,6 +19,9 @@
 
 ## Long Long Term
 - [ ] use CanvasAPI for performance
+
+## Chores
+- [ ] Create Proper Picture for the Table Data Flow
 
 
 # History

@@ -1,8 +1,8 @@
-import React, { useRef, useMemo, useEffect, useCallback, useState } from 'react';
+import React, { useRef, useMemo, useEffect, useCallback, useState, Fragment } from 'react';
 // non-lib imports
 import { ColumnSetter } from './ColumnSetter';
 import { useAppContext } from '@app';
-import type { CustomerSortingMap, SorterProps, CustomerSorterInputGroup, CustomerSorterInputGroupUnderling } from '@typings';
+import type { CustomerSortingMap, SorterProps, CustomerSorterInputGroup, CustomerSorterInputGroupUnderling } from '@type';
 
 export function CustomerSorter({ columns, hook }: SorterProps): React.JSX.Element {
 	const { general } = useAppContext();
@@ -293,39 +293,37 @@ export function CustomerSorter({ columns, hook }: SorterProps): React.JSX.Elemen
 			<div className="customerOptions">
 				{groups.map((group) => {
 					return (
-						<>
-							<h2 key={group.head + 'h2'}>{group.head}</h2>
+						<Fragment key={group.head}>
+							<h2>{group.head}</h2>
 							{group.underlings.map((subject) => {
 								return (
-									<>
-										<p key={group.head + subject.name + 'p'}>{subject.name}</p>
-										<div className="dataRowWrapper" key={group.head + subject.name + 'div'}>
+									<Fragment key={group.head + subject.name}>
+										<p>{subject.name}</p>
+										<div className="dataRowWrapper">
 											{subject.fields.map((field, index) => {
 												const fieldRef = useRef<HTMLSelectElement>(null);
 												subject.refGroup.current[index] = fieldRef;
 												counter.current += 1;
 												layoutHandler(group, subject, index, columns[counter.current + 1]);
 												return (
-													<>
-														<div className="dataRowWrapper" key={group.head + subject.name + field + 'div'}>
-															<ColumnSetter
-																defaultIndex={selectionMode === 'consecutive' ? counter.current : -1}
-																columns={columns}
-																name={field}
-																onInput={() => {
-																	inputHandler(group, subject, index);
-																}}
-																ref={fieldRef}
-															/>
-														</div>
-													</>
+													<div className="dataRowWrapper" key={group.head + subject.name + field}>
+														<ColumnSetter
+															defaultIndex={selectionMode === 'consecutive' ? counter.current : -1}
+															columns={columns}
+															name={field}
+															onInput={() => {
+																inputHandler(group, subject, index);
+															}}
+															ref={fieldRef}
+														/>
+													</div>
 												);
 											})}
 										</div>
-									</>
+									</Fragment>
 								);
 							})}
-						</>
+						</Fragment>
 					);
 				})}
 			</div>

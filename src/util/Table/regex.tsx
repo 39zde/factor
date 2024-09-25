@@ -14,6 +14,32 @@ const WhiteSpaceRx = /(((?<=\s)\s+)|(^\s+)|(\s+$))/gm;
 
 const EmailRx = /(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})/i;
 
+// const dbNameSelector = /(?<=^\{[\s]?\")[\w]+_db(?=\"[\s]?\:[\s]?\{)/gm;
+// const firstOStoreSelector = /(?<=^\{[\s]{0,}\"[\w]+_db\"[\s]{0,}\:[\s]{0,}\{[\s]{0,}\")\w+(?=\"[\s]{0,}\:[\s]{0,}\[[\s]{0,}\{)/gm
+// const oStoreSelector = /(?<=^\")[\w]+(?=\")/gm
+// const oStoreSplitter = /(?<=\}[\s]{0,}\,?[\s]{0,}\][\s]{0,})\,(?=[\s]{0,}\"[\w]+\"[\s]{0,}\:[\s]{0,}\[)/gm;
+// const rowSplitter = /(?<=\}[\s]{0,})\,(?=[\s]{0,}\{)/gm
+// const firstRowSelector = /^\"[\w]+\"[\s]{0,}\:\[[\s]{0,}/gm
+// const tailTester = /\}[\s]{0,}\,?[\s]{0,}\][\s]{0,}\}?[\s]{0,}\}?[\s]{0,}$/gm
+
+const dbNameRemover = /^[\s]{0,}?\{[\s]{0,}?\"[\w]+\"[\s]{0,}?\:[\s]{0,}?\{[\s]{0,}?/gm;
+const dbNameSelector = /(?<=^\{[\s]?\")[\w]+_db(?=\"[\s]?\:[\s]?\{)/gm;
+const oStoreNameRemover = /^[\s]{0,}\"\w+\"[\s]{0,}\:[\s]{0,}\[/gm;
+const oStoreNameSelector = /^[\s]{0,}\"\w+\"/gm;
+const oStoreSplitter = /(?<=\}[\s]{0,}\,?[\s]{0,}\][\s]{0,})\,(?=[\s]{0,}\"[\w]+\"[\s]{0,}\:[\s]{0,}\[)/gm;
+const tailTester = /\}[\s]{0,}\,?[\s]{0,}\][\s]{0,}\}?[\s]{0,}\}?[\s]{0,}$/gm;
+const rowSplitter = /(?<=\}[\s]{0,})\,(?=[\s]{0,}\{)/gm;
+
+const importExportRx = {
+	dbNameRemover,
+	dbNameSelector,
+	oStoreNameRemover,
+	oStoreSplitter,
+	oStoreNameSelector,
+	tailTester,
+	rowSplitter,
+};
+
 export const rx = {
 	TitleRx,
 	WhiteSpaceRx,
@@ -21,4 +47,5 @@ export const rx = {
 	titleTitleRx,
 	doctorRx,
 	diplomaRx,
+	importExportRx,
 };

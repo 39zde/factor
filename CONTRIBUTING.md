@@ -54,13 +54,14 @@ To use yarn the official way [corepack](https://nodejs.org/api/corepack.html) mu
 
 Run
 ```bash
+npm install -g react-devtools
 yarn devtools
 ```
 and uncomment
 ```html
 <script src="http://localhost:8097"></script>
 ```
-in [index.html](./src/renderer/index.html)
+in [index.html](./index.html)
 
 ## Theming
 
@@ -103,11 +104,6 @@ Ratings:
 
    Hold the data of created Documents across different oStores.<br>
    _Rating: High_
-
- ### Session Storage
- ---
-  Holds uploaded files as plain text before importing to factor_db.<br>
-  _Rating: Medium_
 
  ### Local Storage
  ---

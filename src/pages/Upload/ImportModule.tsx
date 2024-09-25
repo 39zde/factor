@@ -1,7 +1,7 @@
 import React from 'react';
 // non-lib imports
 import { CustomerSorter } from './TableSorters/CustomerSorter';
-import type { ImportModuleProps } from '@typings';
+import type { ImportModuleProps } from '@type';
 
 export function ImportModule({ mode, columns, hook }: ImportModuleProps): React.JSX.Element {
 	switch (mode) {

@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { CogIcon, HomeIcon, UploadIcon, UserRoundIcon, ArrowRightFromLineIcon, CuboidIcon, ReceiptTextIcon, HelpCircle, File } from 'lucide-react';
 // non-lib imports
 import { RouterButton } from './RouterButton';
 import { LowerButton } from './LowerButton';
 import { useAppContext, solids } from '@app';
 import { getDataBaseDisplayName } from '@util';
-import { RouteType, SideBarProps, DataBaseNames } from '@typings';
+import { RouteType, SideBarProps, DataBaseNames } from '@type';
 import './SideBar.css';
 
 export function SideBar({ routesHook }: SideBarProps): React.JSX.Element {
@@ -25,7 +25,7 @@ export function SideBar({ routesHook }: SideBarProps): React.JSX.Element {
 
 	return (
 		<>
-			<aside
+			<nav
 				className="sideBar"
 				style={{
 					width: sideBarWidth,
@@ -76,57 +76,63 @@ export function SideBar({ routesHook }: SideBarProps): React.JSX.Element {
 						routeName="Upload"
 						textOverride={general.language === 'deutsch' ? 'Hochladen' : 'Upload'}
 					/>
-					<RouterButton
-						handler={routeHandler}
-						active={!routesHook.showHelp && !routesHook.showSettings}
-						icon={
-							<ArrowRightFromLineIcon
-								size={solids.icon.size.regular}
-								strokeWidth={
-									routesHook.route === 'ExportPage' && !routesHook.showHelp && !routesHook.showSettings
-										? solids.icon.strokeWidth.large
-										: solids.icon.strokeWidth.regular
+					{window.__USE_TAURI__ ? (
+						<>
+							<RouterButton
+								handler={routeHandler}
+								active={!routesHook.showHelp && !routesHook.showSettings}
+								icon={
+									<ArrowRightFromLineIcon
+										size={solids.icon.size.regular}
+										strokeWidth={
+											routesHook.route === 'ExportPage' && !routesHook.showHelp && !routesHook.showSettings
+												? solids.icon.strokeWidth.large
+												: solids.icon.strokeWidth.regular
+										}
+										color={
+											routesHook.route === 'ExportPage' && !routesHook.showHelp && !routesHook.showSettings
+												? 'var(--color-primary)'
+												: 'light-dark(var(--color-dark-1),var(--color-light-1))'
+										}
+									/>
 								}
-								color={
-									routesHook.route === 'ExportPage' && !routesHook.showHelp && !routesHook.showSettings
-										? 'var(--color-primary)'
-										: 'light-dark(var(--color-dark-1),var(--color-light-1))'
-								}
+								route={routesHook.route}
+								routeName="ExportPage"
+								textOverride={general.language === 'deutsch' ? 'Exportieren' : 'Export'}
 							/>
-						}
-						route={routesHook.route}
-						routeName="ExportPage"
-						textOverride={general.language === 'deutsch' ? 'Exportieren' : 'Export'}
-					/>
-					<RouterButton
-						handler={routeHandler}
-						active={!routesHook.showHelp && !routesHook.showSettings}
-						icon={
-							<File
-								size={solids.icon.size.regular}
-								strokeWidth={
-									routesHook.route === 'Templates' && !routesHook.showHelp && !routesHook.showSettings
-										? solids.icon.strokeWidth.large
-										: solids.icon.strokeWidth.regular
+							<RouterButton
+								handler={routeHandler}
+								active={!routesHook.showHelp && !routesHook.showSettings}
+								icon={
+									<File
+										size={solids.icon.size.regular}
+										strokeWidth={
+											routesHook.route === 'Templates' && !routesHook.showHelp && !routesHook.showSettings
+												? solids.icon.strokeWidth.large
+												: solids.icon.strokeWidth.regular
+										}
+										color={
+											routesHook.route === 'Templates' && !routesHook.showHelp && !routesHook.showSettings
+												? 'var(--color-primary)'
+												: 'light-dark(var(--color-dark-1),var(--color-light-1))'
+										}
+									/>
 								}
-								color={
-									routesHook.route === 'Templates' && !routesHook.showHelp && !routesHook.showSettings
-										? 'var(--color-primary)'
-										: 'light-dark(var(--color-dark-1),var(--color-light-1))'
-								}
+								route={routesHook.route}
+								routeName="Templates"
+								textOverride={general.language === 'deutsch' ? 'Vorlagen' : 'Templates'}
 							/>
-						}
-						route={routesHook.route}
-						routeName="Templates"
-						textOverride={general.language === 'deutsch' ? 'Vorlagen' : 'Templates'}
-					/>
+						</>
+					) : (
+						<></>
+					)}
 					<div className="divider" />
 					{Object.entries(database.databases).map(([key, val]) => {
 						if (val !== null) {
 							return (
-								<>
+								<Fragment key={key}>
 									<RouterButton
-										key={key}
+										// key={key}
 										active={!routesHook.showHelp && !routesHook.showSettings}
 										handler={routeHandler}
 										icon={
@@ -196,7 +202,7 @@ export function SideBar({ routesHook }: SideBarProps): React.JSX.Element {
 										routeName={getDataBaseDisplayName('english', key as DataBaseNames) as RouteType}
 										textOverride={getDataBaseDisplayName(general.language, key as DataBaseNames)}
 									/>
-								</>
+								</Fragment>
 							);
 						}
 					})}
@@ -233,7 +239,7 @@ export function SideBar({ routesHook }: SideBarProps): React.JSX.Element {
 						active={routesHook.showSettings}
 					/>
 				</div>
-			</aside>
+			</nav>
 		</>
 	);
 }

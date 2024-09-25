@@ -2,9 +2,23 @@ import React, { useState, useRef } from 'react';
 // non-lib imports
 import { useAppContext } from '@app';
 
-export function RowShifter({ cols }: { cols: string[] }): React.JSX.Element {
+export function RowShifter({
+	cols,
+	showOptionsHook,
+	updateHook,
+}: {
+	cols: string[];
+	showOptionsHook: {
+		text: string;
+		value: boolean;
+		setValue: (newVal: boolean) => void;
+	};
+	updateHook: {
+		update: boolean;
+		setUpdate: (newValue: boolean) => void;
+	};
+}): React.JSX.Element {
 	const { general, worker, database } = useAppContext();
-	const [showOptions, setShowOptions] = useState<boolean>(false);
 	const colInputRef = useRef<HTMLSelectElement>(null);
 	const valueInputRef = useRef<HTMLInputElement>(null);
 	const offsetInputRef = useRef<HTMLInputElement>(null);
@@ -46,30 +60,33 @@ export function RowShifter({ cols }: { cols: string[] }): React.JSX.Element {
 				body: 'offset cannot be zero and must be an integer below the number of columns',
 			});
 		}
+		updateHook.setUpdate(true);
+		console.log({
+			col: colInput,
+			value: valInput,
+			offset: offsetInput,
+			direction: directionInput,
+		});
 		worker.ImportWorker.postMessage({
 			type: 'align',
 			dbVersion: database.dbVersion,
 			dataBaseName: 'factor_db',
-			message: {
+			data: {
 				col: colInput,
 				value: valInput,
 				offset: offsetInput,
 				direction: directionInput,
 			},
 		});
-
-		worker.ImportWorker.onmessage = () => {
-			setShowOptions(false);
-		};
 	};
 
 	return (
 		<>
 			<div className="rowShifter">
-				<button onClick={() => setShowOptions((old) => !old)} className="alignButton">
+				<button onClick={() => showOptionsHook.setValue(!showOptionsHook.value)} className="alignButton">
 					{general.language === 'deutsch' ? 'Zeilen ausrichten' : 'Align Rows'}
 				</button>
-				<div className="alignOptions" style={{ display: showOptions ? 'flex' : 'none' }}>
+				<div className="alignOptions" style={{ display: showOptionsHook.value ? 'flex' : 'none' }}>
 					<p>{general.language === 'deutsch' ? 'Zeile soll ausgerichtet werden, wenn' : 'Shift Row, if'}</p>
 					<select ref={colInputRef} id="colInput" onInput={colInputHandler}>
 						<option defaultChecked>-</option>
@@ -109,8 +126,8 @@ export function RowShifter({ cols }: { cols: string[] }): React.JSX.Element {
 					<p>{general.language === 'deutsch' ? 'Seite' : 'side'}</p>
 					<div className="divider" />
 					<div className="alignActions">
-						<button onClick={() => setShowOptions(false)}>{general.language === 'deutsch' ? 'Abbrechen' : 'Cancel'}</button>
-						<button onClick={goHandler}>Go!</button>
+						<button onClick={() => showOptionsHook.setValue(false)}>{general.language === 'deutsch' ? 'Abbrechen' : 'Cancel'}</button>
+						<button onClick={goHandler}>{showOptionsHook.text}</button>
 					</div>
 				</div>
 			</div>

@@ -1,6 +1,5 @@
 import type { Dispatch } from 'react';
-import type { TableDispatchAction, TableContextType } from '../types/comps/Table/Table';
-import type { DerefRow } from '../types/database/DataBaseData';
+import type { DerefRow, TableDispatchAction, TableContextType } from '@type';
 
 /**
  * calculate the scope from rowHeight and Table height
@@ -63,7 +62,9 @@ export function updateSizing(
 
 /**
  * set the scope, initialize Rows if they have not started yet, add rows, if the scope increased,	remove rows, if the scope decreased
- * @param {number} newScope
+ * @param { Dispatch<TableDispatchAction>} dispatch
+ * @param {{hasStarted: boolean;tableRows: DerefRow[];oldScope: number;newScope: number;tableName: string; dbVersion: number;dataBaseName: string;start: number;}} tableValues
+ * @param {Worker} worker
  * @use tableState.hasStarted, tableState.rows, tableState.scope, tableState.dbVersion, tableState.dataBaseName, tableState.start
  * @invokes causeRerender, TableWorker: startingRows, stream
  * @dispatches lastReceived, rows, scope
@@ -150,16 +151,6 @@ export function updateScope(
 			dataBaseName: tableValues.dataBaseName,
 			scope: tableValues.newScope,
 		});
-		// let dummyRows = new Array(newScope).fill({
-		// 	row: '-',
-		// 	value: 'loading...',
-		// });
-		// // and dispatch dummy rows for now
-		// dispatch({
-		// 	type: 'set',
-		// 	name: 'rows',
-		// 	newVal: dummyRows,
-		// });
 	}
 }
 

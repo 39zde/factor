@@ -1,5 +1,9 @@
 # Release Notes
 
+## Version v2.1.1
+	- sanding and optimizations
+	- github pages demo
+
 ## Version v2.1.0
 	- notifications
 	- database exports

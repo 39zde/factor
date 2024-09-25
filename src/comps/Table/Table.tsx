@@ -14,7 +14,7 @@ import React, {
 import { ChevronRight } from 'lucide-react';
 // non-lib imports
 import { TableHead } from './TableHead';
-import { TableBodyDisplay } from './TableBodyDisplay';
+import { TableBody } from './TableBody';
 import { TableFoot } from './TableFoot';
 import { ColumnCheckBox } from './ColumnCheckBox';
 import { ContextMenu } from '../ContextMenu/ContextMenu';
@@ -29,7 +29,7 @@ import type {
 	DerefRow,
 	StarterPackageResponse,
 	MenuItem,
-} from '@typings';
+} from '@type';
 import './Table.css';
 
 const TableContext = createContext<TableContextType>(PlaceHolderTableContext);
@@ -46,16 +46,7 @@ export function useTableDispatch() {
 	return useContext(TableDispatchContext);
 }
 
-export function Table({
-	dataBaseName,
-	tableName,
-	colsHook,
-	entriesHook,
-	updateHook,
-	uniqueKey,
-	update,
-	nativeColumnNames,
-}: TableProps): React.JSX.Element {
+export function Table({ dataBaseName, tableName, colsHook, entriesHook, updateHook, uniqueKey, nativeColumnNames }: TableProps): React.JSX.Element {
 	const rowColumnWidth = 40;
 	const scrollBarHeight = 5;
 	const { database, appearances, worker, general } = useAppContext();
@@ -100,13 +91,13 @@ export function Table({
 				newVal: dataBaseName,
 			});
 		}
-		dispatch({
-			type: 'set',
-			name: 'tableName',
-			newVal: tableName,
-		});
 		if (tableState.tableName !== tableName) {
 			// set new tableName
+			dispatch({
+				type: 'set',
+				name: 'tableName',
+				newVal: tableName,
+			});
 		}
 		if (tableState.uniqueKey !== uniqueKey) {
 			// set new uniqueKey
@@ -122,6 +113,20 @@ export function Table({
 				type: 'set',
 				name: 'dbVersion',
 				newVal: database.dbVersion,
+			});
+		}
+		// use the native column names or the localized ones
+		if (nativeColumnNames !== undefined) {
+			dispatch({
+				type: 'set',
+				name: 'nativeColumnNames',
+				newVal: nativeColumnNames,
+			});
+		} else {
+			dispatch({
+				type: 'set',
+				name: 'nativeColumnNames',
+				newVal: false,
 			});
 		}
 		// figure out the scope
@@ -143,19 +148,6 @@ export function Table({
 				worker.TableWorker
 			);
 		}
-		if (nativeColumnNames !== undefined) {
-			dispatch({
-				type: 'set',
-				name: 'nativeColumnNames',
-				newVal: nativeColumnNames,
-			});
-		} else {
-			dispatch({
-				type: 'set',
-				name: 'nativeColumnNames',
-				newVal: false,
-			});
-		}
 	}, [tableName, dataBaseName, uniqueKey, database.dbVersion]);
 
 	// start populating the context once the table Body is there
@@ -168,27 +160,38 @@ export function Table({
 	// listen for any updates
 	useEffect(() => {
 		setMenuActive(false);
-		if (update !== undefined) {
-			if (tableState.update !== update) {
+		const newUpdate = updateHook?.update;
+		if (newUpdate !== undefined) {
+			if (tableState.update !== newUpdate) {
 				dispatch({
 					type: 'set',
 					name: 'update',
-					newVal: update,
+					newVal: newUpdate,
 				});
-				if (update) {
+				if (newUpdate) {
 					initTableState();
 				}
 			}
 		}
-	}, [update]);
+	}, [updateHook?.update]);
 
 	// if we register a change from out side the table component execute it
-	useCallback(() => {
+	useEffect(() => {
 		if (colsHook !== undefined) {
+			dispatch({
+				type: 'set',
+				name: 'update',
+				newVal: true,
+			});
 			dispatch({
 				type: 'set',
 				name: 'columns',
 				newVal: colsHook.cols,
+			});
+			dispatch({
+				type: 'set',
+				name: 'update',
+				newVal: false,
 			});
 		}
 	}, [colsHook?.cols]);
@@ -512,6 +515,7 @@ export function Table({
 				}
 				break;
 			case 'error':
+				console.error(eventData.data);
 				notify({
 					type: 'notify',
 					notification: {
@@ -702,7 +706,7 @@ export function Table({
 								) : (
 									<></>
 								)}
-								<TableBodyDisplay ref={tableBodyRef} />
+								<TableBody ref={tableBodyRef} />
 								{!tableState.update ? (
 									<>
 										<TableFoot
@@ -727,92 +731,3 @@ export function Table({
 		</>
 	);
 }
-
-/**
-
-Data Information Flow
-
-
-Start
-|
-├useReducer-init
-|		|- tableState.uniqueKey
-|		|- tableState.cursorX
-| 		|- tableState.cursor
-|		|- tableState.isMouseDown
-|		|- tableState.userSelect
-|		|- tableState.activeBg
-|		|- tableState.activeCol
-|		|- tableState.start
-|		|- tableState.lastReceived
-|		|- tableState.hasStarted
-|		|- tableState.update
-|
-initTableState[tableName, dataBaseName, uniqueKey, database.dbVersion]
-|		|-tableState.hasStared => false
-|		|-tableState.dataBaseName
-|		|-tableState.tableName
-|		|-tableState.uniqueKey
-|     |-tableState.dbVersion
-|
-|
-updateSizing()
-|		|-tableState.resizeElemHeight
-|
-updateScope()
-|		|-tableState.scope
-|
-|
-tableWorkerRequest: starterPackage
-|
-... wait for the worker to do its work
-|
-tableWorkerResponse: starterPackage
-|		|-tableState.count
-|		|-tableState.columns (can use localStorage)
-|		|-tableState.allColumns (can use localStorage)
-|		|-tableState.colsRef
-|		|-tableState.resizeStyles
-|		|-tableState.columnWidths
-|		|-tableState.rows
-|		|-tableState.lastReceived
-|		|-tableState.hasStarted
-|
-|
-|
-|
-|<---------------------let us say the  tableName changes
-|
-|
-initTableState[tableName, dataBaseName, uniqueKey, database.dbVersion]
-|		|-tableState.hasStared => false
-|		|-tableState.dataBaseName
-|		|-tableState.tableName
-|		|-tableState.uniqueKey
-|     |-tableState.dbVersion
-|
-|
-updateSizing()
-|		|-tableState.resizeElemHeight
-|
-updateScope()
-|		|-tableState.scope
-|
-newScope < oldScope
-|
-|
-├---------------┐
-|					 |
-false 			true
-|   				 |
-|		  	       |-tableState.rows
-|		          |-tableState.lastReceived
-|
-tableWorkerRequest: stream (action: add)
-|
-... wait for the worker to do its work
-|
-tableWorkerResponse: stream(action: add)
-| 	 |-tableState.rows
-|	 |-tableState.lastReceived
- */

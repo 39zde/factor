@@ -9,7 +9,6 @@ import type {
 	BankType,
 	CompanyType,
 	Customer,
-	AddDataArgs,
 	DateInput,
 	UploadRow,
 	DerefPersonType,
@@ -23,58 +22,59 @@ import type {
 	PreInsertCustomer,
 	TableRow,
 	TableRowCounter,
-} from '@typings';
-import { getAddressHash } from '@util';
+	ImportWorkerMessage,
+	AlignVariables,
+	RemoveVariables,
+	DataBaseNames,
+	RemoveCondition,
+	RankedDeletion,
+	UpdateMessage,
+} from '@type';
+import { getAddressHash, rx } from '@util';
 
 self.onmessage = (e: MessageEvent): void => {
-	if (e.data.dataBaseName === undefined) {
-		return;
+	const eventData = Array.isArray(e.data) ? (e.data[0] as ImportWorkerMessage) : (e.data as ImportWorkerMessage);
+	if (eventData.dataBaseName === undefined) {
+		return postMessage({
+			type: 'error',
+			data: `undefined Database name`,
+		});
 	}
-	switch (e.data.type) {
+
+	switch (eventData.type) {
 		case 'import':
-			if (typeof e.data.data !== 'string') {
-				return postMessage({
-					type: 'error',
-					data: 'invalid input: data is not of type string',
-				});
-			}
-			importData(e.data.dataBaseName, e.data.dbVersion, e.data.data);
+			importData(eventData.dataBaseName, eventData.dbVersion, 'data_upload', eventData.data as 'json' | 'csv', e.data[1] as ReadableStream);
+			break;
+		case 'restore':
+			restoreBackup(eventData.dbVersion, e.data[1] as ReadableStream);
 			break;
 		case 'align':
-			alignData(e.data.dataBaseName, e.data.dbVersion, e.data.data);
+			alignData(eventData.dataBaseName, eventData.dbVersion, eventData.data as AlignVariables);
 			break;
 		case 'rankColsByCondition':
-			let condition = e.data.data.condition;
-			switch (condition) {
-				case 'empty text':
-					condition = '';
-					break;
-				case 'undefined':
-					condition = undefined;
-					break;
-				case 'null':
-					condition = null;
-					break;
-				case '0':
-					condition = 0;
-					break;
-				case 'custom text':
-					condition = e.data.data.custom.string;
-					break;
-				case 'custom number':
-					condition = e.data.data.custom.number;
-					break;
-				default:
-					condition = '';
-			}
-			rankColsByCondition(condition, e.data.dataBaseName, e.data.dbVersion);
+			rankColsByCondition(eventData.dataBaseName, eventData.dbVersion, eventData.data as RemoveVariables);
 			break;
-		case 'deleteCol':
-			deleteCol(e.data.data);
+		case 'delete-col':
+			deleteCol(eventData.data as string, eventData.type);
+			break;
+		case 'delete-rank':
+			deleteCol((eventData.data as RankedDeletion).columnName, eventData.type, (eventData.data as RankedDeletion).columnIndex);
 			break;
 		case 'sort':
 			self.navigator.locks.request('sorting-lock', () => {
-				sortData(e.data.dataBaseName, e.data.dbVersion, e.data.targetDBName, e.data.data);
+				if (eventData.targetDBName !== undefined) {
+					sortData(
+						eventData.dataBaseName,
+						eventData.dbVersion,
+						eventData.targetDBName,
+						eventData.data as ArticleSortingMap | CustomerSortingMap | DocumentSortingMap
+					);
+				} else {
+					return postMessage({
+						type: 'error',
+						data: `target data base name is undefined`,
+					});
+				}
 			});
 			break;
 		default:
@@ -176,16 +176,24 @@ function parseDate(input: string, type: DateInput): Date {
 	}
 }
 
-const updateManager = (total: number) => {
+const updateManager = (
+	task: 'import' | 'align' | 'sort' | 'delete-rank' | 'rank' | 'delete-col',
+	total: number,
+	addons?: (object | string | number)[]
+) => {
 	const increment = 0.1;
 	let ratchet = 0.1;
 	let counter = 0;
 	let progress = 0;
 	function postUpdate(msg: string): void {
-		postMessage({
-			type: 'progress',
+		const updateMessage: UpdateMessage = {
+			type: `${task}-progress`,
 			data: msg,
-		});
+		};
+		if (addons !== undefined) {
+			updateMessage.addons = addons;
+		}
+		postMessage(updateMessage);
 	}
 
 	function update(): void {
@@ -195,9 +203,6 @@ const updateManager = (total: number) => {
 			ratchet += increment;
 			postUpdate(`${(progress * 100).toFixed(0)}%`);
 			if (progress === 1) {
-				postMessage({
-					type: 'success',
-				});
 				ratchet = 0.1;
 				counter = 0;
 				progress = 0;
@@ -207,67 +212,127 @@ const updateManager = (total: number) => {
 	return update;
 };
 
-function importData(dataBaseName: string, dbVersion: number, data: string) {
-	function getKeys(row: string) {
-		const keys = row.split(';');
-		return keys;
-	}
-	let rows: string[] = data.split('\n');
-	const line: string = rows[0];
-	if (line.endsWith('\r')) {
-		rows = data.split('\r\n');
-	}
-	if (rows[rows.length - 1].length === 0) {
-		rows.pop();
-	}
-	const keys = getKeys(rows[0]);
+function importData(dataBaseName: string, dbVersion: number, oStore: string, fileType: 'json' | 'csv', data: ReadableStream) {
 	const request = indexedDB.open(dataBaseName, dbVersion);
+	const readable = data.pipeThrough(new TextDecoderStream('utf-8'));
+	const reader = readable.getReader();
+	const update = updateManager('import', 4);
+	let fuse = true;
+	let lineEnd = '\n';
+	const columns: string[] = [];
+	let pos = 0;
+	let tail: string | undefined = undefined;
+	let nextTail: string | undefined = undefined;
+	update();
+	function genDBRow(columns: string[], values: string[], rowNumber: number) {
+		const out = {
+			row: rowNumber,
+		};
+		for (const [index, col] of columns.entries()) {
+			Object.defineProperty(out, col, {
+				configurable: true,
+				enumerable: true,
+				writable: true,
+				value: values[index],
+			});
+		}
+		return out;
+	}
 
 	request.onupgradeneeded = () => {
 		const db = request.result;
 		db.createObjectStore('data_upload', { keyPath: 'row' });
-		// console.log('created oStore data_upload');
 	};
 
 	request.onsuccess = () => {
 		const db = request.result;
-		if (db.objectStoreNames.contains('data_upload')) {
-			// console.log('db contains data_upload');
-			function deleteData(db: IDBDatabase) {
-				const transaction = db.transaction('data_upload', 'readwrite', { durability: 'strict' });
-				const objectStore = transaction.objectStore('data_upload');
-				objectStore.clear();
-				transaction.commit();
-			}
-			function addData({ keys, rows, db }: AddDataArgs) {
-				const transaction = db.transaction('data_upload', 'readwrite', { durability: 'strict' });
-				const objectStore = transaction.objectStore('data_upload');
-				let i = 1;
-				while (i < rows.length) {
-					const columns = rows[i].split(';');
-					const out = {
-						row: 0,
-					} as TableRow;
-					out['row'] = i;
-					for (let j = 0; j < keys.length; j++) {
-						out[keys[j]] = columns[j];
+		update();
+		const transaction = db.transaction('data_upload', 'readwrite', { durability: 'strict' });
+		const oStore = transaction.objectStore('data_upload');
+		const clearRequest = oStore.clear();
+		const promises: Promise<number | null>[] = [];
+
+		clearRequest.onsuccess = () => {
+			update();
+			reader.read().then(function readDataUpload(value) {
+				if (!value.done) {
+					if (fileType === 'csv') {
+						let rows = value.value.split(lineEnd);
+						if (value.value.endsWith(lineEnd)) {
+							rows.pop();
+						} else {
+							nextTail = rows.pop();
+						}
+						if (fuse) {
+							if (rows[0].endsWith('\r')) {
+								lineEnd = '\r\n';
+								rows = value.value.split('\r\n');
+								if (value.value.endsWith('\r\n')) {
+									rows.pop();
+								} else {
+									nextTail = rows.pop();
+								}
+							}
+							if (!rows[0].includes(';')) {
+								return postMessage({
+									type: 'error',
+									data: 'This csv file is not separated by semicolons (;)',
+								});
+							}
+							const cols = rows.splice(0, 1);
+							cols[0].split(';').forEach((v) => {
+								columns.push(v);
+							});
+							fuse = false;
+						}
+						for (const [index, row] of rows.entries()) {
+							let dbRow;
+							if (index === 0 && tail !== undefined) {
+								dbRow = genDBRow(columns, (tail + row).split(';'), pos + 1);
+								tail = undefined;
+							} else {
+								dbRow = genDBRow(columns, row.split(';'), pos + 1);
+							}
+							promises.push(addRowPromise(dataBaseName, dbVersion, 'data_upload', dbRow));
+							pos += 1;
+						}
+						tail = nextTail;
+						nextTail = undefined;
+						reader.read().then(readDataUpload);
 					}
-					objectStore.add(out);
-					i++;
+				} else {
+					Promise.all(promises).then(() => {
+						update();
+						postMessage({
+							type: 'import-done',
+							data: [pos, columns],
+						});
+					});
 				}
-				transaction.commit();
-			}
-			deleteData(db);
-			addData({ keys, rows, db });
-			const copy = [...keys];
-			copy.splice(0, 0, 'row');
-			return postMessage({
-				type: 'imported',
-				data: [rows.length, copy],
 			});
-		}
+		};
+		transaction.oncomplete = () => {
+			// db.close();
+			// console.log('completed');
+			// return postMessage({
+			// 	type: 'imported',
+			// 	data: [pos, columns],
+			// });
+		};
+		transaction.onerror = (ev) => {
+			console.log(ev);
+			return postMessage({
+				type: 'error',
+				data: 'Database transaction failed',
+			});
+		};
+		clearRequest.onerror = () => {
+			console.log('clear error');
+		};
 	};
+
 	request.onerror = () => {
+		console.log(oStore);
 		return postMessage({
 			type: 'error',
 			data: 'failed to open database',
@@ -275,21 +340,104 @@ function importData(dataBaseName: string, dbVersion: number, data: string) {
 	};
 }
 
-function alignData(
-	dataBaseName: string,
-	dbVersion: number,
-	alignVariables: {
-		col: string; // column name
-		value: string; // the value of the outlier
-		offset: number; // the shift amount
-		direction: 'Left' | 'Right'; // the direction to shift to
+function addRowPromise(dataBaseName: string, dbVersion: number, oStoreName: string, row: TableRow): Promise<number | null> {
+	return new Promise((resolve, reject) => {
+		addRow(dataBaseName, dbVersion, oStoreName, row, (result: number | null) => {
+			if (result !== null) {
+				resolve(result);
+			} else {
+				reject(null);
+			}
+		});
+	});
+}
+
+function addRow(dataBaseName: string, dbVersion: number, oStoreName: string, row: TableRow, callback: (result: number | null) => void) {
+	const dbRequest = indexedDB.open(dataBaseName, dbVersion);
+	dbRequest.onsuccess = () => {
+		const db = dbRequest.result;
+		const transaction = db.transaction(oStoreName, 'readwrite', { durability: 'strict' });
+		const oStore = transaction.objectStore(oStoreName);
+		const addRequest = oStore.add(row);
+		addRequest.onsuccess = () => {
+			transaction.commit();
+			callback(row.row);
+		};
+		addRequest.onerror = () => {
+			transaction.abort();
+			callback(null);
+		};
+	};
+	dbRequest.onblocked = () => {
+		callback(null);
+	};
+
+	dbRequest.onerror = () => {
+		callback(null);
+	};
+}
+
+async function putRowPromise(dataBaseName: string, dbVersion: number, oStoreName: string, row: TableRow): Promise<number | null> {
+	return new Promise((resolve, reject) => {
+		putRow(dataBaseName, dbVersion, oStoreName, row, (result: number | null) => {
+			if (result !== null) {
+				resolve(result);
+			} else {
+				reject(null);
+			}
+		});
+	});
+}
+
+function putRow(dataBaseName: string, dbVersion: number, oStoreName: string, row: TableRow, callback: (result: number | null) => void) {
+	const dbRequest = indexedDB.open(dataBaseName, dbVersion);
+
+	switch (dataBaseName) {
+		case 'customer_db':
+			dbRequest.onupgradeneeded = upgradeCustomerDB;
+			break;
+		case 'article_db':
+			break;
+		case 'document_db':
+			break;
 	}
-) {
+
+	dbRequest.onsuccess = () => {
+		const db = dbRequest.result;
+		if (!db.objectStoreNames.contains(oStoreName)) {
+			console.error(`${oStoreName} does not exist`);
+			callback(null);
+		} else {
+			const transaction = db.transaction(oStoreName, 'readwrite', { durability: 'strict' });
+			const oStore = transaction.objectStore(oStoreName);
+			const putRequest = oStore.put(row);
+			putRequest.onsuccess = () => {
+				transaction.commit();
+				callback(row.row);
+			};
+			putRequest.onerror = () => {
+				transaction.abort();
+				callback(null);
+			};
+		}
+	};
+	dbRequest.onblocked = () => {
+		callback(null);
+	};
+
+	dbRequest.onerror = () => {
+		callback(null);
+	};
+}
+
+function alignData(dataBaseName: string, dbVersion: number, alignVariables: AlignVariables) {
+	console.log(alignVariables);
 	function performShift(to: number, item: TableRow) {
 		const out = item;
 		const copy = structuredClone(item);
 		const keys = Object.keys(item);
 		if (to > 0) {
+			// ignore the first key (row key)
 			for (let i = 1; i < keys.length; i++) {
 				const key = keys[i];
 				if (i <= Math.abs(to)) {
@@ -326,54 +474,61 @@ function alignData(
 		const db = request.result;
 		const transaction = db.transaction(['data_upload'], 'readwrite');
 		const objectStore = transaction.objectStore('data_upload');
-		let count: number;
 		const countRequest = objectStore.count();
 		countRequest.onsuccess = () => {
-			count = countRequest.result;
-			return (objectStore.openCursor(null, 'next').onsuccess = (ev) => {
-				//@ts-expect-error the event of a IDB request always has a target prop
-				const cursor: IDBCursorWithValue | null = ev.target.result;
-				if (cursor !== null) {
-					if (cursor.value[alignVariables.col] == undefined) {
+			const count = countRequest.result;
+			const update = updateManager('align', count);
+			const cursorRequest = objectStore.openCursor(null, 'next');
+			cursorRequest.onsuccess = () => {
+				const cursor = cursorRequest.result;
+				if (cursor) {
+					const row = cursor.value as TableRow;
+					if (row[alignVariables.col] === undefined) {
 						cursor.continue();
 					}
-
-					if (cursor.value[alignVariables.col] === alignVariables.value) {
-						performShift(shiftAmount, cursor.value);
-					}
-
-					if (parseInt(cursor.key.toString()) < count) {
-						cursor.continue();
+					if (row[alignVariables.col] === alignVariables.value) {
+						const result = performShift(shiftAmount, cursor.value);
+						const updateRequest = cursor.update(result);
+						updateRequest.onsuccess = () => {
+							update();
+							cursor.continue();
+						};
+						updateRequest.onerror = () => {
+							console.error('failed to shift row ', cursor.value.row);
+							update();
+							cursor.continue();
+						};
 					} else {
-						return postMessage({
-							type: 'success',
-							data: 'aligned values',
-						});
+						update();
+						cursor.continue();
 					}
 				} else {
-					// return postMessage({ type: 'error', data: 'invalid cursor' })
+					postMessage({
+						type: 'align-done',
+						data: 'aligned values',
+					});
 				}
-			});
+			};
 		};
 	};
 }
 
-function rankColsByCondition(dataBaseName: string, dbVersion: number, condition: string | null | number | undefined) {
-	function compareItemToCondition(condition: string | null | number | undefined, value: string | number): boolean {
-		switch (typeof condition) {
-			case undefined:
+function rankColsByCondition(dataBaseName: string, dbVersion: number, condition: RemoveVariables) {
+	function compareItemToCondition(compareCondition: RemoveCondition, value: string | number): boolean {
+		switch (compareCondition) {
+			case 'undefined':
 				if (value === undefined && value !== null) {
 					return true;
 				}
 				return false;
-			case null:
+			case 'null':
 				if (value !== undefined && value === null) {
 					return true;
 				}
 				return false;
-			case 'number':
+			case 'custom number':
 				if (typeof value === 'number' || typeof value === 'bigint') {
-					if (value === condition) {
+					if (value.toFixed(2) === parseFloat(condition.custom.number).toFixed(2)) {
 						return true;
 					}
 				} else {
@@ -384,25 +539,34 @@ function rankColsByCondition(dataBaseName: string, dbVersion: number, condition:
 					}
 				}
 				return false;
-			case 'string':
-				if (typeof condition === 'string') {
-					if (condition.length === 0) {
-						if (typeof value === 'string') {
-							if (value.trim().length === 0) {
-								return true;
-							}
-						} else {
-							if (typeof value === 'undefined' || typeof value === null) {
-							}
-						}
-					} else {
-						if (value === condition) {
-							return true;
-						}
+			case 'custom string':
+				if (typeof value === 'string') {
+					if (value.trim() === condition.custom.string.trim()) {
+						return true;
 					}
 					return false;
 				}
 				return false;
+			case '0':
+				let testVar;
+				if (typeof value === 'number') {
+					testVar = value.toFixed(2);
+				} else {
+					testVar = value;
+				}
+				if (testVar === '0.00') {
+					return true;
+				}
+				return false;
+			case 'empty text':
+				if (typeof value !== 'string') {
+					return false;
+				}
+				if (value.trim() === '') {
+					return true;
+				}
+				return false;
+			case '-':
 			default:
 				return false;
 		}
@@ -422,7 +586,7 @@ function rankColsByCondition(dataBaseName: string, dbVersion: number, condition:
 				const keys = Object.keys(firstRow);
 				keys.splice(keys.indexOf('row'), 1);
 				const counter = firstRow as TableRowCounter;
-				const update = updateManager(count * keys.length);
+				const update = updateManager('rank', count * keys.length);
 				for (const [k] of Object.entries(counter)) {
 					counter[k] = 0;
 				}
@@ -434,7 +598,7 @@ function rankColsByCondition(dataBaseName: string, dbVersion: number, condition:
 						for (const key of keys) {
 							update();
 							const value = cursor.value[key];
-							const test = compareItemToCondition(condition, value);
+							const test = compareItemToCondition(condition.condition, value);
 							if (test) {
 								counter[key] = counter[key] + 1;
 							}
@@ -446,7 +610,7 @@ function rankColsByCondition(dataBaseName: string, dbVersion: number, condition:
 						} else {
 							const ranking = Object.entries(counter);
 							ranking.sort((a, b) => b[1] - a[1]);
-							postMessage({ type: 'ranking', data: ranking });
+							postMessage({ type: 'rank-done', data: ranking });
 						}
 					} else {
 						return postMessage({
@@ -460,7 +624,7 @@ function rankColsByCondition(dataBaseName: string, dbVersion: number, condition:
 	};
 }
 
-function deleteCol(col: string) {
+function deleteCol(col: string, responseType: 'delete-rank' | 'delete-col', rankedIndex?: number) {
 	const dbRequest = indexedDB.open('factor_db');
 	dbRequest.onsuccess = () => {
 		const db = dbRequest.result;
@@ -471,26 +635,164 @@ function deleteCol(col: string) {
 		const countRequest = objStore.count();
 		countRequest.onsuccess = () => {
 			const count = countRequest.result;
+			const update = updateManager(responseType, count, rankedIndex ? [rankedIndex] : undefined);
 			const cursorRequest = objStore.openCursor(null, 'next');
 			cursorRequest.onsuccess = () => {
-				const cursor: IDBCursorWithValue | null = cursorRequest.result;
+				const cursor = cursorRequest.result;
 				if (cursor) {
 					const newValue = cursor.value;
 					delete newValue[col];
 					cursor.update(newValue);
-
-					if (parseInt(cursor.key.toString()) < count) {
-						cursor.continue();
-					} else {
-						postMessage({
-							type: 'colDeletion',
-							data: `deleted col: ${col}`,
-						});
-					}
+					update();
+					cursor.continue();
+				} else {
+					postMessage({
+						type: `${responseType}-done`,
+						data: rankedIndex,
+					});
 				}
 			};
 		};
 	};
+}
+
+function restoreBackup(dbVersion: number, data: ReadableStream) {
+	const readable = new TextDecoderStream('utf-8');
+	const source = data.pipeThrough(readable);
+	const reader = source.getReader();
+	let dataBaseName: string | undefined = undefined;
+	let oStoreName: string | undefined = undefined;
+	let tail: string | undefined = undefined;
+	let prevTail: string | undefined = undefined;
+	let fuse = true;
+	const promises: Promise<number | null>[] = [];
+	reader.read().then(function readBackup(value) {
+		if (!value.done) {
+			// if there is data we can process
+			const oStoreData = value.value.split(rx.importExportRx.oStoreSplitter);
+			if (oStoreData.length > 1 && !rx.importExportRx.tailTester.test(oStoreData[oStoreData.length - 1])) {
+				// if there are more than 1 oStores in this run and the last oStore does not end with `]`
+				// store the last oStore in the tail an remove it from the oStores
+				// in the next run we will add it again
+				tail = oStoreData.pop();
+			} else {
+				tail === undefined;
+			}
+
+			for (const [index, store] of oStoreData.entries()) {
+				// iterate the oStores
+				let currentStore = store;
+				if (index === 0 && prevTail !== undefined) {
+					// if it is the first oStore and we have something stored from the previous run
+					// add it in front of the current oStore
+					currentStore = prevTail + currentStore;
+					// discard once used
+					prevTail = undefined;
+				}
+				if (fuse) {
+					// runs once at the beginning of the stream
+					// get the name of the database
+					const dbNameSearch = rx.importExportRx.dbNameSelector.exec(currentStore);
+					if (dbNameSearch !== null) {
+						if (typeof dbNameSearch[0] === 'string') {
+							dataBaseName = dbNameSearch[0];
+							currentStore = currentStore.replace(rx.importExportRx.dbNameRemover, '');
+						} else {
+							console.error('failed to match dataBaseName');
+						}
+					} else {
+						console.error('failed to match dataBaseName');
+					}
+					// burn the fuse
+					fuse = false;
+				}
+				if (currentStore.trimStart().startsWith(`"`)) {
+					// get oStoreName
+					if (/^[\s]{0,}\"\w+\"/gm.test(currentStore)) {
+						const testedOStore = currentStore.slice(currentStore.indexOf(`"`) + 1, currentStore.indexOf(':') - 1);
+						testedOStore.replaceAll(`"`, '');
+						oStoreName = testedOStore;
+						currentStore = currentStore.replace(rx.importExportRx.oStoreNameRemover, '');
+						// inform user about it
+						postMessage({
+							type: 'restore-progress',
+							data: `restoring ${testedOStore}...`,
+						});
+					}
+				}
+				// split oStore data into rows
+				const rows = currentStore.split(rx.importExportRx.rowSplitter);
+				for (const [rowIndex, row] of rows.entries()) {
+					let currentRow = row;
+					if (currentRow.endsWith('}]')) {
+						// if its the end of an oStore remove the square brackets
+						currentRow = currentRow.slice(0, currentRow.length - 1);
+					}
+					if (currentRow.endsWith('}]}}')) {
+						// if it is the end of the backup remove `]}}`
+						currentRow = currentRow.slice(0, currentRow.length - 3);
+					}
+
+					if (!currentRow.startsWith('{') || !currentRow.endsWith('}')) {
+						// if the row is cut somewhere
+						if (rowIndex === rows.length - 1) {
+							// and it is the last item of rows
+							// add the data to the tail
+							if (tail === undefined) {
+								tail = currentRow;
+							} else {
+								tail += currentRow;
+							}
+						}
+					} else {
+						// if the row is cut nowhere
+						try {
+							// parse the row as json
+							const parsedRow = JSON.parse(currentRow, (_key, value) => {
+								if (Array.isArray(value)) {
+									// when making changes to this keep the fillReferences function of the table worker in mind
+									if (value.length !== 0) {
+										if (typeof value[0] === 'number') {
+											return createArrayBuffer(value);
+										} else {
+											return value;
+										}
+									} else {
+										return undefined;
+									}
+								}
+								return value;
+							});
+							if (parsedRow && dataBaseName && oStoreName) {
+								// if successfully parsed, put the row into place
+								// add the promise to our task list
+								promises.push(putRowPromise(dataBaseName, dbVersion, oStoreName, parsedRow));
+							}
+						} catch {
+							console.error('failed to parse json', currentRow);
+						}
+					}
+				}
+			}
+			// tail now becomes the previous tail
+			prevTail = tail;
+			tail = undefined;
+			// proceed to the next chuck
+			reader.read().then(readBackup);
+		} else {
+			// if there is no more data
+			// resolve all promises
+			Promise.all(promises).then(() => {
+				// then inform the user we are done here
+				console.log('restore done');
+				console.log('all promises resolved');
+				postMessage({
+					type: 'restore-done',
+					data: dataBaseName,
+				});
+			});
+		}
+	});
 }
 
 function parseCustomerData(
@@ -502,109 +804,7 @@ function parseCustomerData(
 ) {
 	const customerDBrequest = indexedDB.open(dataBaseName, dbVersion);
 
-	customerDBrequest.onupgradeneeded = function upgradeCustomerDB(e: IDBVersionChangeEvent): void {
-		const target: IDBOpenDBRequest = e.target as IDBOpenDBRequest;
-		const db = target.result;
-		const stores = db.objectStoreNames;
-
-		if (!stores.contains('customers')) {
-			const customer = db.createObjectStore('customers', {
-				keyPath: 'row',
-			});
-			customer.createIndex('customers-id', 'id', {
-				unique: true,
-			});
-		}
-
-		if (!stores.contains('persons')) {
-			const persons = db.createObjectStore('persons', {
-				keyPath: 'row',
-			});
-
-			persons.createIndex('persons-lastName', 'lastName', {
-				unique: false,
-			});
-
-			persons.createIndex('persons-firstName', 'firstName', {
-				unique: false,
-			});
-		}
-
-		if (!stores.contains('emails')) {
-			const email = db.createObjectStore('emails', {
-				keyPath: 'row',
-			});
-
-			email.createIndex('emails-email', 'email', {
-				unique: true,
-			});
-		}
-
-		if (!stores.contains('phones')) {
-			const phone = db.createObjectStore('phones', {
-				keyPath: 'row',
-			});
-
-			phone.createIndex('phones-phone', 'phone', {
-				unique: true,
-			});
-		}
-
-		if (!stores.contains('addresses')) {
-			const address = db.createObjectStore('addresses', {
-				keyPath: 'row',
-			});
-
-			address.createIndex('addresses-street', 'street', {
-				unique: false,
-			});
-			address.createIndex('addresses-city', 'city', {
-				unique: false,
-			});
-			address.createIndex('addresses-zip', 'zip', {
-				unique: false,
-			});
-			address.createIndex('addresses-country', 'country', {
-				unique: false,
-			});
-			address.createIndex('addresses-hash', 'hash', {
-				unique: true,
-			});
-		}
-
-		if (!stores.contains('banks')) {
-			const bank = db.createObjectStore('banks', {
-				keyPath: 'row',
-			});
-
-			bank.createIndex('banks-name', 'name', {
-				multiEntry: true,
-			});
-			bank.createIndex('banks-iban', 'iban', {
-				unique: true,
-			});
-		}
-
-		if (!stores.contains('company')) {
-			const company = db.createObjectStore('company', {
-				keyPath: 'row',
-			});
-
-			company.createIndex('company-name', 'name', {
-				unique: false,
-			});
-
-			company.createIndex('company-taxID', 'taxID', {
-				unique: false,
-			});
-			company.createIndex('company-taxNumber', 'taxNumber', {
-				unique: false,
-			});
-			company.createIndex('company-vatID', 'vatID', {
-				unique: false,
-			});
-		}
-	};
+	customerDBrequest.onupgradeneeded = upgradeCustomerDB;
 
 	customerDBrequest.onsuccess = () => {
 		// variable definitions
@@ -629,7 +829,7 @@ function parseCustomerData(
 		const customerTracker = new Proxy<typeof customerCounter>(customerCounter, customerTrackerHandler);
 
 		// function definitions
-		// these need to be done in the customerDB request scope to 'function' properly
+		// these need to be defined in the customerDB request scope to 'function' properly
 		function insertEmail(data: EmailType, callback: (result: number | null) => void): void {
 			if (oStores.contains('emails')) {
 				const emailData = data;
@@ -1088,7 +1288,6 @@ function parseCustomerData(
 					for (let i = 0; i < result.length; i++) {
 						insertCustomer(result[i], (rowNumber: number | null) => {
 							if (rowNumber !== null) {
-								// console.log('done with customer in row : ' + rowNumber[0]);
 								doneCallback(rowNumber);
 							} else {
 								doneCallback(null);
@@ -1709,7 +1908,7 @@ function parseDocumentData(dataBaseName: string, dataBaseVersion: number, map: D
 function sortData(
 	dataBaseName: string,
 	dbVersion: number,
-	targetDBName: 'article_db' | 'customer_db' | 'document_db',
+	targetDBName: DataBaseNames,
 	sortingMap: CustomerSortingMap | ArticleSortingMap | DocumentSortingMap
 ) {
 	const request = indexedDB.open(dataBaseName, dbVersion);
@@ -1721,7 +1920,7 @@ function sortData(
 
 		dataUploadCountRequest.onsuccess = () => {
 			const dataCount = dataUploadCountRequest.result;
-			const update = updateManager(dataCount);
+			const update = updateManager('sort', dataCount);
 			const cursorRequest = dataUpload.openCursor(null, 'next');
 			type PromiseCounterType = {
 				promises: Promise<number | null>[];
@@ -1738,12 +1937,25 @@ function sortData(
 					if (prop === 'add') {
 						if (typeof value !== 'number') {
 							target['promises'].push(value);
+							// console.log(target['promises'].length / target['total']);
 							if (target['promises'].length === target['total']) {
-								Promise.all(target['promises']).then(() => {
+								postMessage({
+									type: 'sort-progress',
+									data: 'processing...',
+								});
+
+								Promise.all(target['promises']).then((results) => {
+									if (results.includes(null)) {
+										console.error('not all items imported');
+									}
 									postMessage({
-										type: 'success',
+										type: 'sort-done',
 										data: targetDBName,
 									});
+								});
+								postMessage({
+									type: 'sort-progress',
+									data: 'processing...',
 								});
 							}
 						}
@@ -1767,11 +1979,10 @@ function sortData(
 							// console.log('starting with: ', cursor.value.row);
 							proxy.add = new Promise<number | null>((resolve) => {
 								parseCustomerData('customer_db', dbVersion, sortingMap as CustomerSortingMap, cursor.value, (result) => {
-									// console.log('done with: ', result);
-									update();
 									resolve(result);
 								});
 							});
+							update();
 							cursor.continue();
 							break;
 						case 'document_db':
@@ -1800,10 +2011,114 @@ function sortData(
 		dbTransaction.oncomplete = () => {
 			// postMessage({
 			// 	type: 'success',
-			// 	data: 'customers',
+			// 	data: 'customer_db',
 			// });
 		};
 	};
+}
+
+function upgradeCustomerDB(e: IDBVersionChangeEvent): void {
+	const target: IDBOpenDBRequest = e.target as IDBOpenDBRequest;
+	const db = target.result;
+	const stores = db.objectStoreNames;
+
+	if (!stores.contains('customers')) {
+		const customer = db.createObjectStore('customers', {
+			keyPath: 'row',
+		});
+		customer.createIndex('customers-id', 'id', {
+			unique: true,
+		});
+	}
+
+	if (!stores.contains('persons')) {
+		const persons = db.createObjectStore('persons', {
+			keyPath: 'row',
+		});
+
+		persons.createIndex('persons-lastName', 'lastName', {
+			unique: false,
+		});
+
+		persons.createIndex('persons-firstName', 'firstName', {
+			unique: false,
+		});
+	}
+
+	if (!stores.contains('emails')) {
+		const email = db.createObjectStore('emails', {
+			keyPath: 'row',
+		});
+
+		email.createIndex('emails-email', 'email', {
+			unique: true,
+		});
+	}
+
+	if (!stores.contains('phones')) {
+		const phone = db.createObjectStore('phones', {
+			keyPath: 'row',
+		});
+
+		phone.createIndex('phones-phone', 'phone', {
+			unique: true,
+		});
+	}
+
+	if (!stores.contains('addresses')) {
+		const address = db.createObjectStore('addresses', {
+			keyPath: 'row',
+		});
+
+		address.createIndex('addresses-street', 'street', {
+			unique: false,
+		});
+		address.createIndex('addresses-city', 'city', {
+			unique: false,
+		});
+		address.createIndex('addresses-zip', 'zip', {
+			unique: false,
+		});
+		address.createIndex('addresses-country', 'country', {
+			unique: false,
+		});
+		address.createIndex('addresses-hash', 'hash', {
+			unique: true,
+		});
+	}
+
+	if (!stores.contains('banks')) {
+		const bank = db.createObjectStore('banks', {
+			keyPath: 'row',
+		});
+
+		bank.createIndex('banks-name', 'name', {
+			multiEntry: true,
+		});
+		bank.createIndex('banks-iban', 'iban', {
+			unique: true,
+		});
+	}
+
+	if (!stores.contains('company')) {
+		const company = db.createObjectStore('company', {
+			keyPath: 'row',
+		});
+
+		company.createIndex('company-name', 'name', {
+			unique: false,
+		});
+
+		company.createIndex('company-taxID', 'taxID', {
+			unique: false,
+		});
+		company.createIndex('company-taxNumber', 'taxNumber', {
+			unique: false,
+		});
+		company.createIndex('company-vatID', 'vatID', {
+			unique: false,
+		});
+	}
 }
 
 /**
@@ -1898,4 +2213,14 @@ function mergeArray(base: string[] | undefined, addition: string[] | string): st
 	} else {
 		return addition;
 	}
+}
+
+function createArrayBuffer(numbers: number[]): ArrayBuffer {
+	// @ts-expect-error no ts implementation (or at least I wasn't able find the correct way)
+	const buffer = new ArrayBuffer(numbers.length * 2, { maxByteLength: 128 });
+	const view = new DataView(buffer);
+	for (let i = 0; i < numbers.length * 2; i += 2) {
+		view.setInt16(i, numbers[i / 2]);
+	}
+	return buffer;
 }

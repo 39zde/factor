@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 // non-lib imports
-import type { RouterButtonProps } from '@typings';
+import type { RouterButtonProps } from '@type';
 import './SideBar.css';
 
 export function RouterButton({ route, handler, routeName, icon, textOverride, active }: RouterButtonProps): React.JSX.Element {
@@ -20,7 +20,7 @@ export function RouterButton({ route, handler, routeName, icon, textOverride, ac
 						: route === routeName && active
 							? 'light-dark(var(--color-light-1),var(--color-dark-1))'
 							: 'light-dark(var(--color-light-2),var(--color-dark-2))',
-					color: route === routeName && active ? 'var(--color-primary)' : 'initial',
+					color: route === routeName && active ? 'var(--color-primary)' : 'inherit',
 					fontWeight: route === routeName && active ? 'bold' : 'initial',
 				}}
 				className="sideBarButton">
