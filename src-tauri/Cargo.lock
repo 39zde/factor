@@ -967,7 +967,7 @@ dependencies = [
 
 [[package]]
 name = "factor"
-version = "2.1.0"
+version = "2.1.1"
 dependencies = [
  "serde",
  "serde_json",

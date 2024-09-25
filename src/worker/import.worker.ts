@@ -298,14 +298,11 @@ function importData(dataBaseName: string, dbVersion: number, oStore: string, fil
 						}
 						tail = nextTail;
 						nextTail = undefined;
-						console.log("read agaion")
 						reader.read().then(readDataUpload);
 					}
 				} else {
-					console.log("steam end, resolve promises")
 					Promise.all(promises).then(() => {
 						update();
-						console.log('promises released');
 						postMessage({
 							type: 'import-done',
 							data: [pos, columns],
