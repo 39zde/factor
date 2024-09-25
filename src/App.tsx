@@ -12,18 +12,15 @@ disableMenu();
 const ImportWorker = (() => {
 	const work = new Worker(new URL('@worker/import.worker.ts', import.meta.url), {
 		type: 'module',
-		name: "import.worker.ts"
+		name: 'import.worker.ts',
 	});
-	work.onerror = (e) =>{
-		console.error("ImportWorkerError: ",e)
-	}
 	return work;
 })();
 
 const ExportWorker = (() => {
 	const work = new Worker(new URL('@worker/export.worker.ts', import.meta.url), {
 		type: 'module',
-		name: "export.worker.ts"
+		name: 'export.worker.ts',
 	});
 	return work;
 })();
@@ -31,7 +28,7 @@ const ExportWorker = (() => {
 const TableWorker = (() => {
 	const work = new Worker(new URL('@worker/table.worker.ts', import.meta.url), {
 		type: 'module',
-		name: "table.worker.ts"
+		name: 'table.worker.ts',
 	});
 	return work;
 })();
@@ -125,7 +122,7 @@ function App(): JSX.Element {
 			});
 		if (window.__USE_TAURI__) {
 			requestPermission();
-		}else{
+		} else {
 			// preset local storage for demo
 			localStorage.setItem('addresses-allColumns', 'row,type,street,zip,city,country,notes,hash');
 			localStorage.setItem('addresses-columnWidths', '40,156,200,88.5,173.5,58,191,391');
