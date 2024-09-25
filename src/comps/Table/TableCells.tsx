@@ -150,8 +150,8 @@ function AddressTableCell({ data }: { data: AddressType[] }): React.JSX.Element 
 
 						return (
 							<Fragment key={item.hash}>
-								<p key={textRow1}>{textRow1}</p>
-								<p key={textRow2}>
+								<p>{textRow1}</p>
+								<p>
 									{textRow2}({textRow3})
 								</p>
 							</Fragment>
@@ -234,11 +234,7 @@ function CompanyTableCell({ data }: { data: CompanyType[] }): React.JSX.Element 
 					if (item?.name !== undefined) {
 						text1 += item.name;
 					}
-					return (
-						<>
-							<p>{text1}</p>
-						</>
-					);
+					return <p key={text1}>{text1}</p>;
 				})}
 			</span>
 		</>
