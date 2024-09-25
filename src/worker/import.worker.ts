@@ -223,7 +223,7 @@ function importData(dataBaseName: string, dbVersion: number, oStore: string, fil
 	let pos = 0;
 	let tail: string | undefined = undefined;
 	let nextTail: string | undefined = undefined;
-	update()
+	update();
 	function genDBRow(columns: string[], values: string[], rowNumber: number) {
 		const out = {
 			row: rowNumber,
@@ -768,7 +768,7 @@ function restoreBackup(dbVersion: number, data: ReadableStream) {
 								promises.push(putRowPromise(dataBaseName, dbVersion, oStoreName, parsedRow));
 							}
 						} catch (e) {
-							console.error('failed to parse json',currentRow);
+							console.error('failed to parse json', currentRow);
 						}
 					}
 				}
@@ -1939,13 +1939,13 @@ function sortData(
 							// console.log(target['promises'].length / target['total']);
 							if (target['promises'].length === target['total']) {
 								postMessage({
-									type: "sort-progress",
-									data: "processing..."
-								})
+									type: 'sort-progress',
+									data: 'processing...',
+								});
 
 								Promise.all(target['promises']).then((results) => {
-									if(results.includes(null)){
-										console.error("not all items imported")
+									if (results.includes(null)) {
+										console.error('not all items imported');
 									}
 									postMessage({
 										type: 'sort-done',
@@ -1953,9 +1953,9 @@ function sortData(
 									});
 								});
 								postMessage({
-									type: "sort-progress",
-									data: "processing..."
-								})
+									type: 'sort-progress',
+									data: 'processing...',
+								});
 							}
 						}
 					}

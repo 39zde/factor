@@ -22,15 +22,13 @@ const EmailRx = /(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@((
 // const firstRowSelector = /^\"[\w]+\"[\s]{0,}\:\[[\s]{0,}/gm
 // const tailTester = /\}[\s]{0,}\,?[\s]{0,}\][\s]{0,}\}?[\s]{0,}\}?[\s]{0,}$/gm
 
-const dbNameRemover = /^[\s]{0,}?\{[\s]{0,}?\"[\w]+\"[\s]{0,}?\:[\s]{0,}?\{[\s]{0,}?/gm
+const dbNameRemover = /^[\s]{0,}?\{[\s]{0,}?\"[\w]+\"[\s]{0,}?\:[\s]{0,}?\{[\s]{0,}?/gm;
 const dbNameSelector = /(?<=^\{[\s]?\")[\w]+_db(?=\"[\s]?\:[\s]?\{)/gm;
-const oStoreNameRemover = /^[\s]{0,}\"\w+\"[\s]{0,}\:[\s]{0,}\[/gm
-const oStoreNameSelector = /^[\s]{0,}\"\w+\"/gm
+const oStoreNameRemover = /^[\s]{0,}\"\w+\"[\s]{0,}\:[\s]{0,}\[/gm;
+const oStoreNameSelector = /^[\s]{0,}\"\w+\"/gm;
 const oStoreSplitter = /(?<=\}[\s]{0,}\,?[\s]{0,}\][\s]{0,})\,(?=[\s]{0,}\"[\w]+\"[\s]{0,}\:[\s]{0,}\[)/gm;
-const tailTester = /\}[\s]{0,}\,?[\s]{0,}\][\s]{0,}\}?[\s]{0,}\}?[\s]{0,}$/gm
-const rowSplitter = /(?<=\}[\s]{0,})\,(?=[\s]{0,}\{)/gm
-
-
+const tailTester = /\}[\s]{0,}\,?[\s]{0,}\][\s]{0,}\}?[\s]{0,}\}?[\s]{0,}$/gm;
+const rowSplitter = /(?<=\}[\s]{0,})\,(?=[\s]{0,}\{)/gm;
 
 const importExportRx = {
 	dbNameRemover,
@@ -40,7 +38,7 @@ const importExportRx = {
 	oStoreNameSelector,
 	tailTester,
 	rowSplitter,
-}
+};
 
 export const rx = {
 	TitleRx,

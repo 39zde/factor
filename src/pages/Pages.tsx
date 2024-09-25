@@ -1,5 +1,5 @@
 import { Home } from './Home/Home';
-import { HomeDemo} from "./Home/HomeDemo";
+import { HomeDemo } from './Home/HomeDemo';
 import { Upload } from './Upload/Upload';
 import { Settings } from './Settings/Settings';
 import { Customers } from './Customers/Customers';

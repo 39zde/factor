@@ -283,7 +283,7 @@ export function Upload(): React.JSX.Element {
 				}
 				break;
 			case 'sort-progress':
-				if(createButtonText !== "processing..."){
+				if (createButtonText !== 'processing...') {
 					setCreateButtonText(eventData.data as string);
 				}
 				break;
@@ -310,7 +310,6 @@ export function Upload(): React.JSX.Element {
 				setShowFile(false);
 				break;
 			case 'restore-progress':
-
 				setBackupProgress(eventData.data as string);
 				break;
 			case 'restore-done':
