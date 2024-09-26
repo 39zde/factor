@@ -5,12 +5,11 @@
 An invoicing application built with TypeScript:React on top of IndexDB packaged with Tauri v2[^1]
 
 ## Status
-The most important step is already done, which is the Table Component in in `./src/comps/Table`.
+The most important step is already done, which is the Table Component in in [`./src/comps/Table`](./src/comps/Table).
 The approach of using IndexedDB is surprisingly performant, better than expected. So why go with IndexedDB?
 Well it is already built into the browser, meaning no added dependencies. It's also quite performant, even with
  - IndexedDB is a NOSQL-type Database[^2], but using referencing to different object stores[^3] (oStores)
  - the awkward async callbacks without using `await`
- - no significant performance tricks applied
 
 I have not run any benchmarks yet, but scrolling in a Table with:
  - entries: 4000+ entries
@@ -19,7 +18,7 @@ I have not run any benchmarks yet, but scrolling in a Table with:
  - column-count: 12 columns
  - column with of 250px
  - 5 dereferencing operations per row
- - in dev mode
+ - in dev mode (2x the number of hooks are beeing called)
  - on old hardware
  - Memory usage at 3MB
 
@@ -27,7 +26,7 @@ works without problems. WebWorkers[^4] do most of the heavy lifting. Certainly m
 
 For now the uploading of data can only be done in csv with semi-colon (;) separated fields with customers as the only upload option. There are still a bunch of things to do (see [roadmap.md](./roadmap.md)), before adding new tables.
 
-Now this app uses Tauri v2, instead of Electron, for better IPC/File-Handling. Also the Executable Size decreased darmatically, by using the native WebView used on the System.
+Now this app uses Tauri v2, instead of Electron, for better IPC/File-Handling. Also the executable Size decreased darmatically, by using the native WebView used on the system.
 There are also some major performance gains everywhere, which is really nice to see. Tauri v2 is quite young, so some bugs will be expected, but adopting v2 this early should pay off in the future by not having to migrate from v1.
 
 ## Screen Shots
