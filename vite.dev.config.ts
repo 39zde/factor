@@ -19,7 +19,6 @@ export default defineConfig({
 				format: 'es',
 				intro: `window.__FACTOR_VERSION__= ${JSON.stringify(process.env.npm_package_version)}; window.__USE_TAURI__ = true;`,
 			},
-			logLevel: 'silent',
 		},
 	},
 	worker: {
