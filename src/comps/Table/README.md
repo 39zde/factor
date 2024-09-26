@@ -1,5 +1,24 @@
 # The Table Component
 
+The Table Components at it's core displays the data stored in one oStore of a IndexedDB database, where one Row corresponds to one oStore entry.
+It implements its own event loop and orchestrates the rendering of Head, Body and Foot.
+
+## Structure
+
+The main component is [Table.tsx](./Table.tsx). It
+- initiates the Table Context,
+- creates the state management with the use of React's [useReducer](https://react.dev/reference/react/useReducer)
+- handles the responses from the table worker
+- manages the context menu
+	- column order
+	- column visibility
+- listens for Prop changes
+- listens for mouse events
+	- onMouseDown
+	- onMouseMove
+	- onMouseUp
+	
+
 ## Data Information flow
 
 ```javascript
