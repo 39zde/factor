@@ -33,21 +33,22 @@ import type {
 import './Table.css';
 
 const TableContext = createContext<TableContextType>(PlaceHolderTableContext);
-const TableDispatchContext =
-	//!TODO find the correct type for this to not need ts-ignore
-	// @ts-expect-error unintuitive typing with useReducer in combination with useContext
-	createContext<Dispatch<TableDispatchAction>>(tableReducer);
+const TableDispatchContext = createContext<Dispatch<TableDispatchAction>>((value: TableDispatchAction) => {
+	tableReducer(PlaceHolderTableContext, value);
+});
 
-export function useTableContext() {
+export function useTableContext(): TableContextType {
 	return useContext<TableContextType>(TableContext);
 }
 
-export function useTableDispatch() {
-	return useContext(TableDispatchContext);
+export function useTableDispatch(): Dispatch<TableDispatchAction> {
+	return useContext<Dispatch<TableDispatchAction>>(TableDispatchContext);
 }
 
 export function Table({ dataBaseName, tableName, colsHook, entriesHook, updateHook, uniqueKey, nativeColumnNames }: TableProps): React.JSX.Element {
+	/** width of the first columns in every tabes, it displays the row number */
 	const rowColumnWidth = 40;
+	/** the height of the horizontal scrollbar */
 	const scrollBarHeight = 5;
 	const { database, appearances, worker, general } = useAppContext();
 	const notify = useChangeContext();
@@ -157,7 +158,8 @@ export function Table({ dataBaseName, tableName, colsHook, entriesHook, updateHo
 		}
 	}, [tableBodyRef.current, tableState.hasStarted]);
 
-	// listen for any updates
+	// if we register a prop change of updateHook?.update, set the new update value
+	// and if update is true init the table state again
 	useEffect(() => {
 		setMenuActive(false);
 		const newUpdate = updateHook?.update;
@@ -175,7 +177,7 @@ export function Table({ dataBaseName, tableName, colsHook, entriesHook, updateHo
 		}
 	}, [updateHook?.update]);
 
-	// if we register a change from out side the table component execute it
+	// if we register a prop change of colsHook.cols, set the new columns
 	useEffect(() => {
 		if (colsHook !== undefined) {
 			dispatch({
@@ -220,7 +222,7 @@ export function Table({ dataBaseName, tableName, colsHook, entriesHook, updateHo
 		// don't put tableState.scope into the deps array, because the function updateSizing changes tableState.scope, therefore creating a cycle
 	}, [appearances.height, appearances.rowHeight, tableState.hasStarted]);
 
-	//  handle the messages coming from table.worker.ts
+	// handle the messages coming from table.worker.ts
 	//  this also includes responses from messages made in files other than this one.
 	// dispatches: rows, lastReceived, start, columns, allColumns, resizeStyles, columnWidths, count, hasStarted
 	worker.TableWorker.onmessage = (e: MessageEvent) => {

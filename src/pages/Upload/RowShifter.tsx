@@ -61,12 +61,6 @@ export function RowShifter({
 			});
 		}
 		updateHook.setUpdate(true);
-		console.log({
-			col: colInput,
-			value: valInput,
-			offset: offsetInput,
-			direction: directionInput,
-		});
 		worker.ImportWorker.postMessage({
 			type: 'align',
 			dbVersion: database.dbVersion,

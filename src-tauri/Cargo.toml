@@ -1,6 +1,6 @@
 [package]
 name = "factor"
-version = "2.1.1"
+version = "2.1.2"
 description = "An invoicing application built with TypeScript:React on top of IndexDB packaged with Tauri"
 authors = ["39zde"]
 license = "Apache-2.0"

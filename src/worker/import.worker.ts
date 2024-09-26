@@ -313,30 +313,30 @@ function importData(dataBaseName: string, dbVersion: number, oStore: string, fil
 		};
 		transaction.oncomplete = () => {
 			// db.close();
-			// console.log('completed');
 			// return postMessage({
 			// 	type: 'imported',
 			// 	data: [pos, columns],
 			// });
 		};
 		transaction.onerror = (ev) => {
-			console.log(ev);
-			return postMessage({
+			console.error(ev);
+			postMessage({
 				type: 'error',
 				data: 'Database transaction failed',
 			});
 		};
 		clearRequest.onerror = () => {
-			console.log('clear error');
+			console.error('clear error');
 		};
 	};
 
 	request.onerror = () => {
-		console.log(oStore);
-		return postMessage({
+		postMessage({
 			type: 'error',
 			data: 'failed to open database',
 		});
+		// temporary use oStore
+		oStore = oStore.trim();
 	};
 }
 
@@ -431,7 +431,6 @@ function putRow(dataBaseName: string, dbVersion: number, oStoreName: string, row
 }
 
 function alignData(dataBaseName: string, dbVersion: number, alignVariables: AlignVariables) {
-	console.log(alignVariables);
 	function performShift(to: number, item: TableRow) {
 		const out = item;
 		const copy = structuredClone(item);
@@ -784,8 +783,6 @@ function restoreBackup(dbVersion: number, data: ReadableStream) {
 			// resolve all promises
 			Promise.all(promises).then(() => {
 				// then inform the user we are done here
-				console.log('restore done');
-				console.log('all promises resolved');
 				postMessage({
 					type: 'restore-done',
 					data: dataBaseName,
@@ -1282,7 +1279,6 @@ function parseCustomerData(
 		// this is the finalizing function, once it is done the will be no more
 		function insertCustomers(customer: PreInsertCustomer) {
 			parseCustomer([customer], (result: Customer[] | null) => {
-				// console.log('parseCustomerCallback');
 				if (result !== null) {
 					// the will be only one entry in result
 					for (let i = 0; i < result.length; i++) {
@@ -1937,7 +1933,6 @@ function sortData(
 					if (prop === 'add') {
 						if (typeof value !== 'number') {
 							target['promises'].push(value);
-							// console.log(target['promises'].length / target['total']);
 							if (target['promises'].length === target['total']) {
 								postMessage({
 									type: 'sort-progress',
@@ -1976,7 +1971,6 @@ function sortData(
 							parseArticleData('article_db', dbVersion, sortingMap as ArticleSortingMap, cursor.value);
 							break;
 						case 'customer_db':
-							// console.log('starting with: ', cursor.value.row);
 							proxy.add = new Promise<number | null>((resolve) => {
 								parseCustomerData('customer_db', dbVersion, sortingMap as CustomerSortingMap, cursor.value, (result) => {
 									resolve(result);

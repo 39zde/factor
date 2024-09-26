@@ -1,6 +1,6 @@
 {
     "name": "factor",
-    "version": "v2.1.1",
+    "version": "2.1.2",
     "description": "An invoicing application built with TypeScript:React on top of IndexDB packaged with Tauri",
     "author": "39zde",
     "type": "module",
@@ -8,15 +8,17 @@
     "repository": "https://github.com/39zde/factor",
     "license": "Apache-2.0",
     "scripts": {
-		  "action:devtools": "react-devtools",
-		  "action:format": "prettier --write .",
-		  "action:lint": "eslint ./src -c ./eslint.config.mjs  --fix",
+        "action:devtools": "react-devtools",
+        "action:format": "prettier --write .",
+        "action:lint": "eslint ./src -c ./eslint.config.mjs  --fix",
+		  "action:version": "node ./scripts/upgradeVersion.js",
+		  "action:check-types": "tsc",
         "build": "node ./scripts/preTauriBuild.mjs && tauri build",
         "bundle:dev": "vite build -c ./vite.dev.config.ts",
         "bundle:demo": "node ./scripts/preDemoBundle.mjs && vite build -c ./vite.demo.config.ts && node ./scripts/includeFiles.mjs ",
         "bundle:prod": "tsc && vite build -c ./vite.prod.config.ts",
         "dev:vite": "vite -c ./vite.dev.config.ts",
-		  "dev:demo": "node ./scripts/preDemoBundle.mjs && vite -c ./vite.demo.config.ts",
+        "dev:demo": "node ./scripts/preDemoBundle.mjs && vite -c ./vite.demo.config.ts",
         "dev:tauri": "node ./scripts/preTauriDev.mjs && tauri dev",
         "gen:sample-customers": "node ./scripts/genData.cli.js"
     },
@@ -27,35 +29,35 @@
         "@tauri-apps/plugin-notification": "^2.0.0-rc.1",
         "@tauri-apps/plugin-shell": "^2.0.0-rc.1",
         "@tauri-apps/plugin-window-state": "^2.0.0-rc.1",
-        "lucide-react": "^0.445.0",
+        "lucide-react": "^0.446.0",
         "react": "^18.3.1",
         "react-dom": "^18.3.1"
     },
     "devDependencies": {
-        "@eslint/js": "^9.11.0",
+        "@eslint/js": "^9.11.1",
         "@tauri-apps/cli": "^2.0.0-rc.16",
         "@types/eslint__js": "^8.42.3",
-        "@types/node": "^20.16.5",
-        "@types/react": "^18.3.8",
+        "@types/node": "^20.16.8",
+        "@types/react": "^18.3.9",
         "@types/react-dom": "^18.3.0",
-        "@typescript-eslint/eslint-plugin": "^8.6.0",
-        "@typescript-eslint/parser": "^8.6.0",
+        "@typescript-eslint/eslint-plugin": "^8.7.0",
+        "@typescript-eslint/parser": "^8.7.0",
         "@vitejs/plugin-react": "^4.3.1",
-        "eslint": "^9.11.0",
+        "eslint": "^9.11.1",
         "eslint-plugin-react": "^7.36.1",
         "globals": "^15.9.0",
         "prettier": "^3.3.3",
         "typescript": "^5.6.2",
-        "typescript-eslint": "^8.6.0",
-        "vite": "^5.4.7",
+        "typescript-eslint": "^8.7.0",
+        "vite": "^5.4.8",
         "vite-plugin-mkcert": "^1.17.6"
     },
-    "packageManager": "yarn@4.1.1+sha512.ec40d0639bb307441b945d9467139cbb88d14394baac760b52eca038b330d16542d66fef61574271534ace5a200518dabf3b53a85f1f9e4bfa37141b538a9590",
+    "packageManager": "yarn@4.5.0",
     "engines": {
         "node": "v20.17.0"
     },
     "resolutions": {
-        "micromatch": "4.0.8"
+        "rollup": "4.22.4"
     },
     "readme": "./README.md"
 }

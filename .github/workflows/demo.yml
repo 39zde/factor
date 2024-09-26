@@ -5,32 +5,34 @@ on:
     types: [closed]
     branches: [ "master" ]
 
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
-
-# Sets the GITHUB_TOKEN permissions to allow deployment to GitHub Pages
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-# Allow one concurrent deployment
 concurrency:
   group: 'pages'
   cancel-in-progress: true
 
 jobs:
-  # Single deploy job since we're just deploying
-  deploy:
+  if_merged:
+    if: github.event.pull_request.merged == true
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    strategy:
+      matrix:
+        include:
+          - platform: 'ubuntu-latest'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
+
+    runs-on: ${{ matrix.platform }}
+    
     steps:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Set up Node
         uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
       - name: Install dependencies
         run: |
           corepack enable 

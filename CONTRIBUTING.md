@@ -16,9 +16,9 @@ Anyone can contribute. This is not a Pet-Project nor do I follow any agenda with
   		- [articles_db](#articles_db)
   		- [documents_db](#documents_db)
 	- [Local Storage](#local-storage)
-	- [Session Storage](#session-storage)
 - [Sample Data](#sample-data)
 - [Build](#build)
+- [Versioning](#versioning)
 
 ## Getting Started
 
@@ -36,7 +36,8 @@ corepack enable
 git clone https://github.com/39zde/factor.git
 cd factor
 yarn install
-yarn dev
+yarn dev:tauri
+yarn action:devtools
 ```
 
 ## Workspace
@@ -55,13 +56,9 @@ To use yarn the official way [corepack](https://nodejs.org/api/corepack.html) mu
 Run
 ```bash
 npm install -g react-devtools
-yarn devtools
+yarn dev:tauri
+yarn action:devtool
 ```
-and uncomment
-```html
-<script src="http://localhost:8097"></script>
-```
-in [index.html](./index.html)
 
 ## Theming
 
@@ -120,7 +117,7 @@ Ratings:
 
  Here is an Example made with [DrawDB](https://github.com/drawdb-io/drawdb) of the customers_db database. Each "table" is an oStore. `row` is always the keyPath.  The data types don't match entirely. Fields with a key icon are indexed fields, where indexed means [IDBIndex](https://developer.mozilla.org/en-US/docs/Web/API/IDBIndex). Every field, from which a `1->n` connection originates, is of type `ArrayBuffer`. The `ArrayBuffer`, when decoded with `Uint32`, has n = `ArrayBuffer.byteLength` / `2` references. The reference (the `Uint32` number) is then the row number in the other oStore. The other oStore name is always the key. Thats how relations are stored.
 
- ![customers_db](./resources/img/customers_db.png)
+ ![customers_db](./resources/images//customers_db.png)
 
  Also have a look at [`./src/renderer/src/util/types/database`](./src/renderer/src/util/types/database/)
 
@@ -132,7 +129,7 @@ Index Names have the following structure:
 
  There is a way to generate sample data, which is ready for importing. The script is located at [`./resources/data/genData.cli.js`](./resources/data/genData.cli.js).
  ```bash
-node genData.cli.js
+yarn gen:sample-customers
  ```
  After calling the script you will be asked, how many rows you want. Shortly after a file will appear, ready to be used.
 
@@ -142,3 +139,6 @@ node genData.cli.js
 yarn build
 ```
 This command does the trick. For further details consult the official docs. Also keep in mind [Tauri v2](https://v2.tauri.app/) is very young
+
+## Versioning
+This project aims to follow [Semantic Versioning 2.0.0](https://semver.org/)

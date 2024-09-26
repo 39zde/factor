@@ -1,7 +1,8 @@
 import { app, core, dpi, event, image, menu, mocks, path, tray, webview, webviewWindow, window } from '@tauri-apps/api';
 
-export type { SideBarProps, RouterButtonProps, LowerButtonProps } from './comps/SideBar/SideBarProps';
-export type { RouteType } from './comps/SideBar/routes';
+// pages
+
+export type { HelpTexts, HelpItem } from './pages/Help/HelpTexts';
 
 export type {
 	ImportModuleProps,
@@ -10,6 +11,22 @@ export type {
 	CustomerSorterInputGroupUnderling,
 	ColumnSetterProps,
 } from './pages/Upload/Upload';
+
+// database
+export type { ArticleDBObjectStores, ArticleSortingMap } from './database/ArticleTypes';
+
+export type { DocumentDBObjectStores, DocumentSortingMap } from './database/DocumentTypes';
+
+export type {
+	TableRow,
+	DerefRow,
+	CustomerKeys,
+	CustomerReferences,
+	BaseRow,
+	UploadRow,
+	TableRowCounter,
+	DataBaseNames,
+} from './database/DataBaseData';
 
 export type {
 	Customer,
@@ -33,10 +50,7 @@ export type {
 	BaseCustomer,
 } from './database/CustomerTypes';
 
-export type { TableProps, TableDispatchAction, TableContextType, ResizeStyle, TableRowItemProps, ResizeElementProps } from './comps/Table/Table';
-
-export type { HelpTexts, HelpItem } from './pages/Help/HelpTexts';
-
+// worker
 export type {
 	TableWorkerRequestMessage,
 	TableWorkerRequestMessageAction,
@@ -62,24 +76,20 @@ export type {
 	UpdateMessage,
 } from './worker/import.worker';
 
-export type {
-	TableRow,
-	DerefRow,
-	CustomerKeys,
-	CustomerReferences,
-	BaseRow,
-	UploadRow,
-	TableRowCounter,
-	DataBaseNames,
-} from './database/DataBaseData';
+export type { CompressionTypes, ExportWorkerRequest, ExportWorkerResponse, ExportFileStreamer } from './worker/export.worker';
+
+// comps
+
+export type { CheckBoxProps } from './comps/CheckBox/CheckBox';
 
 export type { ContextMenuProps, MenuItem } from './comps/ContextMenu/ContextMenu';
 
-export type { ArticleDBObjectStores, ArticleSortingMap } from './database/ArticleTypes';
+export type { RouteType } from './comps/SideBar/routes';
+export type { SideBarProps, RouterButtonProps, LowerButtonProps } from './comps/SideBar/SideBarProps';
 
-export type { DocumentDBObjectStores, DocumentSortingMap } from './database/DocumentTypes';
+export type { TableProps, TableDispatchAction, TableContextType, ResizeStyle, TableRowItemProps, ResizeElementProps } from './comps/Table/Table';
 
-export type { CompressionTypes, ExportWorkerRequest, ExportWorkerResponse, ExportFileStreamer } from './worker/export.worker';
+// globals
 
 export type {
 	AppContextType,
