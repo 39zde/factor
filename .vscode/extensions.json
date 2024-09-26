@@ -7,6 +7,7 @@
         "aaron-bond.better-comments",
         "ms-vscode.vscode-typescript-next",
         "esbenp.prettier-vscode",
-        "vadimcn.vscode-lldb"
+        "vadimcn.vscode-lldb",
+        "rust-lang.rust-analyzer"
     ]
 }
