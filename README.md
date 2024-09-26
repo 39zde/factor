@@ -31,10 +31,7 @@ There are also some major performance gains everywhere, which is really nice to 
 
 ## Screen Shots
 
-<img src="./resources/img/screenshots/contextMenu.png" alt="Context Menu" height="300">
-<img src="./resources/img/screenshots/settings.png" alt="Settings Page" height="300">
-<img src="./resources/img/screenshots/upload.png" alt="Settings Page" height="300">
-
+see [Screenshots Folder](./resources/images/screenshots/SCREENSHOT.md)
 
 ## Quick Start
 
