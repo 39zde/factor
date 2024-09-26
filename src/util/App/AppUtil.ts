@@ -62,8 +62,7 @@ export async function getSettings(): Promise<AppSettingsType> {
 		}
 		return settings;
 	} catch (e) {
-		console.log('failed to read settings');
-		console.error(e);
+		console.error('failed to read settings',e);
 	}
 	return defaultSettings;
 }

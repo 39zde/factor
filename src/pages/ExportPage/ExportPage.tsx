@@ -20,13 +20,6 @@ export function ExportPage(): React.JSX.Element {
 		oStoreName: string | undefined,
 		compression: CompressionTypes | undefined
 	) => {
-		console.log({
-			type: type,
-			dataBaseName: dataBaseName,
-			oStoreName: oStoreName,
-			format: format,
-			compression: compression,
-		});
 		setFileHandle(undefined);
 
 		context.worker.ExportWorker.postMessage({
@@ -42,7 +35,6 @@ export function ExportPage(): React.JSX.Element {
 	const formatHandler = () => {
 		if (formatRef.current !== null) {
 			if (formatRef.current.value !== undefined) {
-				console.log(formatRef.current.value);
 				setFormat(formatRef.current.value as 'json' | 'csv');
 			}
 		}
@@ -64,7 +56,6 @@ export function ExportPage(): React.JSX.Element {
 					create(fileName, { baseDir: BaseDirectory.Download }).then((handle) => {
 						setFileHandle(handle);
 						if (eventData.scope !== undefined) {
-							console.log('create');
 							channel.postMessage({ type: 'create', name: fileName, scope: eventData.scope });
 						}
 					});

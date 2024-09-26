@@ -36,19 +36,16 @@ self.onmessage = function requestHandler(e: MessageEvent) {
 			};
 			const proxy = new Proxy(starterPackage, starterHandler);
 			getCount(eventData.dataBaseName, eventData.dbVersion, eventData.storeName, (count: number | undefined) => {
-				// console.log('count: ', count);
 				if (count !== undefined) {
 					proxy.startingCount = count;
 				}
 			});
 			getColumns(eventData.dataBaseName, eventData.dbVersion, eventData.storeName, (cols: string[] | undefined) => {
-				// console.log('columns: ', cols);
 				if (cols !== undefined) {
 					proxy.startingColumns = cols;
 				}
 			});
 			getStartingRows(eventData.dataBaseName, eventData.dbVersion, eventData.storeName, eventData.scope, (rows: DerefRow[] | undefined) => {
-				// console.log('row: ', rows);
 				if (rows !== undefined) {
 					proxy.starterRows = rows;
 				}
@@ -138,7 +135,6 @@ function getStartingRows(
 				},
 			};
 			const doneHandler = new Proxy(done, doneListener);
-			// console.log('db does contain oStore');
 			const cursorRequest = oStore.openCursor(null, 'nextunique');
 			cursorRequest.onsuccess = function startingCursorSuccess() {
 				const cursor: IDBCursorWithValue | null = cursorRequest.result;
@@ -336,7 +332,7 @@ function fillReferences(
 						proxy.count += 1;
 					};
 					request.onerror = function fillReferencesRequestError() {
-						console.log('referencing error');
+						console.error('referencing error');
 						proxy.count += 1;
 					};
 				}
