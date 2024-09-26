@@ -335,6 +335,8 @@ function importData(dataBaseName: string, dbVersion: number, oStore: string, fil
 			type: 'error',
 			data: 'failed to open database',
 		});
+		// temporary use oStore
+		oStore = oStore.trim();
 	};
 }
 

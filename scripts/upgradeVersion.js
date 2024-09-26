@@ -12,8 +12,9 @@ const version = {
 	patch: 0,
 };
 
-const displayHelp = ()=> console.log(
-	`
+const displayHelp = () =>
+	console.log(
+		`
 
 upgradeVersion.js
 A help script to increase the the version numbers across all files
@@ -27,16 +28,24 @@ Scheme: a.b.c
 -m --minor     Increase the version to a.[b+1].0
 -p --patch     Increase the version to a.b.[c+1]
 
-`)
+`
+	);
 
 const versionJsonMatcher = /(?<=\"version\"\:[\s]{0,}\")[\d]{1,}\.[\d]{1,}\.[\d]{1,}(?=\"\,)/gm;
 const versionTomlMatcher = /(?<=version\s\=\s\")[\d]{1,}\.[\d]{1,}\.[\d]{1,}(?=\")/gm;
 
 function main() {
-	if(args.includes("-h") || args.includes("--help") || args.includes("--usage")){
-		displayHelp()
-	}else{
-		if(args.includes("-M")||args.includes("-m")|| args.includes("-p")|| args.includes("--major")|| args.includes("--minor")|| args.includes("--patch")){
+	if (args.includes('-h') || args.includes('--help') || args.includes('--usage')) {
+		displayHelp();
+	} else {
+		if (
+			args.includes('-M') ||
+			args.includes('-m') ||
+			args.includes('-p') ||
+			args.includes('--major') ||
+			args.includes('--minor') ||
+			args.includes('--patch')
+		) {
 			const packageJsonFile = readFileSync(packageJsonPath, 'utf8');
 			const currentVersion = packageJsonFile.match(versionJsonMatcher);
 			if (currentVersion !== null) {
@@ -44,14 +53,14 @@ function main() {
 				version.major = parseInt(versions[0]);
 				version.minor = parseInt(versions[1]);
 				version.patch = parseInt(versions[2]);
-				if (args.includes('--patch') || args.includes("-p")) {
+				if (args.includes('--patch') || args.includes('-p')) {
 					version.patch += 1;
 				}
-				if (args.includes('--minor') || args.includes("-m")) {
+				if (args.includes('--minor') || args.includes('-m')) {
 					version.minor += 1;
 					version.patch = 0;
 				}
-				if (args.includes('--major') || args.includes("-M")) {
+				if (args.includes('--major') || args.includes('-M')) {
 					version.major += 1;
 					version.minor = 0;
 					version.patch = 0;
@@ -67,10 +76,10 @@ function main() {
 				writeFileSync(tauriDevConfPath, newTauriDevConfFile, 'utf8');
 				const tauriProdConfFile = readFileSync(tauriProdConfPath, 'utf8');
 				const newTauriProdConfFile = tauriProdConfFile.replace(versionJsonMatcher, newVersion);
-				writeFileSync(tauriDevConfPath, newTauriProdConfFile, 'utf8');
+				writeFileSync(tauriProdConfPath, newTauriProdConfFile, 'utf8');
 			}
-		}else{
-			displayHelp()
+		} else {
+			displayHelp();
 		}
 	}
 }

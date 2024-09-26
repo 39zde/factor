@@ -1,6 +1,6 @@
 {
     "name": "factor",
-    "version": "2.1.1",
+    "version": "2.1.2",
     "description": "An invoicing application built with TypeScript:React on top of IndexDB packaged with Tauri",
     "author": "39zde",
     "type": "module",
@@ -12,6 +12,7 @@
         "action:format": "prettier --write .",
         "action:lint": "eslint ./src -c ./eslint.config.mjs  --fix",
 		  "action:version": "node ./scripts/upgradeVersion.js",
+		  "action:check-types": "tsc",
         "build": "node ./scripts/preTauriBuild.mjs && tauri build",
         "bundle:dev": "vite build -c ./vite.dev.config.ts",
         "bundle:demo": "node ./scripts/preDemoBundle.mjs && vite build -c ./vite.demo.config.ts && node ./scripts/includeFiles.mjs ",
