@@ -1,5 +1,8 @@
 # Release Notes
 
+## Version v2.1.2
+	- bugfixes and polishing
+
 ## Version v2.1.1
 	- sanding and optimizations
 	- github pages demo
