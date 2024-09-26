@@ -1,13 +1,18 @@
+# Frontend
 node_modules/
-dist/
 bundle-prod/
 bundle-demo/
 bundle-dev/
-.DS_Store
-*.log*
 .yarn
-.perf/
+!resources/data/*.sample.csv
+*.csv
+#a different index.html will be copied to root folder depending, on what package.json script is run
+index.html
+# Backend
 src-tauri/target/
 src-tauri/gen/schemas
-*.csv
-!resources/data/*.sample.csv
+#a different tauri.conf.json will be copied to ./src-tauri/ folder, depending on what package.json script is run
+src-tauri/tauri.conf.json
+# other
+.DS_Store
+*.log*
