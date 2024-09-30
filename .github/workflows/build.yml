@@ -75,6 +75,7 @@ jobs:
         releaseDraft: true
         prerelease: false
         projectPath: './src-tauri'
+        tauriScript: yarn run tauri
         args: ${{ matrix.args }}
 
 
