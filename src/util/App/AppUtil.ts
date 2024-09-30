@@ -7,7 +7,6 @@ import type {
 	AppSettingsDatabaseDatabases,
 	AppContextType,
 	AppAction,
-	AppSettingsAppearance,
 	CustomerDBObjectStores,
 	ArticleDBObjectStores,
 	DocumentDBObjectStores,
