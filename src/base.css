@@ -48,8 +48,6 @@
 *::after {
 	box-sizing: border-box;
 	margin: 0;
-	font-weight: normal;
-	scroll-behavior: smooth;
 }
 
 *::selection {
@@ -62,7 +60,8 @@ menu {
 	list-style: none;
 }
 
-html {
+html,
+body {
 	min-height: 100vh;
 	background: light-dark(var(--color-light-1), var(--color-dark-1));
 	line-height: 1.6;
@@ -70,6 +69,10 @@ html {
 	text-rendering: optimizeLegibility;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
+	box-sizing: border-box;
+	margin: 0;
+	font-weight: normal;
+	scroll-behavior: smooth;
 }
 
 button,
