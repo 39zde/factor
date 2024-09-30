@@ -1,12 +1,12 @@
 {
-    "folders": [
+	"folders": [
 		{
 			"path": "."
 		}
 	],
-    "settings": {
-        "typescript.tsdk": "node_modules\\typescript\\lib",
-		  "files.exclude": {
+	"settings": {
+		"typescript.tsdk": "node_modules\\typescript\\lib",
+		"files.exclude": {
 			"**/.git": true,
 			"**/.svn": true,
 			"**/.hg": true,
@@ -30,10 +30,35 @@
 			"LICENSE": true,
 			"node_modules": true,
 			".yarn": true,
-		  },
-		  "editor.defaultFormatter": "esbenp.prettier-vscode",
-		  "editor.indentSize": "tabSize",
-		  "editor.tabSize": 3,
-    },
-
+		},
+		"editor.indentSize": "tabSize",
+		"editor.tabSize": 3,
+		"[typescript]": {
+			"editor.defaultFormatter": "esbenp.prettier-vscode"
+		},
+		"[javascript]": {
+			"editor.defaultFormatter": "esbenp.prettier-vscode"
+		},
+		"[json]": {
+			"editor.defaultFormatter": "vscode.json-language-features"
+		},
+		"[css]": {
+			"editor.defaultFormatter": "vscode.css-language-features"
+		},
+		"[rust]": {
+			"editor.defaultFormatter": "rust-lang.rust-analyzer"
+		},
+		"[jsonc]": {
+			"editor.defaultFormatter": "vscode.json-language-features"
+		},
+		"[jsonl]": {
+			"editor.defaultFormatter": "vscode.json-language-features"
+		},
+		"[yaml]": {
+			"editor.insertSpaces": true,
+			"editor.tabSize": 2,
+			"editor.autoIndent": "advanced",
+			"diffEditor.ignoreTrimWhitespace": false
+		}
+	},
 }
