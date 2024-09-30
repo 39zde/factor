@@ -5,6 +5,11 @@ on:
     types: [closed]
     branches: [ "master" ]
   workflow_dispatch:
+    inputs:
+      publish:
+        required: true
+        type: boolean
+        description: 'manual release'
     
 concurrency:
   group: 'pages'
@@ -12,7 +17,7 @@ concurrency:
 
 jobs:
   if_merged:
-    if: github.event.pull_request.merged == true
+    if: github.event.pull_request.merged == true || inputs.publish
     permissions:
       contents: read
       pages: write
