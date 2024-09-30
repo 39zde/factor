@@ -1,5 +1,8 @@
 @import url('@base');
 
+:root {
+	color-scheme: light dark;
+}
 
 @supports (scrollbar-color: white black) {
 	@media screen and (prefers-color-scheme: dark) {

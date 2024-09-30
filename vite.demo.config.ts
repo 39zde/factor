@@ -3,17 +3,6 @@ import { resolve } from 'path';
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
-interface PreRenderedChunk {
-	exports: string[];
-	facadeModuleId: string | null;
-	isDynamicEntry: boolean;
-	isEntry: boolean;
-	isImplicitEntry: boolean;
-	moduleIds: string[];
-	name: string;
-	type: 'chunk';
-}
-
 // https://vitejs.dev/config/
 export default defineConfig({
 	plugins: [react(), mkcert()],

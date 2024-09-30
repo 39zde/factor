@@ -2,6 +2,7 @@
 
 ## Version v2.1.2
 	- bugfixes and polishing
+	- dependency upgrades
 
 ## Version v2.1.1
 	- sanding and optimizations

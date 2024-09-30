@@ -180,7 +180,7 @@ function App(): JSX.Element {
 				<ChangeContext.Provider value={dispatch}>
 					<link
 						rel="stylesheet"
-						href={new URL(`./scrollbarColor-${appState.appearances.colorTheme.split(' ').join('')}.css`, import.meta.url).href}
+						href={new URL(`./theme-${appState.appearances.colorTheme.split(' ').join('')}.css`, import.meta.url).href}
 						type="text/css"
 					/>
 					<div

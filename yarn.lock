@@ -770,120 +770,120 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-pdf/fns@npm:2.2.1":
-  version: 2.2.1
-  resolution: "@react-pdf/fns@npm:2.2.1"
+"@react-pdf/fns@npm:3.0.0":
+  version: 3.0.0
+  resolution: "@react-pdf/fns@npm:3.0.0"
   dependencies:
     "@babel/runtime": "npm:^7.20.13"
-  checksum: 10c0/457bdff57eaebbf09f1a78a23118e711589a2afc229bade3de91776db24ebce5c61ebe46032b9a550d47c98611e0c84fc4e1bb7ea89d4847fb00bddc010ca814
+  checksum: 10c0/24975e5735e2b49cfb820072e97b775af7679aa27990e60b7398c03cc8610aaf3c776089263cbf7b499f81181663ecd671e7dea8ca41052bc28ff1b9650ef8d9
   languageName: node
   linkType: hard
 
-"@react-pdf/font@npm:^2.5.2":
-  version: 2.5.2
-  resolution: "@react-pdf/font@npm:2.5.2"
+"@react-pdf/font@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "@react-pdf/font@npm:3.0.0"
   dependencies:
     "@babel/runtime": "npm:^7.20.13"
-    "@react-pdf/types": "npm:^2.6.0"
+    "@react-pdf/types": "npm:^2.7.0"
     cross-fetch: "npm:^3.1.5"
     fontkit: "npm:^2.0.2"
     is-url: "npm:^1.2.4"
-  checksum: 10c0/471c824bcde68d39bc2f8e9bd21f993f40c3e1bbec2391a6f1abcc4a5408c8405fa86e1ca15733205f658ac01e65a6d275277fc457d194cc1408a3555baaf81b
+  checksum: 10c0/154f846d254ecaa2e8301c424296f51b49e5b8104c0efd6f539a5fe9135012c17c29549d7151cdbcc062a851985a0ef34a17d0121f99c7d775f81263bea68ae9
   languageName: node
   linkType: hard
 
-"@react-pdf/image@npm:^2.3.6":
-  version: 2.3.6
-  resolution: "@react-pdf/image@npm:2.3.6"
+"@react-pdf/image@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "@react-pdf/image@npm:3.0.0"
   dependencies:
     "@babel/runtime": "npm:^7.20.13"
-    "@react-pdf/png-js": "npm:^2.3.1"
+    "@react-pdf/png-js": "npm:^3.0.0"
     cross-fetch: "npm:^3.1.5"
-    jay-peg: "npm:^1.0.2"
-  checksum: 10c0/7ff4994f53beef0b54233178dec404601396024484ee0ff94cb0cc8df1fb20e0cc706436037b6634bfa67e918a73dd5db7ded59285eadfe29da520a9f1cf09b1
+    jay-peg: "npm:^1.1.0"
+  checksum: 10c0/49cf34f5b5d26b27c4faab3d741a3c6b6fe8fd1b067d417ea01f63695670a6acd770663d1c5ef9f13dd8948f8686a8a9ad79290d88a2c3bcccd27dcf3ca7e21e
   languageName: node
   linkType: hard
 
-"@react-pdf/layout@npm:^3.13.0":
-  version: 3.13.0
-  resolution: "@react-pdf/layout@npm:3.13.0"
+"@react-pdf/layout@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "@react-pdf/layout@npm:4.0.0"
   dependencies:
     "@babel/runtime": "npm:^7.20.13"
-    "@react-pdf/fns": "npm:2.2.1"
-    "@react-pdf/image": "npm:^2.3.6"
-    "@react-pdf/pdfkit": "npm:^3.2.0"
-    "@react-pdf/primitives": "npm:^3.1.1"
-    "@react-pdf/stylesheet": "npm:^4.3.0"
-    "@react-pdf/textkit": "npm:^4.4.1"
-    "@react-pdf/types": "npm:^2.6.0"
+    "@react-pdf/fns": "npm:3.0.0"
+    "@react-pdf/image": "npm:^3.0.0"
+    "@react-pdf/pdfkit": "npm:^4.0.0"
+    "@react-pdf/primitives": "npm:^4.0.0"
+    "@react-pdf/stylesheet": "npm:^5.0.0"
+    "@react-pdf/textkit": "npm:^5.0.0"
+    "@react-pdf/types": "npm:^2.7.0"
     cross-fetch: "npm:^3.1.5"
     emoji-regex: "npm:^10.3.0"
     queue: "npm:^6.0.1"
-    yoga-layout: "npm:^2.0.1"
-  checksum: 10c0/868e6f5d3e34b776cebafaa44c15b9a357553daa49dce2ef829087aaec9edcc530bbfcd66f2786f4b1cf1339b9319fdaa884eede401f9df6622b21036b614b8a
+    yoga-layout: "npm:^3.1.0"
+  checksum: 10c0/d58b1d148c365e7a89c8afc26130129c388b3fc18aabd04513179e714c42c7d61622729e0dadddf457c158bfb34ea1ca8aa45fb635cc7971faded45fa1ca1e64
   languageName: node
   linkType: hard
 
-"@react-pdf/pdfkit@npm:^3.2.0":
-  version: 3.2.0
-  resolution: "@react-pdf/pdfkit@npm:3.2.0"
+"@react-pdf/pdfkit@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "@react-pdf/pdfkit@npm:4.0.0"
   dependencies:
     "@babel/runtime": "npm:^7.20.13"
-    "@react-pdf/png-js": "npm:^2.3.1"
+    "@react-pdf/png-js": "npm:^3.0.0"
     browserify-zlib: "npm:^0.2.0"
     crypto-js: "npm:^4.2.0"
     fontkit: "npm:^2.0.2"
-    jay-peg: "npm:^1.0.2"
+    jay-peg: "npm:^1.1.0"
     vite-compatible-readable-stream: "npm:^3.6.1"
-  checksum: 10c0/da0c0614c6eef9931bc2cad554b78c4edca07fbdf5b965077ecad076129a856f8eab74c6b8aaf79af5239a38da93433c442f819a8c8df0424868ad6e28c2ba7e
+  checksum: 10c0/eabad2fe1127ab4bc8362a528c826c0efca9104c91d665882e29b90b2c578f11b39329f3db6e78fa30724f8213b9580bf9792149e5658106aaa8102e8db5d53f
   languageName: node
   linkType: hard
 
-"@react-pdf/png-js@npm:^2.3.1":
-  version: 2.3.1
-  resolution: "@react-pdf/png-js@npm:2.3.1"
+"@react-pdf/png-js@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "@react-pdf/png-js@npm:3.0.0"
   dependencies:
     browserify-zlib: "npm:^0.2.0"
-  checksum: 10c0/63f54ab19be2de9efd8704b943eec4b032386cad9bd4154af7f03f81f66ea95fc4b8c5ae4b1d2531f18ae6141cb107b6a50898ef0f7f561c3eaecd4b441baeae
+  checksum: 10c0/8ed9b4936df2440b4cec66b56d4da9150458a8d38d4f53fd569a590e8d7cf7629819a0ce0cff22bcb60ccda2252734501cd2b6d6d372b5b7e50026a1a840a43e
   languageName: node
   linkType: hard
 
-"@react-pdf/primitives@npm:^3.1.1":
-  version: 3.1.1
-  resolution: "@react-pdf/primitives@npm:3.1.1"
-  checksum: 10c0/da8453f923d09bae8fff89c861dc06d8028138fcf765c53cf17126de209348ebbdd2dac434a36ba4c3ed4895594cb2507b231a011944ae3105789b11fd683839
+"@react-pdf/primitives@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "@react-pdf/primitives@npm:4.0.0"
+  checksum: 10c0/f906f138835914c932b69e730e7b738ab197fd021d1053a75259af2e158abeafae41cffa231be55b1532a6d0a0dbfbcf3a8aa8ed7a101c9304eb4b1d7b79cf13
   languageName: node
   linkType: hard
 
-"@react-pdf/render@npm:^3.5.0":
-  version: 3.5.0
-  resolution: "@react-pdf/render@npm:3.5.0"
+"@react-pdf/render@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "@react-pdf/render@npm:4.0.0"
   dependencies:
     "@babel/runtime": "npm:^7.20.13"
-    "@react-pdf/fns": "npm:2.2.1"
-    "@react-pdf/primitives": "npm:^3.1.1"
-    "@react-pdf/textkit": "npm:^4.4.1"
-    "@react-pdf/types": "npm:^2.6.0"
+    "@react-pdf/fns": "npm:3.0.0"
+    "@react-pdf/primitives": "npm:^4.0.0"
+    "@react-pdf/textkit": "npm:^5.0.0"
+    "@react-pdf/types": "npm:^2.7.0"
     abs-svg-path: "npm:^0.1.1"
     color-string: "npm:^1.9.1"
     normalize-svg-path: "npm:^1.1.0"
     parse-svg-path: "npm:^0.1.2"
     svg-arc-to-cubic-bezier: "npm:^3.2.0"
-  checksum: 10c0/7a4136a05229e245276a077d06f03c334ea81f9c42db828b0708f78e0d845b43a5168c711cda86ddecdce1223a97e851064a563e2524e3b15d74f6813ed3c45f
+  checksum: 10c0/a76502842deca71e6120efaa437f0966f42c346aae1fe341dc53ae0ce5f5cf57f2e2acad20d97ab19cde2d9da139495fefee3c98e5637fb809222bd7135c7818
   languageName: node
   linkType: hard
 
-"@react-pdf/renderer@npm:^3.4.5":
-  version: 3.4.5
-  resolution: "@react-pdf/renderer@npm:3.4.5"
+"@react-pdf/renderer@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "@react-pdf/renderer@npm:4.0.0"
   dependencies:
     "@babel/runtime": "npm:^7.20.13"
-    "@react-pdf/font": "npm:^2.5.2"
-    "@react-pdf/layout": "npm:^3.13.0"
-    "@react-pdf/pdfkit": "npm:^3.2.0"
-    "@react-pdf/primitives": "npm:^3.1.1"
-    "@react-pdf/render": "npm:^3.5.0"
-    "@react-pdf/types": "npm:^2.6.0"
+    "@react-pdf/font": "npm:^3.0.0"
+    "@react-pdf/layout": "npm:^4.0.0"
+    "@react-pdf/pdfkit": "npm:^4.0.0"
+    "@react-pdf/primitives": "npm:^4.0.0"
+    "@react-pdf/render": "npm:^4.0.0"
+    "@react-pdf/types": "npm:^2.7.0"
     events: "npm:^3.3.0"
     object-assign: "npm:^4.1.1"
     prop-types: "npm:^15.6.2"
@@ -891,42 +891,42 @@ __metadata:
     scheduler: "npm:^0.17.0"
   peerDependencies:
     react: ^16.8.0 || ^17.0.0 || ^18.0.0
-  checksum: 10c0/e6cba95ce8d6c23b3f830d73b2c54baff0ce645a2b3ecef8b5a9f0b2113ea05956d240e572f366bc80b69c266877bab22f2373be31296a86dac93413c00fddf2
+  checksum: 10c0/aef20fc0bb4d576b426c37fa120ec7d65568dbae0c321355bbbc04a2b57e67cbdac50983815d7f1cd93dbedb1310affa9c4f0d68c1b629272b68767dfc8a5cd2
   languageName: node
   linkType: hard
 
-"@react-pdf/stylesheet@npm:^4.3.0":
-  version: 4.3.0
-  resolution: "@react-pdf/stylesheet@npm:4.3.0"
+"@react-pdf/stylesheet@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "@react-pdf/stylesheet@npm:5.0.0"
   dependencies:
     "@babel/runtime": "npm:^7.20.13"
-    "@react-pdf/fns": "npm:2.2.1"
-    "@react-pdf/types": "npm:^2.6.0"
+    "@react-pdf/fns": "npm:3.0.0"
+    "@react-pdf/types": "npm:^2.7.0"
     color-string: "npm:^1.9.1"
     hsl-to-hex: "npm:^1.0.0"
     media-engine: "npm:^1.0.3"
     postcss-value-parser: "npm:^4.1.0"
-  checksum: 10c0/0df5f138804febe5ce6ffc4eea3ed22fa36d0bdf76eedd4c639cd8790b355f1247d3e3969049ebf310fcb7b5c274a639d8a95d32d3a6c0fb815a0e22bae3370b
+  checksum: 10c0/4f150e23d386aa426474f81636110ec93528aff4558a1e6bfa0e945e3b94ac08ff2766856ae4afe7722f30b390b772fd45544a920a7dc7b42bfa2228d39cb944
   languageName: node
   linkType: hard
 
-"@react-pdf/textkit@npm:^4.4.1":
-  version: 4.4.1
-  resolution: "@react-pdf/textkit@npm:4.4.1"
+"@react-pdf/textkit@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "@react-pdf/textkit@npm:5.0.0"
   dependencies:
     "@babel/runtime": "npm:^7.20.13"
-    "@react-pdf/fns": "npm:2.2.1"
+    "@react-pdf/fns": "npm:3.0.0"
     bidi-js: "npm:^1.0.2"
     hyphen: "npm:^1.6.4"
     unicode-properties: "npm:^1.4.1"
-  checksum: 10c0/261c9130c80f6a8df95559244cf5de39d7ca53bed15865338d9f33f36dba085d3864f06e3d3b0fef37aca0e7a1d9ad1085086de4a0015b180bb66270146aa445
+  checksum: 10c0/57e991364612c79c89fb7d64bbd3632d829d15df5345a7dcbfe531c17dd2b712907abb91c5c4d0c1072ba9891d0a353dc66e3b2e3f87933663ac5304fb38c7b2
   languageName: node
   linkType: hard
 
-"@react-pdf/types@npm:^2.6.0":
-  version: 2.6.0
-  resolution: "@react-pdf/types@npm:2.6.0"
-  checksum: 10c0/831c449d63c5156e28e4fa28b69e603a162ebca3460e00dd2da442ef6bee6d4bd0c0b30d9ad7b38d8c56fabd495be9328fc772b0641dfb0991fd754a05816bf3
+"@react-pdf/types@npm:^2.7.0":
+  version: 2.7.0
+  resolution: "@react-pdf/types@npm:2.7.0"
+  checksum: 10c0/820ca4fefe4ff31a7b9a2e138600282f9675d2c9c1c1deff4ef81821a6b69351a8cf52ab2ddb72acce27db57bba2ef4dc2a5e73cc98bc6306a69ddbc630a7f25
   languageName: node
   linkType: hard
 
@@ -1059,97 +1059,97 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tauri-apps/api@npm:^2.0.0-rc.5":
-  version: 2.0.0-rc.5
-  resolution: "@tauri-apps/api@npm:2.0.0-rc.5"
-  checksum: 10c0/40e816e5b78c7c2c48c08c1a0ca51952366abdf407695eec2882f26c3bd9044c244478375decc2b9d37d9f2bd45b1513ffa8f01e8aa1be01faaf08374ae30c2e
+"@tauri-apps/api@npm:^2.0.0-rc.6":
+  version: 2.0.0-rc.6
+  resolution: "@tauri-apps/api@npm:2.0.0-rc.6"
+  checksum: 10c0/77a58617cefc2c27ac4d077276fea6f39930c4246513e931a057875bd94df55ebaed939cb375d44489e334f7c951fa30672b7d84f1ed51668775b2552f5a701f
   languageName: node
   linkType: hard
 
-"@tauri-apps/cli-darwin-arm64@npm:2.0.0-rc.16":
-  version: 2.0.0-rc.16
-  resolution: "@tauri-apps/cli-darwin-arm64@npm:2.0.0-rc.16"
+"@tauri-apps/cli-darwin-arm64@npm:2.0.0-rc.17":
+  version: 2.0.0-rc.17
+  resolution: "@tauri-apps/cli-darwin-arm64@npm:2.0.0-rc.17"
   conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
 
-"@tauri-apps/cli-darwin-x64@npm:2.0.0-rc.16":
-  version: 2.0.0-rc.16
-  resolution: "@tauri-apps/cli-darwin-x64@npm:2.0.0-rc.16"
+"@tauri-apps/cli-darwin-x64@npm:2.0.0-rc.17":
+  version: 2.0.0-rc.17
+  resolution: "@tauri-apps/cli-darwin-x64@npm:2.0.0-rc.17"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
 
-"@tauri-apps/cli-linux-arm-gnueabihf@npm:2.0.0-rc.16":
-  version: 2.0.0-rc.16
-  resolution: "@tauri-apps/cli-linux-arm-gnueabihf@npm:2.0.0-rc.16"
+"@tauri-apps/cli-linux-arm-gnueabihf@npm:2.0.0-rc.17":
+  version: 2.0.0-rc.17
+  resolution: "@tauri-apps/cli-linux-arm-gnueabihf@npm:2.0.0-rc.17"
   conditions: os=linux & cpu=arm
   languageName: node
   linkType: hard
 
-"@tauri-apps/cli-linux-arm64-gnu@npm:2.0.0-rc.16":
-  version: 2.0.0-rc.16
-  resolution: "@tauri-apps/cli-linux-arm64-gnu@npm:2.0.0-rc.16"
+"@tauri-apps/cli-linux-arm64-gnu@npm:2.0.0-rc.17":
+  version: 2.0.0-rc.17
+  resolution: "@tauri-apps/cli-linux-arm64-gnu@npm:2.0.0-rc.17"
   conditions: os=linux & cpu=arm64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@tauri-apps/cli-linux-arm64-musl@npm:2.0.0-rc.16":
-  version: 2.0.0-rc.16
-  resolution: "@tauri-apps/cli-linux-arm64-musl@npm:2.0.0-rc.16"
+"@tauri-apps/cli-linux-arm64-musl@npm:2.0.0-rc.17":
+  version: 2.0.0-rc.17
+  resolution: "@tauri-apps/cli-linux-arm64-musl@npm:2.0.0-rc.17"
   conditions: os=linux & cpu=arm64 & libc=musl
   languageName: node
   linkType: hard
 
-"@tauri-apps/cli-linux-x64-gnu@npm:2.0.0-rc.16":
-  version: 2.0.0-rc.16
-  resolution: "@tauri-apps/cli-linux-x64-gnu@npm:2.0.0-rc.16"
+"@tauri-apps/cli-linux-x64-gnu@npm:2.0.0-rc.17":
+  version: 2.0.0-rc.17
+  resolution: "@tauri-apps/cli-linux-x64-gnu@npm:2.0.0-rc.17"
   conditions: os=linux & cpu=x64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@tauri-apps/cli-linux-x64-musl@npm:2.0.0-rc.16":
-  version: 2.0.0-rc.16
-  resolution: "@tauri-apps/cli-linux-x64-musl@npm:2.0.0-rc.16"
+"@tauri-apps/cli-linux-x64-musl@npm:2.0.0-rc.17":
+  version: 2.0.0-rc.17
+  resolution: "@tauri-apps/cli-linux-x64-musl@npm:2.0.0-rc.17"
   conditions: os=linux & cpu=x64 & libc=musl
   languageName: node
   linkType: hard
 
-"@tauri-apps/cli-win32-arm64-msvc@npm:2.0.0-rc.16":
-  version: 2.0.0-rc.16
-  resolution: "@tauri-apps/cli-win32-arm64-msvc@npm:2.0.0-rc.16"
+"@tauri-apps/cli-win32-arm64-msvc@npm:2.0.0-rc.17":
+  version: 2.0.0-rc.17
+  resolution: "@tauri-apps/cli-win32-arm64-msvc@npm:2.0.0-rc.17"
   conditions: os=win32 & cpu=arm64
   languageName: node
   linkType: hard
 
-"@tauri-apps/cli-win32-ia32-msvc@npm:2.0.0-rc.16":
-  version: 2.0.0-rc.16
-  resolution: "@tauri-apps/cli-win32-ia32-msvc@npm:2.0.0-rc.16"
+"@tauri-apps/cli-win32-ia32-msvc@npm:2.0.0-rc.17":
+  version: 2.0.0-rc.17
+  resolution: "@tauri-apps/cli-win32-ia32-msvc@npm:2.0.0-rc.17"
   conditions: os=win32 & cpu=ia32
   languageName: node
   linkType: hard
 
-"@tauri-apps/cli-win32-x64-msvc@npm:2.0.0-rc.16":
-  version: 2.0.0-rc.16
-  resolution: "@tauri-apps/cli-win32-x64-msvc@npm:2.0.0-rc.16"
+"@tauri-apps/cli-win32-x64-msvc@npm:2.0.0-rc.17":
+  version: 2.0.0-rc.17
+  resolution: "@tauri-apps/cli-win32-x64-msvc@npm:2.0.0-rc.17"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
 
-"@tauri-apps/cli@npm:^2.0.0-rc.16":
-  version: 2.0.0-rc.16
-  resolution: "@tauri-apps/cli@npm:2.0.0-rc.16"
+"@tauri-apps/cli@npm:^2.0.0-rc.17":
+  version: 2.0.0-rc.17
+  resolution: "@tauri-apps/cli@npm:2.0.0-rc.17"
   dependencies:
-    "@tauri-apps/cli-darwin-arm64": "npm:2.0.0-rc.16"
-    "@tauri-apps/cli-darwin-x64": "npm:2.0.0-rc.16"
-    "@tauri-apps/cli-linux-arm-gnueabihf": "npm:2.0.0-rc.16"
-    "@tauri-apps/cli-linux-arm64-gnu": "npm:2.0.0-rc.16"
-    "@tauri-apps/cli-linux-arm64-musl": "npm:2.0.0-rc.16"
-    "@tauri-apps/cli-linux-x64-gnu": "npm:2.0.0-rc.16"
-    "@tauri-apps/cli-linux-x64-musl": "npm:2.0.0-rc.16"
-    "@tauri-apps/cli-win32-arm64-msvc": "npm:2.0.0-rc.16"
-    "@tauri-apps/cli-win32-ia32-msvc": "npm:2.0.0-rc.16"
-    "@tauri-apps/cli-win32-x64-msvc": "npm:2.0.0-rc.16"
+    "@tauri-apps/cli-darwin-arm64": "npm:2.0.0-rc.17"
+    "@tauri-apps/cli-darwin-x64": "npm:2.0.0-rc.17"
+    "@tauri-apps/cli-linux-arm-gnueabihf": "npm:2.0.0-rc.17"
+    "@tauri-apps/cli-linux-arm64-gnu": "npm:2.0.0-rc.17"
+    "@tauri-apps/cli-linux-arm64-musl": "npm:2.0.0-rc.17"
+    "@tauri-apps/cli-linux-x64-gnu": "npm:2.0.0-rc.17"
+    "@tauri-apps/cli-linux-x64-musl": "npm:2.0.0-rc.17"
+    "@tauri-apps/cli-win32-arm64-msvc": "npm:2.0.0-rc.17"
+    "@tauri-apps/cli-win32-ia32-msvc": "npm:2.0.0-rc.17"
+    "@tauri-apps/cli-win32-x64-msvc": "npm:2.0.0-rc.17"
   dependenciesMeta:
     "@tauri-apps/cli-darwin-arm64":
       optional: true
@@ -1173,7 +1173,7 @@ __metadata:
       optional: true
   bin:
     tauri: tauri.js
-  checksum: 10c0/2c646c120057ae9f5e03ab09a9955be249925f4e6e7bb858bb67894a5871ce73ea40feae210d6a2489ad2f0680be4bd47a17bb13e57e1b874ea7a1116f9b89c4
+  checksum: 10c0/2f821b2c8e7338f2c05ec2cdce9c705418895dd411f44e09d6e02efef6538024a01f9530c1b90c77679de0b7b51704e1c9c655facadbd45fab720611dc41af96
   languageName: node
   linkType: hard
 
@@ -1294,12 +1294,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^20.16.8":
-  version: 20.16.8
-  resolution: "@types/node@npm:20.16.8"
+"@types/node@npm:^20.16.10":
+  version: 20.16.10
+  resolution: "@types/node@npm:20.16.10"
   dependencies:
     undici-types: "npm:~6.19.2"
-  checksum: 10c0/3b3bd96885cbbe49e5f701be91f9a69b904a60b23fd4812083b053a802a03e38227919ff800aff2961fd11147b471a1a4fc09f1df171f372698f16d39859aebf
+  checksum: 10c0/c0c0c7ecb083ec638c2118e54b5242bb4c39a75608cbac9475cf15aaceb64b8bc997a87a0798e700a81d61651c8a7750ae0455be0f0996ada6e8b2bb818d90c5
   languageName: node
   linkType: hard
 
@@ -1329,13 +1329,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:^18.3.9":
-  version: 18.3.9
-  resolution: "@types/react@npm:18.3.9"
+"@types/react@npm:^18.3.10":
+  version: 18.3.10
+  resolution: "@types/react@npm:18.3.10"
   dependencies:
     "@types/prop-types": "npm:*"
     csstype: "npm:^3.0.2"
-  checksum: 10c0/a92b8e061d0c833e096254782c56a802316593f4a907fb834b557cabe848a0829b9eb6056404ea239eb4d5ec5ac7b7724309761516c0a7a277916fa04dd4f805
+  checksum: 10c0/f5be1de1b0331c1fdb33d577f4cf7f1b949d4bded5347b2351a537f03c51dade5be115e21b161dcf1b37061954d320f6a0bdf8d7b70e24eda51071fdd614383d
   languageName: node
   linkType: hard
 
@@ -2382,9 +2382,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-react@npm:^7.36.1":
-  version: 7.36.1
-  resolution: "eslint-plugin-react@npm:7.36.1"
+"eslint-plugin-react@npm:^7.37.0":
+  version: 7.37.0
+  resolution: "eslint-plugin-react@npm:7.37.0"
   dependencies:
     array-includes: "npm:^3.1.8"
     array.prototype.findlast: "npm:^1.2.5"
@@ -2406,7 +2406,7 @@ __metadata:
     string.prototype.repeat: "npm:^1.0.0"
   peerDependencies:
     eslint: ^3 || ^4 || ^5 || ^6 || ^7 || ^8 || ^9.7
-  checksum: 10c0/8cb37f7fb351213bc44263580ff77627e14e27870fd81dae593e3de2826340b9bd8bbac7ae00fd5de69751a0660b2e51bd26760596f4ae85548f6b1bd76706e6
+  checksum: 10c0/c9b02cd425c2a7c36b07fe223e405ae235500ac98f04898529cd8842c78fdd5b54f7c29189db5d6eab390ac5ac531af6e7b94a1f3fe9ad1e6564f7d78fd0eb6b
   languageName: node
   linkType: hard
 
@@ -2548,22 +2548,22 @@ __metadata:
   resolution: "factor@workspace:."
   dependencies:
     "@eslint/js": "npm:^9.11.1"
-    "@react-pdf/renderer": "npm:^3.4.5"
-    "@tauri-apps/api": "npm:^2.0.0-rc.5"
-    "@tauri-apps/cli": "npm:^2.0.0-rc.16"
+    "@react-pdf/renderer": "npm:^4.0.0"
+    "@tauri-apps/api": "npm:^2.0.0-rc.6"
+    "@tauri-apps/cli": "npm:^2.0.0-rc.17"
     "@tauri-apps/plugin-fs": "npm:^2.0.0-rc.2"
     "@tauri-apps/plugin-notification": "npm:^2.0.0-rc.1"
     "@tauri-apps/plugin-shell": "npm:^2.0.0-rc.1"
     "@tauri-apps/plugin-window-state": "npm:^2.0.0-rc.1"
     "@types/eslint__js": "npm:^8.42.3"
-    "@types/node": "npm:^20.16.8"
-    "@types/react": "npm:^18.3.9"
+    "@types/node": "npm:^20.16.10"
+    "@types/react": "npm:^18.3.10"
     "@types/react-dom": "npm:^18.3.0"
     "@typescript-eslint/eslint-plugin": "npm:^8.7.0"
     "@typescript-eslint/parser": "npm:^8.7.0"
     "@vitejs/plugin-react": "npm:^4.3.1"
     eslint: "npm:^9.11.1"
-    eslint-plugin-react: "npm:^7.36.1"
+    eslint-plugin-react: "npm:^7.37.0"
     globals: "npm:^15.9.0"
     lucide-react: "npm:^0.446.0"
     prettier: "npm:^3.3.3"
@@ -3380,12 +3380,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jay-peg@npm:^1.0.2":
-  version: 1.0.2
-  resolution: "jay-peg@npm:1.0.2"
+"jay-peg@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "jay-peg@npm:1.1.0"
   dependencies:
     restructure: "npm:^3.0.0"
-  checksum: 10c0/5681959a180cdc59bf84884118e5e2c26ea3d30da6e46ccd41381b698cd434d2df66cf361e85a8ae3aa153c7660074a702bb53e1c584e5d932bf3001a2e8d7a3
+  checksum: 10c0/c749afb288ae304620a70c08ca518c84ea15f7049bd3fffcbcc0a878ca592bf7ae17d7c315e18d24fb7f4d8ab447631b976dcd32f06dd2cace76ba2c04ca747b
   languageName: node
   linkType: hard
 
@@ -5132,9 +5132,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yoga-layout@npm:^2.0.1":
-  version: 2.0.1
-  resolution: "yoga-layout@npm:2.0.1"
-  checksum: 10c0/beb0375b2f0b3e0f67955bc1e548753665b67158d825f8788d812b62887b502ea17d89b34276a3a58e66bd583fb5afdbe70f8933a06eccd57e9b47fc4ec003ff
+"yoga-layout@npm:^3.1.0":
+  version: 3.1.0
+  resolution: "yoga-layout@npm:3.1.0"
+  checksum: 10c0/0de05dda9d10f0008be1a8ab5047d7bc6ce04f09376d917b09c75a4ccd3e3af44e3a9315f697f579439b28112d8f66b8797d9a27855a31b9ac947e3c1a826204
   languageName: node
   linkType: hard

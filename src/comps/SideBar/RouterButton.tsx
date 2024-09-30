@@ -20,7 +20,7 @@ export function RouterButton({ route, handler, routeName, icon, textOverride, ac
 						: route === routeName && active
 							? 'light-dark(var(--color-light-1),var(--color-dark-1))'
 							: 'light-dark(var(--color-light-2),var(--color-dark-2))',
-					color: route === routeName && active ? 'var(--color-primary)' : 'inherit',
+					color: route === routeName && active ? 'light-dark(var(--color-primary-dark),var(--color-primary-light))' : 'inherit',
 					fontWeight: route === routeName && active ? 'bold' : 'initial',
 				}}
 				className="sideBarButton">
