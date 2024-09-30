@@ -44,7 +44,7 @@ export function SideBar({ routesHook }: SideBarProps): React.JSX.Element {
 								}
 								color={
 									routesHook.route === 'Home' && !routesHook.showHelp && !routesHook.showSettings
-										? 'var(--color-primary)'
+										? 'light-dark(var(--color-primary-dark),var(--color-primary-light))'
 										: 'light-dark(var(--color-dark-1),var(--color-light-1))'
 								}
 							/>
@@ -67,7 +67,7 @@ export function SideBar({ routesHook }: SideBarProps): React.JSX.Element {
 								}
 								color={
 									routesHook.route === 'Upload' && !routesHook.showHelp && !routesHook.showSettings
-										? 'var(--color-primary)'
+										? 'light-dark(var(--color-primary-dark),var(--color-primary-light))'
 										: 'light-dark(var(--color-dark-1),var(--color-light-1))'
 								}
 							/>
@@ -91,7 +91,7 @@ export function SideBar({ routesHook }: SideBarProps): React.JSX.Element {
 										}
 										color={
 											routesHook.route === 'ExportPage' && !routesHook.showHelp && !routesHook.showSettings
-												? 'var(--color-primary)'
+												? 'light-dark(var(--color-primary-dark),var(--color-primary-light))'
 												: 'light-dark(var(--color-dark-1),var(--color-light-1))'
 										}
 									/>
@@ -113,7 +113,7 @@ export function SideBar({ routesHook }: SideBarProps): React.JSX.Element {
 										}
 										color={
 											routesHook.route === 'Templates' && !routesHook.showHelp && !routesHook.showSettings
-												? 'var(--color-primary)'
+												? 'light-dark(var(--color-primary-dark),var(--color-primary-light))'
 												: 'light-dark(var(--color-dark-1),var(--color-light-1))'
 										}
 									/>
@@ -151,7 +151,7 @@ export function SideBar({ routesHook }: SideBarProps): React.JSX.Element {
 															routesHook.route === getDataBaseDisplayName('english', key as DataBaseNames) &&
 															!routesHook.showHelp &&
 															!routesHook.showSettings
-																? 'var(--color-primary)'
+																? 'light-dark(var(--color-primary-dark),var(--color-primary-light))'
 																: 'light-dark(var(--color-dark-1),var(--color-light-1))'
 														}
 													/>
@@ -171,7 +171,7 @@ export function SideBar({ routesHook }: SideBarProps): React.JSX.Element {
 															routesHook.route === getDataBaseDisplayName('english', key as DataBaseNames) &&
 															!routesHook.showHelp &&
 															!routesHook.showSettings
-																? 'var(--color-primary)'
+																? 'light-dark(var(--color-primary-dark),var(--color-primary-light))'
 																: 'light-dark(var(--color-dark-1),var(--color-light-1))'
 														}
 													/>
@@ -191,7 +191,7 @@ export function SideBar({ routesHook }: SideBarProps): React.JSX.Element {
 															routesHook.route === getDataBaseDisplayName('english', key as DataBaseNames) &&
 															!routesHook.showHelp &&
 															!routesHook.showSettings
-																? 'var(--color-primary)'
+																? 'light-dark(var(--color-primary-dark),var(--color-primary-light))'
 																: 'light-dark(var(--color-dark-1),var(--color-light-1))'
 														}
 													/>
@@ -217,7 +217,7 @@ export function SideBar({ routesHook }: SideBarProps): React.JSX.Element {
 							<HelpCircle
 								size={solids.icon.size.regular}
 								strokeWidth={routesHook.showHelp ? solids.icon.strokeWidth.large : solids.icon.strokeWidth.regular}
-								color={routesHook.showHelp ? 'var(--color-primary)' : 'light-dark(var(--color-dark-1),var(--color-light-1))'}
+								color={routesHook.showHelp ? 'light-dark(var(--color-primary-dark),var(--color-primary-light))' : 'light-dark(var(--color-dark-1),var(--color-light-1))'}
 							/>
 						}
 						text={general.language === 'deutsch' ? 'Hilfe' : 'Help'}
@@ -232,7 +232,7 @@ export function SideBar({ routesHook }: SideBarProps): React.JSX.Element {
 							<CogIcon
 								size={solids.icon.size.regular}
 								strokeWidth={routesHook.showSettings ? solids.icon.strokeWidth.large : solids.icon.strokeWidth.regular}
-								color={routesHook.showSettings ? 'var(--color-primary)' : 'light-dark(var(--color-dark-1),var(--color-light-1))'}
+								color={routesHook.showSettings ? 'light-dark(var(--color-primary-dark),var(--color-primary-light))' : 'light-dark(var(--color-dark-1),var(--color-light-1))'}
 							/>
 						}
 						text={general.language === 'deutsch' ? 'Einstellungen' : 'Settings'}
