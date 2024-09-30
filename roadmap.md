@@ -7,7 +7,7 @@
 - [ ] add sorting
 - [ ] add scroll bar
 - [x] open urls in default browser
-- [ ] add Tests
+- [ ] add tests
 
 ## Long Term
 - [ ] add articles table
