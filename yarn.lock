@@ -1177,6 +1177,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tauri-apps/plugin-cli@npm:~2.0.0-rc":
+  version: 2.0.0-rc.1
+  resolution: "@tauri-apps/plugin-cli@npm:2.0.0-rc.1"
+  dependencies:
+    "@tauri-apps/api": "npm:^2.0.0-rc.4"
+  checksum: 10c0/f25b01ccde95b15108e11cd755029caa5ba4f3375a6b1177384d6f6b3296a098484da710802ce6d084ceb2d55411b530ceeb53befee5fed38c9b9be9b084fd14
+  languageName: node
+  linkType: hard
+
 "@tauri-apps/plugin-fs@npm:^2.0.0-rc.2":
   version: 2.0.0-rc.2
   resolution: "@tauri-apps/plugin-fs@npm:2.0.0-rc.2"
@@ -2551,6 +2560,7 @@ __metadata:
     "@react-pdf/renderer": "npm:^4.0.0"
     "@tauri-apps/api": "npm:^2.0.0-rc.6"
     "@tauri-apps/cli": "npm:^2.0.0-rc.17"
+    "@tauri-apps/plugin-cli": "npm:~2.0.0-rc"
     "@tauri-apps/plugin-fs": "npm:^2.0.0-rc.2"
     "@tauri-apps/plugin-notification": "npm:^2.0.0-rc.1"
     "@tauri-apps/plugin-shell": "npm:^2.0.0-rc.1"

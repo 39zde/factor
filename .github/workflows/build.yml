@@ -15,16 +15,16 @@ jobs:
       matrix:
         include:
           - platform: 'macos-latest' # for Arm based macs (M1 and above).
-            args: '--target aarch64-apple-darwin --config ./tauri.conf.json --ci'
+            args: '--target aarch64-apple-darwin'
           - platform: 'macos-latest' # for Intel based macs.
-            args: '--target x86_64-apple-darwin --config ./tauri.conf.json --ci'
-          - platform: 'ubuntu-22.04'
-            args: '--config ./tauri.conf.json --ci'
+            args: '--target x86_64-apple-darwin '
+          - platform: 'ubuntu-latest'
+            args: ''
           - platform: 'windows-latest'
-            args: '--config ./tauri.conf.json --ci'
-          
+            args: ''
+
     runs-on: ${{ matrix.platform }}
-    
+
     steps:
     - name: check out git repo
       uses: actions/checkout@v4
@@ -36,7 +36,7 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
-        
+
     - name: Setup Node
       uses: actions/setup-node@master
       with:
@@ -61,9 +61,9 @@ jobs:
     - name: copy files before build
       run: node ./scripts/preTauriBuild.js
 
-    - name: show 
+    - name: show
       run: ls ./src-tauri
-  
+
     - uses: tauri-apps/tauri-action@v0
       env:
         PUBLISH_FOR_PULL_REQUEST: true
