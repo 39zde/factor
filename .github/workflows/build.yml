@@ -15,11 +15,13 @@ jobs:
       matrix:
         include:
           - platform: 'macos-latest' # for Arm based macs (M1 and above).
-            args: '--target aarch64-apple-darwin'
+            args: '--target aarch64-apple-darwin --config ./tauri.conf.json --ci'
           - platform: 'macos-latest' # for Intel based macs.
-            args: '--target x86_64-apple-darwin'
+            args: '--target x86_64-apple-darwin --config ./tauri.conf.json --ci'
           - platform: 'ubuntu-22.04'
+            args: '--config ./tauri.conf.json --ci'
           - platform: 'windows-latest'
+            args: '--config ./tauri.conf.json --ci'
           
     runs-on: ${{ matrix.platform }}
     
@@ -55,7 +57,13 @@ jobs:
       run: |
         corepack enable
         yarn install
-        
+
+    - name: copy files before build
+      run: node ./scripts/preTauriBuild.js
+
+    - name: show 
+      run: ls ./src-tauri
+  
     - uses: tauri-apps/tauri-action@v0
       env:
         PUBLISH_FOR_PULL_REQUEST: true
