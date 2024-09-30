@@ -20,8 +20,8 @@
 			"capabilities": [
 				"main"
 			],
-			"csp": "default-src 'self'; script-src 'self'; connect-src 'self'; worker-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:",
-			"devCsp": "default-src 'self'",
+			"csp": "default-src 'self'; script-src 'self'; connect-src 'self'; worker-src 'self'; style-src 'self'; img-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; frame-src: 'none'; upgrade-insecure-requests",
+			"devCsp": null,
 			"assetProtocol": {
 				"enable": false,
 				"scope": []

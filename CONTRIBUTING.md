@@ -62,8 +62,16 @@ yarn action:devtool
 
 ## Theming
 
-Theming is done via the [light-dark](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/light-dark) CSS color function. The theme is then being changed by setting a different `color-scheme` value in a CSS root tag. Try to follow the general styling.
+Theming is done via the [light-dark](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/light-dark) CSS color function. The theme is then being changed by setting a different `color-scheme` value in a CSS root tag. `color-scheme` has the following valid values `light`,`dark` and `light dark`. The same is true for `AppContext.appearances.colorTheme`. Depending on the App-Context, a different stylesheet is being linked (see [`App.tsx`](./src/App.tsx)). Those stylesheets are:
+- [`theme-light.css`](./src/theme-light.css)
+- [`theme-dark.css`](./src/theme-dark.css)
+- [`theme-lightdark.css`](./src/theme-lightdark.css)
 
+As for the Styling itself, try to follow the general styling.
+- Secondary color for active/selected elements, rarely accents.
+- Primary color for interactive elements, unless it breaks with the overall element styling. The table row navigator buttons are a good example ([`TableBody.tsx`](./src/comps/Table/TableBody.tsx)), for when to break with theme.
+- Links are underlined and mostly not focusable (`tabindex: -1;`).
+- ...expect this list to grow over time
 
 ## Data Storage
 

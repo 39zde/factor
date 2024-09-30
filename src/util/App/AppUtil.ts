@@ -156,15 +156,6 @@ export function appReducer(appState: AppContextType, action: AppAction): AppCont
 	switch (action.type) {
 		case 'set': {
 			if (action.change !== undefined) {
-				if (action.change.appearances !== undefined) {
-					const appearanceChanges = action.change.appearances as AppSettingsAppearance;
-					if (appearanceChanges.colorTheme !== undefined) {
-						const themeTag = document.getElementById('theme');
-						if (themeTag !== null) {
-							themeTag.innerText = `:root{ color-scheme: ${appearanceChanges.colorTheme} ; }`;
-						}
-					}
-				}
 				if (action.change.database !== undefined) {
 					if (action.change.database.databases !== undefined) {
 						for (const [key, val] of Object.entries(action.change.database.databases)) {

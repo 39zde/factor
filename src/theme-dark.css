@@ -1,6 +1,10 @@
 @import url('@base');
 
-@supports (scrollbar-color: white black){
+:root {
+	color-scheme: dark;
+}
+
+@supports (scrollbar-color: white black) {
 	:root {
 		scrollbar-color: var(--color-light-3) var(--color-dark-1);
 	}

@@ -1,12 +1,19 @@
 <!doctype html>
-<html>
+<html lang="en">
+
 <head>
-	<meta charset="UTF-8" name="Factor" lang="en-US,de-DE" http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; connect-src 'self'; worker-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:" />
-	<style id="theme">:root { color-scheme: light; }</style>
+	<meta charset="UTF-8" name="Factor" lang="en-US,de-DE" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<meta http-equiv="Content-Security-Policy"
+		content="default-src 'self'; script-src 'self'; connect-src 'self'; worker-src 'self'; style-src 'self'; img-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; frame-src: 'none'; upgrade-insecure-requests" />
+	<meta http-equiv="Cross-Origin-Embedder-Policy" content="require-corp" />
+	<meta http-equiv="Cross-Origin-Opener-Policy" content="same-origin" />
 	<title>Factor</title>
 </head>
+
 <body>
 	<div id="root"></div>
 	<script type="module" src="./src/main.tsx"></script>
 </body>
+
 </html>
