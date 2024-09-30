@@ -25,7 +25,9 @@ jobs:
     
     steps:
     - name: check out git repo
-      uses: actions/checkout@master
+      uses: actions/checkout@v4
+      with:
+        ref: "master"
 
     - name: install dependencies (ubuntu only)
       if: matrix.platform == 'ubuntu-22.04' # This must match the platform value defined above.
